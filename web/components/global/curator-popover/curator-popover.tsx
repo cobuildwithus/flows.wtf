@@ -25,8 +25,8 @@ interface Props {
 
 export const CuratorPopover = (props: Props) => {
   const { flow, address } = props
-  const { ethPrice } = useETHPrice()
   const { tokens, earnings } = useUserTcrTokens(address)
+  const { ethPrice } = useETHPrice()
 
   const closeRef = useRef<HTMLButtonElement>(null)
   const closePopover = () => closeRef.current?.click()
