@@ -1,0 +1,32 @@
+{
+  "crons": [
+    {
+      "path": "/crons/reveal-votes",
+      "schedule": "*/2 * * * *"
+    },
+    {
+      "path": "/crons/balance-flow-rates",
+      "schedule": "*/1 * * * *"
+    },
+    {
+      "path": "/crons/conversion-rates",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/crons/derived-data/template",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/crons/derived-data/minimum-salary",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/crons/derived-data/grant-page",
+      "schedule": "0 */2 * * *"
+    },
+    {
+      "path": "/crons/total-earned",
+      "schedule": "0 */2 * * *"
+    }
+  ]
+}

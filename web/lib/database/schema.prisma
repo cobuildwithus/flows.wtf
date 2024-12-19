@@ -1,0 +1,266 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views", "multiSchema", "tracing"]
+  output          = "../../node_modules/@prisma/flows"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+  schemas   = ["web", "onchain"]
+}
+
+model Draft {
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String
+  tagline         String?
+  image           String
+  users           String[]
+  isPrivate       Boolean  @default(true)
+  isOnchain       Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  flowId          String
+  isFlow          Boolean  @default(false)
+  transactionHash String?
+
+  flow Grant @relation(fields: [flowId], references: [id])
+
+  @@index([isPrivate])
+  @@index([isOnchain])
+  @@index([flowId])
+  @@index([createdAt])
+  @@map("Draft")
+  @@schema("web")
+}
+
+model DerivedData {
+  id        String   @id @default(cuid())
+  grantId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  grant Grant @relation(fields: [grantId], references: [id])
+
+  // derived data here (generated from ai etc.)
+  minimumSalary     Int?
+  template          String?
+  lastBuilderUpdate DateTime?
+  pageData          String?
+
+  @@index([grantId])
+  @@map("DerivedData")
+  @@schema("web")
+}
+
+model Conversation {
+  id          String   @id
+  type        String
+  messages    Json
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        String
+  attachments Json?
+
+  @@index([user])
+  @@index([type])
+  @@map("Conversation")
+  @@schema("web")
+}
+
+model Story {
+  id                    String    @id @default(uuid())
+  title                 String
+  summary               String
+  key_points           String[]
+  participants         String[]
+  header_image         String?
+  timeline             Json
+  sentiment            String    @db.VarChar(10)
+  completeness         Decimal   @db.Decimal(3,2)
+  complete             Boolean
+  sources              String[]
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+  media_urls           String[]
+  author               String
+  tagline              String
+  grant_ids            String[]
+  parent_flow_ids      String[]
+  cast_hashes          String[]
+  mint_urls            String[]
+  info_needed_to_complete String?
+  edits                Json?
+
+  @@index([complete])
+  @@index([id])
+  @@index([updated_at])
+  @@index([parent_flow_ids])
+  @@map("Stories")
+  @@schema("web")
+}
+
+model Grant {
+  id                               String  @id
+  recipient                        String
+  flowId                           String  @map("flow_id")
+  submitter                        String
+  parentContract                   String  @map("parent_contract")
+  isTopLevel                       Boolean @map("is_top_level")
+  isFlow                           Boolean @map("is_flow")
+  title                            String
+  description                      String
+  image                            String
+  tagline                          String?
+  url                              String?
+  isRemoved                        Boolean @map("is_removed")
+  isActive                         Boolean @map("is_active")
+  votesCount                       String  @map("votes_count")
+  monthlyIncomingFlowRate          String  @map("monthly_incoming_flow_rate")
+  monthlyIncomingBaselineFlowRate  String  @map("monthly_incoming_baseline_flow_rate")
+  monthlyIncomingBonusFlowRate     String  @map("monthly_incoming_bonus_flow_rate")
+  monthlyOutgoingFlowRate          String  @map("monthly_outgoing_flow_rate")
+  monthlyRewardPoolFlowRate        String  @map("monthly_reward_pool_flow_rate")
+  monthlyBaselinePoolFlowRate      String  @map("monthly_baseline_pool_flow_rate")
+  monthlyBonusPoolFlowRate         String  @map("monthly_bonus_pool_flow_rate")
+  bonusMemberUnits                 String  @map("bonus_member_units")
+  baselineMemberUnits              String  @map("baseline_member_units")
+  totalEarned                      String  @map("total_earned")
+  activeRecipientCount             Int     @map("active_recipient_count")
+  awaitingRecipientCount           Int     @map("awaiting_recipient_count")
+  challengedRecipientCount         Int     @map("challenged_recipient_count")
+  tcr                              String  @unique
+  erc20                            String  @unique
+  arbitrator                       String  @unique
+  tokenEmitter                     String  @unique @map("token_emitter")
+  status                           Int
+  challengePeriodEndsAt            Int     @map("challenge_period_ends_at")
+  isDisputed                       Boolean @map("is_disputed")
+  isResolved                       Boolean @map("is_resolved")
+  evidenceGroupID                  String  @unique @map("evidence_group_id")
+  createdAt                        Int     @map("created_at")
+  updatedAt                        Int     @map("updated_at")
+  baselinePool                     String  @map("baseline_pool")
+  bonusPool                        String  @map("bonus_pool")
+  managerRewardPool                String  @map("manager_reward_pool")
+  superToken                       String  @map("super_token")
+  managerRewardSuperfluidPool      String  @map("manager_reward_superfluid_pool")
+  managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")
+  baselinePoolFlowRatePercent      Int     @map("baseline_pool_flow_rate_percent")
+
+  flow         Grant         @relation("Subgrants", fields: [flowId], references: [id])
+  subgrants    Grant[]       @relation("Subgrants")
+  drafts       Draft[]
+  disputes     Dispute[]
+  tokenHolders TokenHolder[]
+  evidences    Evidence[]
+  derivedData  DerivedData?
+
+  @@index([isTopLevel])
+  @@index([isFlow])
+  @@index([isActive])
+  @@index([isTopLevel, isFlow])
+  @@map("Grant")
+  @@schema("onchain")
+}
+
+view Vote {
+  id          String  @id
+  contract    String
+  recipientId String  @map("recipient_id")
+  tokenId     String  @map("token_id")
+  bps         Int
+  voter       String
+  blockNumber String  @map("block_number")
+  votesCount  String  @map("votes_count")
+
+  @@index([contract])
+  @@index([recipientId])
+  @@schema("onchain")
+}
+
+view PonderMeta {
+  key   String @id
+  value String
+
+  @@map("_ponder_meta")
+  @@schema("onchain")
+}
+
+view Dispute {
+  id                   String     @id
+  disputeId            String     @map("dispute_id")
+  arbitrator           String
+  arbitrable           String
+  grantId              String     @map("grant_id")
+  challenger           String
+  votingStartTime      Int        @map("voting_start_time")
+  votingEndTime        Int        @map("voting_end_time")
+  revealPeriodEndTime  Int        @map("reveal_period_end_time")
+  votes                String
+  requesterPartyVotes  String     @map("requester_party_votes")
+  challengerPartyVotes String     @map("challenger_party_votes")
+  ruling               Int
+  creationBlock        Int        @map("creation_block")
+  totalSupply          String     @map("total_supply")
+  isExecuted           Boolean    @map("is_executed")
+  evidenceGroupID      String     @unique @map("evidence_group_id")
+  grant                Grant      @relation(fields: [grantId], references: [id])
+  evidences            Evidence[]
+
+  @@schema("onchain")
+}
+
+view DisputeVote {
+  id          String  @id
+  arbitrator  String
+  disputeId   String  @map("dispute_id")
+  commitHash  String  @map("commit_hash")
+  voter       String
+  choice      Int?
+  votes       String?
+  reason      String?
+  committedAt Int     @map("committed_at")
+  revealedBy  String? @map("revealed_by")
+  revealedAt  Int?    @map("revealed_at")
+
+  @@unique([disputeId, arbitrator, voter])
+  @@index([voter])
+  @@schema("onchain")
+}
+
+view TokenHolder {
+  id            String @id
+  tokenContract String @map("token_contract")
+  flow          Grant  @relation(fields: [tokenContract], references: [erc20])
+  holder        String
+  firstPurchase Int    @map("first_purchase")
+  amount        String
+  totalBought   String @map("total_bought")
+  totalSold     String @map("total_sold")
+  costBasis     String @map("cost_basis")
+  totalSaleProceeds String @map("total_sale_proceeds")
+
+  @@unique([tokenContract, holder])
+  @@index([holder])
+  @@index([holder, amount])
+  @@schema("onchain")
+}
+
+view Evidence {
+  id              String @id
+  arbitrator      String
+  evidenceGroupID String @map("evidence_group_id")
+  evidence        String
+  party           String
+  blockNumber     String @map("block_number")
+
+  dispute Dispute @relation(fields: [evidenceGroupID], references: [evidenceGroupID])
+  grant   Grant   @relation(fields: [evidenceGroupID], references: [evidenceGroupID])
+
+  @@index([evidenceGroupID])
+  @@schema("onchain")
+}

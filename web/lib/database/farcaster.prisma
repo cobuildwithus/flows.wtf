@@ -1,0 +1,69 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "tracing"]
+  output          = "../../node_modules/@prisma/farcaster"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("FARCASTER_DATABASE_URL")
+  directUrl = env("DIRECT_FARCASTER_DATABASE_URL")
+  schemas   = ["production"]
+}
+
+model Profile {
+  fname              String?
+  display_name       String?
+  avatar_url         String?
+  bio               String?
+  verified_addresses String[]
+  updated_at         DateTime
+  fid               BigInt    @id
+  casts             Cast[]
+  channel_members    ChannelMember[]
+  
+  @@map("farcaster_profile")
+  @@schema("production")
+  @@index([verified_addresses], type: Gin)
+}
+
+model Cast {
+  id                BigInt    @id
+  created_at        DateTime
+  updated_at        DateTime
+  deleted_at        DateTime?
+  timestamp         DateTime
+  fid              BigInt
+  hash             Bytes
+  parent_hash      Bytes?
+  parent_fid       BigInt?
+  parent_url       String?
+  text             String?
+  embeds           String?
+  mentioned_fids   BigInt[]
+  mentions_positions_array Int[]
+  root_parent_hash Bytes?
+  root_parent_url  String?
+  profile          Profile   @relation(fields: [fid], references: [fid])
+  computed_tags    String[]
+  embed_summaries  String[]
+
+  @@map("farcaster_casts")
+  @@schema("production")
+}
+
+model ChannelMember {
+  id          BigInt    @id
+  created_at  DateTime
+  updated_at  DateTime
+  deleted_at  DateTime?
+  timestamp   DateTime
+  fid        BigInt
+  channel_id  String
+  profile     Profile   @relation(fields: [fid], references: [fid])
+
+  @@map("farcaster_channel_members")
+  @@schema("production")
+  @@index([fid])
+  @@index([channel_id])
+}

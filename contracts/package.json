@@ -1,0 +1,14 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "Generate contract ABIs for web & indexer",
+  "scripts": {
+    "generate": "wagmi generate",
+    "postgenerate": "cp src/generated.ts ../web/lib/abis.ts && cp src/generated.ts ../indexer/abis.ts && cp addresses.ts ../web/addresses.ts && cp addresses.ts ../indexer/addresses.ts"
+  },
+  "dependencies": {
+    "@types/node": "^22.5.5",
+    "@wagmi/cli": "^2.1.16",
+    "typescript": "^5.6.2"
+  }
+}
