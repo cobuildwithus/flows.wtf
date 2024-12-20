@@ -37,7 +37,7 @@ export function BuyApplicationFee(props: Props) {
       onSuccess={onSuccess}
       successMessage="Paid application fee!"
     >
-      Pay Fee <EthInUsd amount={totalCost} />
+      Pay Deposit
     </BuyTokenButton>
   )
 }

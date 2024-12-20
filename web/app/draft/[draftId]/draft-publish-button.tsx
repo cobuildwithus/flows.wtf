@@ -130,9 +130,9 @@ export function DraftPublishButton(props: Props) {
               1
             </span>
             <p className="text-muted-foreground">
-              Applying costs{" "}
-              <TcrInUsd tokenEmitter={getEthAddress(flow.tokenEmitter)} amount={addItemCost} /> and
-              will kick off a challenge period.
+              Deposit{" "}
+              <TcrInUsd tokenEmitter={getEthAddress(flow.tokenEmitter)} amount={addItemCost} /> to
+              apply.
             </p>
           </li>
           <li className="flex items-start space-x-4">
@@ -140,9 +140,8 @@ export function DraftPublishButton(props: Props) {
               2
             </span>
             <p className="text-muted-foreground">
-              For {challengePeriodFormatted}, anyone can pay to challenge this application and send
-              it to a community vote. You may lose your application fee if the application is voted
-              down by the community.
+              For {challengePeriodFormatted}, anyone can challenge your application. You may lose
+              your deposit if the community votes against you.
             </p>
           </li>
           <li className="flex items-start space-x-4">
@@ -150,10 +149,7 @@ export function DraftPublishButton(props: Props) {
               3
             </span>
             <div>
-              <p className="text-muted-foreground">
-                If not challenged, your application will be accepted and your application fee will
-                be returned.
-              </p>
+              <p className="text-muted-foreground">If approved, your deposit will be refunded.</p>
             </div>
           </li>
         </ul>
@@ -222,7 +218,7 @@ export function DraftPublishButton(props: Props) {
                 }
               }}
             >
-              {!hasEnoughAllowance && "Approve Fee"}
+              {!hasEnoughAllowance && "Approve Deposit"}
               {hasEnoughAllowance && `${action} draft`}
             </Button>
           )}
