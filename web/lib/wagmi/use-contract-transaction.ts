@@ -33,9 +33,9 @@ export const useContractTransaction = (args?: {
   const { data: hash, isPending, error, ...writeContractRest } = useWriteContract()
   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash })
 
-  const { chainId: connectedChainId, isConnected } = useAccount()
+  const { chainId: connectedChainId, isConnected, address } = useAccount()
   const { switchChainAsync } = useSwitchChain()
-  const { login } = useLogin()
+  const { login, connectWallet } = useLogin()
 
   useEffect(() => {
     if (callbackHandled || !toastId) return
@@ -82,7 +82,8 @@ export const useContractTransaction = (args?: {
     prepareWallet: async (toastId?: number | string) => {
       setCallbackHandled(false)
 
-      if (!isConnected) return login()
+      if (!address) return login()
+      if (!isConnected) return connectWallet()
 
       if (chainId !== connectedChainId) {
         try {

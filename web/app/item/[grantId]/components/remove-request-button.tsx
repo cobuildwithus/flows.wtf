@@ -98,7 +98,7 @@ export function GrantRemoveRequestButton(props: Props) {
 
   const ref = useRef<HTMLButtonElement>(null)
 
-  const { removeItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr), chainId)
+  const { removeItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr))
   const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr), chainId)
 
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({
@@ -211,7 +211,6 @@ export function GrantRemoveRequestButton(props: Props) {
               onSuccess={() => {
                 token.refetch()
               }}
-              extraInfo="apply"
               flow={flow}
               defaultTokenAmount={removeItemCost - token.balance}
             />

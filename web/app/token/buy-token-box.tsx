@@ -1,6 +1,5 @@
 "use client"
 
-import { useUserTcrTokens } from "@/components/global/curator-popover/hooks/use-user-tcr-tokens"
 import { createRelayClient } from "@/lib/relay/client"
 import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
 import { getEthAddress } from "@/lib/utils"
@@ -50,7 +49,6 @@ export function BuyTokenBox({
   const { data: balance } = useBalance({ address, chainId: selectedChain.id })
   const [tokenAmount, _setTokenAmount] = useState((Number(defaultTokenAmount) / 1e18).toString())
   const [tokenAmountBigInt, _setTokenAmountBigInt] = useState(defaultTokenAmount)
-  const { mutate: mutateUserTcrTokens } = useUserTcrTokens(address)
 
   const { balances, refetch } = useERC20Balances([getEthAddress(token)], address)
   const tokenBalance = balances?.[0]
@@ -133,14 +131,14 @@ export function BuyTokenBox({
       </div>
 
       <BuyTokenButton
-        selectedChain={selectedChain}
+        className="w-full rounded-2xl py-7 text-lg font-medium tracking-wide"
+        chainId={selectedChain.id}
         tokenEmitter={tokenEmitter}
         costWithRewardsFee={costWithRewardsFee}
         tokenAmountBigInt={tokenAmountBigInt}
-        isLoadingRewardsQuote={isLoadingRewardsQuote}
+        isReady={!isLoadingRewardsQuote}
         onSuccess={(hash) => {
           refetch()
-          setTimeout(() => mutateUserTcrTokens(), 1000)
           onSuccess(hash)
         }}
       />

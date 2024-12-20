@@ -1,6 +1,7 @@
 import { Address, erc20Abi } from "viem"
 import { base } from "viem/chains"
 import { useReadContracts } from "wagmi"
+import { getEthAddress } from "../utils"
 
 export function useERC20Balances(contracts: Address[], owner: Address | undefined) {
   const { data, refetch } = useReadContracts({
@@ -18,6 +19,15 @@ export function useERC20Balances(contracts: Address[], owner: Address | undefine
 
   return {
     balances,
+    refetch,
+  }
+}
+
+export function useERC20Balance(contract: string, owner: Address | undefined) {
+  const { balances, refetch } = useERC20Balances([getEthAddress(contract)], owner)
+
+  return {
+    balance: balances[0] || 0n,
     refetch,
   }
 }

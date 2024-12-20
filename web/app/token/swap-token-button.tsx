@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation"
 interface Props {
   flow: Grant
   defaultTokenAmount?: bigint
-  extraInfo?: "curator" | "apply" | "challenge"
+  extraInfo?: "curator" | "challenge"
   onSuccess?: (hash: string) => void
   size?: ButtonProps["size"]
   variant?: ButtonProps["variant"]
@@ -101,12 +101,7 @@ export function SwapTokenButton(props: Props) {
                     and earn a stream of USDC for verifying impact of grantees.
                   </p>
                 )}
-                {extraInfo === "apply" && (
-                  <p>
-                    Buy {Number(defaultTokenAmount) / 1e18} TCR tokens to pay your application fee.
-                    If your grant is approved, you will get your application fee back.
-                  </p>
-                )}
+
                 {extraInfo === "challenge" && (
                   <p>
                     Buy {Number(defaultTokenAmount) / 1e18} TCR tokens to challenge a grant. If your

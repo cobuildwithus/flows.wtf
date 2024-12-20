@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { RelayChain } from "@reservoir0x/relay-sdk"
 import { base, mainnet } from "viem/chains"
-import { useAccount, useBalance } from "wagmi"
 import { BaseEthLogo } from "./base-eth-logo"
 import { CurrencyDisplay } from "./currency-display"
+import { useEthBalances } from "./hooks/use-eth-balances"
 import { TokenBalance } from "./token-balance"
 import { TokenLogo } from "./token-logo"
 
@@ -21,16 +21,7 @@ export const SwitchEthChainButton = ({
   switchChain: (chainId: number) => void
   selectedChain: RelayChain
 }) => {
-  const { address } = useAccount()
-
-  const { data: baseEthBalance } = useBalance({
-    chainId: base.id,
-    address,
-  })
-  const { data: ethBalance } = useBalance({
-    chainId: mainnet.id,
-    address,
-  })
+  const { balances } = useEthBalances()
 
   const isBase = selectedChain.id === base.id
 
@@ -62,13 +53,13 @@ export const SwitchEthChainButton = ({
           onClick={() => switchChain(mainnet.id)}
           logoChild={<TokenLogo className="mr-4" size={30} src="/eth.png" alt="ETH" />}
           chainName="Ethereum"
-          balance={ethBalance?.value || BigInt(0)}
+          balance={balances[mainnet.id]}
         />
         <ChainMenuItem
           onClick={() => switchChain(base.id)}
           logoChild={<BaseEthLogo className="mr-2" size={30} />}
           chainName="Base"
-          balance={baseEthBalance?.value || BigInt(0)}
+          balance={balances[base.id]}
         />
       </DropdownMenuContent>
     </DropdownMenu>

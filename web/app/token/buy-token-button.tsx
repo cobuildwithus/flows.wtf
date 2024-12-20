@@ -1,9 +1,10 @@
+import { useUserTcrTokens } from "@/components/global/curator-popover/hooks/use-user-tcr-tokens"
 import { Button } from "@/components/ui/button"
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { useWaitForTransactions } from "@/lib/wagmi/use-wait-for-transactions"
-import { RelayChain } from "@reservoir0x/relay-sdk"
+import { ComponentProps, PropsWithChildren } from "react"
 import { toast } from "sonner"
 import { Address, zeroAddress } from "viem"
 import { base } from "viem/chains"
@@ -12,25 +13,30 @@ import { useBuyTokenRelay } from "./hooks/use-buy-token-relay"
 
 const toChainId = base.id
 
+interface Props extends ComponentProps<typeof Button> {
+  onSuccess: (hash: string) => void
+  tokenEmitter: Address
+  costWithRewardsFee: bigint
+  tokenAmountBigInt: bigint
+  isReady: boolean
+  chainId: number
+  successMessage?: string
+}
+
 export const BuyTokenButton = ({
   onSuccess,
   tokenEmitter,
   costWithRewardsFee,
   tokenAmountBigInt,
-  isLoadingRewardsQuote,
-  selectedChain,
-}: {
-  onSuccess: (hash: string) => void
-  tokenEmitter: Address
-  costWithRewardsFee: bigint
-  tokenAmountBigInt: bigint
-  isLoadingRewardsQuote: boolean
-  selectedChain: RelayChain
-}) => {
-  const chainId = selectedChain.id
-  const successMessage = "Tokens bought successfully!"
+  isReady,
+  chainId,
+  children = "Buy",
+  successMessage = "Tokens bought successfully!",
+  ...buttonProps
+}: PropsWithChildren<Props>) => {
   const { address } = useAccount()
   const { data: balance } = useBalance({ address, chainId })
+  const { mutate: mutateUserTcrTokens } = useUserTcrTokens(address)
 
   const { executeBuyTokenRelay, txHashes } = useBuyTokenRelay()
 
@@ -38,9 +44,11 @@ export const BuyTokenButton = ({
     chainId,
     success: successMessage,
     onSuccess: async (hash) => {
+      setTimeout(() => mutateUserTcrTokens(), 1000)
       onSuccess(hash)
     },
   })
+
   useWaitForTransactions(txHashes, toastId)
 
   const insufficientBalance =
@@ -48,8 +56,8 @@ export const BuyTokenButton = ({
 
   return (
     <Button
-      className="w-full rounded-2xl py-7 text-lg font-medium tracking-wide"
-      disabled={isLoading || isLoadingRewardsQuote || !balance || insufficientBalance}
+      {...buttonProps}
+      disabled={isLoading || !isReady || !balance || insufficientBalance}
       loading={isLoading}
       type="button"
       onClick={async () => {
@@ -96,7 +104,7 @@ export const BuyTokenButton = ({
         }
       }}
     >
-      {insufficientBalance ? "Insufficient ETH balance" : "Buy"}
+      {insufficientBalance ? "Insufficient ETH balance" : children}
     </Button>
   )
 }

@@ -23,7 +23,7 @@ export function useBuyTokenQuote(contract: Address, amount: bigint, chainId = ba
 }
 
 export function useBuyTokenQuoteWithRewards(contract: Address, amount: bigint, chainId = base.id) {
-  const { data, isError, isLoading } = useReadContract({
+  const { data, isError, isLoading, error } = useReadContract({
     abi: tokenEmitterImplAbi,
     address: contract,
     chainId,
@@ -36,5 +36,6 @@ export function useBuyTokenQuoteWithRewards(contract: Address, amount: bigint, c
     addedSurgeCost: data?.[1] || BigInt(0),
     isError,
     isLoading,
+    error,
   }
 }

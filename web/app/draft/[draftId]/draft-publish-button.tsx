@@ -1,6 +1,6 @@
 "use client"
 
-import { SwapTokenButton } from "@/app/token/swap-token-button"
+import { TcrInUsd } from "@/components/global/tcr-in-usd"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -31,9 +31,10 @@ import { DerivedData, Draft, Grant } from "@prisma/flows"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
-import { encodeAbiParameters, formatEther, zeroAddress } from "viem"
+import { encodeAbiParameters, zeroAddress } from "viem"
 import { base } from "viem/chains"
 import { useAccount } from "wagmi"
+import { BuyApplicationFee } from "./buy-application-fee"
 import { publishDraft } from "./publish-draft"
 
 interface Props {
@@ -51,8 +52,8 @@ export function DraftPublishButton(props: Props) {
   const ref = useRef<HTMLButtonElement>(null)
   const { login } = useLogin()
 
-  const { addItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr), chainId)
-  const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr), chainId)
+  const { addItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr))
+  const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr))
 
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({
     chainId,
@@ -125,50 +126,45 @@ export function DraftPublishButton(props: Props) {
         </DialogHeader>
         <ul className="my-4 space-y-6">
           <li className="flex items-start space-x-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
               1
             </span>
-            <p>
-              Applying costs {formatEther(addItemCost)} {token.symbol} and will kick off a challenge
-              period.
+            <p className="text-muted-foreground">
+              Applying costs{" "}
+              <TcrInUsd tokenEmitter={getEthAddress(flow.tokenEmitter)} amount={addItemCost} /> and
+              will kick off a challenge period.
             </p>
           </li>
           <li className="flex items-start space-x-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
               2
             </span>
-            <p>
+            <p className="text-muted-foreground">
               For {challengePeriodFormatted}, anyone can pay to challenge this application and send
               it to a community vote. You may lose your application fee if the application is voted
               down by the community.
             </p>
           </li>
           <li className="flex items-start space-x-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
               3
             </span>
             <div>
-              <p>
+              <p className="text-muted-foreground">
                 If not challenged, your application will be accepted and your application fee will
                 be returned.
-              </p>
-              <p className="mt-2.5 text-sm text-muted-foreground">
-                Your {token.symbol} balance: {formatEther(token.balance)} (
-                {formatEther(token.allowance)} approved)
               </p>
             </div>
           </li>
         </ul>
         <div className="flex justify-end space-x-2">
           {!hasEnoughBalance && (
-            <SwapTokenButton
-              text={`Buy ${token.symbol} to apply`}
+            <BuyApplicationFee
+              flow={flow}
+              amount={addItemCost - token.balance}
               onSuccess={() => {
                 token.refetch()
               }}
-              extraInfo="apply"
-              flow={flow}
-              defaultTokenAmount={addItemCost - token.balance}
             />
           )}
           {hasEnoughBalance && (
@@ -226,7 +222,8 @@ export function DraftPublishButton(props: Props) {
                 }
               }}
             >
-              {!hasEnoughAllowance && "Approve and "} {action}
+              {!hasEnoughAllowance && "Approve Fee"}
+              {hasEnoughAllowance && `${action} draft`}
             </Button>
           )}
         </div>
