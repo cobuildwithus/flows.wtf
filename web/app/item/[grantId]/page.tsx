@@ -27,6 +27,8 @@ import { WhoCard } from "./cards/who"
 import { WhyCard } from "./cards/why"
 import { BgGradient } from "./components/bg-gradient"
 import { CurationCard } from "./components/curation-card"
+import { Grades } from "./components/grades"
+import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { GrantStories } from "./components/grant-stories"
 import { GrantPageData } from "./page-data/schema"
@@ -107,7 +109,15 @@ export default async function GrantPage(props: Props) {
             </div>
           </div>
 
-          <Metrics metrics={data.metrics} />
+          <div className="col-span-full lg:col-span-3">
+            <Grades grant={grant} />
+          </div>
+
+          <div className="col-span-full lg:col-span-9 lg:flex lg:items-center lg:justify-end">
+            <Suspense fallback={<div className="h-[268px]" />}>
+              <GrantActivity grant={grant} />
+            </Suspense>
+          </div>
 
           <Builder
             tags={builder.tags}
@@ -128,6 +138,8 @@ export default async function GrantPage(props: Props) {
               </div>
             </div>
           ))}
+
+          <Metrics metrics={data.metrics} />
 
           <Media media={data.media} />
         </div>
