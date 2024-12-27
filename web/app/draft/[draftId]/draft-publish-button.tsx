@@ -50,7 +50,7 @@ export function DraftPublishButton(props: Props) {
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
-  const { login } = useLogin()
+  const { login, connectWallet } = useLogin()
 
   const { addItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr))
   const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr))
@@ -110,6 +110,7 @@ export function DraftPublishButton(props: Props) {
             if (!address) {
               e.preventDefault()
               login()
+              connectWallet()
             }
           }}
           ref={ref}
@@ -131,8 +132,7 @@ export function DraftPublishButton(props: Props) {
             </span>
             <p className="text-muted-foreground">
               Deposit{" "}
-              <TcrInUsd tokenEmitter={getEthAddress(flow.tokenEmitter)} amount={addItemCost} /> to
-              apply.
+              <TcrInUsd tokenEmitter={getEthAddress(flow.tokenEmitter)} amount={addItemCost} />.
             </p>
           </li>
           <li className="flex items-start space-x-4">

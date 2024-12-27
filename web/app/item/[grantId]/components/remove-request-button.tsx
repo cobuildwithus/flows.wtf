@@ -94,7 +94,7 @@ export function GrantRemoveRequestButton(props: Props) {
   const router = useRouter()
   const [reason, setReason] = useState<string | null>(null)
   const [comment, setComment] = useState<string>("")
-  const { login } = useLogin()
+  const { login, connectWallet } = useLogin()
 
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -127,6 +127,7 @@ export function GrantRemoveRequestButton(props: Props) {
           variant="outline"
           onClick={(e) => {
             if (!address) {
+              connectWallet()
               login()
               e.preventDefault()
             }
