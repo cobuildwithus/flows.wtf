@@ -82,8 +82,8 @@ export const useContractTransaction = (args?: {
     prepareWallet: async (toastId?: number | string) => {
       setCallbackHandled(false)
 
-      if (!isConnected) return connectWallet()
       if (!address) return login()
+      if (!isConnected) return connectWallet()
 
       if (chainId !== connectedChainId) {
         try {
