@@ -10,7 +10,7 @@ import { useAccount } from "wagmi"
 export const VotingToggle = () => {
   const { isLoading, isActive, activate } = useVoting()
   const { address } = useAccount()
-  const { login } = useLogin()
+  const { login, connectWallet } = useLogin()
   const { tokens } = useDelegatedTokens(address)
 
   return (
@@ -18,6 +18,7 @@ export const VotingToggle = () => {
       onClick={() => {
         if (!address) {
           login()
+          connectWallet()
           return
         }
 
