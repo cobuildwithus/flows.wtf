@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { base, baseSepolia, mainnet } from "viem/chains"
 import { nounsTokenAddress } from "./abis"
 import { NOUNS_TOKEN } from "./config"
+import { imageDomains } from "@/image-domains"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -40,6 +41,23 @@ export function getIpfsUrl(url: string, gateway: "pinata" | "ipfs" = "ipfs") {
   if (gateway === "pinata") return getPinataUrl(url)
 
   return `https://ipfs.io/ipfs/${hash}`
+}
+
+export function doOptimizeImage(url: string) {
+  try {
+    const urlObj = new URL(url)
+    const hostname = urlObj.hostname
+
+    return imageDomains.some((domain) => {
+      if (domain.startsWith("*.")) {
+        const suffix = domain.slice(2)
+        return hostname.endsWith(suffix)
+      }
+      return hostname === domain
+    })
+  } catch {
+    return false
+  }
 }
 
 export function getEthAddress(address: string) {
