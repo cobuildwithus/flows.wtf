@@ -1,23 +1,13 @@
 import type { NextConfig } from "next"
+import { imageDomains } from "./image-domains"
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "media.giphy.com", pathname: "/**" },
-      { protocol: "https", hostname: "*.mypinata.cloud", pathname: "/**" },
-      { protocol: "https", hostname: "ipfs.io", pathname: "/**" },
-      { protocol: "https", hostname: "noun.pics", pathname: "/**" },
-      { protocol: "https", hostname: "imagedelivery.net", pathname: "/**" },
-      { protocol: "https", hostname: "wrpcd.net", pathname: "/**" },
-      {
-        protocol: "https",
-        hostname: "dmo9tcngmx442k9p.public.blob.vercel-storage.com",
-        pathname: "/**",
-      },
-      { protocol: "https", hostname: "i.imgur.com", pathname: "/**" },
-      { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
-      { protocol: "https", hostname: "*.w3s.link", pathname: "/**" },
-    ],
+    remotePatterns: imageDomains.map((hostname) => ({
+      protocol: "https",
+      hostname,
+      pathname: "/**",
+    })),
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -25,3 +15,4 @@ const nextConfig: NextConfig = {
 }
 
 export default nextConfig
+export { imageDomains }

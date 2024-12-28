@@ -1,5 +1,5 @@
 import { VideoPlayer } from "@/components/ui/video-player"
-import { getIpfsUrl } from "@/lib/utils"
+import { doOptimizeImage, getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
 
 interface Props {
@@ -30,6 +30,7 @@ export function Media(props: Props) {
               <Image
                 src={getIpfsUrl(url, "pinata")}
                 alt={alt}
+                unoptimized={!doOptimizeImage(url)}
                 fill
                 className="rounded-lg object-cover"
               />
