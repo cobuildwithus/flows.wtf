@@ -59,7 +59,6 @@ export default async function FlowDraftsPage(props: Props) {
           <TableRow>
             <TableHead colSpan={2}>Name</TableHead>
             <TableHead className="max-sm:hidden">{isTopLevel ? "Proposer" : "Builders"}</TableHead>
-            <TableHead className="text-center max-sm:hidden">Type</TableHead>
             <TableHead className="text-center">Created</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
@@ -87,10 +86,6 @@ export default async function FlowDraftsPage(props: Props) {
                     </UserProfile>
                   ))}
                 </div>
-              </TableCell>
-
-              <TableCell className="text-center max-sm:hidden">
-                <p>{draft.isFlow ? "Flow" : "Grant"}</p>
               </TableCell>
 
               <TableCell className="text-center max-sm:text-xs">
