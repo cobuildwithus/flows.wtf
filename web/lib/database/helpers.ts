@@ -1,5 +1,6 @@
 import { DerivedData, Grant, Story } from "@prisma/flows"
 import { Status } from "../enums"
+import { MAX_GRANTS_PER_USER } from "../config"
 
 export function isGrantApproved(grant: Pick<Grant, "status">) {
   const { status } = grant
@@ -55,4 +56,8 @@ export function meetsMinimumSalary(
     (activeRecipientCount + awaitingRecipientCount - challengedRecipientCount + 1)
 
   return currentMinimumSalary >= Number(flow.derivedData?.minimumSalary || 0)
+}
+
+export function userBelowMaxGrants(numGrants: number) {
+  return numGrants < MAX_GRANTS_PER_USER
 }
