@@ -32,7 +32,7 @@ export const StatusNotDisputed = (props: Props) => {
       <li>If successful, the challenger will win the application fee.</li>
 
       <li>
-        If no challenges are submitted <b>with</b>
+        If no challenges are submitted <b>by </b>
         <DateTime
           date={new Date(grant.challengePeriodEndsAt * 1000)}
           className="font-medium"

@@ -63,12 +63,18 @@ function getRelativeTime(
   const seconds = Math.floor(absDiff / 1000)
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
 
-  const sign = diff >= 0 ? 1 : -1
+  // Custom thresholds for days
+  if (hours >= 48) {
+    const days = Math.floor(hours / 24)
+    return formatter.format(diff >= 0 ? days : -days, "day")
+  }
 
-  if (days !== 0) return formatter.format(sign * days, "day")
-  if (hours !== 0) return formatter.format(sign * hours, "hour")
-  if (minutes !== 0) return formatter.format(sign * minutes, "minute")
-  return formatter.format(sign * seconds, "second")
+  if (hours >= 24) {
+    return diff >= 0 ? "tomorrow" : "yesterday"
+  }
+
+  if (hours > 0) return formatter.format(diff >= 0 ? hours : -hours, "hour")
+  if (minutes > 0) return formatter.format(diff >= 0 ? minutes : -minutes, "minute")
+  return formatter.format(diff >= 0 ? seconds : -seconds, "second")
 }
