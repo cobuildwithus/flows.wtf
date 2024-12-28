@@ -8,15 +8,15 @@ import "@xyflow/react/dist/style.css"
 // Node dimensions
 const dimensions = {
   pool: { width: 420, height: 420 }, // Increased pool size
-  flow: { width: 280, height: 280 }, // Increased flow size
-  grant: { width: 160, height: 120 }, // Increased grant size
+  flow: { width: 290, height: 290 }, // Increased flow size
+  grant: { width: 150, height: 150 }, // Increased grant size
 }
 
 // Layout settings
 const layout = {
   center: { x: 0, y: 0 },
-  flowRadius: 1000, // Increased radius for flows
-  subgrantRadius: 120, // Increased radius for subgrants
+  flowRadius: 1100, // Increased radius for flows
+  subgrantRadius: 125, // Increased radius for subgrants
 }
 
 function createPoolNode(pool: Grant, flowCount: number): IPoolNode {
@@ -132,10 +132,11 @@ function createGrantNode(grant: Grant, position: { x: number; y: number }, angle
 type Props = {
   flows: (Grant & { subgrants: Grant[] })[]
   pool: Grant
+  noScroll?: boolean
 }
 
 export const FullDiagram = (props: Props) => {
-  const { flows, pool } = props
+  const { flows, pool, noScroll = false } = props
 
   // Build diagram elements
   const mainNodes: Node[] = [createPoolNode(pool, flows.length)]
@@ -224,7 +225,6 @@ export const FullDiagram = (props: Props) => {
       })
     }
   })
-
   return (
     <div className="grow bg-background">
       <ReactFlow
@@ -239,6 +239,7 @@ export const FullDiagram = (props: Props) => {
         edgesFocusable={false}
         elementsSelectable={false}
         zoomOnDoubleClick={false}
+        preventScrolling={!noScroll}
         proOptions={{ hideAttribution: true }}
         nodeTypes={{
           flow: FlowNode,
