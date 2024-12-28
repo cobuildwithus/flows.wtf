@@ -60,7 +60,7 @@ export const StatusNotDisputed = async (props: Props) => {
         </li>
         {evidence?.evidence && <li>{formatEvidence(evidence.evidence)}</li>}
         <li>
-          If no challenges are submitted <b>by </b>
+          If no challenges are submitted{" "}
           <DateTime
             date={new Date(grant.challengePeriodEndsAt * 1000)}
             className="font-medium"
