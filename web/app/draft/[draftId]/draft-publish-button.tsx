@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { flowTcrImplAbi } from "@/lib/abis"
 import { useLogin } from "@/lib/auth/use-login"
-import { meetsMinimumSalary } from "@/lib/database/helpers"
+import { meetsMinimumSalary, userBelowMaxGrants } from "@/lib/database/helpers"
 import { RecipientType } from "@/lib/enums"
 import { useTcrData } from "@/lib/tcr/use-tcr-data"
 import { useTcrToken } from "@/lib/tcr/use-tcr-token"
@@ -41,12 +41,13 @@ interface Props {
   draft: Draft
   flow: Grant & { derivedData: DerivedData | null }
   size?: "default" | "sm"
+  grantsCount: number
 }
 
 const chainId = base.id
 
 export function DraftPublishButton(props: Props) {
-  const { draft, flow, size = "default" } = props
+  const { draft, flow, size = "default", grantsCount } = props
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
@@ -76,6 +77,30 @@ export function DraftPublishButton(props: Props) {
 
   const hasEnoughBalance = token.balance >= addItemCost
   const hasEnoughAllowance = token.allowance >= addItemCost
+
+  if (!userBelowMaxGrants(grantsCount)) {
+    return (
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button type="button" ref={ref} size={size}>
+            {action}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Maximum grants limit</AlertDialogTitle>
+            <AlertDialogDescription className="pt-1.5 leading-relaxed">
+              This builder has reached the maximum number of active grants allowed per user. Please
+              focus on your existing grants!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Okay</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    )
+  }
 
   if (!meetsMinimumSalary(flow)) {
     return (

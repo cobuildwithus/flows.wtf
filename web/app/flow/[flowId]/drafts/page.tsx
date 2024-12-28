@@ -30,15 +30,17 @@ export const revalidate = 0
 export default async function FlowDraftsPage(props: Props) {
   const { flowId } = await props.params
 
-  const flow = await database.grant.findFirstOrThrow({
-    where: { id: flowId, isFlow: true, isRemoved: false },
-    include: { derivedData: true },
-  })
-
-  const drafts = await database.draft.findMany({
-    where: { flowId, isPrivate: false, isOnchain: false },
-    orderBy: { createdAt: "desc" },
-  })
+  const [flow, drafts, existingGrants] = await Promise.all([
+    database.grant.findFirstOrThrow({
+      where: { id: flowId, isFlow: true, isRemoved: false },
+      include: { derivedData: true },
+    }),
+    database.draft.findMany({
+      where: { flowId, isPrivate: false, isOnchain: false },
+      orderBy: { createdAt: "desc" },
+    }),
+    getExistingGrantsCount(),
+  ])
 
   const { isTopLevel } = flow
 
@@ -94,7 +96,12 @@ export default async function FlowDraftsPage(props: Props) {
 
               <TableCell className="w-[100px] max-w-[100px]">
                 <div className="flex justify-end">
-                  <DraftPublishButton draft={draft} flow={flow} size="sm" />
+                  <DraftPublishButton
+                    grantsCount={existingGrants[draft.users[0]] || 0}
+                    draft={draft}
+                    flow={flow}
+                    size="sm"
+                  />
                 </div>
               </TableCell>
             </TableRow>
@@ -102,5 +109,25 @@ export default async function FlowDraftsPage(props: Props) {
         </TableBody>
       </Table>
     </>
+  )
+}
+
+async function getExistingGrantsCount() {
+  const counts = await database.grant.groupBy({
+    by: ["recipient"],
+    where: {
+      isActive: true,
+    },
+    _count: {
+      recipient: true,
+    },
+  })
+
+  return counts.reduce(
+    (acc, curr) => ({
+      ...acc,
+      [curr.recipient]: curr._count.recipient,
+    }),
+    {} as Record<string, number>,
   )
 }

@@ -51,6 +51,10 @@ export default async function DraftPage(props: Props) {
     include: { flow: { include: { derivedData: true } } },
   })
 
+  const existingGrants = await database.grant.count({
+    where: { recipient: draft.users[0], isActive: true },
+  })
+
   const { title, flow, isOnchain, createdAt, users, isFlow, description } = draft
 
   const costs = getTcrCosts(flow)
@@ -80,7 +84,9 @@ export default async function DraftPage(props: Props) {
         </Breadcrumb>
         <div className="flex items-center space-x-1.5">
           <DraftEditButton draft={draft} edit={edit} />
-          {!isOnchain && !edit && <DraftPublishButton draft={draft} flow={flow} />}
+          {!isOnchain && !edit && (
+            <DraftPublishButton grantsCount={existingGrants} draft={draft} flow={flow} />
+          )}
         </div>
       </div>
 
