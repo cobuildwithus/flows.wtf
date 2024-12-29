@@ -12,8 +12,7 @@ interface Props {
 export default async function ApplyPage(props: Props) {
   const { flowId } = await props.params
 
-  const flow = await getFlow(flowId)
-  const user = await getUser()
+  const [flow, user] = await Promise.all([getFlow(flowId), getUser()])
 
   const chatId = `chat-${flow.id}-${user?.address}`
 

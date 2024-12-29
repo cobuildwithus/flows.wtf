@@ -25,12 +25,12 @@ export function StoryCard(props: { story: Story }) {
       <div className="grow p-4">
         <Link
           href={`/story/${id}`}
-          className="text-base font-semibold leading-snug group-hover:text-primary"
+          className="line-clamp-2 text-base font-semibold leading-snug group-hover:text-primary"
         >
           {title}
           <span className="absolute inset-0" />
         </Link>
-        <p className="mt-1.5 text-sm text-muted-foreground">{tagline}</p>
+        <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{tagline}</p>
       </div>
 
       <div className="flex items-center justify-between space-x-1.5 p-4">
