@@ -82,7 +82,7 @@ export default async function Home() {
                 <div className="flex h-full items-center justify-center">Loading diagram...</div>
               }
             >
-              <FullDiagram noScroll flows={await getFlows()} pool={pool} />
+              <FullDiagram noScroll noPan flows={await getFlows()} pool={pool} />
             </Suspense>
           </div>
         </div>
