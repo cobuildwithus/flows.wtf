@@ -21,7 +21,7 @@ const makeRequest = async (endpoint: string, body: any) => {
   })
 
   let lastError
-  const maxRetries = 3
+  const maxRetries = 6 // Increased from 4 to 8
   for (let i = 0; i < maxRetries; i++) {
     try {
       const response = await fetch(process.env.EMBEDDINGS_QUEUE_URL + endpoint, {
@@ -41,8 +41,10 @@ const makeRequest = async (endpoint: string, body: any) => {
     } catch (error) {
       lastError = error
       if (i < maxRetries - 1) {
-        // Don't wait after the last attempt
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        // Exponential backoff with jitter
+        const baseDelay = Math.min(1000 * Math.pow(2, i), 10000) // Cap at 10 seconds
+        const jitter = Math.random() * 1000 // Add up to 1 second of random jitter
+        await new Promise((resolve) => setTimeout(resolve, baseDelay + jitter))
       }
     }
   }
