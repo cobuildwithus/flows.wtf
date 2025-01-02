@@ -76,13 +76,13 @@ export default async function Home() {
               <CTAButtons />
             </div>
           </div>
-          <div className="flex h-[750px] grow flex-col">
+          <div className="flex h-[450px] grow flex-col md:h-[750px]">
             <Suspense
               fallback={
                 <div className="flex h-full items-center justify-center">Loading diagram...</div>
               }
             >
-              <FullDiagram noScroll noPan flows={await getFlows()} pool={pool} />
+              <FullDiagram noScroll flows={await getFlows()} pool={pool} />
             </Suspense>
           </div>
         </div>
