@@ -56,19 +56,18 @@ export function ActionCardContent(props: Props) {
   return (
     <>
       <h2 className="text-lg font-semibold text-secondary-foreground">gm {user?.username}</h2>
-      {show && (
-        <div className="mb-5 mt-2.5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
-          {isLoading && (
-            <div className="pt-2.5">
-              <DotLoader />
-            </div>
-          )}
-          {!isLoading && <Markdown>{animatedText}</Markdown>}
-          {error && (
-            <p className="text-destructive">An error occurred: {error.message.slice(0, 150)}</p>
-          )}
-        </div>
-      )}
+
+      <div className="mb-5 mt-2.5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
+        {isLoading && (
+          <div className="pt-2.5">
+            <DotLoader />
+          </div>
+        )}
+        {!isLoading && show && <Markdown>{animatedText}</Markdown>}
+        {error && (
+          <p className="text-destructive">An error occurred: {error.message.slice(0, 150)}</p>
+        )}
+      </div>
 
       {show &&
         action?.text &&
