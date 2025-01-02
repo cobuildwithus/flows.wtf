@@ -54,7 +54,7 @@ export function createEdge(
     id: `${source}-${target}`,
     source,
     target,
-    type: "bezier",
+    type: "default",
     style: { strokeWidth: 2 },
     markerEnd: { type: MarkerType.Arrow },
     data: { animated: true },

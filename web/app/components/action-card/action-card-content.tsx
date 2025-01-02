@@ -16,12 +16,13 @@ import { useAuthenticated } from "@/lib/auth/use-authenticated"
 interface Props {
   user?: User
   animated: boolean
+  hasSession: boolean
   text?: string
   action?: { link?: string; text: string; isChat: boolean }
 }
 
 export function ActionCardContent(props: Props) {
-  const { user, animated } = props
+  const { user, animated, hasSession } = props
 
   const hasSubmitted = useRef(false)
   const { ready } = useAuthenticated()
@@ -50,10 +51,12 @@ export function ActionCardContent(props: Props) {
   const action = props.action || object?.action
   const text = props.text || object?.text || ""
 
+  const show = ready || hasSession
+
   return (
     <>
       <h2 className="text-lg font-semibold text-secondary-foreground">gm {user?.username}</h2>
-      {ready && (
+      {show && (
         <div className="mb-5 mt-2.5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
           {isLoading && (
             <div className="pt-2.5">
@@ -67,7 +70,7 @@ export function ActionCardContent(props: Props) {
         </div>
       )}
 
-      {ready &&
+      {show &&
         action?.text &&
         (() => {
           const Component = animated ? motion.div : "div"
