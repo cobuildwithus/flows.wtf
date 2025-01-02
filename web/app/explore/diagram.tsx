@@ -18,11 +18,10 @@ type Props = {
   flows: (Grant & { subgrants: Grant[] })[]
   pool: Grant
   noScroll?: boolean
-  noPan?: boolean
 }
 
 export const FullDiagram = (props: Props) => {
-  const { flows, pool, noScroll = false, noPan = false } = props
+  const { flows, pool, noScroll = false } = props
 
   // Build diagram elements
   const mainNodes: Node[] = [createPoolNode(pool, flows.length)]
@@ -121,9 +120,6 @@ export const FullDiagram = (props: Props) => {
         colorMode="system"
         nodesDraggable={false}
         snapToGrid
-        // Disable panning (viewport movement)
-        panOnDrag={!noPan}
-        panOnScroll={!noPan}
         nodesFocusable={false}
         edgesFocusable={false}
         elementsSelectable={false}
