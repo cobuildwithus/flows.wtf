@@ -9,10 +9,11 @@ import { getGuidanceCacheKey, guidanceSchema } from "./guidance-utils"
 
 interface Props {
   user?: User
+  hasSession: boolean
 }
 
 export async function ActionCard(props: Props) {
-  const { user } = props
+  const { user, hasSession } = props
 
   const cachedGuidance = await kv.get(getGuidanceCacheKey(user?.address))
   const { data } = guidanceSchema.safeParse(cachedGuidance)
@@ -24,6 +25,7 @@ export async function ActionCard(props: Props) {
       user={user}
     >
       <ActionCardContent
+        hasSession={hasSession}
         user={user}
         animated={!data || (!user && !(await cookies()).has("guidance-guest"))}
         text={data?.text}
