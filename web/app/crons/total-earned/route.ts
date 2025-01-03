@@ -17,10 +17,6 @@ export async function GET() {
       where: {
         isActive: true,
       },
-      orderBy: {
-        updatedAt: "asc",
-      },
-      take: 15,
     })
 
     let nUpdated = 0
