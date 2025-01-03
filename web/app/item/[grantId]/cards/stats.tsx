@@ -34,7 +34,7 @@ const Stat = (props: PropsWithChildren<{ label: string }>) => {
   const { children, label } = props
   return (
     <div>
-      <div className="text-2xl font-bold leading-[46px] lg:text-3xl">{children}</div>
+      <div className="flex h-[46px] items-center text-2xl font-bold lg:text-3xl">{children}</div>
       <div className="text-sm text-muted-foreground">{label}</div>
     </div>
   )
