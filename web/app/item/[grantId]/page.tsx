@@ -58,7 +58,7 @@ export default async function GrantPage(props: Props) {
     getUser(),
     database.grant.findUniqueOrThrow({
       where: { id: grantId, isActive: true, isTopLevel: false },
-      include: { flow: true, derivedData: { select: { pageData: true } } },
+      include: { flow: true, derivedData: { select: { pageData: true, grades: true } } },
       ...getCacheStrategy(600), // ToDo: Invalidate on edit
     }),
   ])

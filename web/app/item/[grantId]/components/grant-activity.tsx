@@ -24,9 +24,9 @@ export async function GrantActivity(props: Props) {
 
   return (
     <div>
-      <h3 className="font-bold tracking-tight">Grant Activity</h3>
+      <h3 className="font-bold tracking-tight">Grant Impact</h3>
       <p className="mb-6 text-muted-foreground max-sm:text-sm">
-        {castsCount} casts and {storiesCount} stories published last year
+        {castsCount} updates and {storiesCount} stories published
       </p>
       <ActivityCalendar
         data={activities}

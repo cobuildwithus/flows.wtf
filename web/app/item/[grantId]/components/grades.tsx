@@ -1,26 +1,51 @@
 import { cn } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import { Grant, DerivedData } from "@prisma/flows"
 import { Grade } from "./grade"
 
 interface Props {
-  grant: Pick<Grant, "id">
+  grant: Pick<Grant, "id"> & { derivedData: Pick<DerivedData, "grades"> | null }
+}
+
+interface Grades {
+  [key: string]: {
+    score: number
+    explanation: string
+  }
 }
 
 export function Grades(props: Props) {
   const { grant } = props
 
+  if (!grant.derivedData?.grades) return <PendingEvaluation />
+
+  const grades = grant.derivedData?.grades as unknown as Grades
+
+  const overallScore = grades
+    ? Math.ceil(
+        Object.values(grades).reduce((acc, { score }) => acc + score, 0) /
+          Object.keys(grades).length,
+      )
+    : 0
+
   return (
     <div className="space-y-6 rounded-xl border bg-card p-5">
       <div className="flex items-center space-x-4">
-        <CircularProgress value={80} />
-        <span className="font-medium">Overall Score</span>
+        <CircularProgress value={overallScore} />
+        <span className="font-medium">Builder Score</span>
       </div>
 
       <div className="space-y-4">
-        <Grade label="Impact Score" value={8} percentage={80} />
-        <Grade label="Communication" value={60} percentage={70} />
-        <Grade label="Code Quality" value="D" percentage={60} />
-        <Grade label="Number of Users" value={15000} percentage={30} />
+        {Object.entries(grades)
+          .sort(([, a], [, b]) => b.score - a.score)
+          .map(([label, { score, explanation }]) => (
+            <Grade
+              key={label}
+              label={label}
+              value={score}
+              percentage={score}
+              explanation={explanation}
+            />
+          ))}
       </div>
     </div>
   )
@@ -56,6 +81,27 @@ function CircularProgress({ value }: { value: number }) {
         >
           {value}
         </span>
+      </div>
+    </div>
+  )
+}
+
+export function PendingEvaluation() {
+  return (
+    <div className="w-full rounded-xl border bg-card p-6 text-center">
+      <div className="mb-6 flex items-center space-x-4">
+        <div className="relative size-12">
+          <svg className="size-full" viewBox="0 0 100 100">
+            <circle className="fill-none stroke-muted" strokeWidth="6" cx="50" cy="50" r="45" />
+          </svg>
+        </div>
+        <span className="font-medium">Pending Evaluation</span>
+      </div>
+      <div className="space-y-4">
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p>Grades will appear here once the grant has been evaluated by our AI system.</p>
+          <p>This happens after a builder posts their first update.</p>
+        </div>
       </div>
     </div>
   )
