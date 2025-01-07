@@ -31,7 +31,7 @@ export function Grades(props: Props) {
     <div className="space-y-6 rounded-xl border bg-card p-5">
       <div className="flex items-center space-x-4">
         <CircularProgress value={overallScore} />
-        <span className="font-medium">Builder Score</span>
+        <span className="font-medium">Impact Score</span>
       </div>
 
       <div className="space-y-4">
@@ -58,8 +58,8 @@ function CircularProgress({ value }: { value: number }) {
         <circle className="fill-none stroke-muted" strokeWidth="6" cx="50" cy="50" r="45" />
         <circle
           className={cn("fill-none transition-all", {
-            "stroke-green-500 dark:stroke-green-400": value >= 75,
-            "stroke-yellow-500 dark:stroke-yellow-400": value >= 50 && value < 75,
+            "stroke-green-500 dark:stroke-green-400": value >= 80,
+            "stroke-yellow-500 dark:stroke-yellow-400": value >= 50 && value < 80,
             "stroke-red-500 dark:stroke-red-400": value < 50,
           })}
           strokeWidth="6"
@@ -74,8 +74,8 @@ function CircularProgress({ value }: { value: number }) {
       <div className="absolute inset-0 flex items-center justify-center">
         <span
           className={cn("text-lg font-bold", {
-            "text-green-500 dark:text-green-400": value >= 75,
-            "text-yellow-500 dark:text-yellow-400": value >= 50 && value < 75,
+            "text-green-500 dark:text-green-400": value >= 80,
+            "text-yellow-500 dark:text-yellow-400": value >= 50 && value < 80,
             "text-red-500 dark:text-red-400": value < 50,
           })}
         >

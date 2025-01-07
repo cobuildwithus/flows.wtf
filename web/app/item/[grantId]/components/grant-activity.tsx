@@ -6,6 +6,7 @@ import { farcasterDb } from "@/lib/database/farcaster-edge"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
+import { CastsList } from "./casts-list"
 
 interface Props {
   grant: Pick<Grant, "id" | "recipient">
@@ -16,18 +17,21 @@ const MAX_LEVEL = 3
 export async function GrantActivity(props: Props) {
   const { grant } = props
 
-  const { activities, castsCount, storiesCount } = await unstable_cache(
-    () => getActivity(grant),
-    [`activity-graph-${grant.id}`],
-    { revalidate: 1 },
-  )()
+  const [{ activities, storiesCount }, updates] = await Promise.all([
+    unstable_cache(() => getActivity(grant), [`activity-graph-${grant.id}`], { revalidate: 1 })(),
+    getGrantUpdates(grant.id),
+  ])
 
   return (
     <div>
       <h3 className="font-bold tracking-tight">Grant Impact</h3>
-      <p className="mb-6 text-muted-foreground max-sm:text-sm">
-        {castsCount} updates and {storiesCount} stories published
-      </p>
+      <div className="mb-6">
+        <CastsList
+          casts={updates}
+          buttonText={`${updates.length} updates and ${storiesCount} stories published`}
+        />
+      </div>
+
       <ActivityCalendar
         data={activities}
         maxLevel={MAX_LEVEL}
@@ -85,7 +89,6 @@ async function getActivity(grant: Pick<Grant, "id" | "recipient">) {
     activities: Array.from(data.values()).sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     ),
-    castsCount: casts.filter((c) => c.level > 1).length,
     storiesCount: stories.length,
   }
 }
@@ -152,4 +155,17 @@ async function getActivityFromStories(grantId: string) {
 
 function getDate(date: Date) {
   return date.toISOString().split("T")[0]
+}
+
+async function getGrantUpdates(grantId: string) {
+  return await farcasterDb.cast.findMany({
+    where: {
+      parent_hash: null,
+      deleted_at: null,
+      computed_tags: { has: grantId },
+      created_at: { gt: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
+    },
+    orderBy: { created_at: "desc" },
+    include: { profile: true },
+  })
 }
