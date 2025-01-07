@@ -1,12 +1,11 @@
 import "server-only"
 
 import { ActivityCalendar } from "@/components/ui/activity-calendar"
-import database from "@/lib/database/edge"
+import database, { getCacheStrategy } from "@/lib/database/edge"
 import { farcasterDb } from "@/lib/database/farcaster-edge"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
-import { CastsList } from "./casts-list"
 
 interface Props {
   grant: Pick<Grant, "id" | "recipient">
@@ -18,22 +17,20 @@ export async function GrantActivity(props: Props) {
   const { grant } = props
 
   const [{ activities, storiesCount }, updates] = await Promise.all([
-    unstable_cache(() => getActivity(grant), [`activity-graph-${grant.id}`], { revalidate: 1 })(),
+    unstable_cache(() => getActivity(grant), [`activity-graph-${grant.id}`], { revalidate: 180 })(),
     getGrantUpdates(grant.id),
   ])
 
   return (
     <div>
       <h3 className="font-bold tracking-tight">Impact</h3>
-      <div className="mb-6">
-        <CastsList
-          casts={updates}
-          buttonText={`${updates.length} updates and ${storiesCount} stories published`}
-        />
-      </div>
+      <p className="mb-6 mt-0.5 text-sm tracking-tight text-muted-foreground">
+        {updates.count} updates and {storiesCount} stories published
+      </p>
 
       <ActivityCalendar
         data={activities}
+        updates={structuredClone(updates.byDate)}
         maxLevel={MAX_LEVEL}
         weekStart={1}
         blockSize={15}
@@ -68,7 +65,8 @@ async function getActivity(grant: Pick<Grant, "id" | "recipient">) {
   const data = new Map<string, { count: number; level: number; date: string }>()
 
   const startDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1))
-  data.set(getDate(startDate), { date: getDate(startDate), count: 0, level: 0 })
+  data.set(getDate(startDate), { date: getDate(startDate), count: 0, level: 0 }) // start date - last year
+  data.set(getDate(new Date()), { date: getDate(new Date()), count: 0, level: 0 }) // end date - today
 
   const allActivities = [...casts, ...stories]
   allActivities.forEach((activity) => {
@@ -158,7 +156,7 @@ function getDate(date: Date) {
 }
 
 async function getGrantUpdates(grantId: string) {
-  return await farcasterDb.cast.findMany({
+  const updates = await farcasterDb.cast.findMany({
     where: {
       parent_hash: null,
       deleted_at: null,
@@ -166,6 +164,29 @@ async function getGrantUpdates(grantId: string) {
       created_at: { gt: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
     },
     orderBy: { created_at: "desc" },
-    include: { profile: true },
+    select: {
+      hash: true,
+      text: true,
+      created_at: true,
+      embeds: true,
+      profile: {
+        select: {
+          fname: true,
+          avatar_url: true,
+          display_name: true,
+        },
+      },
+    },
+    ...getCacheStrategy(180),
   })
+
+  return {
+    count: updates.length,
+    byDate: updates.reduce<Record<string, (typeof updates)[number][]>>((acc, update) => {
+      const dateKey = getDate(update.created_at)
+      if (!acc[dateKey]) acc[dateKey] = []
+      acc[dateKey].push(update)
+      return acc
+    }, {}),
+  }
 }

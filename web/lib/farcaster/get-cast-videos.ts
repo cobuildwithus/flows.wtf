@@ -4,7 +4,7 @@ interface EmbedUrl {
   url: string
 }
 
-export function getCastVideos(cast: Cast): string[] {
+export function getCastVideos(cast: Pick<Cast, "embeds">): string[] {
   return JSON.parse(cast.embeds || "[]")
     .filter((embed: EmbedUrl): embed is EmbedUrl => "url" in embed)
     .filter((embed: EmbedUrl) => embed.url.endsWith(".m3u8"))
