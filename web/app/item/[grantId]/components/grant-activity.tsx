@@ -24,7 +24,7 @@ export async function GrantActivity(props: Props) {
 
   return (
     <div>
-      <h3 className="font-bold tracking-tight">Grant Impact</h3>
+      <h3 className="font-bold tracking-tight">Impact</h3>
       <div className="mb-6">
         <CastsList
           casts={updates}

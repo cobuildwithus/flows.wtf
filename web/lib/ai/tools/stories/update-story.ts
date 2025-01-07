@@ -50,6 +50,7 @@ export const updateStoryTool = {
     - header_image
     - media_urls
     - timeline
+    - complete
 
     When editing timeline:
     - Keep events in chronological order
@@ -91,6 +92,7 @@ export const updateStoryTool = {
         .describe(
           "The wallet address of the user who is editing the story. Use it from user context in the prompt",
         ),
+      complete: z.boolean().optional().describe("Whether the story is complete"),
     }),
     description: "Update the story by its ID",
     execute: async ({ storyId, address, message, ...updates }) => {
