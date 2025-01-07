@@ -50,7 +50,7 @@ export const CastCard = (props: Props) => {
           <span className="truncate text-sm font-semibold">{cast.profile.display_name}</span>
         </a>
         <a
-          href={`https://warpcast.com/${cast.profile.fname}/0x${Buffer.from(cast.hash).toString("hex")}`}
+          href={`https://warpcast.com/${cast.profile.fname}/0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`}
           target="_blank"
           className="shrink-0 transition-opacity hover:opacity-80"
         >
