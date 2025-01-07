@@ -10,11 +10,16 @@ type Props = ComponentProps<typeof ReactPlayer>
 export function VideoPlayer(props: Props) {
   return (
     <ReactPlayer
+      controls
+      playsinline
       config={{
         file: {
           forceHLS: true,
           forceSafariHLS: true,
-          attributes: { preload: "metadata" },
+          attributes: {
+            preload: "metadata",
+            crossOrigin: "anonymous",
+          },
         },
       }}
       {...props}
