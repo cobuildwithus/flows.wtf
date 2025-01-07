@@ -1,21 +1,44 @@
 "use client"
 
+import { CastCard } from "@/components/ui/cast-card"
+import { TooltipPortal } from "@radix-ui/react-tooltip"
 import { useTheme } from "next-themes"
 import dynamic from "next/dynamic"
 import { ComponentProps } from "react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 
 const ReactActivityCalendar = dynamic(() =>
   import("react-activity-calendar").then((mod) => mod.ActivityCalendar),
 )
 
-export function ActivityCalendar({ ...props }: ComponentProps<typeof ReactActivityCalendar>) {
-  const { theme } = useTheme()
+type Props = ComponentProps<typeof ReactActivityCalendar> & {
+  updates: Record<string, ComponentProps<typeof CastCard>["cast"][]>
+}
+
+export function ActivityCalendar({ updates, ...props }: Props) {
+  const { resolvedTheme } = useTheme()
 
   return (
     <ReactActivityCalendar
       {...props}
-      colorScheme={theme === "dark" ? "dark" : "light"}
-      renderBlock={(block, activity) => block}
+      colorScheme={resolvedTheme === "dark" ? "dark" : "light"}
+      renderBlock={(block, activity) => {
+        const casts = updates[activity.date]
+        if (!casts) return block
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>{block}</TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent className="scrollbar-thumb-rounded-full max-h-96 min-w-60 max-w-full space-y-2.5 overflow-y-auto bg-background/80 p-0 scrollbar-thin scrollbar-thumb-foreground/20 sm:max-w-96">
+                {casts.map((cast) => (
+                  <CastCard key={cast.hash.toString("hex")} cast={cast} />
+                ))}
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        )
+      }}
     />
   )
 }

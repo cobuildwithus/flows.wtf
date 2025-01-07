@@ -8,7 +8,10 @@ import { Grant } from "@prisma/flows"
 import { VideoPlayer } from "./video-player"
 
 interface Props {
-  cast: Cast & { profile: Profile; grant?: Pick<Grant, "title" | "image"> | null }
+  cast: Pick<Cast, "embeds" | "text" | "created_at" | "hash"> & {
+    profile: Pick<Profile, "fname" | "avatar_url" | "display_name">
+    grant?: Pick<Grant, "title" | "image"> | null
+  }
 }
 
 export const CastCard = (props: Props) => {

@@ -19,9 +19,12 @@ export function VideoPlayer(props: Props) {
           attributes: {
             preload: "metadata",
             crossOrigin: "anonymous",
+            playsInline: true,
+            "webkit-playsinline": true,
           },
         },
       }}
+      onError={(e) => console.error("Video Player Error:", e)}
       {...props}
     />
   )
