@@ -10,6 +10,7 @@ interface Grades {
   [key: string]: {
     score: number
     explanation: string
+    metricName: string
   }
 }
 
@@ -37,10 +38,10 @@ export function Grades(props: Props) {
       <div className="space-y-4">
         {Object.entries(grades)
           .sort(([, a], [, b]) => b.score - a.score)
-          .map(([label, { score, explanation }]) => (
+          .map(([label, { score, explanation, metricName }]) => (
             <Grade
               key={label}
-              label={label}
+              label={metricName}
               value={score}
               percentage={score}
               explanation={explanation}
