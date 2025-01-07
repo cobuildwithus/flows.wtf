@@ -26,7 +26,7 @@ export default async function Home() {
 
   return (
     <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
-      <main className="pb-12">
+      <main>
         <div className="container">
           <FlowsStories />
         </div>

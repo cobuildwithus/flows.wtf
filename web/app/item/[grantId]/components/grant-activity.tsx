@@ -41,7 +41,7 @@ export async function GrantActivity(props: Props) {
           light: [
             "hsl(var(--secondary))",
             "hsl(var(--primary) / 0.3)",
-            "hsl(var(--primary) / 0.6)",
+            "hsl(var(--primary) / 0.75)",
             "hsl(var(--primary))",
           ],
           dark: [
