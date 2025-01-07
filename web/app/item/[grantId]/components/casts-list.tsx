@@ -39,11 +39,37 @@ export function CastsList(props: Props) {
               description="There are no updates posted for this grant yet."
             />
           ) : (
-            <div className="mt-4 columns-1 gap-2.5 space-y-2.5 sm:columns-2 lg:columns-3">
-              {casts.map((cast) => (
-                <CastCard key={cast.hash.toString("hex")} cast={cast} />
-              ))}
-            </div>
+            (() => {
+              // 1. Group casts by their date (YYYY-MM-DD).
+              const groupedByDate: Record<string, (Cast & { profile: Profile })[]> = {}
+              casts.forEach((cast) => {
+                const dateKey = new Date(cast.timestamp).toISOString().split("T")[0]
+                if (!groupedByDate[dateKey]) groupedByDate[dateKey] = []
+                groupedByDate[dateKey].push(cast)
+              })
+
+              // 2. Sort date groups. Change this comparison if you want oldest-first instead.
+              const sortedDates = Object.keys(groupedByDate).sort(
+                (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+              )
+
+              // 3. Render them top-to-bottom. CSS columns will handle multi-col layout.
+              return (
+                <div className="mt-4 columns-1 gap-2.5 space-y-2.5 sm:columns-2 lg:columns-3">
+                  {sortedDates.map((dateKey) => {
+                    const dateCasts = groupedByDate[dateKey]
+                    return (
+                      // Use `break-inside-avoid` so each date group stays together in multi-col.
+                      <div key={dateKey} className="mb-4 break-inside-avoid">
+                        {dateCasts.map((cast) => (
+                          <CastCard key={cast.hash.toString("hex")} cast={cast} />
+                        ))}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()
           )}
         </div>
       </DialogContent>
