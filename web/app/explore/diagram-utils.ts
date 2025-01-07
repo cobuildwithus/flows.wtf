@@ -12,7 +12,7 @@ export const dimensions = {
 // Layout settings
 export const diagramLayout = {
   center: { x: 0, y: 0 },
-  flowRadius: 1100, // Increased radius for flows
+  flowRadius: 1200, // Increased radius for flows
   subgrantRadius: 125, // Increased radius for subgrants
 }
 
