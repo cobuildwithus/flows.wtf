@@ -26,7 +26,7 @@ export default async function Home() {
 
   return (
     <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
-      <main>
+      <main className="pb-12">
         <div className="container">
           <FlowsStories />
         </div>
@@ -60,7 +60,7 @@ export default async function Home() {
           <FlowsList flows={activeFlows} />
         </div>
 
-        <div className="mt-12">
+        <div className="mt-12 max-sm:hidden">
           <div className="container mb-6">
             <div className="flex items-center justify-between">
               <div>
