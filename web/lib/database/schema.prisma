@@ -49,6 +49,7 @@ model DerivedData {
   template          String?
   lastBuilderUpdate DateTime?
   pageData          String?
+  grades Json?
 
   @@index([grantId])
   @@map("DerivedData")

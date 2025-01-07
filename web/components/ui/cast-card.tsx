@@ -48,7 +48,7 @@ export const CastCard = (props: Props) => {
         </a>
       </CardHeader>
       <CardContent>
-        <div className="whitespace-pre-line text-sm">{cast.text}</div>
+        <div className="overflow-hidden text-ellipsis whitespace-pre-line text-sm">{cast.text}</div>
 
         {((videos.length || 0) > 0 || (images.length || 0) > 0) && (
           <div className="mt-4 grid grid-cols-1 gap-2.5">
@@ -76,24 +76,6 @@ export const CastCard = (props: Props) => {
             ))}
           </div>
         )}
-        {/* {cast.grant && (
-          <div className="mt-2.5 flex translate-y-1 justify-center md:translate-y-2.5">
-            <Link href={`/item/${cast.grantId}`} className="group flex items-center space-x-2">
-              <span className="text-xs text-muted-foreground transition-colors group-hover:text-foreground">
-                {cast.grant.title}
-              </span>
-              <div style={{ width: `20px`, height: `20px` }}>
-                <Image
-                  src={getIpfsUrl(cast.grant.image)}
-                  alt={cast.grant.title}
-                  width={20}
-                  height={20}
-                  className="size-[20px] rounded-full object-cover"
-                />
-              </div>
-            </Link>
-          </div>
-        )} */}
       </CardContent>
     </Card>
   )

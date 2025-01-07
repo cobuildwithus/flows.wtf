@@ -27,6 +27,8 @@ import { WhoCard } from "./cards/who"
 import { WhyCard } from "./cards/why"
 import { BgGradient } from "./components/bg-gradient"
 import { CurationCard } from "./components/curation-card"
+import { Grades } from "./components/grades"
+import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { GrantStories } from "./components/grant-stories"
 import { GrantPageData } from "./page-data/schema"
@@ -56,7 +58,7 @@ export default async function GrantPage(props: Props) {
     getUser(),
     database.grant.findUniqueOrThrow({
       where: { id: grantId, isActive: true, isTopLevel: false },
-      include: { flow: true, derivedData: { select: { pageData: true } } },
+      include: { flow: true, derivedData: { select: { pageData: true, grades: true } } },
       ...getCacheStrategy(600), // ToDo: Invalidate on edit
     }),
   ])
@@ -107,7 +109,15 @@ export default async function GrantPage(props: Props) {
             </div>
           </div>
 
-          <Metrics metrics={data.metrics} />
+          <div className="col-span-full xl:col-span-3">
+            <Grades grant={grant} />
+          </div>
+
+          <div className="col-span-full lg:col-span-9 xl:flex xl:items-center xl:justify-end">
+            <Suspense fallback={<div className="h-[252px]" />}>
+              <GrantActivity grant={grant} />
+            </Suspense>
+          </div>
 
           <Builder
             tags={builder.tags}
@@ -128,6 +138,8 @@ export default async function GrantPage(props: Props) {
               </div>
             </div>
           ))}
+
+          <Metrics metrics={data.metrics} />
 
           <Media media={data.media} />
         </div>
