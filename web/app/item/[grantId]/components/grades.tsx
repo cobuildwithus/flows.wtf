@@ -89,13 +89,13 @@ function CircularProgress({ value }: { value: number }) {
 export function PendingEvaluation() {
   return (
     <div className="w-full rounded-xl border bg-card p-6 text-center">
-      <div className="mb-6 flex items-center space-x-4">
+      <div className="mb-6 flex items-center space-x-4 max-lg:justify-center">
         <div className="relative size-12">
           <svg className="size-full" viewBox="0 0 100 100">
             <circle className="fill-none stroke-muted" strokeWidth="6" cx="50" cy="50" r="45" />
           </svg>
         </div>
-        <span className="font-medium">Pending Evaluation</span>
+        <span className="font-medium">Pending Grade</span>
       </div>
       <div className="space-y-4">
         <div className="space-y-2 text-sm text-muted-foreground">
