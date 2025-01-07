@@ -9,4 +9,5 @@ export const imageDomains = [
   "i.imgur.com",
   "res.cloudinary.com",
   "*.w3s.link",
+  "ipfs.skatehive.app",
 ]
