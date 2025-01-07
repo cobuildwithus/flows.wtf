@@ -23,6 +23,7 @@ import { VideoPlayer } from "@/components/ui/video-player"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
+import { canEditStory } from "@/lib/database/helpers"
 import { getPinataWithKey } from "@/lib/pinata/url-with-key"
 import { getIpfsUrl } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
@@ -35,7 +36,6 @@ import { KeyPoints } from "./components/key-points"
 import { Participants } from "./components/participants"
 import { Sources } from "./components/sources"
 import { StoryChat } from "./components/story-chat"
-import { canEditStory } from "@/lib/database/helpers"
 import { StoryIncomplete } from "./components/story-incomplete"
 
 interface Props {
@@ -255,7 +255,7 @@ export default async function Page(props: Props) {
           </aside>
         </div>
       </article>
-      <StoryChat user={user} story={story} />
+      <StoryChat user={user} title={title} canEdit={canEditStory(story, user?.address)} />
     </AgentChatProvider>
   )
 }

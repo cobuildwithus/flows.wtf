@@ -21,7 +21,10 @@ export function isGrantAwaiting(grant: Pick<Grant, "status">) {
 const rocketman = "0x289715ffbb2f4b482e2917d2f183feab564ec84f"
 const woj = "0x6cc34d9fb4ae289256fc1896308d387aee2bcc52"
 
-export function canEditStory(story: Story, user: string | undefined): boolean {
+export function canEditStory(
+  story: Pick<Story, "participants" | "author">,
+  user: string | undefined,
+): boolean {
   if (!user) return false
   return (
     story.participants.includes(user) || story.author === user || user === rocketman || user === woj

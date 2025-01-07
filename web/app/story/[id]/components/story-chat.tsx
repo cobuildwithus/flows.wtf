@@ -6,22 +6,19 @@ import { MultimodalInput } from "@/app/chat/components/multimodal-input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { User } from "@/lib/auth/user"
-import { canEditStory } from "@/lib/database/helpers"
-import { Story } from "@prisma/flows"
 import { RotateCcw } from "lucide-react"
 import { useState } from "react"
 
 interface Props {
   user?: User
-  story: Story
+  canEdit: boolean
+  title: string
 }
 
 export function StoryChat(props: Props) {
-  const { user, story } = props
+  const { user, canEdit, title } = props
   const [isOpen, setIsOpen] = useState(false)
   const { messages, restart } = useAgentChat()
-
-  const canEdit = canEditStory(story, user?.address)
 
   return (
     <>
@@ -48,7 +45,7 @@ export function StoryChat(props: Props) {
         <DialogContent className="max-w-screen-md pb-0 max-sm:px-0">
           <DialogHeader className="max-sm:px-4">
             <DialogTitle className="flex items-center">
-              Ask about {story.title}
+              Ask about {title}
               <Button
                 variant="ghost"
                 size="icon"

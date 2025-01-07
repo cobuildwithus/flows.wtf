@@ -19,8 +19,6 @@ export function VideoPlayer(props: Props) {
           attributes: {
             preload: "metadata",
             crossOrigin: "anonymous",
-            playsInline: true,
-            "webkit-playsinline": true,
           },
         },
       }}
