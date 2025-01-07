@@ -2,6 +2,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Icon } from "@/components/ui/icon"
 import { UserProfile } from "@/components/user-profile/user-profile"
+import Link from "next/link"
 
 interface Props {
   tags: string[]
@@ -18,7 +19,15 @@ export function Builder(props: Props) {
       <div className="h-full rounded-xl border bg-secondary/50 p-5 text-secondary-foreground dark:bg-secondary">
         <UserProfile address={recipient} withPopover={false}>
           {(profile) => (
-            <div className="space-y-6">
+            <Link
+              target="_blank"
+              href={
+                profile.username
+                  ? `https://warpcast.com/${profile.username}`
+                  : `https://basescan.org/address/${recipient}`
+              }
+              className="space-y-6"
+            >
               <div className="flex items-center gap-4">
                 <Avatar className="size-12 bg-primary">
                   <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
@@ -51,7 +60,7 @@ export function Builder(props: Props) {
                   </a>
                 ))}
               </div>
-            </div>
+            </Link>
           )}
         </UserProfile>
       </div>
