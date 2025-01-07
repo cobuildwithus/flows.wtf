@@ -35,6 +35,8 @@ import { KeyPoints } from "./components/key-points"
 import { Participants } from "./components/participants"
 import { Sources } from "./components/sources"
 import { StoryChat } from "./components/story-chat"
+import { canEditStory } from "@/lib/database/helpers"
+import { StoryIncomplete } from "./components/story-incomplete"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -111,6 +113,7 @@ export default async function Page(props: Props) {
           <p className="mt-2 text-pretty text-lg text-muted-foreground md:text-xl">
             {story.tagline}
           </p>
+          {!story.complete && <StoryIncomplete canEdit={canEditStory(story, user?.address)} />}
         </header>
 
         <div className="mt-8 grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-12">
