@@ -113,7 +113,7 @@ export default async function GrantPage(props: Props) {
             <Grades grant={grant} />
           </div>
 
-          <div className="col-span-full lg:col-span-9 xl:flex xl:items-center xl:justify-end">
+          <div className="col-span-full xl:col-span-9 xl:flex xl:items-center xl:justify-end">
             <Suspense fallback={<div className="h-[252px]" />}>
               <GrantActivity grant={grant} />
             </Suspense>

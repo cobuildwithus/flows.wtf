@@ -1,3 +1,5 @@
+"use client"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { DateTime } from "@/components/ui/date-time"
@@ -6,9 +8,13 @@ import { getCastVideos } from "@/lib/farcaster/get-cast-videos"
 import { Cast, Profile } from "@prisma/farcaster"
 import { Grant } from "@prisma/flows"
 import { VideoPlayer } from "./video-player"
+import { useCastsText } from "@/lib/casts/use-casts-text"
 
 interface Props {
-  cast: Pick<Cast, "embeds" | "text" | "created_at" | "hash"> & {
+  cast: Pick<
+    Cast,
+    "embeds" | "text" | "created_at" | "hash" | "mentions_positions_array" | "mentioned_fids"
+  > & {
     profile: Pick<Profile, "fname" | "avatar_url" | "display_name">
     grant?: Pick<Grant, "title" | "image"> | null
   }
@@ -19,6 +25,12 @@ export const CastCard = (props: Props) => {
 
   const videos = getCastVideos(cast)
   const images = getCastImages(cast)
+
+  const { text } = useCastsText({
+    text: cast.text || "",
+    mentionsPositions: cast.mentions_positions_array,
+    mentionedFids: cast.mentioned_fids,
+  })
 
   return (
     <Card className="w-full break-inside-avoid">
@@ -38,7 +50,7 @@ export const CastCard = (props: Props) => {
           <span className="truncate text-sm font-semibold">{cast.profile.display_name}</span>
         </a>
         <a
-          href={`https://warpcast.com/${cast.profile.fname}/0x${cast.hash.toString("hex")}`}
+          href={`https://warpcast.com/${cast.profile.fname}/0x${Buffer.from(cast.hash).toString("hex")}`}
           target="_blank"
           className="shrink-0 transition-opacity hover:opacity-80"
         >
@@ -51,7 +63,9 @@ export const CastCard = (props: Props) => {
         </a>
       </CardHeader>
       <CardContent>
-        <div className="overflow-hidden text-ellipsis whitespace-pre-line text-sm">{cast.text}</div>
+        <div className="overflow-hidden text-ellipsis whitespace-pre-line text-sm">
+          {text || cast.text}
+        </div>
 
         {((videos.length || 0) > 0 || (images.length || 0) > 0) && (
           <div className="mt-4 grid grid-cols-1 gap-2.5">

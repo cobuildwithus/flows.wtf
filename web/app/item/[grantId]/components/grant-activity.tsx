@@ -176,6 +176,8 @@ async function getGrantUpdates(grantId: string) {
           display_name: true,
         },
       },
+      mentioned_fids: true,
+      mentions_positions_array: true,
     },
     ...getCacheStrategy(180),
   })
