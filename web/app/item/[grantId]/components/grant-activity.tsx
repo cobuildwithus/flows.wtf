@@ -14,49 +14,51 @@ const MAX_LEVEL = 3
 export async function GrantActivity(props: Props) {
   const { grant } = props
 
-  const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+  const nineMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 9))
   const [{ activities, storiesCount }, updates] = await Promise.all([
     unstable_cache(
-      () => getActivity(grant.recipient, [grant], oneYearAgo),
-      [`activity-graph-${grant.id}`],
+      () => getActivity(grant.recipient, [grant], nineMonthsAgo),
+      [`activity-graph-grant-page-${grant.id}`],
       {
         revalidate: 180,
       },
     )(),
-    getGrantUpdates([grant.id], oneYearAgo),
+    getGrantUpdates([grant.id], nineMonthsAgo),
   ])
 
   return (
-    <div>
-      <h3 className="font-bold tracking-tight">Impact</h3>
-      <p className="mb-6 mt-0.5 text-sm tracking-tight text-muted-foreground">
-        {updates.count} updates and {storiesCount} stories published
-      </p>
+    <div className="flex w-full items-center justify-center">
+      <div className="max-lg:w-full max-lg:max-w-full">
+        <h3 className="font-bold tracking-tight">Impact</h3>
+        <p className="mb-6 mt-0.5 text-sm tracking-tight text-muted-foreground">
+          {updates.count} updates and {storiesCount} stories published
+        </p>
 
-      <ActivityCalendar
-        data={activities}
-        updates={structuredClone(updates.byDate)}
-        maxLevel={MAX_LEVEL}
-        weekStart={1}
-        blockSize={15}
-        blockMargin={4}
-        labels={{ legend: { less: "Less", more: "More" } }}
-        hideTotalCount
-        theme={{
-          light: [
-            "hsl(var(--secondary))",
-            "hsl(var(--primary) / 0.3)",
-            "hsl(var(--primary) / 0.75)",
-            "hsl(var(--primary))",
-          ],
-          dark: [
-            "hsl(var(--secondary) / 0.3)",
-            "hsl(var(--secondary))",
-            "hsl(var(--primary) / 0.75)",
-            "hsl(var(--primary))",
-          ],
-        }}
-      />
+        <ActivityCalendar
+          data={activities}
+          updates={structuredClone(updates.byDate)}
+          maxLevel={MAX_LEVEL}
+          weekStart={1}
+          blockSize={20}
+          blockMargin={4}
+          labels={{ legend: { less: "Less", more: "More" } }}
+          hideTotalCount
+          theme={{
+            light: [
+              "hsl(var(--secondary) / 0.2)",
+              "hsl(var(--primary) / 0.1)",
+              "hsl(var(--primary) / 0.6)",
+              "hsl(var(--primary))",
+            ],
+            dark: [
+              "hsl(var(--secondary) / 0.2)",
+              "hsl(var(--primary) / 0.1)",
+              "hsl(var(--primary) / 0.6)",
+              "hsl(var(--primary))",
+            ],
+          }}
+        />
+      </div>
     </div>
   )
 }
