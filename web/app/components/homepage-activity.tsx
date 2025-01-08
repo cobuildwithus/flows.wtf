@@ -17,9 +17,13 @@ export async function HomepageActivity(props: Props) {
   const sixMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 6))
 
   const [{ activities, storiesCount }, updates] = await Promise.all([
-    unstable_cache(() => getActivity(grants, sixMonthsAgo), [`activity-graph-${grants[0].id}`], {
-      revalidate: 180,
-    })(),
+    unstable_cache(
+      () => getActivity(grants[0].recipient, grants, sixMonthsAgo),
+      [`activity-graph-${grants[0].id}`],
+      {
+        revalidate: 180,
+      },
+    )(),
     getGrantUpdates(
       grants.map((grant) => grant.id),
       sixMonthsAgo,

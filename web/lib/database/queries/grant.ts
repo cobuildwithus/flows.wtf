@@ -23,10 +23,15 @@ export async function countUserActiveGrants() {
 
 const MAX_LEVEL = 3
 
-export async function getActivity(grants: Pick<Grant, "id" | "recipient">[], startDate: Date) {
+export async function getActivity(
+  recipient: string,
+  grants: Pick<Grant, "id" | "recipient">[],
+  startDate: Date,
+) {
+  const grantIds = grants.map((grant) => grant.id)
   const [casts, stories] = await Promise.all([
-    Promise.all(grants.map((grant) => getActivityFromCasts(grant.recipient, grant.id, startDate))),
-    Promise.all(grants.map((grant) => getActivityFromStories(grant.id, startDate))),
+    getActivityFromCasts(recipient, grantIds, startDate),
+    getActivityFromStories(grantIds, startDate),
   ])
 
   const data = new Map<string, { count: number; level: number; date: string }>()
@@ -57,7 +62,7 @@ export async function getActivity(grants: Pick<Grant, "id" | "recipient">[], sta
   }
 }
 
-async function getActivityFromCasts(recipient: string, grantId: string, startDate: Date) {
+async function getActivityFromCasts(recipient: string, grantIds: string[], startDate: Date) {
   const user = await getFarcasterUserByEthAddress(recipient as `0x${string}`)
 
   const casts = await farcasterDb.cast.findMany({
@@ -65,7 +70,7 @@ async function getActivityFromCasts(recipient: string, grantId: string, startDat
     where: {
       parent_hash: null,
       deleted_at: null,
-      OR: [{ computed_tags: { has: grantId } }, { fid: user?.fid }],
+      OR: [{ computed_tags: { hasSome: grantIds } }, { fid: user?.fid }],
       created_at: { gt: startDate },
     },
     orderBy: { created_at: "asc" },
@@ -80,7 +85,7 @@ async function getActivityFromCasts(recipient: string, grantId: string, startDat
       }
 
       acc[date].count++
-      if (cast.computed_tags?.includes(grantId)) {
+      if (cast.computed_tags?.some((tag) => grantIds.includes(tag))) {
         acc[date].aboutGrant++
       }
 
@@ -96,10 +101,10 @@ async function getActivityFromCasts(recipient: string, grantId: string, startDat
   }))
 }
 
-async function getActivityFromStories(grantId: string, startDate: Date) {
+async function getActivityFromStories(grantIds: string[], startDate: Date) {
   const stories = await database.story.findMany({
     where: {
-      grant_ids: { has: grantId },
+      grant_ids: { hasSome: grantIds },
       complete: true,
       created_at: { gt: startDate },
     },

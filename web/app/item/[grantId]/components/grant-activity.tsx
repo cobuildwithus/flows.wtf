@@ -16,9 +16,13 @@ export async function GrantActivity(props: Props) {
 
   const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1))
   const [{ activities, storiesCount }, updates] = await Promise.all([
-    unstable_cache(() => getActivity([grant], oneYearAgo), [`activity-graph-${grant.id}`], {
-      revalidate: 180,
-    })(),
+    unstable_cache(
+      () => getActivity(grant.recipient, [grant], oneYearAgo),
+      [`activity-graph-${grant.id}`],
+      {
+        revalidate: 180,
+      },
+    )(),
     getGrantUpdates([grant.id], oneYearAgo),
   ])
 
