@@ -26,7 +26,7 @@
     },
     {
       "path": "/crons/total-earned",
-      "schedule": "0 */2 * * *"
+      "schedule": "*/20 * * * *"
     }
   ]
 }

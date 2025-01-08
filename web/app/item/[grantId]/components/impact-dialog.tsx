@@ -1,22 +1,18 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Grant, DerivedData } from "@prisma/flows"
-import { cn } from "@/lib/utils"
 import { Grade } from "./grade"
-import { AlertCircle } from "lucide-react"
 import { MetricCard } from "./metric-card"
+import { GrantHeader } from "./grant-header"
+import { CircularProgress } from "./circular-progress"
+import { PendingEvaluation } from "./pending-evaluation"
 
 interface Props {
-  grant: Pick<Grant, "id"> & { derivedData: Pick<DerivedData, "grades"> | null }
+  grants: Array<
+    Pick<Grant, "id" | "title" | "image"> & { derivedData: Pick<DerivedData, "grades"> | null }
+  >
+  dialogTitle?: string
 }
 
 interface Grades {
@@ -28,33 +24,35 @@ interface Grades {
   }
 }
 
+interface GrantWithScore {
+  grant: Props["grants"][0]
+  grades: Grades
+  overallScore: number
+}
+
 export function ImpactDialog(props: Props) {
-  const { grant } = props
+  const { grants, dialogTitle } = props
 
-  if (!grant.derivedData?.grades) return <PendingEvaluation />
+  // Return pending if any grant has no grades
+  if (grants.some((grant) => !grant.derivedData?.grades)) {
+    return <PendingEvaluation />
+  }
 
-  const grades = grant.derivedData?.grades as unknown as Grades
+  const grantsWithScores: GrantWithScore[] = getGrantsWithScores(grants)
 
-  console.log(grades)
-
-  const overallScore = grades
-    ? Math.ceil(
-        Object.values(grades).reduce((acc, { score }) => acc + score, 0) /
-          Object.keys(grades).length,
-      )
-    : 0
+  const lowestScoringGrant = getLowestScoringGrant(grants)
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer space-y-6 rounded-xl border bg-card p-5 transition-all duration-300 hover:scale-[1.01] hover:border-primary/10">
           <div className="flex items-center space-x-4">
-            <CircularProgress value={overallScore} />
-            <span className="font-medium">Impact Score</span>
+            <CircularProgress value={lowestScoringGrant.overallScore} />
+            <span className="font-medium">{dialogTitle || "Impact Score"}</span>
           </div>
 
           <div className="space-y-4">
-            {Object.entries(grades)
+            {Object.entries(lowestScoringGrant.grades)
               .sort(([, a], [, b]) => b.score - a.score)
               .map(([label, { score, explanation, metricName }]) => (
                 <Grade
@@ -69,86 +67,37 @@ export function ImpactDialog(props: Props) {
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle className="mb-2 text-center text-2xl font-bold">Impact Metrics</DialogTitle>
-        </DialogHeader>
-
-        <div className="grid gap-6 p-4 md:grid-cols-2">
-          {Object.entries(grades)
-            .sort(([, a], [, b]) => b.score - a.score)
-            .map(([label, { score, explanation, metricName, tips }]) => (
-              <MetricCard
-                key={label}
-                title={metricName}
-                score={score}
-                explanation={explanation}
-                tips={tips}
-              />
-            ))}
+        <DialogTitle className="text-center text-2xl font-bold" />
+        <div className="mt-2 flex flex-col space-y-16">
+          {grantsWithScores.map(({ grant, grades }) => (
+            <div key={grant.id} className="space-y-6 first:mt-0 last:mb-0">
+              <GrantHeader grant={grant} />
+              <div className="grid gap-3 md:grid-cols-2">
+                {Object.entries(grades)
+                  .sort(([, a], [, b]) => b.score - a.score)
+                  .map(([label, metric]) => (
+                    <MetricCard key={label} {...metric} title={metric.metricName} />
+                  ))}
+              </div>
+            </div>
+          ))}
         </div>
       </DialogContent>
     </Dialog>
   )
 }
 
-function CircularProgress({ value }: { value: number }) {
-  return (
-    <div className="relative size-12">
-      <svg className="size-full" viewBox="0 0 100 100">
-        <circle className="fill-none stroke-muted" strokeWidth="6" cx="50" cy="50" r="45" />
-        <circle
-          className={cn("fill-none transition-all", {
-            "stroke-green-500 dark:stroke-green-400": value >= 80,
-            "stroke-yellow-500 dark:stroke-yellow-400": value >= 60 && value < 80,
-            "stroke-red-500 dark:stroke-red-400": value < 60,
-          })}
-          strokeWidth="6"
-          strokeLinecap="round"
-          cx="50"
-          cy="50"
-          r="45"
-          strokeDasharray={`${(value / 100) * 2 * Math.PI * 45}, ${2 * Math.PI * 45}`}
-          transform="rotate(-90 50 50)"
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span
-          className={cn("text-lg font-bold", {
-            "text-green-500 dark:text-green-400": value >= 80,
-            "text-yellow-500 dark:text-yellow-400": value >= 60 && value < 80,
-            "text-red-500 dark:text-red-400": value < 60,
-          })}
-        >
-          {value}
-        </span>
-      </div>
-    </div>
-  )
+function getLowestScoringGrant(grants: Props["grants"]) {
+  const grantsWithScores = getGrantsWithScores(grants)
+  return grantsWithScores.sort((a, b) => a.overallScore - b.overallScore)[0]
 }
 
-export function PendingEvaluation() {
-  return (
-    <div className="w-full rounded-xl border bg-card p-6 text-center">
-      <div className="mb-6 flex items-center space-x-4 max-lg:justify-center">
-        <div className="relative size-12">
-          <svg className="size-full" viewBox="0 0 100 100">
-            <circle
-              className="fill-muted/30 stroke-yellow-500 dark:stroke-yellow-400"
-              strokeWidth="6"
-              cx="50"
-              cy="50"
-              r="45"
-            />
-          </svg>
-        </div>
-        <span className="font-medium">Pending Grade</span>
-      </div>
-      <div className="space-y-4">
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>Grades will appear here once the grant has been evaluated by our AI system.</p>
-          <p>This happens after a builder posts their first update.</p>
-        </div>
-      </div>
-    </div>
-  )
+function getGrantsWithScores(grants: Props["grants"]) {
+  return grants.map((grant) => {
+    const grades = grant.derivedData?.grades as unknown as Grades
+    const overallScore = Math.ceil(
+      Object.values(grades).reduce((acc, { score }) => acc + score, 0) / Object.keys(grades).length,
+    )
+    return { grant, grades, overallScore }
+  })
 }

@@ -30,7 +30,7 @@ export function ActivityCalendar({ updates, ...props }: Props) {
           <Tooltip>
             <TooltipTrigger asChild>{block}</TooltipTrigger>
             <TooltipPortal>
-              <TooltipContent className="scrollbar-thumb-rounded-full max-h-96 min-w-60 max-w-full space-y-2.5 overflow-y-auto bg-background/80 p-0 scrollbar-thin scrollbar-thumb-foreground/20 sm:max-w-96">
+              <TooltipContent className="scrollbar-thumb-rounded-full max-h-96 min-w-60 max-w-[100vw] space-y-2.5 overflow-y-auto rounded-xl bg-background/80 p-0 scrollbar-thin scrollbar-thumb-foreground/20 sm:max-w-96">
                 {casts.map((cast) => (
                   <CastCard key={cast.hash.toString("hex")} cast={cast} />
                 ))}
