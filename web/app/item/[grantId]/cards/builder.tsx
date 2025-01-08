@@ -19,21 +19,21 @@ export function Builder(props: Props) {
       <div className="h-full rounded-xl border bg-secondary/50 p-5 text-secondary-foreground dark:bg-secondary">
         <UserProfile address={recipient} withPopover={false}>
           {(profile) => (
-            <Link
-              target="_blank"
-              href={
-                profile.username
-                  ? `https://warpcast.com/${profile.username}`
-                  : `https://basescan.org/address/${recipient}`
-              }
-              className="space-y-6"
-            >
-              <div className="flex items-center gap-4">
+            <div className="space-y-6">
+              <Link
+                target="_blank"
+                href={
+                  profile.username
+                    ? `https://warpcast.com/${profile.username}`
+                    : `https://basescan.org/address/${recipient}`
+                }
+                className="flex items-center gap-4 hover:opacity-80"
+              >
                 <Avatar className="size-12 bg-primary">
                   <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
                 </Avatar>
                 <h2 className="text-xl font-semibold">{profile.display_name}</h2>
-              </div>
+              </Link>
 
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
@@ -48,7 +48,10 @@ export function Builder(props: Props) {
               </div>
 
               <div className="flex gap-3">
-                {links.map((link) => (
+                {[
+                  ...links,
+                  { url: `https://basescan.org/address/${recipient}`, icon: "wallet" },
+                ].map((link) => (
                   <a
                     key={link.url}
                     href={link.url}
@@ -60,7 +63,7 @@ export function Builder(props: Props) {
                   </a>
                 ))}
               </div>
-            </Link>
+            </div>
           )}
         </UserProfile>
       </div>

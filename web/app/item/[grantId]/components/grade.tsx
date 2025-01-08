@@ -1,6 +1,5 @@
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Props {
   label: string
@@ -15,18 +14,7 @@ export function Grade(props: Props) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <span className="font-medium capitalize tracking-tight text-muted-foreground">
-                {label}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="max-w-xs">{explanation}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <span className="font-medium capitalize tracking-tight text-muted-foreground">{label}</span>
         <span
           className={cn("font-medium", {
             "text-green-500": percentage >= 75,

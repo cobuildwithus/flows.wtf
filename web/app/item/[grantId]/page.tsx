@@ -27,12 +27,12 @@ import { WhoCard } from "./cards/who"
 import { WhyCard } from "./cards/why"
 import { BgGradient } from "./components/bg-gradient"
 import { CurationCard } from "./components/curation-card"
-import { Grades } from "./components/grades"
 import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { GrantStories } from "./components/grant-stories"
 import { GrantPageData } from "./page-data/schema"
 import { canEditGrant } from "@/lib/database/helpers"
+import { ImpactDialog } from "./components/impact-dialog"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -112,8 +112,8 @@ export default async function GrantPage(props: Props) {
             </div>
           </div>
 
-          <div className="col-span-full xl:col-span-3">
-            <Grades grant={grant} />
+          <div className="col-span-full cursor-pointer xl:col-span-3">
+            <ImpactDialog grant={grant} />
           </div>
 
           <div className="col-span-full xl:col-span-9 xl:flex xl:items-center xl:justify-end">
