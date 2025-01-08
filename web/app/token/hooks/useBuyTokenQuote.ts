@@ -1,40 +1,33 @@
 "use client"
 
-import { tokenEmitterImplAbi } from "@/lib/abis"
 import { Address } from "viem"
 import { base } from "viem/chains"
-import { useReadContract } from "wagmi"
+import useSWR from "swr"
+import { getTokenQuote, getTokenQuoteWithRewards } from "./get-token-quotes"
 
 export function useBuyTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
-  const { data, isError, isLoading } = useReadContract({
-    abi: tokenEmitterImplAbi,
-    address: contract,
-    chainId,
-    functionName: "buyTokenQuote",
-    args: [amount],
-  })
+  const { data, error, isLoading } = useSWR(["buyTokenQuote", contract, amount, chainId], () =>
+    getTokenQuote(contract, amount, chainId),
+  )
 
   return {
-    totalCost: data?.[0] || BigInt(0),
-    addedSurgeCost: data?.[1] || BigInt(0),
-    isError,
+    totalCost: data?.totalCost || BigInt(0),
+    addedSurgeCost: data?.addedSurgeCost || BigInt(0),
+    isError: error || data?.isError || false,
     isLoading,
   }
 }
 
 export function useBuyTokenQuoteWithRewards(contract: Address, amount: bigint, chainId = base.id) {
-  const { data, isError, isLoading, error } = useReadContract({
-    abi: tokenEmitterImplAbi,
-    address: contract,
-    chainId,
-    functionName: "buyTokenQuoteWithRewards",
-    args: [amount],
-  })
+  const { data, error, isLoading } = useSWR(
+    ["buyTokenQuoteWithRewards", contract, amount, chainId],
+    () => getTokenQuoteWithRewards(contract, amount, chainId),
+  )
 
   return {
-    totalCost: data?.[0] || BigInt(0),
-    addedSurgeCost: data?.[1] || BigInt(0),
-    isError,
+    totalCost: data?.totalCost || BigInt(0),
+    addedSurgeCost: data?.addedSurgeCost || BigInt(0),
+    isError: error || data?.isError || false,
     isLoading,
     error,
   }
