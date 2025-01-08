@@ -4,15 +4,7 @@ import PoolNode from "@/components/diagram/pool-node"
 import { Grant } from "@prisma/flows"
 import { Background, Edge, MarkerType, Node, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
-import {
-  createEdge,
-  dimensions,
-  diagramLayout,
-  createGrantNode,
-  createFlowNode,
-  createPoolNode,
-  positionInCircle,
-} from "./diagram-utils"
+import { diagramLayout, createPoolNode, placeFlowAndSubgrants, dimensions } from "./diagram-utils"
 
 type Props = {
   flows: (Grant & { subgrants: Grant[] })[]
@@ -23,103 +15,73 @@ type Props = {
 export const FullDiagram = (props: Props) => {
   const { flows, pool, noScroll = false } = props
 
+  // Sort flows ascending by #subgrants => "least subgrants" at index 0
+  const sortedFlows = [...flows].sort((a, b) => a.subgrants.length - b.subgrants.length)
+
+  // Break the sorted flows into up to 3 "rings" of size 6 each
+  const ring1 = sortedFlows.slice(0, 6)
+  const ring2 = sortedFlows.slice(6, 12)
+  const ring3 = sortedFlows.slice(12)
+
   // Build diagram elements
   const mainNodes: Node[] = [createPoolNode(pool, flows.length)]
   const edges: Edge[] = []
   const grantNodes: Node[] = []
-  const flowAngleStep = (2 * Math.PI) / (flows.length || 1)
 
-  flows.forEach((flow, index) => {
-    const flowAngle = flowAngleStep * index
-    const flowPosition = positionInCircle(
-      diagramLayout.center,
-      diagramLayout.flowRadius * (index === flows.length - 1 ? 1.5 : index % 2 === 0 ? 1 : 1.75),
-      flowAngle,
-      dimensions.flow,
-    )
+  // Radii for the three rings (tweak to your liking)
+  const ringRadius1 = diagramLayout.flowRadius * 0.7
+  const ringRadius2 = diagramLayout.flowRadius * 1.5
+  const ringRadius3 = diagramLayout.flowRadius * 2.4
 
-    mainNodes.push(createFlowNode(flow, flowPosition, flowAngle))
+  // We'll define a small helper that places a ring of flows evenly,
+  // but also applies an angular offset so each ring is "rotated" relative to the others.
+  function placeRing(
+    ringFlows: (Grant & { subgrants: Grant[] })[],
+    radius: number,
+    offset: number = 0,
+  ) {
+    const count = ringFlows.length
+    if (!count) return
+    const angleStep = (2 * Math.PI) / count
 
-    // Normalize angle to be between 0 and 2π
-    const normalizedAngle = ((flowAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
+    ringFlows.forEach((flow, i) => {
+      const angle = offset + i * angleStep
+      placeFlowAndSubgrants(flow, angle, radius, mainNodes, edges, grantNodes)
+    })
+  }
 
-    // Determine source handle based on angle from pool to flow
-    let sourceHandle = "right"
-    if (normalizedAngle > (Math.PI * 7) / 4 || normalizedAngle <= Math.PI / 4) {
-      sourceHandle = "right"
-    } else if (normalizedAngle <= (Math.PI * 3) / 4) {
-      sourceHandle = "bottom"
-    } else if (normalizedAngle <= (Math.PI * 5) / 4) {
-      sourceHandle = "left"
-    } else if (normalizedAngle <= (Math.PI * 7) / 4) {
-      sourceHandle = "top"
-    }
+  // Ring 1 has no offset
+  placeRing(ring1, ringRadius1, /* offset */ 0)
 
-    // Target handle on flow node should be opposite of source
-    const targetHandle = {
-      right: "left",
-      bottom: "top",
-      left: "right",
-      top: "bottom",
-    }[sourceHandle]
+  // Ring 2 is offset by half of ring2's angle step => (π / ring2.length) if ring2 not empty
+  if (ring2.length > 0) {
+    const angleStep2 = (2 * Math.PI) / ring2.length
+    const offset2 = angleStep2 / 2 // e.g. π / ring2.length
+    placeRing(ring2, ringRadius2, offset2)
+  }
 
-    edges.push(createEdge("pool-1", flow.id, sourceHandle, targetHandle))
+  // Ring 3 is similarly offset by half of ring3's angle step
+  if (ring3.length > 0) {
+    const angleStep3 = (2 * Math.PI) / ring3.length
+    const offset3 = angleStep3 / 2 // e.g. π / ring3.length
+    placeRing(ring3, ringRadius3, offset3)
+  }
 
-    if (flow.subgrants.length > 0) {
-      const subgrantAngleStep = (2 * Math.PI) / flow.subgrants.length
-      const flowCenter = {
-        x: flowPosition.x + dimensions.flow.width / 2,
-        y: flowPosition.y + dimensions.flow.height / 2,
-      }
-
-      flow.subgrants.forEach((grant, subIndex) => {
-        const subgrantAngle = subgrantAngleStep * subIndex
-        const grantPosition = positionInCircle(
-          flowCenter,
-          diagramLayout.subgrantRadius * Math.max(2, Math.sqrt(flow.subgrants.length)),
-          subgrantAngle,
-          dimensions.grant,
-        )
-
-        grantNodes.push(createGrantNode(grant, grantPosition, subgrantAngle))
-
-        // Determine handles based on angle between nodes
-        const normalizedAngle = ((subgrantAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
-
-        // Source handle (flow node)
-        let sourceHandle = "right"
-        if (normalizedAngle > (Math.PI * 7) / 4 || normalizedAngle <= (Math.PI * 1) / 4) {
-          sourceHandle = "right"
-        } else if (normalizedAngle <= (Math.PI * 3) / 4) {
-          sourceHandle = "bottom"
-        } else if (normalizedAngle <= (Math.PI * 5) / 4) {
-          sourceHandle = "left"
-        } else if (normalizedAngle <= (Math.PI * 7) / 4) {
-          sourceHandle = "top"
-        }
-
-        // Target handle (grant node) - opposite of source
-        const targetHandle = {
-          right: "left",
-          bottom: "top",
-          left: "right",
-          top: "bottom",
-        }[sourceHandle]
-
-        edges.push(createEdge(flow.id, grant.id, sourceHandle, targetHandle))
-      })
-    }
-  })
   return (
     <div className="grow bg-background">
       <ReactFlow
         defaultNodes={[...mainNodes, ...grantNodes]}
         defaultEdges={edges}
-        fitView
         maxZoom={1}
+        minZoom={0.3}
+        fitView
         colorMode="system"
         nodesDraggable={false}
         snapToGrid
+        fitViewOptions={{
+          maxZoom: 1,
+          minZoom: 0.45,
+        }}
         nodesFocusable={false}
         edgesFocusable={false}
         elementsSelectable={false}

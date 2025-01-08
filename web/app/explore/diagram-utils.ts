@@ -133,3 +133,78 @@ export function createGrantNode(
     sourcePosition: getOppositePosition(targetPosition),
   }
 }
+
+// This helper places a single flow node on a given ring, connects it from the pool,
+// and also places its subgrants in a small circle around it.
+export function placeFlowAndSubgrants(
+  flow: Grant & { subgrants: Grant[] },
+  angle: number,
+  ringRadius: number,
+  mainNodes: Node[],
+  edges: Edge[],
+  grantNodes: Node[],
+) {
+  // Compute the flow node position
+  const flowPos = positionInCircle(diagramLayout.center, ringRadius, angle, dimensions.flow)
+  // Create the flow node
+  mainNodes.push(createFlowNode(flow, flowPos, angle))
+
+  // Connect this flow to the pool in the usual way
+  const normAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
+  let sourceHandle = "right"
+  if (normAngle > (7 * Math.PI) / 4 || normAngle <= Math.PI / 4) {
+    sourceHandle = "right"
+  } else if (normAngle <= (3 * Math.PI) / 4) {
+    sourceHandle = "bottom"
+  } else if (normAngle <= (5 * Math.PI) / 4) {
+    sourceHandle = "left"
+  } else if (normAngle <= (7 * Math.PI) / 4) {
+    sourceHandle = "top"
+  }
+  const targetHandle = {
+    right: "left",
+    bottom: "top",
+    left: "right",
+    top: "bottom",
+  }[sourceHandle]
+  edges.push(createEdge("pool-1", flow.id, sourceHandle, targetHandle))
+
+  // Place subgrants in a small circle around the flow
+  if (flow.subgrants.length) {
+    const subgrantAngleStep = (2 * Math.PI) / flow.subgrants.length
+    const flowCenter = {
+      x: flowPos.x + dimensions.flow.width / 2,
+      y: flowPos.y + dimensions.flow.height / 2,
+    }
+    flow.subgrants.forEach((grant, i) => {
+      const subAngle = i * subgrantAngleStep
+      const grantPos = positionInCircle(
+        flowCenter,
+        diagramLayout.subgrantRadius * Math.max(2, Math.sqrt(flow.subgrants.length)),
+        subAngle,
+        dimensions.grant,
+      )
+      grantNodes.push(createGrantNode(grant, grantPos, subAngle))
+
+      // Edge from flow to subgrant
+      const normSubAngle = ((subAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
+      let sgSource = "right"
+      if (normSubAngle > (7 * Math.PI) / 4 || normSubAngle <= Math.PI / 4) {
+        sgSource = "right"
+      } else if (normSubAngle <= (3 * Math.PI) / 4) {
+        sgSource = "bottom"
+      } else if (normSubAngle <= (5 * Math.PI) / 4) {
+        sgSource = "left"
+      } else if (normSubAngle <= (7 * Math.PI) / 4) {
+        sgSource = "top"
+      }
+      const sgTarget = {
+        right: "left",
+        bottom: "top",
+        left: "right",
+        top: "bottom",
+      }[sgSource]
+      edges.push(createEdge(flow.id, grant.id, sgSource, sgTarget))
+    })
+  }
+}
