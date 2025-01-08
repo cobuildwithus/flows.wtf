@@ -32,10 +32,6 @@ export default async function FlowPage(props: Props) {
     }),
   ])
 
-  if (!subgrants || subgrants.length === 0) {
-    return <EmptyState title="No grants found" description="There are no approved grants yet" />
-  }
-
   const profiles = await getUserProfiles(subgrants.map((g) => getEthAddress(g.recipient)))
 
   return (
@@ -43,16 +39,19 @@ export default async function FlowPage(props: Props) {
       <GrantsStories flowId={flowId} />
 
       <FlowSubmenu flowId={flowId} segment="approved" />
-
-      <GrantsList
-        flow={flow}
-        grants={subgrants
-          .map((g) => ({
-            ...g,
-            profile: profiles.find((p) => p.address === getEthAddress(g.recipient))!,
-          }))
-          .sort(sortGrants)}
-      />
+      {!subgrants || subgrants.length === 0 ? (
+        <EmptyState title="No grants found" description="There are no approved grants yet" />
+      ) : (
+        <GrantsList
+          flow={flow}
+          grants={subgrants
+            .map((g) => ({
+              ...g,
+              profile: profiles.find((p) => p.address === getEthAddress(g.recipient))!,
+            }))
+            .sort(sortGrants)}
+        />
+      )}
       <VotingBar />
     </>
   )
