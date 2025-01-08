@@ -80,7 +80,7 @@ export const FullDiagram = (props: Props) => {
         snapToGrid
         fitViewOptions={{
           maxZoom: 1,
-          minZoom: 0.45,
+          minZoom: 0.4,
         }}
         nodesFocusable={false}
         edgesFocusable={false}
