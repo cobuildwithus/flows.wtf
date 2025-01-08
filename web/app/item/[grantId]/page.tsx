@@ -32,6 +32,7 @@ import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { GrantStories } from "./components/grant-stories"
 import { GrantPageData } from "./page-data/schema"
+import { canEditGrant } from "@/lib/database/helpers"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -69,6 +70,8 @@ export default async function GrantPage(props: Props) {
   if (!data || Object.keys(data).length === 0) notFound()
 
   const { why, focus, who, how, builder, title } = data
+
+  const canEdit = canEditGrant(grant, user?.address)
 
   return (
     <AgentChatProvider
@@ -172,9 +175,9 @@ export default async function GrantPage(props: Props) {
 
         <Plan plan={data.plan} className="mt-10" />
 
-        <GrantStories grantId={grant.id} className="mt-10" />
+        <GrantStories canEdit={canEdit} grantId={grant.id} className="mt-10" />
       </div>
-      <GrantChat grant={grant} user={user} />
+      <GrantChat grant={grant} user={user} canEdit={canEdit} />
     </AgentChatProvider>
   )
 }

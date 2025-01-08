@@ -6,7 +6,6 @@ import { MultimodalInput } from "@/app/chat/components/multimodal-input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { User } from "@/lib/auth/user"
-import { canEditGrant } from "@/lib/database/helpers"
 import { Grant } from "@prisma/flows"
 import { RotateCcw } from "lucide-react"
 import { useState } from "react"
@@ -14,14 +13,13 @@ import { useState } from "react"
 interface Props {
   user?: User
   grant: Grant
+  canEdit: boolean
 }
 
 export function GrantChat(props: Props) {
-  const { user, grant } = props
+  const { user, grant, canEdit } = props
   const [isOpen, setIsOpen] = useState(false)
   const { messages, restart } = useAgentChat()
-
-  const canEdit = canEditGrant(grant, user?.address)
 
   return (
     <>

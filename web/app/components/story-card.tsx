@@ -11,7 +11,7 @@ export function StoryCard(props: { story: Story }) {
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow dark:border dark:bg-card">
-      {header_image && (
+      {header_image ? (
         <div className="h-32 w-full overflow-hidden rounded-lg md:h-44">
           <Image
             src={getPinataWithKey(header_image)}
@@ -20,6 +20,12 @@ export function StoryCard(props: { story: Story }) {
             width={320}
             height={160}
           />
+        </div>
+      ) : (
+        <div className="h-32 w-full overflow-hidden rounded-lg bg-muted md:h-44">
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-muted-foreground">No header image</p>
+          </div>
         </div>
       )}
       <div className="grow p-4">

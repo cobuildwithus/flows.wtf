@@ -31,8 +31,9 @@ export function canEditStory(
   )
 }
 
-export function canEditGrant(grant: Pick<Grant, "recipient">, user: string | undefined) {
-  return user && [grant.recipient, rocketman, woj].includes(user)
+export function canEditGrant(grant: Pick<Grant, "recipient">, user: string | undefined): boolean {
+  if (!user) return false
+  return [grant.recipient, rocketman, woj].includes(user)
 }
 
 export function meetsMinimumSalary(
