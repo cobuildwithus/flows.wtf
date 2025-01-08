@@ -113,7 +113,7 @@ export default async function GrantPage(props: Props) {
           </div>
 
           <div className="col-span-full cursor-pointer xl:col-span-3">
-            <ImpactDialog grant={grant} />
+            <ImpactDialog grants={[grant]} />
           </div>
 
           <div className="col-span-full xl:col-span-9 xl:flex xl:items-center xl:justify-end">

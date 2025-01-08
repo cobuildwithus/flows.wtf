@@ -12,14 +12,16 @@ import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
 import { VotingBar } from "./flow/[flowId]/components/voting-bar"
 import { FullDiagram } from "./explore/diagram"
 import { Suspense } from "react"
+import { getUser } from "@/lib/auth/user"
 
 export default async function Home() {
-  const [pool, activeFlows] = await Promise.all([
+  const [pool, activeFlows, user] = await Promise.all([
     getPool(),
     database.grant.findMany({
       where: { isFlow: true, isActive: true, isTopLevel: false },
       ...getCacheStrategy(120),
     }),
+    getUser(),
   ])
 
   activeFlows.sort(sortGrants)
@@ -28,7 +30,7 @@ export default async function Home() {
     <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
       <main>
         <div className="container">
-          <FlowsStories />
+          <FlowsStories recipient={user?.address} />
         </div>
 
         <div className="container mt-12 flex items-center justify-between">
