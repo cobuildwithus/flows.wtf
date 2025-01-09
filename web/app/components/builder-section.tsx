@@ -5,6 +5,7 @@ import { ActionCard } from "./action-card/action-card"
 import { HomepageActivity } from "./homepage-activity"
 import { cn } from "@/lib/utils"
 import { Grant } from "@prisma/flows"
+import { Suspense } from "react"
 
 export async function BuilderSection({ grants }: { grants: Grant[] }) {
   const hasGrant = grants.length > 0
@@ -25,7 +26,9 @@ export async function BuilderSection({ grants }: { grants: Grant[] }) {
       </div>
       {hasGrant && (
         <div className="md:col-span-2">
-          <HomepageActivity grants={grants} />
+          <Suspense fallback={<div />}>
+            <HomepageActivity grants={grants} />
+          </Suspense>
         </div>
       )}
     </div>
