@@ -39,7 +39,7 @@ export async function FlowsStories({ recipient }: Props) {
 function getStoriesAndGrants(recipient?: `0x${string}`) {
   return Promise.all([
     database.story.findMany({
-      where: { complete: true },
+      where: { complete: true, header_image: { not: null } },
       orderBy: { created_at: "desc" },
       take: 7,
     }),

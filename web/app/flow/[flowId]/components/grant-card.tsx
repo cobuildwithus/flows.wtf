@@ -1,7 +1,10 @@
 import { MonthlyBudget } from "@/app/components/monthly-budget"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Profile } from "@/components/user-profile/get-user-profile"
 import { UserProfilePopover } from "@/components/user-profile/user-popover"
+import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
 import { Grant } from "@prisma/flows"
 import Link from "next/dist/client/link"
@@ -12,6 +15,11 @@ interface Props {
 }
 
 export function GrantCard({ grant }: Props) {
+  const isDisputed = grant.isDisputed
+  const isChallenged = grant.status === Status.ClearingRequested
+
+  const isActive = !isDisputed && !isChallenged
+
   return (
     <article className="group relative isolate flex flex-col justify-between overflow-hidden rounded-2xl bg-primary px-2.5 py-4 md:min-h-72 md:p-4">
       <Image
@@ -30,7 +38,8 @@ export function GrantCard({ grant }: Props) {
             <AvatarImage src={grant.profile.pfp_url} alt={grant.profile.display_name} />
           </Avatar>
         </UserProfilePopover>
-        <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />
+        {isActive && <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />}
+        {!isActive && <DisputedGrantTag />}
       </div>
 
       <div>
@@ -42,5 +51,16 @@ export function GrantCard({ grant }: Props) {
         </h3>
       </div>
     </article>
+  )
+}
+
+function DisputedGrantTag() {
+  return (
+    <Tooltip>
+      <TooltipTrigger tabIndex={-1}>
+        <Badge variant="warning">Disputed</Badge>
+      </TooltipTrigger>
+      <TooltipContent>This grant has been disputed and is under review.</TooltipContent>
+    </Tooltip>
   )
 }
