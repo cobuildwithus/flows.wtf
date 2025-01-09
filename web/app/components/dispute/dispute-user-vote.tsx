@@ -42,11 +42,12 @@ export function DisputeUserVote(props: Props) {
     dispute.disputeId,
   )
 
-  const { forCommitHash, againstCommitHash } = useSecretVoteHash(
-    flow.arbitrator,
-    dispute.disputeId,
-    address,
-  )
+  const {
+    forCommitHash,
+    againstCommitHash,
+    error,
+    isLoading: isLoadingSecretVoteHash,
+  } = useSecretVoteHash(flow.arbitrator, dispute.disputeId, address)
 
   const { writeContract, prepareWallet, isLoading, toastId } = useContractTransaction({
     onSuccess: () => {
@@ -93,6 +94,9 @@ export function DisputeUserVote(props: Props) {
           type="button"
           onClick={async () => {
             try {
+              if (isLoadingSecretVoteHash)
+                return toast.info("Generating vote hashes...", { id: toastId })
+              if (error) return toast.error(error.message, { id: toastId })
               if (!forCommitHash || !againstCommitHash) throw new Error("No secret hash")
               await prepareWallet()
 
@@ -119,6 +123,9 @@ export function DisputeUserVote(props: Props) {
           className="grow"
           onClick={async () => {
             try {
+              if (isLoadingSecretVoteHash)
+                return toast.info("Generating vote hashes...", { id: toastId })
+              if (error) return toast.error(error.message, { id: toastId })
               if (!againstCommitHash || !forCommitHash) throw new Error("No secret hash")
               await prepareWallet()
 

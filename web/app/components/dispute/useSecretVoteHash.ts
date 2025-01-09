@@ -1,57 +1,42 @@
 "use client"
 
-import { generateKVKey, generateSalt, Party, SavedVote } from "@/lib/kv/disputeVote"
-import { saveOrGetEncrypted } from "@/lib/kv/kvStore"
+import { Party } from "@/lib/kv/disputeVote"
+import { generateVoteHash } from "./get-secret-vote-hash"
 import { useEffect, useState } from "react"
-import { encodeAbiParameters, keccak256 } from "viem"
 
 export function useSecretVoteHash(arbitrator: string, disputeId: string, address?: string) {
   const [forCommitHash, setForCommitHash] = useState<`0x${string}` | null>(null)
   const [againstCommitHash, setAgainstCommitHash] = useState<`0x${string}` | null>(null)
+  const [error, setError] = useState<Error | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (!address) return
 
-    const generateVoteHash = async (party: Party) => {
-      const { commitHash, salt } = generateCommitment(party)
+    const generateVotes = async () => {
+      setIsLoading(true)
+      try {
+        const [forHash, againstHash] = await Promise.all([
+          generateVoteHash(Party.Requester, arbitrator, disputeId, address),
+          generateVoteHash(Party.Challenger, arbitrator, disputeId, address),
+        ])
 
-      const key = generateKVKey(arbitrator, disputeId, address, commitHash)
-      const data: SavedVote = {
-        choice: party,
-        reason: "",
-        disputeId: parseInt(disputeId),
-        voter: address.toLowerCase() as `0x${string}`,
-        salt,
-        commitHash,
-      }
-
-      // pull if already saved, otherwise save
-      const vote = await saveOrGetEncrypted(key, data)
-
-      if (party === Party.Requester) {
-        setForCommitHash(vote.commitHash)
-      } else {
-        setAgainstCommitHash(vote.commitHash)
+        setForCommitHash(forHash)
+        setAgainstCommitHash(againstHash)
+        setError(null)
+      } catch (error) {
+        console.error("Error generating vote hashes:", error)
+        setError(error instanceof Error ? error : new Error("Failed to generate vote hashes"))
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    generateVoteHash(Party.Requester)
-    generateVoteHash(Party.Challenger)
+    generateVotes()
   }, [arbitrator, disputeId, address])
 
-  if (!arbitrator || !disputeId || !address) return { forCommitHash: null, againstCommitHash: null }
+  if (!arbitrator || !disputeId || !address)
+    return { forCommitHash: null, againstCommitHash: null, error: null, isLoading: false }
 
-  return { forCommitHash, againstCommitHash }
-}
-
-const generateCommitment = (party: Party): { commitHash: `0x${string}`; salt: `0x${string}` } => {
-  const salt = generateSalt()
-  const commitHash = keccak256(
-    encodeAbiParameters(
-      [{ type: "uint256" }, { type: "string" }, { type: "bytes32" }],
-      [BigInt(party), "", salt],
-    ),
-  )
-
-  return { commitHash, salt }
+  return { forCommitHash, againstCommitHash, error, isLoading }
 }
