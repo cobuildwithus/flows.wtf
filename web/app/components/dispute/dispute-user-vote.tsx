@@ -152,7 +152,7 @@ export function DisputeUserVote(props: Props) {
       )}
       {!canVoteOnchain && (
         <div className="mt-3 text-center text-xs text-muted-foreground">
-          You don&apos;t have enough voting power to vote.
+          You didn&apos;t have enough voting power when this dispute was created to vote.
         </div>
       )}
       {canVoteOnchain && canVote && (
