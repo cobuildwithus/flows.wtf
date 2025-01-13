@@ -10,8 +10,6 @@ interface Props {
 }
 
 export function FlowCard({ flow }: Props) {
-  const approvedGrants = flow.activeRecipientCount
-
   return (
     <article className="group relative isolate flex flex-col justify-between overflow-hidden rounded-2xl bg-primary p-5">
       <Image
@@ -31,7 +29,7 @@ export function FlowCard({ flow }: Props) {
         <MonthlyBudget
           display={flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate}
           flow={flow}
-          approvedGrants={approvedGrants}
+          approvedGrants={flow.activeRecipientCount}
         />
       </div>
 
