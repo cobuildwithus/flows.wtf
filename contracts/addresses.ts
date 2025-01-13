@@ -20,4 +20,8 @@ export const base = {
   TokenEmitter: "0x14de2e56ebe65d2cc81b5186f8cb299cfbb37ee1",
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
+
+  // New TokenEmitter Contracts
+  TokenEmitterEthImpl: "x",
+  FlowTokenEmitterImpl: "x",
 } as const
