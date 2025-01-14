@@ -10,7 +10,7 @@ export type ChatBody = {
 }
 
 export type ChatData = {
-  address?: string
+  address?: string // Remove in v2
   flowId?: string
   grantId?: string
   storyId?: string

@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["views", "multiSchema", "tracing"]
+  previewFeatures = ["views", "multiSchema"]
   output          = "../../node_modules/@prisma/flows"
 }
 
@@ -49,7 +49,7 @@ model DerivedData {
   template          String?
   lastBuilderUpdate DateTime?
   pageData          String?
-  grades Json?
+  grades            Json?
 
   @@index([grantId])
   @@map("DerivedData")
@@ -73,28 +73,28 @@ model Conversation {
 }
 
 model Story {
-  id                    String    @id @default(uuid())
-  title                 String
-  summary               String
-  key_points           String[]
-  participants         String[]
-  header_image         String?
-  timeline             Json
-  sentiment            String    @db.VarChar(10)
-  completeness         Decimal   @db.Decimal(3,2)
-  complete             Boolean
-  sources              String[]
-  created_at           DateTime  @default(now())
-  updated_at           DateTime  @updatedAt
-  media_urls           String[]
-  author               String
-  tagline              String
-  grant_ids            String[]
-  parent_flow_ids      String[]
-  cast_hashes          String[]
-  mint_urls            String[]
+  id                      String   @id @default(uuid())
+  title                   String
+  summary                 String
+  key_points              String[]
+  participants            String[]
+  header_image            String?
+  timeline                Json
+  sentiment               String   @db.VarChar(10)
+  completeness            Decimal  @db.Decimal(3, 2)
+  complete                Boolean
+  sources                 String[]
+  created_at              DateTime @default(now())
+  updated_at              DateTime @updatedAt
+  media_urls              String[]
+  author                  String
+  tagline                 String
+  grant_ids               String[]
+  parent_flow_ids         String[]
+  cast_hashes             String[]
+  mint_urls               String[]
   info_needed_to_complete String?
-  edits                Json?
+  edits                   Json?
 
   @@index([complete])
   @@index([id])
@@ -169,14 +169,14 @@ model Grant {
 }
 
 view Vote {
-  id          String  @id
+  id          String @id
   contract    String
-  recipientId String  @map("recipient_id")
-  tokenId     String  @map("token_id")
+  recipientId String @map("recipient_id")
+  tokenId     String @map("token_id")
   bps         Int
   voter       String
-  blockNumber String  @map("block_number")
-  votesCount  String  @map("votes_count")
+  blockNumber String @map("block_number")
+  votesCount  String @map("votes_count")
 
   @@index([contract])
   @@index([recipientId])
@@ -234,15 +234,15 @@ view DisputeVote {
 }
 
 view TokenHolder {
-  id            String @id
-  tokenContract String @map("token_contract")
-  flow          Grant  @relation(fields: [tokenContract], references: [erc20])
-  holder        String
-  firstPurchase Int    @map("first_purchase")
-  amount        String
-  totalBought   String @map("total_bought")
-  totalSold     String @map("total_sold")
-  costBasis     String @map("cost_basis")
+  id                String @id
+  tokenContract     String @map("token_contract")
+  flow              Grant  @relation(fields: [tokenContract], references: [erc20])
+  holder            String
+  firstPurchase     Int    @map("first_purchase")
+  amount            String
+  totalBought       String @map("total_bought")
+  totalSold         String @map("total_sold")
+  costBasis         String @map("cost_basis")
   totalSaleProceeds String @map("total_sale_proceeds")
 
   @@unique([tokenContract, holder])

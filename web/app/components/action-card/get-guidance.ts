@@ -39,10 +39,15 @@ export async function getGuidance(
 
   const agent = await getAgent("flo", { address })
 
-  const result = await streamObject({
+  return streamObject({
     model: anthropic("claude-3-5-sonnet-latest"),
     schema: guidanceSchema,
-    onFinish: ({ object }) => onFinish?.(object),
+    onFinish: ({ object, error, response }) => {
+      if (error) {
+        console.error("Error in guidance", error, response)
+      }
+      onFinish?.(object)
+    },
     system: `${agent.prompt}\n\nInitial context from the database using the queryEmbeddings tool:\n${JSON.stringify(initialContext)}.`,
     prompt: `
     ${address ? `User ${address}` : "Guest"} just visited the home page of flows.wtf.
@@ -81,6 +86,4 @@ export async function getGuidance(
     Do not introduce yourself. Do not say you have access to data about user. Just write a message to the user. No need to inform them about your context awareness or why you say what you say.
     `,
   })
-
-  return result
 }

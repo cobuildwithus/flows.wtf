@@ -18,7 +18,7 @@ interface Props {
   animated: boolean
   hasSession: boolean
   text?: string
-  action?: { link?: string; text: string; isChat: boolean }
+  action?: { link?: string | null; text: string; isChat: boolean }
 }
 
 export function ActionCardContent(props: Props) {

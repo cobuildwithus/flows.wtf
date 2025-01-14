@@ -1,9 +1,9 @@
 "use server"
 
+import { queryEmbeddingsSimilarity } from "@/lib/embedding/query"
 import { validTypes } from "@/lib/types/job"
 import { z } from "zod"
 import { generateEmbedding } from "../../../embedding/generate-embedding"
-import { queryEmbeddingsSimilarity } from "@/lib/embedding/query"
 
 const embeddingQuerySchema = z.object({
   types: z.array(z.enum(validTypes)).optional(),
@@ -60,7 +60,7 @@ export async function searchEmbeddings({
 
     return results
   } catch (error) {
-    console.error(error)
+    console.error("Error in searchEmbeddings", error)
     return (error as Error).message
   }
 }
