@@ -2,6 +2,7 @@
 
 import { AgentType } from "@/lib/ai/agents/agent"
 import { User } from "@/lib/auth/user"
+import { useIdentityToken } from "@privy-io/react-auth"
 import { Attachment, Message } from "ai"
 import { useChat, UseChatHelpers } from "ai/react"
 import { useRouter } from "next/navigation"
@@ -35,13 +36,20 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
   const [attachments, setAttachments] = useState<Array<Attachment>>([])
   const [context, setContext] = useState("")
   const router = useRouter()
+  const { identityToken } = useIdentityToken()
 
   const chat = useChat({
     id,
-    api: `/chat`,
+    api: `${process.env.NEXT_PUBLIC_CHAT_API_URL ?? "http://localhost:4000"}/api/chat`,
     body: { type, id, data, context } satisfies Omit<ChatBody, "messages">,
     initialMessages: initialMessages || readChatHistory(),
     keepLastMessageOnError: true,
+    headers: {
+      "privy-id-token": identityToken || "",
+      city: user?.location?.city || "",
+      country: user?.location?.country || "",
+      "country-region": user?.location?.countryRegion || "",
+    },
     onToolCall: ({ toolCall }) => {
       switch (toolCall.toolName) {
         case "updateGrant":
