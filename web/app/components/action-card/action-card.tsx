@@ -1,6 +1,7 @@
 import "server-only"
 
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { User } from "@/lib/auth/user"
 import { kv } from "@vercel/kv"
 import { cookies } from "next/headers"
@@ -23,6 +24,7 @@ export async function ActionCard(props: Props) {
       id={`action-card-${user?.address.toLowerCase()}-${new Date().toISOString().split("T")[0]}`}
       type="flo"
       user={user}
+      identityToken={await getPrivyIdToken()}
     >
       <ActionCardContent
         hasSession={hasSession}

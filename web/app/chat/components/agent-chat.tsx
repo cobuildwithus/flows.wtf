@@ -2,7 +2,6 @@
 
 import { AgentType } from "@/lib/ai/agents/agent"
 import { User } from "@/lib/auth/user"
-import { useIdentityToken } from "@privy-io/react-auth"
 import { Attachment, Message } from "ai"
 import { useChat, UseChatHelpers } from "ai/react"
 import { useRouter } from "next/navigation"
@@ -16,6 +15,7 @@ interface Props {
   user?: User
   data?: ChatData
   initialMessages?: Message[]
+  identityToken: string | undefined
 }
 
 interface AgentChatContext extends UseChatHelpers {
@@ -31,12 +31,11 @@ interface AgentChatContext extends UseChatHelpers {
 const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
 
 export function AgentChatProvider(props: PropsWithChildren<Props>) {
-  const { id, type, user, initialMessages, children, data } = props
+  const { id, type, user, initialMessages, children, data, identityToken } = props
   const { readChatHistory, storeChatHistory, resetChatHistory } = useChatHistory({ id })
   const [attachments, setAttachments] = useState<Array<Attachment>>([])
   const [context, setContext] = useState("")
   const router = useRouter()
-  const { identityToken } = useIdentityToken()
 
   const chat = useChat({
     id,

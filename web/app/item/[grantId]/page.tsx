@@ -8,8 +8,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Icon } from "@/components/ui/icon"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
+import { canEditGrant } from "@/lib/database/helpers"
 import { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { Suspense } from "react"
@@ -30,9 +32,8 @@ import { CurationCard } from "./components/curation-card"
 import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { GrantStories } from "./components/grant-stories"
-import { GrantPageData } from "./page-data/schema"
-import { canEditGrant } from "@/lib/database/helpers"
 import { ImpactDialog } from "./components/impact-dialog"
+import { GrantPageData } from "./page-data/schema"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -79,6 +80,7 @@ export default async function GrantPage(props: Props) {
       type="flo"
       user={user}
       data={{ grantId: grant.id }}
+      identityToken={await getPrivyIdToken()}
     >
       <div className="container mt-2.5 pb-24 md:mt-6">
         <Breadcrumb className="mb-6">
