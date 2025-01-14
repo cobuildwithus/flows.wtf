@@ -9,13 +9,18 @@ const verificationKey = `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEB1GUPYZCvCfMHfxcHwUb6rtzdp4LtC7V8tjdHA+l9y2YIzNmA1PyaQDDMNH9xz4bL5hDDsjuFriGzH4ODS4ZGQ==
 -----END PUBLIC KEY-----`
 
-export const getUserAddressFromCookie = cache(async () => {
+export async function getPrivyIdToken() {
   const token = (await cookies()).get("privy-id-token")
+  return token ? token.value : undefined
+}
+
+export const getUserAddressFromCookie = cache(async () => {
+  const token = await getPrivyIdToken()
   if (!token) return undefined
 
   try {
     const { payload } = await jose.jwtVerify(
-      token.value,
+      token,
       await jose.importSPKI(verificationKey, "ES256"),
       {
         issuer: "privy.io",

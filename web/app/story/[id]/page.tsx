@@ -21,6 +21,7 @@ import { DateTime } from "@/components/ui/date-time"
 import { Markdown } from "@/components/ui/markdown"
 import { VideoPlayer } from "@/components/ui/video-player"
 import { UserProfile } from "@/components/user-profile/user-profile"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditStory } from "@/lib/database/helpers"
@@ -86,6 +87,7 @@ export default async function Page(props: Props) {
       type="gonzo"
       user={user}
       data={{ storyId: id }}
+      identityToken={await getPrivyIdToken()}
     >
       <article className="container mt-2.5 max-w-6xl pb-24 md:mt-6">
         <Breadcrumb>
