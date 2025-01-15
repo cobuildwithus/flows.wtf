@@ -3,7 +3,12 @@
 import { animate } from "framer-motion"
 import { useEffect, useState } from "react"
 
-export function useAnimatedText(text: string, split: "char" | "word" = "char", skip = false) {
+export function useAnimatedText(
+  text: string,
+  split: "char" | "word" = "char",
+  skip = false,
+  onComplete?: () => void,
+) {
   const [cursor, setCursor] = useState(0)
   const [startingCursor, setStartingCursor] = useState(0)
   const [prevText, setPrevText] = useState(text)
@@ -23,6 +28,7 @@ export function useAnimatedText(text: string, split: "char" | "word" = "char", s
       onUpdate(latest) {
         setCursor(Math.floor(latest))
       },
+      onComplete,
     })
 
     return () => controls.stop()

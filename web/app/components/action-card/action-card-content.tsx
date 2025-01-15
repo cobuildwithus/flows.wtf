@@ -1,117 +1,53 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { DotLoader } from "@/components/ui/dot-loader"
 import { Markdown } from "@/components/ui/markdown"
 import { User } from "@/lib/auth/user"
 import { useAnimatedText } from "@/lib/hooks/use-animated-text"
-import { experimental_useObject as useObject } from "ai/react"
+import { isBrowser } from "@/lib/utils"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { useEffect, useRef } from "react"
+import { use } from "react"
+import { Guidance } from "./get-guidance"
 import { GuidanceChat } from "./guidance-chat"
-import { guidanceSchema } from "./guidance-utils"
-import { useAuthenticated } from "@/lib/auth/use-authenticated"
 
 interface Props {
+  guidance: Promise<Guidance>
   user?: User
-  animated: boolean
-  hasSession: boolean
-  text?: string
-  action?: { link?: string | null; text: string; isChat: boolean }
 }
 
 export function ActionCardContent(props: Props) {
-  const { user, animated, hasSession } = props
+  const { guidance, user } = props
 
-  const hasSubmitted = useRef(false)
-  const { ready } = useAuthenticated()
+  const { text, action } = use(guidance)
 
-  const { object, submit, isLoading, error } = useObject({
-    api: "/api/action-card",
-    schema: guidanceSchema,
-    onError: (error) => {
-      console.error("An error occurred:", error)
-      if (shouldRetry(error)) {
-        retrySubmit(1, "Hello", submit)
-      }
-    },
+  const animate = isBrowser() && !sessionStorage.getItem("hasAnimatedActionCard")
+
+  const animatedText = useAnimatedText(text, "char", !animate, () => {
+    if (isBrowser()) {
+      sessionStorage.setItem("hasAnimatedActionCard", "true")
+    }
   })
 
-  const animatedText = useAnimatedText(props.text || object?.text || "", "char", !animated)
-
-  useEffect(() => {
-    if (!hasSubmitted.current && !props.text) {
-      submit(`Hello`)
-      hasSubmitted.current = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
-
-  const action = props.action || object?.action
-  const text = props.text || object?.text || ""
-
-  const show = ready || hasSession
+  const Component = animate ? motion.div : "div"
+  const motionProps = animate ? { animate: { opacity: [0, 1] }, transition: { delay: 4.5 } } : {}
 
   return (
     <>
-      <h2 className="text-lg font-semibold text-secondary-foreground">gm {user?.username}</h2>
-
-      <div className="mb-5 mt-2.5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
-        {isLoading && (
-          <div className="pt-2.5">
-            <DotLoader />
-          </div>
-        )}
-        {!isLoading && show && <Markdown>{animatedText}</Markdown>}
-        {error && (
-          <p className="text-destructive">An error occurred: {error.message.slice(0, 150)}</p>
-        )}
+      <div className="mb-5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
+        <Markdown>{animatedText}</Markdown>
       </div>
-
-      {show &&
-        action?.text &&
-        (() => {
-          const Component = animated ? motion.div : "div"
-          const motionProps = animated
-            ? { animate: { opacity: [0, 1] }, transition: { delay: 4.5 } }
-            : {}
-
-          return (
-            <Component {...motionProps}>
-              {action.isChat ? (
-                <GuidanceChat user={user} context={text}>
-                  {action.text}
-                </GuidanceChat>
-              ) : (
-                <Button key={action.link} variant="ai-secondary" size="md">
-                  <Link href={action.link || "#"}>{action.text}</Link>
-                </Button>
-              )}
-            </Component>
-          )
-        })()}
+      <Component {...motionProps}>
+        {action.isChat ? (
+          <GuidanceChat user={user} context={text}>
+            {action.text}
+          </GuidanceChat>
+        ) : (
+          <Button key={action.link} variant="ai-secondary" size="md">
+            <Link href={action.link || "#"}>{action.text}</Link>
+          </Button>
+        )}
+      </Component>
     </>
   )
-}
-
-const maxRetries = 3
-const retryDelay = 1000
-function shouldRetry(error: Error) {
-  return (
-    error.message.includes("Network Error") ||
-    error.message.includes("Network connection lost") ||
-    error.message.includes("Failed to fetch")
-  )
-}
-
-function retrySubmit(attempt: number, input: string, submit: (input: string) => void) {
-  if (attempt <= maxRetries) {
-    setTimeout(() => {
-      console.log(`Retrying... Attempt ${attempt}`)
-      submit(input)
-    }, retryDelay * attempt)
-  } else {
-    console.error("Max retry attempts reached. Please try again later.")
-  }
 }

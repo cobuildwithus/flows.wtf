@@ -1,10 +1,9 @@
 import "server-only"
 
-import { getUser, hasSession } from "@/lib/auth/user"
-import { ActionCard } from "./action-card/action-card"
-import { HomepageActivity } from "./homepage-activity"
 import { cn } from "@/lib/utils"
 import { Grant } from "@prisma/flows"
+import { ActionCard } from "./action-card/action-card"
+import { HomepageActivity } from "./homepage-activity"
 
 export async function BuilderSection({ grants }: { grants: Grant[] }) {
   const hasGrant = grants.length > 0
@@ -21,7 +20,7 @@ export async function BuilderSection({ grants }: { grants: Grant[] }) {
           !hasGrant && "md:mx-auto md:w-full md:max-w-lg",
         )}
       >
-        <ActionCard user={await getUser()} hasSession={await hasSession()} />
+        <ActionCard />
       </div>
       {hasGrant && (
         <div className="md:col-span-2">

@@ -1,9 +1,9 @@
+import { imageDomains } from "@/image-domains"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { base, baseSepolia, mainnet } from "viem/chains"
 import { nounsTokenAddress } from "./abis"
 import { NOUNS_TOKEN } from "./config"
-import { imageDomains } from "@/image-domains"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -91,4 +91,8 @@ export function openseaNftUrl(contract: string, tokenId: string, chainId: number
 
 export function usesTestNounsToken() {
   return NOUNS_TOKEN.toLowerCase() !== nounsTokenAddress[1].toLowerCase()
+}
+
+export function isBrowser() {
+  return typeof window !== "undefined"
 }

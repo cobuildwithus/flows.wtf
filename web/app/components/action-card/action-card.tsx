@@ -1,38 +1,32 @@
 import "server-only"
 
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { DotLoader } from "@/components/ui/dot-loader"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
-import { User } from "@/lib/auth/user"
-import { kv } from "@vercel/kv"
-import { cookies } from "next/headers"
+import { getUser } from "@/lib/auth/user"
+import { Suspense } from "react"
 import { ActionCardContent } from "./action-card-content"
-import { getGuidanceCacheKey, guidanceSchema } from "./guidance-utils"
+import { getGuidance } from "./get-guidance"
 
-interface Props {
-  user?: User
-  hasSession: boolean
-}
+export async function ActionCard() {
+  const user = await getUser()
+  const identityToken = await getPrivyIdToken()
 
-export async function ActionCard(props: Props) {
-  const { user, hasSession } = props
-
-  const cachedGuidance = await kv.get(getGuidanceCacheKey(user?.address))
-  const { data } = guidanceSchema.safeParse(cachedGuidance)
+  const guidance = getGuidance(user?.address, identityToken)
 
   return (
     <AgentChatProvider
       id={`action-card-${user?.address.toLowerCase()}-${new Date().toISOString().split("T")[0]}`}
       type="flo"
       user={user}
-      identityToken={await getPrivyIdToken()}
+      identityToken={identityToken}
     >
-      <ActionCardContent
-        hasSession={hasSession}
-        user={user}
-        animated={!data || (!user && !(await cookies()).has("guidance-guest"))}
-        text={data?.text}
-        action={data?.action}
-      />
+      <h2 className="mb-2.5 text-lg font-semibold text-secondary-foreground">
+        gm {user?.username}
+      </h2>
+      <Suspense fallback={<DotLoader className="pt-2.5" />}>
+        <ActionCardContent user={user} guidance={guidance} />
+      </Suspense>
     </AgentChatProvider>
   )
 }

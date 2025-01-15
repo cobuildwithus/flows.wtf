@@ -1,89 +1,52 @@
-import "server-only"
-
-import { getAgent } from "@/lib/ai/agents/agent"
-import { anthropic } from "@/lib/ai/providers/anthropic"
-import { searchEmbeddings } from "@/lib/ai/tools/embeddings/search-embeddings"
-import { FLOWS_CHANNEL_ID, NOUNS_CHANNEL_ID } from "@/lib/config"
-import { streamObject } from "ai"
-import { unstable_cache } from "next/cache"
+import { kv } from "@vercel/kv"
 import { z } from "zod"
-import { guidanceSchema } from "./guidance-utils"
 
-export async function getGuidance(
-  address: `0x${string}` | undefined,
-  onFinish?: (object?: z.infer<typeof guidanceSchema>) => Promise<void>,
-) {
-  const initialContext = await unstable_cache(
-    async () => {
-      const casts = await searchEmbeddings({
-        types: ["cast"],
-        users: address ? [address] : undefined,
-        tags: [],
-        numResults: 15,
-        groups: [],
-        orderBy: "created_at",
-      })
-      const grants = await searchEmbeddings({
-        types: ["grant", "grant-application", "flow"],
-        users: address ? [address] : undefined,
-        tags: [],
-        numResults: 15,
-        groups: [],
-        orderBy: "created_at",
-      })
-      return { casts, grants }
-    },
-    [`initial-builder-context-${address ?? "guest"}`],
-    { revalidate: 3600 * 5 }, // 5 hours
-  )()
+const schema = z.object({
+  text: z.string().describe("The guidance message to the user."),
+  action: z
+    .object({
+      text: z.string().max(12).describe("The text of the action button."),
+      link: z.string().optional().nullable().describe("The link of the action button."),
+      isChat: z.boolean().default(false).describe("Whether to open the chat dialog."),
+    })
+    .describe("Action the user can take."),
+})
 
-  const agent = await getAgent("flo", { address })
+export type Guidance = z.infer<typeof schema>
 
-  return streamObject({
-    model: anthropic("claude-3-5-sonnet-latest"),
-    schema: guidanceSchema,
-    onFinish: ({ object, error, response }) => {
-      if (error) {
-        console.error("Error in guidance", error, response)
-      }
-      onFinish?.(object)
-    },
-    system: `${agent.prompt}\n\nInitial context from the database using the queryEmbeddings tool:\n${JSON.stringify(initialContext)}.`,
-    prompt: `
-    ${address ? `User ${address}` : "Guest"} just visited the home page of flows.wtf.
+export async function getGuidance(address?: string, identityToken?: string): Promise<Guidance> {
+  if (!address) return defaultGuidance
 
-    Write a short message to the user explaining what they should do next on the platform.
+  try {
+    const { data: cachedGuidance } = schema.safeParse(await kv.get(cacheKey(address)))
+    if (cachedGuidance) return cachedGuidance
 
-    Write this message in english language. Right now we cannot ask any question to the user - we just need to display them a message, without any input from them.
+    if (!identityToken) throw new Error(`Missing identity token for user ${address}`)
 
-    When deciding what to say, think about what the user is likely to be interested in. 
-    Consider the user's profile, activity, and interests.
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CHAT_API_URL}/api/guidance`, {
+      headers: { "privy-id-token": identityToken },
+    })
 
-    Always provide exactly one action the user can take, with text and link. Action text should be short, but don't use just "Chat". It should be friendly and inviting.
+    const { data: guidance, error } = schema.safeParse(await response.json())
+    if (!guidance) throw new Error(`Guidance validation failed! ${error}`)
 
-    The most common action will be to open a chat with you - you can then help user understand the platform, ask questions, get ideas about what to do next or apply for a grant.
-    
-    If the action is to open a chat, do not provide a url, just set the "isChat" flag to true. The website then will open a chat in a modal when user clicks the button.
+    await kv.set(cacheKey(address), guidance, { ex: 60 * 60 * 4 })
 
-    Guidelines:
-    - If the user is not logged in (guest), you may just briefly introduce the platform.
-    - If the user is not a builder yet, you may suggest they apply for a grant. Would be nice to suggest 1-2 flows with smaller number of grants and that matches their interests. Applying for a grant happens via chat.
-    - If the user is a builder without verified Farcaster account, suggest them to verify it. Point them to the https://warpcast.com/~/settings/verified-addresses URL.
-    - If the user is a builder without recent activity (at least 5-7 days), you may suggest posting update on Farcaster. Here is the intent URL: https://warpcast.com/~/compose?text=&channelKey=[CHANNEL_ID] . For [CHANNEL_ID] use either ${NOUNS_CHANNEL_ID} or ${FLOWS_CHANNEL_ID} depending on the user's membership (use the one they already joined).
-    - If the user is a builder with recent activity, be creative and suggest starting conversation with you to get ideas about what to do next and how to make the most from the platform and community. If you have some specifc ideas for the user - go with it.
+    return guidance
+  } catch (e) {
+    console.error(e)
+    return defaultGuidance
+  }
+}
 
-    Use 2-3 short paragraphs and no more than 150 characters.
-    
-    Do not onboard user to web3 or crypto. Do not use any jargon, technical terms or do not refer to grants as "projects".
+export function cacheKey(address: string) {
+  return `guidance-v9-${address?.toLowerCase()}`
+}
 
-    Try to make the message as personalized as possible.
-
-    Below is a general good message for new users or people who are not builders:
-    "Welcome to Flows! This is were people get paid for making positive impact in their communities."
-
-    For guests, don't be too specific about the type of builders we support. Just say it's a place for people to get paid for making positive impact in their communities.
-    
-    Do not introduce yourself. Do not say you have access to data about user. Just write a message to the user. No need to inform them about your context awareness or why you say what you say.
-    `,
-  })
+const defaultGuidance: Guidance = {
+  text: "Welcome to Flows! This is where people get paid for making positive impact in their communities\n\nWhether you're an artist, athlete, musician, or community organizer, there's a place for you here. We support people who want to make a difference while doing what they love.",
+  action: {
+    text: "Let's talk",
+    isChat: true,
+  },
 }
