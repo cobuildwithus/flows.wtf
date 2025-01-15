@@ -7,7 +7,7 @@ import { useAnimatedText } from "@/lib/hooks/use-animated-text"
 import { isBrowser } from "@/lib/utils"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { use } from "react"
+import { use, useEffect, useState } from "react"
 import { Guidance } from "./get-guidance"
 import { GuidanceChat } from "./guidance-chat"
 
@@ -18,25 +18,36 @@ interface Props {
 
 export function ActionCardContent(props: Props) {
   const { guidance, user } = props
-
+  const [show, setShow] = useState(false)
+  const [animate, setAnimate] = useState(false)
   const { text, action } = use(guidance)
 
-  const animate = isBrowser() && !sessionStorage.getItem("hasAnimatedActionCard")
+  useEffect(() => {
+    if (!isBrowser()) return
+    setAnimate(window.sessionStorage.getItem("hasAnimatedActionCard") !== "true")
+    setShow(true)
+  }, [])
 
   const animatedText = useAnimatedText(text, "char", !animate, () => {
-    if (isBrowser()) {
-      sessionStorage.setItem("hasAnimatedActionCard", "true")
-    }
+    window?.sessionStorage?.setItem("hasAnimatedActionCard", "true")
   })
+
+  if (!show) return null
 
   const Component = animate ? motion.div : "div"
   const motionProps = animate ? { animate: { opacity: [0, 1] }, transition: { delay: 4.5 } } : {}
 
   return (
     <>
-      <div className="mb-5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
-        <Markdown>{animatedText}</Markdown>
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={show ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <div className="mb-5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
+          <Markdown>{animatedText}</Markdown>
+        </div>
+      </motion.div>
       <Component {...motionProps}>
         {action.isChat ? (
           <GuidanceChat user={user} context={text}>
