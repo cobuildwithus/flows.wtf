@@ -8,6 +8,7 @@ import { FlowManagement } from "./contracts/flow"
 import { TCRManagement } from "./contracts/tcr"
 import { getEthAddress } from "@/lib/utils"
 import { TokenEmitterManagement } from "./contracts/token-emitter"
+import { ERC20MintableManagement } from "./contracts/erc20-mintable"
 
 interface Props {
   flow: FlowWithGrants
@@ -17,6 +18,7 @@ export const ManageFlow = ({ flow }: Props) => {
   const flowAddress = getEthAddress(flow.recipient)
   const tcrAddress = getEthAddress(flow.tcr)
   const tokenEmitterAddress = getEthAddress(flow.tokenEmitter)
+  const erc20MintableAddress = getEthAddress(flow.erc20)
   const isFlowOwner = useIsFlowOwner(flowAddress)
   const arbitratorAddress = useArbitrator(tcrAddress)
 
@@ -25,6 +27,7 @@ export const ManageFlow = ({ flow }: Props) => {
     <div className="min-h-screen bg-background py-8">
       <h1 className="mb-8 text-3xl font-bold tracking-tight">Contract Management</h1>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <ERC20MintableManagement erc20MintableAddress={erc20MintableAddress} />
         <TokenEmitterManagement tokenEmitterAddress={tokenEmitterAddress} />
         <FlowManagement flowAddress={flowAddress} />
         <TCRManagement tcrAddress={tcrAddress} />
