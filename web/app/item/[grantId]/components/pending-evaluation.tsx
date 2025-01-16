@@ -36,7 +36,7 @@ export function PendingEvaluation({ user }: { user?: User }) {
       </div>
       {requestFarcasterConnect && address && (
         <div className="mt-8">
-          <SignInWithNeynar />
+          <SignInWithNeynar user={user} />
         </div>
       )}
     </div>

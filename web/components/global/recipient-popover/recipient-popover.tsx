@@ -17,13 +17,15 @@ import { AnimatedSalary } from "../animated-salary"
 import { WithdrawSalaryButton } from "../withdraw-salary-button"
 import { useUserGrants } from "./use-user-grants"
 import SignInWithNeynar from "../signin-with-neynar"
+import { User } from "@/lib/auth/user"
 
 interface Props {
-  address: `0x${string}`
+  user: User
 }
 
 export const RecipientPopover = (props: Props) => {
-  const { address } = props
+  const { user } = props
+  const { address } = user
   const { grants, earnings, refetch } = useUserGrants(address)
   const closeRef = useRef<HTMLButtonElement>(null)
 
@@ -120,7 +122,7 @@ export const RecipientPopover = (props: Props) => {
                     <AlertDescription>
                       You must connect to Farcaster to keep getting paid.
                       <br />
-                      <SignInWithNeynar variant="default" className="mt-2" />
+                      <SignInWithNeynar variant="default" className="mt-2" user={user} />
                     </AlertDescription>
                   </Alert>
                 )}

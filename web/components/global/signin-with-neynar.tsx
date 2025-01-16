@@ -5,8 +5,13 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import FarcasterLogo from "@/public/farcaster.svg"
+import { handleNeynarSignin } from "@/lib/farcaster/handle-neynar-signin"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { User } from "@/lib/auth/user"
 
 const clientId = process.env.NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID
+const NEYNAR_ORIGIN = "https://app.neynar.com"
 
 interface NeynarCallbackData {
   signer_uuid: string
@@ -17,51 +22,74 @@ interface NeynarCallbackData {
 
 interface Props extends React.ComponentPropsWithoutRef<typeof Button> {
   className?: string
-  redirectUri?: string
-  onSignInSuccess?: (data: NeynarCallbackData) => void | Promise<void>
+  user: User
 }
 
 declare global {
   interface Window {
-    onSignInSuccess?: (data: NeynarCallbackData) => void | Promise<void>
+    __neynarAuthWindow?: Window | null
   }
 }
 
-export default function SignInWithNeynar({
-  className = "",
-  redirectUri,
-  onSignInSuccess,
-  ...buttonProps
-}: Props) {
+export default function SignInWithNeynar({ className = "", user, ...buttonProps }: Props) {
+  const router = useRouter()
+
+  // Declare callback function for window scope
+  const handleSignInSuccess = useCallback(
+    async (data: NeynarCallbackData) => {
+      try {
+        await handleNeynarSignin(data.fid, data.signer_uuid, data.signer_permissions, user.address)
+        router.refresh()
+      } catch (e: any) {
+        console.error(e)
+        toast.error(e.message || "Failed to sign in with Neynar")
+      }
+    },
+    [user.address],
+  )
   useEffect(() => {
-    // Set up global callback
-    if (onSignInSuccess) {
-      window.onSignInSuccess = onSignInSuccess
+    function handleMessage(event: MessageEvent) {
+      if (event.origin !== NEYNAR_ORIGIN || event.isTrusted !== true) return
+
+      if (event.data?.is_authenticated) {
+        handleSignInSuccess(event.data)
+
+        if (window.__neynarAuthWindow) {
+          window.__neynarAuthWindow.close()
+          window.__neynarAuthWindow = null
+        }
+      }
     }
 
-    // Cleanup
+    window.addEventListener("message", handleMessage)
     return () => {
-      window.onSignInSuccess = undefined
+      window.removeEventListener("message", handleMessage)
+      if (window.__neynarAuthWindow) {
+        window.__neynarAuthWindow.close()
+        window.__neynarAuthWindow = null
+      }
     }
-  }, [onSignInSuccess])
+  }, [handleSignInSuccess])
 
   const handleClick = useCallback(() => {
+    if (window.__neynarAuthWindow) {
+      window.__neynarAuthWindow.close()
+    }
+
     const width = 600
     const height = 700
     const left = window.screen.width / 2 - width / 2
     const top = window.screen.height / 2 - height / 2
 
-    // Construct login URL
-    const loginUrl = new URL("https://app.neynar.com/login")
+    const loginUrl = new URL(`${NEYNAR_ORIGIN}/login`)
     loginUrl.searchParams.append("client_id", clientId || "")
-    if (redirectUri) {
-      loginUrl.searchParams.append("redirect_uri", redirectUri)
-    }
 
-    // Open popup
+    const isDesktop = window.matchMedia("(min-width: 800px)").matches
     const windowFeatures = `width=${width},height=${height},top=${top},left=${left}`
-    window.open(loginUrl.toString(), "_blank", windowFeatures)
-  }, [redirectUri])
+    const windowOptions = isDesktop ? windowFeatures : "fullscreen=yes"
+
+    window.__neynarAuthWindow = window.open(loginUrl.toString(), "_blank", windowOptions)
+  }, [])
 
   if (!clientId) {
     console.error("Missing NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID environment variable")
