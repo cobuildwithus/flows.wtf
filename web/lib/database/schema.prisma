@@ -159,7 +159,7 @@ model Grant {
   tokenHolders TokenHolder[]
   evidences    Evidence[]
   derivedData  DerivedData?
-
+  votes        Vote[]
   @@index([isTopLevel])
   @@index([isFlow])
   @@index([isActive])
@@ -177,6 +177,8 @@ view Vote {
   voter       String
   blockNumber String  @map("block_number")
   votesCount  String  @map("votes_count")
+
+  grant Grant @relation(fields: [recipientId], references: [id])
 
   @@index([contract])
   @@index([recipientId])
