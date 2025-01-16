@@ -18,6 +18,7 @@ import { LoginButton } from "./login-button"
 import { ModeToggle } from "./mode-toggle"
 import { useRunUserJobs } from "@/lib/auth/use-run-user-jobs"
 import Link from "next/dist/client/link"
+import SignInWithNeynar from "./signin-with-neynar"
 
 interface Props {
   user?: User
@@ -84,10 +85,24 @@ export const MenuAvatar = (props: Props) => {
                 </div>
               </div>
             )}
+            <FarcasterSignIn user={user} />
           </PopoverContent>
         </Popover>
       )}
       {isGuest && <LoginButton />}
+    </div>
+  )
+}
+
+function FarcasterSignIn({ user }: { user: User }) {
+  if (user.fid) return null
+  return (
+    <div className="mt-4 border-t border-border pt-4">
+      <SignInWithNeynar
+        onSuccess={(data) => {
+          console.log(data)
+        }}
+      />
     </div>
   )
 }
@@ -106,7 +121,7 @@ export function Voter(props: { votingPower: bigint; tokenIds: bigint[] }) {
           : `${tokensCount} Nouns`}
         .
         <br />
-        <br /> Split the flow of money between different flows & projects by voting.
+        <br /> Flow money to different projects by voting.
         {votingPower > MAX_VOTING_POWER && (
           <Alert variant="destructive" className="mt-2.5">
             <AlertDescription className="text-xs">
@@ -117,7 +132,7 @@ export function Voter(props: { votingPower: bigint; tokenIds: bigint[] }) {
           </Alert>
         )}
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-4 border-t border-border pt-6">
+      <div className="mt-6 grid grid-cols-2 gap-4">
         {tokenIds.map((tokenId) => (
           <a
             target="_blank"
