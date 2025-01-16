@@ -3,8 +3,8 @@
 import React, { useEffect, useCallback } from "react"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
-import { saveOrGetEncrypted } from "@/lib/kv/kvStore"
-import { generateNeynarSignerKVKey } from "@/lib/kv/neynarSignerUUID"
+import { handleNeynarSignin } from "@/lib/farcaster/handle-neynar-signin"
+import { toast } from "sonner"
 
 const clientId = process.env.NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID
 
@@ -16,6 +16,7 @@ interface NeynarSignInResponse {
 
 interface Props {
   className?: string
+  userAddress: `0x${string}`
 }
 
 declare global {
@@ -24,17 +25,21 @@ declare global {
   }
 }
 
-const SignInWithNeynar = ({ className = "" }: Props) => {
+const SignInWithNeynar = ({ className = "", userAddress }: Props) => {
   const { theme } = useTheme()
   // Declare callback function for window scope
-  const handleSignInSuccess = useCallback(async (data: NeynarSignInResponse) => {
-    console.log("sign in success", data)
-    await saveOrGetEncrypted(generateNeynarSignerKVKey(data.fid), {
-      fid: data.fid,
-      signer_uuid: data.signer_uuid,
-      signer_permissions: data.signer_permissions,
-    })
-  }, [])
+  const handleSignInSuccess = useCallback(
+    async (data: NeynarSignInResponse) => {
+      try {
+        console.log("sign in success", data)
+        await handleNeynarSignin(data.fid, data.signer_uuid, data.signer_permissions, userAddress)
+      } catch (e: any) {
+        console.error(e)
+        toast.error(e.message || "Failed to sign in with Neynar")
+      }
+    },
+    [userAddress],
+  )
 
   useEffect(() => {
     // Add script tag
