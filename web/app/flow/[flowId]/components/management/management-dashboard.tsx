@@ -22,7 +22,7 @@ export const ManageFlow = ({ flow }: Props) => {
   const isFlowOwner = useIsFlowOwner(flowAddress)
   const arbitratorAddress = useArbitrator(tcrAddress)
 
-  // if (!isFlowOwner) return null
+  if (!isFlowOwner) return null
   return (
     <div className="min-h-screen bg-background py-8">
       <h1 className="mb-8 text-3xl font-bold tracking-tight">Contract Management</h1>
