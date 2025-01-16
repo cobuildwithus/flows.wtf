@@ -31,7 +31,6 @@ const SignInWithNeynar = ({ className = "", userAddress }: Props) => {
   const handleSignInSuccess = useCallback(
     async (data: NeynarSignInResponse) => {
       try {
-        console.log("sign in success", data)
         await handleNeynarSignin(data.fid, data.signer_uuid, data.signer_permissions, userAddress)
       } catch (e: any) {
         console.error(e)

@@ -8,9 +8,11 @@ export function AvatarLink({ user }: { user: User }) {
   const username = user.username || getShortEthAddress(user.address)
   return (
     <div className="flex items-center gap-2">
-      <Avatar className="size-6 rounded-full">
-        <AvatarImage src={user.avatar} alt={user.username} />
-      </Avatar>
+      {user.avatar && (
+        <Avatar className="size-6 rounded-full">
+          <AvatarImage src={user.avatar} alt={user.username} />
+        </Avatar>
+      )}
       {user.fid ? (
         <Link
           href={`https://warpcast.com/${user.username}`}
