@@ -5,6 +5,7 @@ import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { handleNeynarSignin } from "@/lib/farcaster/handle-neynar-signin"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 const clientId = process.env.NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID
 
@@ -27,11 +28,14 @@ declare global {
 
 const SignInWithNeynar = ({ className = "", userAddress }: Props) => {
   const { theme } = useTheme()
+  const router = useRouter()
+
   // Declare callback function for window scope
   const handleSignInSuccess = useCallback(
     async (data: NeynarSignInResponse) => {
       try {
         await handleNeynarSignin(data.fid, data.signer_uuid, data.signer_permissions, userAddress)
+        router.refresh()
       } catch (e: any) {
         console.error(e)
         toast.error(e.message || "Failed to sign in with Neynar")
