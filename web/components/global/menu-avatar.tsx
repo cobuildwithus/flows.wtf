@@ -16,6 +16,8 @@ import Link from "next/dist/client/link"
 import SignInWithNeynar from "./signin-with-neynar"
 import { AvatarLink } from "./avatar-link"
 import { NounsVoter } from "./nouns-voter-section"
+import { useHasSignerRegistered } from "@/lib/farcaster/useHasSignerUUID"
+import { FarcasterSignIn } from "./farcaster-sign-in"
 
 interface Props {
   user?: User
@@ -80,20 +82,11 @@ export const MenuAvatar = (props: Props) => {
                 </div>
               </div>
             )}
-            <FarcasterSignIn user={user} />
+            <FarcasterSignIn className="mt-4 border-t border-border pt-4" user={user} />
           </PopoverContent>
         </Popover>
       )}
       {isGuest && <LoginButton />}
-    </div>
-  )
-}
-
-function FarcasterSignIn({ user }: { user: User }) {
-  if (user.fid) return null
-  return (
-    <div className="mt-4 border-t border-border pt-4">
-      <SignInWithNeynar userAddress={user.address} />
     </div>
   )
 }
