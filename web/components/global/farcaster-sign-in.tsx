@@ -11,7 +11,7 @@ export function FarcasterSignIn({ user, className }: { user: User; className?: s
 
   return (
     <div className={className}>
-      <SignInWithNeynar userAddress={user.address} />
+      <SignInWithNeynar />
     </div>
   )
 }

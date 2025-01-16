@@ -13,10 +13,8 @@ import { LoginButton } from "./login-button"
 import { ModeToggle } from "./mode-toggle"
 import { useRunUserJobs } from "@/lib/auth/use-run-user-jobs"
 import Link from "next/dist/client/link"
-import SignInWithNeynar from "./signin-with-neynar"
 import { AvatarLink } from "./avatar-link"
 import { NounsVoter } from "./nouns-voter-section"
-import { useHasSignerRegistered } from "@/lib/farcaster/useHasSignerUUID"
 import { FarcasterSignIn } from "./farcaster-sign-in"
 
 interface Props {
@@ -66,11 +64,8 @@ export const MenuAvatar = (props: Props) => {
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  You don&apos;t have any delegated Nouns, which means you can&apos;t vote for grant
-                  budget allocations.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  You may like to get involved in the following ways:
+                  You don&apos;t have any Nouns, which means you can&apos;t vote on flows. You can
+                  still get involved:
                 </p>
                 <div className="flex space-x-2.5">
                   <Button asChild size="sm" className="w-full">

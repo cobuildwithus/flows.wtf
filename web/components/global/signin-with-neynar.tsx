@@ -1,66 +1,67 @@
 "use client"
 
-import React, { useEffect, useCallback } from "react"
-import { useTheme } from "next-themes"
+import React, { useCallback, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { handleNeynarSignin } from "@/lib/farcaster/handle-neynar-signin"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import Image from "next/image"
+import FarcasterLogo from "@/public/farcaster.svg"
 
 const clientId = process.env.NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID
 
-interface NeynarSignInResponse {
+interface NeynarCallbackData {
   signer_uuid: string
   fid: number
   signer_permissions: string[]
+  is_authenticated: boolean
 }
 
-interface Props {
+interface Props extends React.ComponentPropsWithoutRef<typeof Button> {
   className?: string
-  userAddress: `0x${string}`
+  redirectUri?: string
+  onSignInSuccess?: (data: NeynarCallbackData) => void | Promise<void>
 }
 
 declare global {
   interface Window {
-    onSignInSuccess?: (data: NeynarSignInResponse) => void
+    onSignInSuccess?: (data: NeynarCallbackData) => void | Promise<void>
   }
 }
 
-const SignInWithNeynar = ({ className = "", userAddress }: Props) => {
-  const { theme } = useTheme()
-  const router = useRouter()
-
-  // Declare callback function for window scope
-  const handleSignInSuccess = useCallback(
-    async (data: NeynarSignInResponse) => {
-      try {
-        await handleNeynarSignin(data.fid, data.signer_uuid, data.signer_permissions, userAddress)
-        router.refresh()
-      } catch (e: any) {
-        console.error(e)
-        toast.error(e.message || "Failed to sign in with Neynar")
-      }
-    },
-    [userAddress],
-  )
-
+export default function SignInWithNeynar({
+  className = "",
+  redirectUri,
+  onSignInSuccess,
+  ...buttonProps
+}: Props) {
   useEffect(() => {
-    // Add script tag
-    const script = document.createElement("script")
-    // loading script on demand to avoid adding new packages
-    script.src = "https://neynarxyz.github.io/siwn/raw/1.2.0/index.js"
-    script.async = true
-    document.body.appendChild(script)
-
-    // Add callback to window scope
-    window.onSignInSuccess = handleSignInSuccess
+    // Set up global callback
+    if (onSignInSuccess) {
+      window.onSignInSuccess = onSignInSuccess
+    }
 
     // Cleanup
     return () => {
-      document.body.removeChild(script)
-      delete window.onSignInSuccess
+      window.onSignInSuccess = undefined
     }
-  }, [handleSignInSuccess])
+  }, [onSignInSuccess])
+
+  const handleClick = useCallback(() => {
+    const width = 600
+    const height = 700
+    const left = window.screen.width / 2 - width / 2
+    const top = window.screen.height / 2 - height / 2
+
+    // Construct login URL
+    const loginUrl = new URL("https://app.neynar.com/login")
+    loginUrl.searchParams.append("client_id", clientId || "")
+    if (redirectUri) {
+      loginUrl.searchParams.append("redirect_uri", redirectUri)
+    }
+
+    // Open popup
+    const windowFeatures = `width=${width},height=${height},top=${top},left=${left}`
+    window.open(loginUrl.toString(), "_blank", windowFeatures)
+  }, [redirectUri])
 
   if (!clientId) {
     console.error("Missing NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID environment variable")
@@ -68,33 +69,15 @@ const SignInWithNeynar = ({ className = "", userAddress }: Props) => {
   }
 
   return (
-    <div
-      className={cn(
-        "neynar_signin inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-md border border-input bg-background text-sm font-medium tracking-tight shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50 dark:text-white max-sm:h-8",
-        className,
-      )}
-      data-client_id={clientId}
-      data-success-callback="onSignInSuccess"
-      data-theme={theme}
-      data-permissions="read_write"
-      data-variant="farcaster"
-      data-height="100%"
-      data-width="100%"
-      data-logo_size="20px"
-      data-border_radius="6px"
-      data-font_size="14px"
-      data-font_weight="500"
-      data-background_color={"transparent"}
-      data-color={theme === "dark" ? "#ffffff" : "#000000"}
-      data-styles={JSON.stringify({
-        border: "1px solid var(--border)",
-        transition: "background-color 0.2s ease",
-        "&:hover": {
-          backgroundColor: theme === "dark" ? "#111111" : "#f9f9f9",
-        },
-      })}
-    />
+    <Button
+      onClick={handleClick}
+      variant="outline"
+      size="default"
+      className={cn("w-full gap-2", className)}
+      {...buttonProps}
+    >
+      <Image src={FarcasterLogo} alt="Farcaster" className="h-5 w-auto" />
+      Connect Farcaster
+    </Button>
   )
 }
-
-export default SignInWithNeynar

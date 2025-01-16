@@ -5,13 +5,14 @@ import database from "@/lib/database/edge"
 import { FeaturedStoryCard } from "./story-card-featured"
 import { ImpactDialog } from "@/app/item/[grantId]/components/impact-dialog"
 import { BuilderSection } from "./builder-section"
+import { User } from "@/lib/auth/user"
 
 interface Props {
-  recipient?: `0x${string}`
+  user?: User
 }
 
-export async function FlowsStories({ recipient }: Props) {
-  const [stories, grants] = await getStoriesAndGrants(recipient)
+export async function FlowsStories({ user }: Props) {
+  const [stories, grants] = await getStoriesAndGrants(user?.address)
 
   const hasGrant = grants.length > 0
 
@@ -25,7 +26,7 @@ export async function FlowsStories({ recipient }: Props) {
     <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
       <BuilderSection grants={grants} />
 
-      {hasGrant && <ImpactDialog grants={grants} dialogTitle="Your Impact" />}
+      {hasGrant && <ImpactDialog grants={grants} dialogTitle="Your Impact" user={user} />}
 
       {featuredStory && <FeaturedStoryCard story={featuredStory} />}
 
