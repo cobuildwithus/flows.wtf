@@ -21,10 +21,6 @@
       "schedule": "*/5 * * * *"
     },
     {
-      "path": "/crons/derived-data/grant-page",
-      "schedule": "0 */2 * * *"
-    },
-    {
       "path": "/crons/total-earned",
       "schedule": "*/20 * * * *"
     }
