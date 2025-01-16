@@ -39,6 +39,8 @@ export default function SignInWithNeynar({ className = "", user, ...buttonProps 
     async (data: NeynarCallbackData) => {
       try {
         await handleNeynarSignin(data.fid, data.signer_uuid, data.signer_permissions, user.address)
+        // wait 1 sec
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         router.refresh()
       } catch (e: any) {
         console.error(e)
