@@ -34,7 +34,7 @@ export const BudgetDialog = (props: Props) => {
           /mo
         </Badge>
       </DialogTrigger>
-      <DialogContent className="md:max-w-[1025px]">
+      <DialogContent>
         <div className="flex flex-col space-y-3">
           <p className="text-sm font-medium">Min. Salary</p>
 
@@ -60,19 +60,25 @@ export const BudgetDialog = (props: Props) => {
             <p className="text-muted-foreground">Baseline Pool:</p>
             <p className="text-right">
               <Currency>{flow.monthlyBaselinePoolFlowRate || 0}</Currency>/mo
-              <span className="ml-1 text-muted-foreground">({baselinePercent / 1e4}%)</span>
+              <span className="ml-1 text-muted-foreground">
+                ({(baselinePercent / 1e4).toFixed(2)}%)
+              </span>
             </p>
 
             <p className="text-muted-foreground">Bonus Pool:</p>
             <p className="text-right">
               <Currency>{flow.monthlyBonusPoolFlowRate || 0}</Currency>/mo
-              <span className="ml-1 text-muted-foreground">({bonusPercent / 1e4}%)</span>
+              <span className="ml-1 text-muted-foreground">
+                ({(bonusPercent / 1e4).toFixed(2)}%)
+              </span>
             </p>
 
             <p className="text-muted-foreground">Curator Rewards:</p>
             <p className="text-right">
               <Currency>{flow.monthlyRewardPoolFlowRate || 0}</Currency>/mo
-              <span className="ml-1 text-muted-foreground">({managerPercent / 1e4}%)</span>
+              <span className="ml-1 text-muted-foreground">
+                ({(managerPercent / 1e4).toFixed(2)}%)
+              </span>
             </p>
           </div>
 
