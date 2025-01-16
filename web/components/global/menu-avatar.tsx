@@ -98,11 +98,7 @@ function FarcasterSignIn({ user }: { user: User }) {
   if (user.fid) return null
   return (
     <div className="mt-4 border-t border-border pt-4">
-      <SignInWithNeynar
-        onSuccess={(data) => {
-          console.log(data)
-        }}
-      />
+      <SignInWithNeynar />
     </div>
   )
 }

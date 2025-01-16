@@ -3,21 +3,18 @@
 import React, { useEffect, useCallback } from "react"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
+import { saveOrGetEncrypted } from "@/lib/kv/kvStore"
+import { generateNeynarSignerKVKey } from "@/lib/kv/neynarSignerUUID"
 
 const clientId = process.env.NEXT_PUBLIC_NEYNAR_FLOWS_WTF_CLIENT_ID
 
 interface NeynarSignInResponse {
-  fid: number
-  username: string
-  displayName: string
-  pfp: {
-    url: string
-  }
   signer_uuid: string
+  fid: number
+  signer_permissions: string[]
 }
 
 interface Props {
-  onSuccess: (data: NeynarSignInResponse) => void
   className?: string
 }
 
@@ -27,15 +24,17 @@ declare global {
   }
 }
 
-const SignInWithNeynar = ({ onSuccess, className = "" }: Props) => {
+const SignInWithNeynar = ({ className = "" }: Props) => {
   const { theme } = useTheme()
   // Declare callback function for window scope
-  const handleSignInSuccess = useCallback(
-    (data: NeynarSignInResponse) => {
-      onSuccess?.(data)
-    },
-    [onSuccess],
-  )
+  const handleSignInSuccess = useCallback(async (data: NeynarSignInResponse) => {
+    console.log("sign in success", data)
+    await saveOrGetEncrypted(generateNeynarSignerKVKey(data.fid), {
+      fid: data.fid,
+      signer_uuid: data.signer_uuid,
+      signer_permissions: data.signer_permissions,
+    })
+  }, [])
 
   useEffect(() => {
     // Add script tag
