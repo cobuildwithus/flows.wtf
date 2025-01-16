@@ -7,7 +7,12 @@ export async function getTokenVotes(contract: `0x${string}`, tokenIds: string[])
   if (!tokenIds.length) return []
 
   const votes = await database.vote.findMany({
-    select: { bps: true, recipientId: true, votesCount: true },
+    select: {
+      bps: true,
+      recipientId: true,
+      votesCount: true,
+      grant: { select: { isActive: true } },
+    },
     where: {
       contract,
       tokenId: { in: tokenIds },
@@ -15,5 +20,7 @@ export async function getTokenVotes(contract: `0x${string}`, tokenIds: string[])
     distinct: ["recipientId"],
   })
 
-  return votes.map((vote) => ({ ...vote, bps: (vote.bps / PERCENTAGE_SCALE) * 10000 }))
+  return votes
+    .filter((vote) => vote.grant.isActive)
+    .map((vote) => ({ ...vote, bps: (vote.bps / PERCENTAGE_SCALE) * 10000 }))
 }
