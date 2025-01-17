@@ -50,6 +50,7 @@ model DerivedData {
   lastBuilderUpdate DateTime?
   pageData          String?
   grades            Json?
+  overallGrade      Float?
 
   @@index([grantId])
   @@map("DerivedData")

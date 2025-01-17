@@ -11,7 +11,9 @@ import { User } from "@/lib/auth/user"
 
 interface Props {
   grants: Array<
-    Pick<Grant, "id" | "title" | "image"> & { derivedData: Pick<DerivedData, "grades"> | null }
+    Pick<Grant, "id" | "title" | "image"> & {
+      derivedData: Pick<DerivedData, "grades" | "overallGrade"> | null
+    }
   >
   dialogTitle?: string
   user?: User
@@ -98,7 +100,9 @@ function getGrantsWithScores(grants: Props["grants"]) {
   return grants.map((grant) => {
     const grades = grant.derivedData?.grades as unknown as Grades
     const overallScore = Math.ceil(
-      Object.values(grades).reduce((acc, { score }) => acc + score, 0) / Object.keys(grades).length,
+      grant.derivedData?.overallGrade ||
+        Object.values(grades).reduce((acc, { score }) => acc + score, 0) /
+          Object.keys(grades).length,
     )
     return { grant, grades, overallScore }
   })

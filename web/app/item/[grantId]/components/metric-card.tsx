@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Progress } from "@/components/ui/progress"
 import { AlertCircle } from "lucide-react"
 
@@ -34,20 +35,25 @@ export function MetricCard({
         </div>
         <Progress value={score} className="h-2" indicatorClassName={getScoreColor(score)} />
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-2">
         <CardDescription className="text-sm">{explanation}</CardDescription>
         {tips && tips.length > 0 && (
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
+          <Collapsible>
+            <CollapsibleTrigger
+              tabIndex={-1}
+              className="flex w-full items-center gap-2 text-sm font-medium"
+            >
               <AlertCircle className="h-4 w-4" />
               Tips for Improvement
-            </div>
-            <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
-              {tips.map((tip, index) => (
-                <li key={index}>{tip}</li>
-              ))}
-            </ul>
-          </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                {tips.map((tip, index) => (
+                  <li key={index}>{tip}</li>
+                ))}
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
         )}
       </CardContent>
     </Card>
