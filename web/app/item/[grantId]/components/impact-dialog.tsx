@@ -7,12 +7,14 @@ import { MetricCard } from "./metric-card"
 import { GrantHeader } from "./grant-header"
 import { CircularProgress } from "./circular-progress"
 import { PendingEvaluation } from "./pending-evaluation"
+import { User } from "@/lib/auth/user"
 
 interface Props {
   grants: Array<
     Pick<Grant, "id" | "title" | "image"> & { derivedData: Pick<DerivedData, "grades"> | null }
   >
   dialogTitle?: string
+  user?: User
 }
 
 interface Grades {
@@ -31,11 +33,11 @@ interface GrantWithScore {
 }
 
 export function ImpactDialog(props: Props) {
-  const { grants, dialogTitle } = props
+  const { grants, dialogTitle, user } = props
 
   // Return pending if any grant has no grades
   if (grants.some((grant) => !grant.derivedData?.grades)) {
-    return <PendingEvaluation />
+    return <PendingEvaluation user={user} />
   }
 
   const grantsWithScores: GrantWithScore[] = getGrantsWithScores(grants)

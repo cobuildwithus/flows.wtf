@@ -30,7 +30,7 @@ export default async function Home() {
     <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
       <main>
         <div className="container">
-          <FlowsStories recipient={user?.address} />
+          <FlowsStories user={user} />
         </div>
 
         <div className="container mt-12 flex items-center justify-between">

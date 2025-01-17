@@ -11,6 +11,7 @@ export type User = {
   username: string
   avatar?: string
   fid?: number
+  hasSignerUUID?: boolean
   location?: { city: string | null; country: string | null; countryRegion: string | null }
 }
 
@@ -24,7 +25,6 @@ export const getUser = cache(async () => {
   const city = headersList.get("X-Vercel-IP-City")
 
   const farcasterUser = await getFarcasterUserByEthAddress(address)
-
   return {
     address,
     username: farcasterUser?.fname || (await getEnsNameFromAddress(address)) || "",

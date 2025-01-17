@@ -22,6 +22,10 @@ model Profile {
   casts              Cast[]
   channel_members    ChannelMember[]
 
+  // manually verified addresses on flows.wtf (outside of warpcast flow that is too hard for users to find)
+  // we merge this with verified_addresses from warpcast on the backend, so just use this field as a source of history
+  manual_verified_addresses String[]
+
   @@index([verified_addresses], type: Gin)
   @@map("farcaster_profile")
   @@schema("production")
