@@ -43,6 +43,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
     body: { type, id, data, context } satisfies Omit<ChatBody, "messages">,
     initialMessages: initialMessages || readChatHistory(),
     keepLastMessageOnError: true,
+    streamProtocol: "data",
     headers: {
       "privy-id-token": identityToken || "",
       city: user?.location?.city || "",
