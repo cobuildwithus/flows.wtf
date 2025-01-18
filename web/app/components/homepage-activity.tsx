@@ -4,6 +4,7 @@ import { ActivityCalendar } from "@/components/ui/activity-calendar"
 import { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
 import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant"
+import pluralize from "pluralize"
 
 interface Props {
   grants: Pick<Grant, "id" | "recipient">[]
@@ -30,11 +31,13 @@ export async function HomepageActivity(props: Props) {
     ),
   ])
 
+  const contributions = updates.count + storiesCount
+
   return (
     <div className="flex h-full flex-col items-center justify-start overflow-x-auto max-md:px-5 max-md:pb-7 md:pt-12">
       <div className="mb-4 mt-8 w-full text-left md:hidden">
         <h2 className="font-medium text-secondary-foreground">
-          {updates.count + storiesCount} updates in the last 6 mo.
+          {contributions} {pluralize("update", contributions)} in the last 6 mo.
         </h2>
       </div>
 
@@ -65,7 +68,7 @@ export async function HomepageActivity(props: Props) {
       />
 
       <div className="mt-2.5 hidden w-full text-left text-xs tracking-tight text-muted-foreground md:block xl:px-7">
-        {updates.count + storiesCount} contributions
+        {contributions} {pluralize("contribution", contributions)}
       </div>
     </div>
   )
