@@ -2,6 +2,7 @@
 
 import { canBeChallenged } from "@/app/components/dispute/helpers"
 import { SwapTokenButton } from "@/app/token/swap-token-button"
+import { AuthButton } from "@/components/ui/auth-button"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Markdown } from "@/components/ui/markdown"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { erc20VotesArbitratorImplAbi, flowTcrImplAbi } from "@/lib/abis"
 import { useTcrData } from "@/lib/tcr/use-tcr-data"
@@ -60,9 +62,14 @@ export function DisputeStartButton(props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button type="button" ref={ref} disabled={!canBeChallenged(grant)} className={className}>
+        <AuthButton
+          type="button"
+          ref={ref}
+          disabled={!canBeChallenged(grant)}
+          className={className}
+        >
           Challenge {type}
-        </Button>
+        </AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-lg">
         <DialogHeader>
@@ -70,14 +77,16 @@ export function DisputeStartButton(props: Props) {
             Challenge {type}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-2 divide-x divide-border">
-          <div className="md:pr-6">
-            <h2 className="font-medium tracking-tight">{flow.title}</h2>
-            <h3 className="text-sm text-muted-foreground">Guidelines & requirements</h3>
-            <div className="mt-6 space-y-2.5 text-sm leading-normal">
-              <Markdown>{flow.description}</Markdown>
+        <div className="grid max-h-[100vh] grid-cols-2 divide-x divide-border">
+          <ScrollArea className="h-[calc(100vh-200px)]">
+            <div className="md:pr-6">
+              <h2 className="font-medium tracking-tight">{flow.title}</h2>
+              <h3 className="text-sm text-muted-foreground">Guidelines & requirements</h3>
+              <div className="mt-6 space-y-2.5 text-sm leading-normal">
+                <Markdown>{flow.description}</Markdown>
+              </div>
             </div>
-          </div>
+          </ScrollArea>
           <ul className="my-4 space-y-6 text-sm md:pl-6">
             <Step i={1}>
               <p>
@@ -86,7 +95,9 @@ export function DisputeStartButton(props: Props) {
               </p>
             </Step>
             <Step i={2}>
-              <p className="mb-2">Why are you challenging this {type}?</p>
+              <p className="mb-2">
+                Why are you challenging this {type}? Please reference the requirements.
+              </p>
               <Textarea
                 className="mt-4"
                 placeholder="Explain your reasoning..."
@@ -108,10 +119,12 @@ export function DisputeStartButton(props: Props) {
                 {formatEther(addItemCost - arbitrationCost)} {token.symbol} and are repaid your
                 challenge fee.
               </p>
-              <p className="mt-4 text-sm">
-                Your {token.symbol} balance: {formatEther(token.balance)} (
-                {formatEther(token.allowance)} approved)
-              </p>
+              {token.balance > 0 && (
+                <p className="mt-4 text-sm">
+                  Your {token.symbol} balance: {formatEther(token.balance)} (
+                  {formatEther(token.allowance)} approved)
+                </p>
+              )}
             </Step>
           </ul>
         </div>

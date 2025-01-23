@@ -1,42 +1,30 @@
+"use client"
+
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { Address, erc20Abi } from "viem"
+import { Address } from "viem"
 import { base } from "viem/chains"
-import { useAccount, useReadContract, useReadContracts } from "wagmi"
+import { useAccount } from "wagmi"
 import { erc20VotesMintableImplAbi } from "../abis"
+import { getTokenData } from "./get-token-data"
+import useSWR from "swr"
 
 export function useTcrToken(contract: Address, spender: Address, chainId = base.id) {
   const { address: owner } = useAccount()
 
-  const erc20 = { abi: erc20Abi, address: contract, chainId }
-
-  const { data, refetch } = useReadContracts({
-    contracts: [
-      { ...erc20, functionName: "allowance", args: [owner!!, spender] },
-      { ...erc20, functionName: "symbol" },
-      { ...erc20, functionName: "name" },
-    ],
-    query: { enabled: !!owner },
-  })
-
-  const { data: balance, refetch: refetchBalance } = useReadContract({
-    ...erc20,
-    functionName: "balanceOf",
-    args: [owner!!],
-    query: { enabled: !!owner, refetchInterval: 1000 },
-  })
-
-  const [allowance, symbol, name] = data || []
+  const { data, mutate } = useSWR(`token-data:${JSON.stringify([contract, owner, spender])}`, () =>
+    getTokenData(contract, owner, spender),
+  )
 
   const { prepareWallet, writeContract, isLoading, isConfirmed } = useContractTransaction({
     chainId,
     loading: "Approving...",
     success: "Token approved",
-    onSuccess: () => refetch(),
+    onSuccess: () => mutate(),
   })
 
   return {
-    allowance: allowance?.result || BigInt(0),
-    balance: balance || BigInt(0),
+    allowance: data?.allowance || BigInt(0),
+    balance: data?.balance || BigInt(0),
     approve: async (amount: bigint) => {
       await prepareWallet()
       writeContract({
@@ -47,13 +35,10 @@ export function useTcrToken(contract: Address, spender: Address, chainId = base.
         chainId,
       })
     },
-    refetch: () => {
-      refetch()
-      refetchBalance()
-    },
+    refetch: () => mutate(),
     isApproving: isLoading,
     isApproved: isConfirmed,
-    symbol: symbol?.result,
-    name: name?.result,
+    symbol: data?.symbol,
+    name: data?.name,
   }
 }
