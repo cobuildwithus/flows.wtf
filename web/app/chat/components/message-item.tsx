@@ -1,7 +1,7 @@
 "use client"
 
 import { Markdown } from "@/components/ui/markdown"
-import { AgentType } from "@/lib/ai/agents/agent"
+import { AgentType } from "@/lib/ai/agent-type"
 import Flo from "@/public/flo.png"
 import Gonzo from "@/public/gonzo.svg"
 import { Attachment, ToolInvocation } from "ai"

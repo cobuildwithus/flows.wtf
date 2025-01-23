@@ -1,4 +1,4 @@
-import { AgentType } from "@/lib/ai/agents/agent"
+import { AgentType } from "@/lib/ai/agent-type"
 import { Message } from "ai"
 
 export type ChatBody = {
