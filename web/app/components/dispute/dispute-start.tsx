@@ -77,9 +77,9 @@ export function DisputeStartButton(props: Props) {
             Challenge {type}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid max-h-[100vh] grid-cols-2 divide-x divide-border">
-          <ScrollArea className="h-[calc(100vh-200px)]">
-            <div className="md:pr-6">
+        <div className="grid max-h-[100vh] divide-border md:grid-cols-2 md:divide-x">
+          <ScrollArea className="hidden md:block md:max-h-[calc(100vh-200px)]">
+            <div className="pb-6 sm:pr-6">
               <h2 className="font-medium tracking-tight">{flow.title}</h2>
               <h3 className="text-sm text-muted-foreground">Guidelines & requirements</h3>
               <div className="mt-6 space-y-2.5 text-sm leading-normal">
@@ -87,7 +87,7 @@ export function DisputeStartButton(props: Props) {
               </div>
             </div>
           </ScrollArea>
-          <ul className="my-4 space-y-6 text-sm md:pl-6">
+          <ul className="my-4 space-y-6 pt-6 text-sm sm:pl-6 sm:pt-0">
             <Step i={1}>
               <p>
                 Challenging this {type} ({grant.title}) costs {formatEther(challengeSubmissionCost)}{" "}
@@ -142,6 +142,7 @@ export function DisputeStartButton(props: Props) {
               disabled={token.isApproving || isLoading}
               loading={token.isApproving || isLoading}
               type="button"
+              className="w-full sm:w-auto"
               onClick={async () => {
                 if (!reason) {
                   toast.error("Please provide a reason", { id: toastId })

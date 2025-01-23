@@ -6,14 +6,12 @@ import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { erc20VotesMintableImplAbi } from "../abis"
 import { getTokenData } from "./get-token-data"
-import useSWR from "swr"
+import { useServerFunction } from "../hooks/use-server-function"
 
 export function useTcrToken(contract: Address, spender: Address, chainId = base.id) {
   const { address: owner } = useAccount()
 
-  const { data, mutate } = useSWR(`token-data:${JSON.stringify([contract, owner, spender])}`, () =>
-    getTokenData(contract, owner, spender),
-  )
+  const { data, mutate } = useServerFunction(getTokenData, "token-data", [contract, owner, spender])
 
   const { prepareWallet, writeContract, isLoading, isConfirmed } = useContractTransaction({
     chainId,
