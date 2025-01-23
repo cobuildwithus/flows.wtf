@@ -13,6 +13,7 @@ import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { getEthAddress } from "@/lib/utils"
 import { Dispute, Grant } from "@prisma/flows"
+import { Challenger } from "./challenger"
 
 interface Props {
   grant: Grant
@@ -28,7 +29,7 @@ export async function StatusDisputed(props: Props) {
   if (isDisputeWaitingForVoting(dispute)) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
+        <Challenger address={getEthAddress(dispute.challenger)} />
         <Evidence />
         <VotingStartDate />
         <li>Token holders vote to approve or reject the application.</li>
@@ -39,7 +40,7 @@ export async function StatusDisputed(props: Props) {
   if (canDisputeBeVotedOn(dispute) || isDisputeRevealingVotes(dispute)) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
+        <Challenger address={getEthAddress(dispute.challenger)} />
         <Evidence />
         <VotingStartDate />
         <VotingEndDate />
@@ -51,7 +52,7 @@ export async function StatusDisputed(props: Props) {
   if (canDisputeBeExecuted(dispute)) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
+        <Challenger address={getEthAddress(dispute.challenger)} />
         <Evidence />
         <VotingEndDate />
         <Results />
@@ -63,22 +64,11 @@ export async function StatusDisputed(props: Props) {
   if (dispute.isExecuted) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
+        <Challenger address={getEthAddress(dispute.challenger)} />
         <Evidence />
         <VotingEndDate />
         <Results />
       </div>
-    )
-  }
-
-  async function Challenger() {
-    return (
-      <li>
-        <span className="text-yellow-500">Challenged by</span>{" "}
-        <UserProfile address={getEthAddress(dispute.challenger)}>
-          {(profile) => <span className="font-medium text-primary">{profile.display_name}</span>}
-        </UserProfile>
-      </li>
     )
   }
 
