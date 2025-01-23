@@ -1,11 +1,11 @@
 import { BuilderProfileJobBody, EmbeddingType, IsGrantUpdateJobBody, JobBody } from "../types/job"
 
 const validateEnvVars = () => {
-  if (!process.env.EMBEDDINGS_QUEUE_URL) {
-    throw new Error("EMBEDDINGS_QUEUE_URL is not defined")
-  }
   if (!process.env.EMBEDDINGS_QUEUE_API_KEY) {
     throw new Error("EMBEDDINGS_QUEUE_API_KEY is not defined")
+  }
+  if (!process.env.EMBEDDINGS_QUEUE_URL) {
+    throw new Error("EMBEDDINGS_QUEUE_URL is not defined")
   }
 }
 
