@@ -1,6 +1,7 @@
 "use client"
 
 import { SwapTokenButton } from "@/app/token/swap-token-button"
+import { AuthButton } from "@/components/ui/auth-button"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { flowTcrImplAbi } from "@/lib/abis"
-import { useLogin } from "@/lib/auth/use-login"
 import { useTcrData } from "@/lib/tcr/use-tcr-data"
 import { useTcrToken } from "@/lib/tcr/use-tcr-token"
 import { getEthAddress } from "@/lib/utils"
@@ -94,7 +94,6 @@ export function GrantRemoveRequestButton(props: Props) {
   const router = useRouter()
   const [reason, setReason] = useState<string | null>(null)
   const [comment, setComment] = useState<string>("")
-  const { login, connectWallet } = useLogin()
 
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -120,21 +119,9 @@ export function GrantRemoveRequestButton(props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          ref={ref}
-          className="w-full bg-transparent"
-          variant="outline"
-          onClick={(e) => {
-            if (!address) {
-              connectWallet()
-              login()
-              e.preventDefault()
-            }
-          }}
-        >
+        <AuthButton type="button" ref={ref} className="w-full bg-transparent" variant="outline">
           Start removal process
-        </Button>
+        </AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-lg">
         <DialogHeader>

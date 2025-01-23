@@ -7,7 +7,6 @@ import { FileInput } from "@/components/ui/file-input"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MarkdownInput } from "@/components/ui/markdown-input"
-import { useLogin } from "@/lib/auth/use-login"
 import { MAX_GRANTS_PER_USER } from "@/lib/config"
 import { meetsMinimumSalary } from "@/lib/database/helpers"
 import { getShortEthAddress } from "@/lib/utils"
@@ -19,6 +18,7 @@ import { toast } from "sonner"
 import { useAccount } from "wagmi"
 import { saveDraft } from "./save-draft"
 import { useRecipientExists } from "./useRecipientExists"
+import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   flow: Grant & { derivedData: DerivedData | null }
@@ -30,7 +30,6 @@ interface Props {
 export function ApplyForm(props: Props) {
   const { flow, isFlow, template, userActiveGrants } = props
   const { isConnected, address } = useAccount()
-  const { login } = useLogin()
 
   const router = useRouter()
   const [isGuest, setIsGuest] = useState(true)
@@ -97,9 +96,7 @@ export function ApplyForm(props: Props) {
             <AlertTitle className="text-base">Connect your wallet</AlertTitle>
             <AlertDescription>You need to sign in to submit the application.</AlertDescription>
           </div>
-          <Button onClick={() => login()} type="button">
-            Connect Wallet
-          </Button>
+          <AuthButton type="button">Connect Wallet</AuthButton>
         </Alert>
       )}
 

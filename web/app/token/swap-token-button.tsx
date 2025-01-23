@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, ButtonProps } from "@/components/ui/button"
+import { ButtonProps } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -15,8 +15,8 @@ import { SwapTokenBox } from "./swap-token-box"
 import { getEthAddress } from "@/lib/utils"
 import { useAccount } from "wagmi"
 import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
-import { useLogin } from "@/lib/auth/use-login"
 import { useRouter } from "next/navigation"
+import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   flow: Grant
@@ -44,37 +44,18 @@ export function SwapTokenButton(props: Props) {
   } = props
   const ref = useRef<HTMLButtonElement>(null)
 
-  const { address, isConnected } = useAccount()
-  const { login, connectWallet } = useLogin()
+  const { address } = useAccount()
   const { balances } = useERC20Balances([getEthAddress(flow.erc20)], address)
 
   const text =
     props.text || (balances?.[0] ? (!flow.isTopLevel ? "Buy TCR" : "Buy FLOWS") : "Become curator")
 
-  // if not connected, return login
-  if (!isConnected) {
-    return (
-      <Button
-        size={size}
-        variant={variant}
-        onClick={() => {
-          login()
-          connectWallet()
-        }}
-        type="button"
-        ref={ref}
-      >
-        {text}
-      </Button>
-    )
-  }
-
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size={size} variant={variant} type="button" ref={ref}>
+        <AuthButton size={size} variant={variant} type="button" ref={ref}>
           {text}
-        </Button>
+        </AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-xs px-3 py-8 md:p-6">
         <DialogHeader>

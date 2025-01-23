@@ -20,7 +20,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { flowTcrImplAbi } from "@/lib/abis"
-import { useLogin } from "@/lib/auth/use-login"
 import { meetsMinimumSalary, userBelowMaxGrants } from "@/lib/database/helpers"
 import { RecipientType } from "@/lib/enums"
 import { useTcrData } from "@/lib/tcr/use-tcr-data"
@@ -36,6 +35,7 @@ import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { BuyApplicationFee } from "./buy-application-fee"
 import { publishDraft } from "./publish-draft"
+import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   draft: Draft
@@ -51,7 +51,6 @@ export function DraftPublishButton(props: Props) {
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
-  const { login, connectWallet } = useLogin()
 
   const { addItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr))
   const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr))
@@ -129,20 +128,9 @@ export function DraftPublishButton(props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          onClick={(e) => {
-            if (!address) {
-              e.preventDefault()
-              login()
-              connectWallet()
-            }
-          }}
-          ref={ref}
-          size={size}
-        >
+        <AuthButton ref={ref} size={size}>
           {action}
-        </Button>
+        </AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-sm">
         <DialogHeader>
