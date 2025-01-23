@@ -3,9 +3,9 @@
 import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { Messages } from "@/app/chat/components/messages"
 import { MultimodalInput } from "@/app/chat/components/multimodal-input"
+import { AuthButton } from "@/components/ui/auth-button"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useLogin } from "@/lib/auth/use-login"
 import { User } from "@/lib/auth/user"
 import { RotateCcw } from "lucide-react"
 import { useState } from "react"
@@ -20,16 +20,14 @@ export function GuidanceChat(props: Props) {
   const { user, children: buttonText, context } = props
   const [isOpen, setIsOpen] = useState(false)
   const { append, messages, restart, setContext } = useAgentChat()
-  const { login } = useLogin()
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <Button
+      <AuthButton
         variant="ai-secondary"
         size="md"
         type="button"
         onClick={() => {
-          if (!user) return login()
           setIsOpen(true)
           if (messages.length === 0) {
             setContext(
@@ -40,7 +38,7 @@ export function GuidanceChat(props: Props) {
         }}
       >
         {buttonText}
-      </Button>
+      </AuthButton>
       <DialogContent className="max-w-none pb-0 max-sm:px-0">
         <DialogHeader className="max-sm:px-4">
           <DialogTitle className="flex items-center">

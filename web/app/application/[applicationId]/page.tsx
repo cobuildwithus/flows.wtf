@@ -19,6 +19,8 @@ import Image from "next/image"
 import { redirect } from "next/navigation"
 import { StatusDisputed } from "./components/status-disputed"
 import { StatusNotDisputed } from "./components/status-not-disputed"
+import { Badge } from "@/components/ui/badge"
+import { Status } from "@/lib/enums"
 
 export const runtime = "nodejs"
 
@@ -150,7 +152,12 @@ export default async function ApplicationPage(props: Props) {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Application status</CardTitle>
+              <CardTitle className="flex w-full flex-row items-center justify-between">
+                <span>Application status</span>
+                {grant.status === Status.ClearingRequested && (
+                  <Badge variant="destructive">Removing</Badge>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {!grant.isDisputed && !grant.isResolved && (
