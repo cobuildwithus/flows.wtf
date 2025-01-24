@@ -11,8 +11,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^1.0.9",
-    "@ai-sdk/openai": "^1.0.20",
     "@chainsafe/persistent-merkle-tree": "^0.8.0",
     "@chainsafe/ssz": "^0.17.1",
     "@lodestar/types": "^1.22.0",

@@ -13,14 +13,6 @@
       "schedule": "*/10 * * * *"
     },
     {
-      "path": "/crons/derived-data/template",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/crons/derived-data/minimum-salary",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/crons/total-earned",
       "schedule": "*/20 * * * *"
     }
