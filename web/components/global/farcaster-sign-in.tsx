@@ -6,8 +6,8 @@ import SignInWithNeynar from "./signin-with-neynar"
 import { useHasSignerRegistered } from "@/lib/farcaster/useHasSignerUUID"
 
 export function FarcasterSignIn({ user, className }: { user: User; className?: string }) {
-  const { hasSignerUUID } = useHasSignerRegistered({ fid: user.fid })
-  if (hasSignerUUID) return null
+  const { hasSignerUUID, isLoading } = useHasSignerRegistered({ fid: user.fid })
+  if (hasSignerUUID || isLoading) return null
 
   return (
     <div className={className}>

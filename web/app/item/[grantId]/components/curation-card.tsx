@@ -28,7 +28,7 @@ export const CurationCard = async (props: Props) => {
   })
 
   return (
-    <div className={cn("flex h-full flex-col space-y-4", className)}>
+    <div className={cn("flex flex-col space-y-4", className)}>
       <div className="flex flex-1 flex-col rounded-xl border bg-white/50 p-6 shadow-sm transition-colors hover:bg-white/60 dark:bg-transparent dark:hover:bg-white/5">
         <h3 className="mb-6 flex items-center justify-between font-medium">
           Curation Status
