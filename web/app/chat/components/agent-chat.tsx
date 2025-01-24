@@ -26,6 +26,7 @@ interface AgentChatContext extends UseChatHelpers {
   context: string
   setContext: React.Dispatch<React.SetStateAction<string>>
   type: AgentType
+  hasStartedStreaming: boolean
 }
 
 const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
@@ -35,6 +36,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
   const { readChatHistory, storeChatHistory, resetChatHistory } = useChatHistory({ id })
   const [attachments, setAttachments] = useState<Array<Attachment>>([])
   const [context, setContext] = useState("")
+  const [hasStartedStreaming, setHasStartedStreaming] = useState(false)
   const router = useRouter()
 
   const chat = useChat({
@@ -60,6 +62,12 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
           break
       }
     },
+    onResponse: () => {
+      setHasStartedStreaming(true)
+    },
+    onFinish: () => {
+      setHasStartedStreaming(false)
+    },
   })
 
   const restart = () => {
@@ -79,7 +87,17 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
 
   return (
     <AgentChatContext.Provider
-      value={{ ...chat, type, restart, attachments, setAttachments, user, context, setContext }}
+      value={{
+        ...chat,
+        type,
+        restart,
+        attachments,
+        setAttachments,
+        user,
+        context,
+        setContext,
+        hasStartedStreaming,
+      }}
     >
       {children}
     </AgentChatContext.Provider>

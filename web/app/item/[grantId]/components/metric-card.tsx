@@ -23,19 +23,21 @@ export function MetricCard({
   tips?: string[]
 }) {
   return (
-    <Card className="w-full">
+    <Card className="flex h-full w-full flex-col">
       <CardHeader className="flex flex-col space-y-3">
         <div className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
           <span
-            className={`text-2xl font-bold ${score >= 80 ? "text-green-500" : score >= 60 ? "text-yellow-500" : "text-red-500"}`}
+            className={`text-2xl font-bold ${
+              score >= 80 ? "text-green-500" : score >= 60 ? "text-yellow-500" : "text-red-500"
+            }`}
           >
             {score}
           </span>
         </div>
         <Progress value={score} className="h-2" indicatorClassName={getScoreColor(score)} />
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="flex flex-grow flex-col justify-between space-y-3 md:pt-4">
         <CardDescription className="text-sm">{explanation}</CardDescription>
         {tips && tips.length > 0 && (
           <Collapsible>

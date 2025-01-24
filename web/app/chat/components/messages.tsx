@@ -4,8 +4,8 @@ import { useAgentChat } from "./agent-chat"
 import { ErrorMessage } from "./error-message"
 import { MessageItem } from "./message-item"
 
-export const Messages = () => {
-  const { messages, error, append, restart, isLoading, type } = useAgentChat()
+export function Messages() {
+  const { messages, error, append, restart, isLoading, type, hasStartedStreaming } = useAgentChat()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const isInitialLoad = useRef(true)
@@ -67,7 +67,8 @@ export const Messages = () => {
         />
       )}
 
-      {isLoading && (
+      {/* Only show loader if we are waiting AND streaming hasn't started yet */}
+      {isLoading && !hasStartedStreaming && (
         <div className="flex justify-center">
           <DotLoader />
         </div>
