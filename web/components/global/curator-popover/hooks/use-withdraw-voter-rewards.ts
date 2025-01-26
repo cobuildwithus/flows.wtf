@@ -32,11 +32,6 @@ export const useWithdrawVoterRewards = (
   })
 
   const withdrawRewards = async (disputeId: bigint, round: bigint) => {
-    if (!address) {
-      toast.error("Wallet not connected")
-      return
-    }
-
     try {
       await prepareWallet()
 

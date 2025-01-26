@@ -23,11 +23,6 @@ export const useBulkPoolWithdrawMacro = (pools: `0x${string}`[], onSuccess?: () 
   })
 
   const withdraw = async () => {
-    if (!address) {
-      toast.error("Wallet not connected")
-      return
-    }
-
     try {
       await prepareWallet()
       const args = encodeAbiParameters([{ type: "address[]", name: "pools" }], [pools])
