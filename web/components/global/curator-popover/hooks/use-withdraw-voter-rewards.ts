@@ -35,6 +35,11 @@ export const useWithdrawVoterRewards = (
     try {
       await prepareWallet()
 
+      if (!address) {
+        toast.error("Wallet not connected")
+        return
+      }
+
       writeContract({
         account: address,
         address: getEthAddress(arbitratorAddress),
