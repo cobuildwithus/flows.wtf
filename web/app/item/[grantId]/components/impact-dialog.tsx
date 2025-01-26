@@ -86,6 +86,11 @@ export function ImpactDialog(props: Props) {
             </div>
           ))}
         </div>
+        <div className="rounded-lg border border-muted/20 bg-muted/5 text-right text-xs text-muted-foreground">
+          {lowestScoringGrant.overallScore < 90
+            ? "*Impact score updates every 2 days when updates are posted"
+            : "*Impact score updates every 2 weeks"}
+        </div>
       </DialogContent>
     </Dialog>
   )
