@@ -24,7 +24,7 @@ export function FlowCard({ flow }: Props) {
 
       <div className="flex justify-between">
         <div className="relative z-20">
-          <GrantStatusCountBadges id={flow.id} flow={flow} alwaysShowAll />
+          <GrantStatusCountBadges id={flow.id} flow={flow} />
         </div>
         <MonthlyBudget
           display={flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate}
