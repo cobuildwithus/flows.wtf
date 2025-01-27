@@ -24,6 +24,9 @@ export const getFarcasterUsersByEthAddress = async (rawAddress: `0x${string}`) =
           has: address,
         },
       },
+      orderBy: {
+        updated_at: "desc",
+      },
       ...getCacheStrategy(86400),
     })
 
@@ -44,6 +47,9 @@ export const getFarcasterUsersByEthAddresses = async (addresses: `0x${string}`[]
           hasSome: lowerAddresses,
         },
       },
+      orderBy: {
+        updated_at: "desc",
+      },
       ...getCacheStrategy(3600),
     })
 
@@ -59,6 +65,9 @@ export const getFarcasterUsersByFids = async (fids: bigint[]) => {
   try {
     const users = await farcasterDb.profile.findMany({
       where: { fid: { in: fids } },
+      orderBy: {
+        updated_at: "desc",
+      },
       ...getCacheStrategy(3600),
     })
 
