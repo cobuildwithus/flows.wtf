@@ -6,6 +6,7 @@ import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { VotingToggle } from "./voting-toggle"
+import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 
 interface Props {
   flowId: string
@@ -18,7 +19,7 @@ export const FlowSubmenu = async (props: Props) => {
   const flow = await getFlowWithGrants(flowId)
 
   const draftsCount = await database.draft.count({
-    where: { flowId, isPrivate: false, isOnchain: false },
+    where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
     ...getCacheStrategy(120),
   })
 

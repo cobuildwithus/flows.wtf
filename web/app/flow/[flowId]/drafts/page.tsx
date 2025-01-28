@@ -17,6 +17,7 @@ import database from "@/lib/database/edge"
 import { FlowSubmenu } from "../components/flow-submenu"
 import { GrantLogoCell } from "../components/grant-logo-cell"
 import { GrantTitleCell } from "../components/grant-title-cell"
+import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 
 export const runtime = "nodejs"
 
@@ -36,7 +37,7 @@ export default async function FlowDraftsPage(props: Props) {
       include: { derivedData: true },
     }),
     database.draft.findMany({
-      where: { flowId, isPrivate: false, isOnchain: false },
+      where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
       orderBy: { createdAt: "desc" },
     }),
     getExistingGrantsCount(),

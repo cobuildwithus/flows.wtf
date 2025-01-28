@@ -37,3 +37,5 @@ export const FLOWS_CHANNEL_ID = "flows"
 export const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11" as `0x${string}`
 
 export const MAX_GRANTS_PER_USER = 2
+
+export const DRAFT_CUTOFF_DATE = new Date(Date.now() - 50 * 24 * 60 * 60 * 1000)
