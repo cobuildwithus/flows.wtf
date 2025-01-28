@@ -1,7 +1,7 @@
 import "server-only"
 
 import { EmptyState } from "@/components/ui/empty-state"
-import { getUserProfiles } from "@/components/user-profile/get-user-profile"
+import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
@@ -27,12 +27,17 @@ export default async function FlowPage(props: Props) {
     }),
     database.grant.findMany({
       where: { flowId, isActive: true },
-      include: { derivedData: true },
+      include: { derivedData: { select: { lastBuilderUpdate: true } } },
       ...getCacheStrategy(1200),
     }),
   ])
 
-  const profiles = await getUserProfiles(subgrants.map((g) => getEthAddress(g.recipient)))
+  const grants = await Promise.all(
+    subgrants.map(async (g) => ({
+      ...g,
+      profile: await getUserProfile(getEthAddress(g.recipient)),
+    })),
+  )
 
   return (
     <>
@@ -42,15 +47,7 @@ export default async function FlowPage(props: Props) {
       {!subgrants || subgrants.length === 0 ? (
         <EmptyState title="No grants found" description="There are no approved grants yet" />
       ) : (
-        <GrantsList
-          flow={flow}
-          grants={subgrants
-            .map((g) => ({
-              ...g,
-              profile: profiles.find((p) => p.address === getEthAddress(g.recipient))!,
-            }))
-            .sort(sortGrants)}
-        />
+        <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
       )}
       <VotingBar />
     </>

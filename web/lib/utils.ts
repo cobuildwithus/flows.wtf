@@ -27,18 +27,19 @@ export function explorerUrl(address: string, chainId: number, type: "tx" | "addr
   return `https://${explorerDomain[chainId]}/${type}/${address}`
 }
 
-const gatewayUrl = `${process.env.NEXT_PUBLIC_GATEWAY_URL}`
-
-function getPinataUrl(hash: string) {
-  return `https://${gatewayUrl}/ipfs/${hash.replace("ipfs://", "")}`
-}
-
 export function getIpfsUrl(url: string, gateway: "pinata" | "ipfs" = "ipfs") {
-  if (url.startsWith("http")) return url
+  if (url.startsWith("http")) {
+    if (url.includes("mypinata.cloud/ipfs/")) {
+      return url + `?pinataGatewayToken=${process.env.PINATA_GATEWAY_KEY}`
+    }
+    return url
+  }
 
   const hash = url.replace("ipfs://", "")
 
-  if (gateway === "pinata") return getPinataUrl(url)
+  if (gateway === "pinata") {
+    return `https://${process.env.NEXT_PUBLIC_GATEWAY_URL}/ipfs/${hash}`
+  }
 
   return `https://ipfs.io/ipfs/${hash}`
 }

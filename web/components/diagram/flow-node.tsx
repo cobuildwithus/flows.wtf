@@ -11,7 +11,7 @@ import { memo } from "react"
 export type IFlowNode = Node<{ flow: Grant }, "flow">
 
 function FlowNode(props: NodeProps<IFlowNode>) {
-  const { targetPosition = Position.Left, sourcePosition = Position.Right, width, height } = props
+  const { width, height } = props
   const { image, title, monthlyIncomingFlowRate, id } = props.data.flow
 
   return (

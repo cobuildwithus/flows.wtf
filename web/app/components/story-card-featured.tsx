@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { DateTime } from "@/components/ui/date-time"
 import { UserProfile } from "@/components/user-profile/user-profile"
-import { getPinataWithKey } from "@/lib/pinata/url-with-key"
+import { getIpfsUrl } from "@/lib/utils"
 import { Story } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,7 +14,7 @@ export function FeaturedStoryCard(props: { story: Story }) {
       {header_image && (
         <div className="pointer-events-none absolute inset-0 -z-10 size-full overflow-hidden">
           <Image
-            src={getPinataWithKey(header_image)}
+            src={getIpfsUrl(header_image, "pinata")}
             alt={title}
             className="size-full object-cover transition-transform group-hover:scale-110"
             width={674}

@@ -1,5 +1,6 @@
 import { kv } from "@vercel/kv"
 import { z } from "zod"
+import { cache } from "react"
 
 const schema = z.object({
   text: z.string().describe("The guidance message to the user."),
@@ -14,30 +15,32 @@ const schema = z.object({
 
 export type Guidance = z.infer<typeof schema>
 
-export async function getGuidance(address?: string, identityToken?: string): Promise<Guidance> {
-  if (!address) return defaultGuidance
+export const getGuidance = cache(
+  async (address?: string, identityToken?: string): Promise<Guidance> => {
+    if (!address) return defaultGuidance
 
-  try {
-    const { data: cachedGuidance } = schema.safeParse(await kv.get(cacheKey(address)))
-    if (cachedGuidance) return cachedGuidance
+    try {
+      const { data: cachedGuidance } = schema.safeParse(await kv.get(cacheKey(address)))
+      if (cachedGuidance) return cachedGuidance
 
-    if (!identityToken) throw new Error(`Missing identity token for user ${address}`)
+      if (!identityToken) throw new Error(`Missing identity token for user ${address}`)
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CHAT_API_URL}/api/guidance`, {
-      headers: { "privy-id-token": identityToken },
-    })
+      const response = await fetch(`${process.env.NEXT_PUBLIC_CHAT_API_URL}/api/guidance`, {
+        headers: { "privy-id-token": identityToken },
+      })
 
-    const { data: guidance, error } = schema.safeParse(await response.json())
-    if (!guidance) throw new Error(`Guidance validation failed! ${error}`)
+      const { data: guidance, error } = schema.safeParse(await response.json())
+      if (!guidance) throw new Error(`Guidance validation failed! ${error}`)
 
-    await kv.set(cacheKey(address), guidance, { ex: 60 * 60 * 4 })
+      await kv.set(cacheKey(address), guidance, { ex: 60 * 60 * 12 })
 
-    return guidance
-  } catch (e) {
-    console.error(e)
-    return defaultGuidance
-  }
-}
+      return guidance
+    } catch (e) {
+      console.error(e)
+      return defaultGuidance
+    }
+  },
+)
 
 export function cacheKey(address: string) {
   return `guidance-v9-${address?.toLowerCase()}`

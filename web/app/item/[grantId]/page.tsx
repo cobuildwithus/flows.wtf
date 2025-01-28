@@ -12,6 +12,8 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
+import { getIpfsUrl } from "@/lib/utils"
+import { DerivedData } from "@prisma/flows"
 import { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { Suspense } from "react"
@@ -46,11 +48,24 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   const grant = await database.grant.findFirstOrThrow({
     where: { id: grantId, isTopLevel: false },
-    select: { title: true, tagline: true },
+    select: {
+      title: true,
+      tagline: true,
+      image: true,
+      derivedData: { select: { pageData: true } },
+    },
     ...getCacheStrategy(1200),
   })
 
-  return { title: grant.title, description: grant.tagline }
+  const data = getPageData(grant.derivedData)
+
+  return {
+    title: grant.title,
+    description: grant.tagline,
+    openGraph: {
+      images: [data?.coverImage ? getIpfsUrl(data.coverImage.url, "pinata") : grant.image],
+    },
+  }
 }
 
 export default async function GrantPage(props: Props) {
@@ -64,14 +79,14 @@ export default async function GrantPage(props: Props) {
         flow: true,
         derivedData: { select: { pageData: true, grades: true, overallGrade: true } },
       },
-      ...getCacheStrategy(600), // ToDo: Invalidate on edit
+      ...getCacheStrategy(300), // ToDo: Invalidate on edit
     }),
   ])
 
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
 
-  const data = JSON.parse(grant.derivedData?.pageData ?? "null") as GrantPageData | null
-  if (!data || Object.keys(data).length === 0) notFound()
+  const data = getPageData(grant.derivedData)
+  if (!data) notFound()
 
   const { why, focus, who, how, builder, title } = data
 
@@ -185,4 +200,10 @@ export default async function GrantPage(props: Props) {
       <GrantChat grant={grant} user={user} canEdit={canEdit} />
     </AgentChatProvider>
   )
+}
+
+function getPageData(derivedData: Pick<DerivedData, "pageData"> | null): GrantPageData | null {
+  const data = JSON.parse(derivedData?.pageData ?? "null") as GrantPageData | null
+  if (!data || Object.keys(data).length === 0) return null
+  return data
 }

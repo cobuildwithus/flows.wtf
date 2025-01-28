@@ -1,7 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { useFileUpload } from "@/lib/pinata/use-file-upload"
+import { useFileUpload } from "@/lib/file-upload/use-file-upload"
 import { UpdateIcon } from "@radix-ui/react-icons"
 import Image from "next/image"
 import { useState } from "react"

@@ -16,3 +16,5 @@ export enum DisputeStatus {
   Appealable,
   Solved,
 }
+
+export type AgentType = "flo" | "gonzo"

@@ -1,10 +1,19 @@
 import { farcasterDb } from "@/lib/database/farcaster-edge"
-import { getCacheStrategy } from "../database/edge"
 import { Profile as FarcasterProfile } from "@prisma/farcaster"
+import { getCacheStrategy } from "../database/edge"
 
-export const getFarcasterUserByEthAddress = async (address: `0x${string}`) => {
+export const getFarcasterUserByEthAddress = async (
+  rawAddress: `0x${string}`,
+): Promise<FarcasterProfile | null> => {
   try {
-    const users = await getFarcasterUsersByEthAddress(address)
+    const address = rawAddress.toLowerCase()
+
+    const users = await farcasterDb.profile.findMany({
+      where: { verified_addresses: { has: address } },
+      orderBy: { updated_at: "desc" },
+      ...getCacheStrategy(86400),
+    })
+
     if (!users || users.length === 0) return null
 
     return convertFarcasterUsers(users)[0]
@@ -14,60 +23,12 @@ export const getFarcasterUserByEthAddress = async (address: `0x${string}`) => {
   }
 }
 
-export const getFarcasterUsersByEthAddress = async (rawAddress: `0x${string}`) => {
-  try {
-    const address = rawAddress.toLowerCase()
-
-    const users = await farcasterDb.profile.findMany({
-      where: {
-        verified_addresses: {
-          has: address,
-        },
-      },
-      orderBy: {
-        updated_at: "desc",
-      },
-      ...getCacheStrategy(86400),
-    })
-
-    return convertFarcasterUsers(users)
-  } catch (e: any) {
-    console.error(e?.message)
-    return []
-  }
-}
-
-export const getFarcasterUsersByEthAddresses = async (addresses: `0x${string}`[]) => {
-  try {
-    const lowerAddresses = addresses.map((addr) => addr.toLowerCase())
-
-    const users = await farcasterDb.profile.findMany({
-      where: {
-        verified_addresses: {
-          hasSome: lowerAddresses,
-        },
-      },
-      orderBy: {
-        updated_at: "desc",
-      },
-      ...getCacheStrategy(3600),
-    })
-
-    return convertFarcasterUsers(users)
-  } catch (e: any) {
-    console.error(e?.message)
-    return []
-  }
-}
-
 // get by fids
 export const getFarcasterUsersByFids = async (fids: bigint[]) => {
   try {
     const users = await farcasterDb.profile.findMany({
       where: { fid: { in: fids } },
-      orderBy: {
-        updated_at: "desc",
-      },
+      orderBy: { updated_at: "desc" },
       ...getCacheStrategy(3600),
     })
 

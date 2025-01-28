@@ -1,7 +1,7 @@
 "use client"
 
-import { AgentType } from "@/lib/ai/agent-type"
 import { User } from "@/lib/auth/user"
+import { AgentType } from "@/lib/enums"
 import { Attachment, Message } from "ai"
 import { useChat, UseChatHelpers } from "ai/react"
 import { useRouter } from "next/navigation"
