@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils"
 
-export function CircularProgress({ value }: { value: number }) {
+export function CircularProgress({ value, size = 12 }: { value: number; size?: number }) {
   return (
-    <div className="relative size-12">
+    <div className={`relative size-${size}`}>
       <svg className="size-full" viewBox="0 0 100 100">
         <circle className="fill-none stroke-muted" strokeWidth="6" cx="50" cy="50" r="45" />
         <circle
@@ -22,7 +22,11 @@ export function CircularProgress({ value }: { value: number }) {
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <span
-          className={cn("text-lg font-bold", {
+          className={cn({
+            "text-xs font-bold": size <= 8,
+            "text-sm font-bold": size > 8 && size <= 10,
+            "text-base font-bold": size > 10 && size <= 12,
+            "text-lg font-bold": size > 12,
             "text-green-500 dark:text-green-400": value >= 80,
             "text-yellow-500 dark:text-yellow-400": value >= 60 && value < 80,
             "text-red-500 dark:text-red-400": value < 60,

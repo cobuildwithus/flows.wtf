@@ -51,7 +51,7 @@ model DerivedData {
   pageData          String?
   grades            Json?
   overallGrade      Float?
-  ongoingRequirements String[] @db.Text
+  ongoingRequirements Json?
   requirementsMetrics Json?
 
   @@index([grantId])

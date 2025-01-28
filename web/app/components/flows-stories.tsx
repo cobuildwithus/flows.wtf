@@ -50,7 +50,14 @@ function getStoriesAndGrants(recipient?: `0x${string}`) {
             recipient: true,
             title: true,
             image: true,
-            derivedData: { select: { overallGrade: true, grades: true } },
+            derivedData: {
+              select: { overallGrade: true, grades: true, requirementsMetrics: true },
+            },
+            flow: {
+              select: {
+                title: true,
+              },
+            },
           },
           where: { isActive: true, isTopLevel: false, recipient },
         })
