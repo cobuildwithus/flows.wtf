@@ -11,7 +11,7 @@ import { memo } from "react"
 export type IGrantNode = Node<{ grant: Grant }, "grant">
 
 function GrantNode(props: NodeProps<IGrantNode>) {
-  const { targetPosition = Position.Top, width, height } = props
+  const { width, height } = props
   const { image, title, monthlyIncomingFlowRate, id } = props.data.grant
 
   return (

@@ -23,8 +23,6 @@ const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export async function generateMetadata(): Promise<Metadata> {
   const pool = await getPool()
-
-  // return { title: pool.title, description: pool.tagline }
   return { title: "Flows", description: pool.tagline }
 }
 

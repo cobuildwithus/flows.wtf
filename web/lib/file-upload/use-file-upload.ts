@@ -2,20 +2,8 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { compressImage } from "./compress-image"
 import { uploadFile } from "./upload-file"
-import Compressor from "compressorjs"
-
-const compressImage = (file: File): Promise<File> => {
-  return new Promise((resolve, reject) => {
-    new Compressor(file, {
-      quality: 0.6,
-      maxWidth: 2000,
-      maxHeight: 2000,
-      success: (result) => resolve(result as File),
-      error: reject,
-    })
-  })
-}
 
 export function useFileUpload() {
   const [isUploading, setIsUploading] = useState<boolean>(false)

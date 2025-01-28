@@ -10,7 +10,7 @@ import { memo } from "react"
 export type IPoolNode = Node<{ pool: Grant; flowCount: number }, "pool">
 
 function PoolNode(props: NodeProps<IPoolNode>) {
-  const { sourcePosition = Position.Bottom, width, height } = props
+  const { width, height } = props
   const { image, title, monthlyOutgoingFlowRate } = props.data.pool
 
   return (

@@ -1,11 +1,11 @@
 import "server-only"
 
 import { StoryCard } from "@/app/components/story-card"
-import database from "@/lib/database/edge"
-import { FeaturedStoryCard } from "./story-card-featured"
 import { ImpactDialog } from "@/app/item/[grantId]/components/impact-dialog"
-import { BuilderSection } from "./builder-section"
 import { User } from "@/lib/auth/user"
+import database from "@/lib/database/edge"
+import { BuilderSection } from "./builder-section"
+import { FeaturedStoryCard } from "./story-card-featured"
 
 interface Props {
   user?: User
@@ -14,12 +14,11 @@ interface Props {
 export async function FlowsStories({ user }: Props) {
   const [stories, grants] = await getStoriesAndGrants(user?.address)
 
-  const hasGrant = grants.length > 0
-
   if (stories.length === 0) return null
 
   const [featuredStory, ...remainingStories] = stories
 
+  const hasGrant = grants.length > 0
   const storiesToRender = !hasGrant ? remainingStories.slice(0, -1) : remainingStories
 
   return (
@@ -46,8 +45,14 @@ function getStoriesAndGrants(recipient?: `0x${string}`) {
     }),
     recipient
       ? database.grant.findMany({
+          select: {
+            id: true,
+            recipient: true,
+            title: true,
+            image: true,
+            derivedData: { select: { overallGrade: true, grades: true } },
+          },
           where: { isActive: true, isTopLevel: false, recipient },
-          include: { derivedData: true },
         })
       : Promise.resolve([]),
   ])

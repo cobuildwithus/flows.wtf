@@ -3,12 +3,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { DateTime } from "@/components/ui/date-time"
+import { useCastsText } from "@/lib/casts/use-casts-text"
 import { getCastImages } from "@/lib/farcaster/get-cast-images"
 import { getCastVideos } from "@/lib/farcaster/get-cast-videos"
 import { Cast, Profile } from "@prisma/farcaster"
 import { Grant } from "@prisma/flows"
 import { VideoPlayer } from "./video-player"
-import { useCastsText } from "@/lib/casts/use-casts-text"
 
 interface Props {
   cast: Pick<

@@ -25,7 +25,6 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditStory } from "@/lib/database/helpers"
-import { getPinataWithKey } from "@/lib/pinata/url-with-key"
 import { getIpfsUrl } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
 import { Metadata } from "next"
@@ -165,7 +164,7 @@ export default async function Page(props: Props) {
                         />
                       ) : (
                         <Image
-                          src={getPinataWithKey(url)}
+                          src={getIpfsUrl(url, "pinata")}
                           alt=""
                           fill
                           className="rounded-lg object-cover"

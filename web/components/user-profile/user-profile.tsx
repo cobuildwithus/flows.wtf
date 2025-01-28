@@ -1,7 +1,7 @@
 import "server-only"
 
 import { getShortEthAddress } from "@/lib/utils"
-import { Suspense, type JSX } from "react";
+import { Suspense, type JSX } from "react"
 import { getUserProfile, Profile } from "./get-user-profile"
 import { UserProfilePopover } from "./user-popover"
 
@@ -15,12 +15,7 @@ export const UserProfile = async (props: Props) => {
   const { address, children } = props
 
   return (
-    <Suspense
-      fallback={children({
-        address,
-        display_name: getShortEthAddress(address),
-      })}
-    >
+    <Suspense fallback={children({ address, display_name: getShortEthAddress(address) })}>
       <UserProfileInner {...props} />
     </Suspense>
   )

@@ -52,7 +52,7 @@ export async function postToEmbeddingsQueueRequest(payload: JobBody) {
   try {
     await makeRequest("/add-job", payload)
   } catch (error) {
-    console.log("Failed to post to embeddings queue:")
+    console.error("Failed to post to embeddings queue:")
     console.log({
       payload,
       EMBEDDINGS_QUEUE_URL: process.env.EMBEDDINGS_QUEUE_URL,

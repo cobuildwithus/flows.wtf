@@ -161,6 +161,7 @@ model Grant {
   evidences    Evidence[]
   derivedData  DerivedData?
   votes        Vote[]
+
   @@index([isTopLevel])
   @@index([isFlow])
   @@index([isActive])

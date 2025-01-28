@@ -5,7 +5,7 @@ import { Grant } from "@prisma/flows"
 import { ActionCard } from "./action-card/action-card"
 import { HomepageActivity } from "./homepage-activity"
 
-export async function BuilderSection({ grants }: { grants: Grant[] }) {
+export async function BuilderSection({ grants }: { grants: Pick<Grant, "id" | "recipient">[] }) {
   const hasGrant = grants.length > 0
   return (
     <div

@@ -1,4 +1,4 @@
-import { AgentType } from "@/lib/ai/agent-type"
+import { AgentType } from "@/lib/enums"
 import { Message } from "ai"
 
 export type ChatBody = {
@@ -10,7 +10,6 @@ export type ChatBody = {
 }
 
 export type ChatData = {
-  address?: string // Remove in v2
   flowId?: string
   grantId?: string
   storyId?: string
