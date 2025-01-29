@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Markdown } from "@/components/ui/markdown"
 import { User } from "@/lib/auth/user"
 import { useAnimatedText } from "@/lib/hooks/use-animated-text"
-import { isBrowser } from "@/lib/utils"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { use, useEffect, useState } from "react"
+import { createHash } from "crypto"
 import { Guidance } from "./get-guidance"
 import { GuidanceChat } from "./guidance-chat"
 
@@ -16,49 +16,56 @@ interface Props {
   user?: User
 }
 
-export function ActionCardContent(props: Props) {
-  const { guidance, user } = props
-  const [show, setShow] = useState(false)
-  const [animate, setAnimate] = useState(false)
+function getLocalHashKey(text: string) {
+  return createHash("md5").update(text).digest("hex")
+}
+
+export function ActionCardContent({ guidance, user }: Props) {
   const { text, action } = use(guidance)
+  const [isTextAnimationComplete, setIsTextAnimationComplete] = useState(false)
+  const [shouldAnimateText, setShouldAnimateText] = useState(false)
 
+  // Check if text has changed by comparing hashes in localStorage
   useEffect(() => {
-    if (!isBrowser()) return
-    setAnimate(window.sessionStorage.getItem("hasAnimatedActionCard") !== "true")
-    setShow(true)
-  }, [])
+    if (!text) return
+    const storedHash = localStorage.getItem("actionCardHash") || ""
+    const currentHash = getLocalHashKey(text)
+    if (storedHash !== currentHash) {
+      localStorage.setItem("actionCardHash", currentHash)
+      setShouldAnimateText(true)
+    } else {
+      setShouldAnimateText(false)
+      setIsTextAnimationComplete(true)
+    }
+  }, [text])
 
-  const animatedText = useAnimatedText(text, "char", !animate, () => {
-    window?.sessionStorage?.setItem("hasAnimatedActionCard", "true")
+  // Animate the text; set completion flag when done
+  const animatedText = useAnimatedText(text, "char", !shouldAnimateText, () => {
+    setIsTextAnimationComplete(true)
   })
 
-  if (!show) return null
-
-  const Component = animate ? motion.div : "div"
-  const motionProps = animate ? { animate: { opacity: [0, 1] }, transition: { delay: 4.5 } } : {}
+  // Prevent rendering when no text is available
+  if (!text) return null
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={show ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.25 }}
-      >
-        <div className="mb-5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
-          <Markdown>{animatedText}</Markdown>
-        </div>
-      </motion.div>
-      <Component {...motionProps}>
-        {action.isChat ? (
-          <GuidanceChat user={user} context={text}>
-            {action.text}
-          </GuidanceChat>
-        ) : (
-          <Button key={action.link} variant="ai-secondary" size="md">
-            <Link href={action.link || "#"}>{action.text}</Link>
-          </Button>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+      <div className="mb-5 space-y-4 text-sm text-secondary-foreground/75 [&>*]:leading-loose">
+        <Markdown>{animatedText}</Markdown>
+
+        {isTextAnimationComplete && (
+          <div>
+            {action.isChat ? (
+              <GuidanceChat user={user} context={text}>
+                {action.text}
+              </GuidanceChat>
+            ) : (
+              <Button variant="ai-secondary" size="md">
+                <Link href={action.link || "#"}>{action.text}</Link>
+              </Button>
+            )}
+          </div>
         )}
-      </Component>
-    </>
+      </div>
+    </motion.div>
   )
 }

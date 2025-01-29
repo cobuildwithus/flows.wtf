@@ -22,7 +22,7 @@ export async function ActionCard() {
       identityToken={identityToken}
     >
       <h2 className="mb-2.5 text-lg font-semibold text-secondary-foreground">
-        gm {user?.username}
+        {user ? `gm ${user.username}` : "Creators welcome"}
       </h2>
       <Suspense fallback={<DotLoader className="pt-2.5" />}>
         <ActionCardContent user={user} guidance={guidance} />

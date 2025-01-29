@@ -47,7 +47,7 @@ export function cacheKey(address: string) {
 }
 
 const defaultGuidance: Guidance = {
-  text: "Welcome to Flows! This is where people get paid for making positive impact in their communities\n\nWhether you're an artist, athlete, musician, or community organizer, there's a place for you here. We support people who want to make a difference while doing what they love.",
+  text: "We pay people to make positive impact in their communities.\n\nWhatever your passion, there's a place for you here. We support people who make a difference doing what they love.",
   action: {
     text: "Let's talk",
     isChat: true,
