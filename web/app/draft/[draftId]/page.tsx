@@ -12,7 +12,7 @@ import { DateTime } from "@/components/ui/date-time"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { getTcrCosts } from "@/lib/tcr/get-tcr-costs"
-import { getEthAddress } from "@/lib/utils"
+import { getEthAddress, getIpfsUrl } from "@/lib/utils"
 import { Metadata } from "next"
 import { Suspense } from "react"
 import { CreatorCard } from "./creator-card"
@@ -23,12 +23,8 @@ import { DraftPublishButton } from "./draft-publish-button"
 export const runtime = "nodejs"
 
 interface Props {
-  params: Promise<{
-    draftId: string
-  }>
-  searchParams: Promise<{
-    edit?: string
-  }>
+  params: Promise<{ draftId: string }>
+  searchParams: Promise<{ edit?: string }>
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -38,7 +34,11 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     where: { id: Number(draftId) },
   })
 
-  return { title: draft.title, description: draft.tagline }
+  return {
+    title: draft.title,
+    description: draft.tagline,
+    openGraph: { images: [getIpfsUrl(draft.image, "pinata")] },
+  }
 }
 
 export default async function DraftPage(props: Props) {

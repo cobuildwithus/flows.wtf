@@ -1,5 +1,6 @@
 import { DisputeUserVote } from "@/app/components/dispute/dispute-user-vote"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,14 +14,13 @@ import { DateTime } from "@/components/ui/date-time"
 import { Markdown } from "@/components/ui/markdown"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
+import { Status } from "@/lib/enums"
 import { getEthAddress, getIpfsUrl, isProduction } from "@/lib/utils"
 import { Metadata } from "next"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 import { StatusDisputed } from "./components/status-disputed"
 import { StatusNotDisputed } from "./components/status-not-disputed"
-import { Badge } from "@/components/ui/badge"
-import { Status } from "@/lib/enums"
 
 export const runtime = "nodejs"
 
@@ -37,7 +37,11 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     where: { id: applicationId },
   })
 
-  return { title: grant.title, description: grant.tagline }
+  return {
+    title: grant.title,
+    description: grant.tagline,
+    openGraph: { images: [getIpfsUrl(grant.image, "pinata")] },
+  }
 }
 
 export default async function ApplicationPage(props: Props) {

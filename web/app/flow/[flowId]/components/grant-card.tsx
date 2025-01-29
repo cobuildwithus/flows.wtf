@@ -1,55 +1,61 @@
 import { MonthlyBudget } from "@/app/components/monthly-budget"
+import { CircularProgress } from "@/app/item/[grantId]/components/circular-progress"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Profile } from "@/components/user-profile/get-user-profile"
-import { UserProfilePopover } from "@/components/user-profile/user-popover"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import { DerivedData, Grant } from "@prisma/flows"
 import Link from "next/dist/client/link"
 import Image from "next/image"
 
 interface Props {
-  grant: Grant & { profile: Profile }
+  grant: Grant & { profile: Profile; derivedData: Pick<DerivedData, "overallGrade"> | null }
 }
 
 export function GrantCard({ grant }: Props) {
-  const isDisputed = grant.isDisputed
-  const isChallenged = grant.status === Status.ClearingRequested
+  const { status, isDisputed, derivedData } = grant
+  const grade = derivedData?.overallGrade || null
 
+  const isChallenged = status === Status.ClearingRequested
   const isActive = !isDisputed && !isChallenged
 
   return (
-    <article className="group relative isolate flex flex-col justify-between overflow-hidden rounded-2xl bg-primary px-2.5 py-4 md:min-h-72 md:p-4">
+    <article className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72">
       <Image
         alt=""
         src={getIpfsUrl(grant.image)}
-        className="absolute inset-0 -z-10 size-full object-cover transition-transform group-hover:scale-110"
+        className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 group-hover:scale-110"
         width={256}
         height={256}
       />
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-gray-900 via-gray-900/40" />
-      <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl ring-1 ring-inset ring-secondary" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-gray-900/70 from-25% via-transparent to-gray-900/80" />
 
-      <div className="flex items-center justify-between text-sm">
-        <UserProfilePopover profile={grant.profile}>
-          <Avatar className="z-20 size-6 border border-white/75 bg-primary text-xs">
-            <AvatarImage src={grant.profile.pfp_url} alt={grant.profile.display_name} />
-          </Avatar>
-        </UserProfilePopover>
-        {isActive && <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />}
-        {!isActive && <DisputedGrantTag />}
-      </div>
+      <Link
+        href={`/item/${grant.id}`}
+        className="flex h-full flex-col justify-between overflow-hidden p-2.5"
+      >
+        <div className="relative flex items-center justify-between text-sm">
+          {isActive && <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />}
+          {!isActive && <DisputedGrantTag />}
 
-      <div>
-        <h3 className="mt-32 text-balance text-sm font-medium text-white md:text-base">
-          <Link href={`/item/${grant.id}`}>
-            <span className="absolute inset-0" />
+          {grade && <CircularProgress value={grade} size={26} />}
+        </div>
+
+        <div className="mt-32 flex translate-y-[26px] flex-col transition-transform duration-300 group-hover:translate-y-0">
+          <h3 className="line-clamp-3 text-balance text-sm font-medium leading-5 text-white md:text-[15px]">
             {grant.title}
-          </Link>
-        </h3>
-      </div>
+          </h3>
+
+          <div className="mt-2.5 flex items-center gap-1.5 text-xs text-white/75">
+            <Avatar className="z-20 size-4 border border-white/75 bg-primary text-xs">
+              <AvatarImage src={grant.profile.pfp_url} alt={grant.profile.display_name} />
+            </Avatar>
+            <div>{grant.profile.display_name}</div>
+          </div>
+        </div>
+      </Link>
     </article>
   )
 }

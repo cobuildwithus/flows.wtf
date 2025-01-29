@@ -18,7 +18,7 @@ export function RequirementsCard({ title, score, explanation, tips }: Props) {
     <Card className="flex w-full flex-col">
       <div className="flex flex-row items-center justify-between gap-3 px-6 py-3 pb-2 text-left text-base font-medium md:px-3.5">
         {title}
-        <CircularProgress size={8} value={score} />
+        <CircularProgress size={32} value={score} />
       </div>
 
       <div className="flex flex-col space-y-3 p-3.5 pt-0 md:p-4 md:pt-0">

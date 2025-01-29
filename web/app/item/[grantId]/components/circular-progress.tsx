@@ -1,10 +1,17 @@
 import { cn } from "@/lib/utils"
 
-export function CircularProgress({ value, size = 12 }: { value: number; size?: number }) {
+interface Props {
+  value: number
+  size?: number
+  className?: string
+}
+
+export function CircularProgress(props: Props) {
+  const { value, size = 48, className } = props
   const noggleCutoff = 97
 
   return (
-    <div className={`relative size-${size}`}>
+    <div className={cn("relative rounded-full", className)} style={{ width: size, height: size }}>
       <svg className="size-full" viewBox="0 0 100 100">
         <circle className="fill-none stroke-muted" strokeWidth="6" cx="50" cy="50" r="45" />
         <circle
@@ -28,23 +35,24 @@ export function CircularProgress({ value, size = 12 }: { value: number; size?: n
         {value < noggleCutoff && (
           <span
             className={cn({
-              "text-sm font-bold": size <= 8,
-              "text-base font-bold": size > 8 && size <= 10,
-              "text-lg font-bold": size > 10 && size <= 12,
-              "text-xl font-bold": size > 12,
+              "text-xs font-bold": size <= 28,
+              "text-sm font-bold": size === 32,
+              "text-base font-bold": size > 32 && size <= 40,
+              "text-lg font-bold": size > 40 && size <= 48,
+              "text-xl font-bold": size > 48,
               "text-green-500 dark:text-green-400": value >= 80,
               "text-yellow-500 dark:text-yellow-400": value >= 60 && value < 80,
               "text-red-500 dark:text-red-400": value < 60,
             })}
           >
-            {value}
+            {value.toFixed(0)}
           </span>
         )}
         {value >= noggleCutoff && (
           <svg
             fill="none"
             height={size}
-            shape-rendering="crispEdges"
+            shapeRendering="crispEdges"
             viewBox="0 0 160 60"
             xmlns="http://www.w3.org/2000/svg"
           >

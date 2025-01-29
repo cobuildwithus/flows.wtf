@@ -1,6 +1,6 @@
 import { kv } from "@vercel/kv"
-import { z } from "zod"
 import { cache } from "react"
+import { z } from "zod"
 
 const schema = z.object({
   text: z.string().describe("The guidance message to the user."),
@@ -29,7 +29,10 @@ export const getGuidance = cache(
         headers: { "privy-id-token": identityToken },
       })
 
-      const { data: guidance, error } = schema.safeParse(await response.json())
+      const { data: guidance, error } = schema.safeParse({
+        text: await response.text(),
+        action: { text: "Let's talk", isChat: true },
+      })
       if (!guidance) throw new Error(`Guidance validation failed! ${error}`)
 
       await kv.set(cacheKey(address), guidance, { ex: 60 * 60 * 12 })
@@ -43,7 +46,7 @@ export const getGuidance = cache(
 )
 
 export function cacheKey(address: string) {
-  return `guidance-v9-${address?.toLowerCase()}`
+  return `guidance-v11-${address?.toLowerCase()}`
 }
 
 const defaultGuidance: Guidance = {
