@@ -2,14 +2,13 @@
 
 import React from "react"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Grant, DerivedData } from "@prisma/flows"
+import type { Grant, DerivedData } from "@prisma/flows"
 import { Grade } from "./grade"
-import { MetricCard } from "./metric-card"
 import { GrantHeader } from "./grant-header"
 import { CircularProgress } from "./circular-progress"
 import { PendingEvaluation } from "./pending-evaluation"
-import { User } from "@/lib/auth/user"
-import { RequirementMetric } from "./requirements-section"
+import type { User } from "@/lib/auth/user"
+import type { RequirementMetric } from "./requirements-section"
 import { RequirementsSection } from "./requirements-section"
 
 interface Props {
@@ -23,18 +22,8 @@ interface Props {
   user?: User
 }
 
-interface Grades {
-  [key: string]: {
-    score: number
-    explanation: string
-    metricName: string
-    tips: string[]
-  }
-}
-
 interface GrantWithScore {
   grant: Props["grants"][0]
-  grades: Grades
   overallScore: number
   requirementsMetrics?: RequirementMetric[]
 }
@@ -60,14 +49,15 @@ export function ImpactDialog(props: Props) {
           </div>
 
           <div className="space-y-4">
-            {Object.entries(lowestScoringGrant.grades)
-              .sort(([, a], [, b]) => b.score - a.score)
-              .map(([label, { score, explanation, metricName }]) => (
+            {lowestScoringGrant.requirementsMetrics
+              .slice(0, 4)
+              .sort((a, b) => b.met - a.met)
+              .map(({ name, met, explanation }) => (
                 <Grade
-                  key={label}
-                  label={metricName}
-                  value={score}
-                  percentage={score}
+                  key={name}
+                  label={name}
+                  value={met}
+                  percentage={met}
                   explanation={explanation}
                 />
               ))}
@@ -77,22 +67,10 @@ export function ImpactDialog(props: Props) {
       <DialogContent className="sm:max-w-5xl">
         <DialogTitle className="text-center text-2xl font-bold" />
         <div className="mt-2 flex flex-col space-y-16">
-          {grantsWithScores.map(({ grant, grades, requirementsMetrics }) => (
+          {grantsWithScores.map(({ grant, requirementsMetrics }) => (
             <div key={grant.id} className="space-y-6 first:mt-0 last:mb-0">
               <GrantHeader grant={grant} />
-              <div className="grid gap-3 md:grid-cols-2">
-                {Object.entries(grades)
-                  .sort(([, a], [, b]) => b.score - a.score)
-                  .map(([label, metric]) => (
-                    <MetricCard key={label} {...metric} title={metric.metricName} />
-                  ))}
-              </div>
-              {requirementsMetrics && (
-                <RequirementsSection
-                  requirements={requirementsMetrics}
-                  flowTitle={grant.flow.title}
-                />
-              )}
+              {requirementsMetrics && <RequirementsSection requirements={requirementsMetrics} />}
             </div>
           ))}
         </div>
@@ -114,10 +92,9 @@ function getLowestScoringGrant(grants: Props["grants"]) {
 
 function getGrantsWithScoresAndMetrics(grants: Props["grants"]) {
   return grants.map((grant) => {
-    const grades = grant.derivedData?.grades as unknown as Grades
     const overallScore = Math.ceil(grant.derivedData?.overallGrade || 0)
     const requirementsMetrics = grant.derivedData
       ?.requirementsMetrics as unknown as RequirementMetric[]
-    return { grant, grades, overallScore, requirementsMetrics }
+    return { grant, overallScore, requirementsMetrics }
   })
 }
