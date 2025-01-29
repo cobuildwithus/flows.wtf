@@ -10,7 +10,10 @@ import { GrantsTable } from "./grants-table"
 interface Props {
   flow: Grant
   grants: Array<
-    Grant & { derivedData: Pick<DerivedData, "lastBuilderUpdate"> | null; profile: Profile }
+    Grant & {
+      derivedData: Pick<DerivedData, "lastBuilderUpdate" | "overallGrade"> | null
+      profile: Profile
+    }
   >
 }
 
