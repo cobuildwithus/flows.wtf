@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Grant, DerivedData } from "@prisma/flows"
 import { Grade } from "./grade"
@@ -8,11 +9,14 @@ import { GrantHeader } from "./grant-header"
 import { CircularProgress } from "./circular-progress"
 import { PendingEvaluation } from "./pending-evaluation"
 import { User } from "@/lib/auth/user"
+import { RequirementMetric } from "./requirements-section"
+import { RequirementsSection } from "./requirements-section"
 
 interface Props {
   grants: Array<
     Pick<Grant, "id" | "title" | "image"> & {
-      derivedData: Pick<DerivedData, "grades" | "overallGrade"> | null
+      derivedData: Pick<DerivedData, "grades" | "overallGrade" | "requirementsMetrics"> | null
+      flow: Pick<Grant, "title">
     }
   >
   dialogTitle?: string
@@ -32,6 +36,7 @@ interface GrantWithScore {
   grant: Props["grants"][0]
   grades: Grades
   overallScore: number
+  requirementsMetrics?: RequirementMetric[]
 }
 
 export function ImpactDialog(props: Props) {
@@ -42,8 +47,7 @@ export function ImpactDialog(props: Props) {
     return <PendingEvaluation user={user} />
   }
 
-  const grantsWithScores: GrantWithScore[] = getGrantsWithScores(grants)
-
+  const grantsWithScores: GrantWithScore[] = getGrantsWithScoresAndMetrics(grants)
   const lowestScoringGrant = getLowestScoringGrant(grants)
 
   return (
@@ -70,10 +74,10 @@ export function ImpactDialog(props: Props) {
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-5xl">
         <DialogTitle className="text-center text-2xl font-bold" />
         <div className="mt-2 flex flex-col space-y-16">
-          {grantsWithScores.map(({ grant, grades }) => (
+          {grantsWithScores.map(({ grant, grades, requirementsMetrics }) => (
             <div key={grant.id} className="space-y-6 first:mt-0 last:mb-0">
               <GrantHeader grant={grant} />
               <div className="grid gap-3 md:grid-cols-2">
@@ -83,13 +87,20 @@ export function ImpactDialog(props: Props) {
                     <MetricCard key={label} {...metric} title={metric.metricName} />
                   ))}
               </div>
+              {requirementsMetrics && (
+                <RequirementsSection
+                  requirements={requirementsMetrics}
+                  flowTitle={grant.flow.title}
+                />
+              )}
             </div>
           ))}
         </div>
-        <div className="text-right text-xs text-muted-foreground">
+
+        <div className="mt-4 text-right text-xs text-muted-foreground">
           {lowestScoringGrant.overallScore < 90
-            ? "*Impact score updates every 2 days when updates are posted"
-            : "*Impact score updates every 2 weeks"}
+            ? "*Scores update every 2 days when updates are posted"
+            : "*Scores update every 2 weeks"}
         </div>
       </DialogContent>
     </Dialog>
@@ -97,18 +108,16 @@ export function ImpactDialog(props: Props) {
 }
 
 function getLowestScoringGrant(grants: Props["grants"]) {
-  const grantsWithScores = getGrantsWithScores(grants)
+  const grantsWithScores = getGrantsWithScoresAndMetrics(grants)
   return grantsWithScores.sort((a, b) => a.overallScore - b.overallScore)[0]
 }
 
-function getGrantsWithScores(grants: Props["grants"]) {
+function getGrantsWithScoresAndMetrics(grants: Props["grants"]) {
   return grants.map((grant) => {
     const grades = grant.derivedData?.grades as unknown as Grades
-    const overallScore = Math.ceil(
-      grant.derivedData?.overallGrade ||
-        Object.values(grades).reduce((acc, { score }) => acc + score, 0) /
-          Object.keys(grades).length,
-    )
-    return { grant, grades, overallScore }
+    const overallScore = Math.ceil(grant.derivedData?.overallGrade || 0)
+    const requirementsMetrics = grant.derivedData
+      ?.requirementsMetrics as unknown as RequirementMetric[]
+    return { grant, grades, overallScore, requirementsMetrics }
   })
 }

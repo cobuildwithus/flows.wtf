@@ -71,17 +71,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function GrantPage(props: Props) {
   const { grantId } = await props.params
 
-  const [user, { flow, ...grant }] = await Promise.all([
-    getUser(),
-    database.grant.findUniqueOrThrow({
-      where: { id: grantId, isActive: true, isTopLevel: false },
-      include: {
-        flow: true,
-        derivedData: { select: { pageData: true, grades: true, overallGrade: true } },
-      },
-      ...getCacheStrategy(300), // ToDo: Invalidate on edit
-    }),
-  ])
+  const [user, { flow, ...grant }] = await Promise.all([getUser(), getGrant(grantId)])
 
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
 
@@ -133,7 +123,7 @@ export default async function GrantPage(props: Props) {
           </div>
 
           <div className="col-span-full cursor-pointer xl:col-span-3">
-            <ImpactDialog grants={[grant]} />
+            <ImpactDialog grants={[{ ...grant, flow: { title: flow.title } }]} />
           </div>
 
           <div className="col-span-full xl:col-span-9 xl:flex xl:items-center xl:justify-end">
@@ -206,4 +196,17 @@ function getPageData(derivedData: Pick<DerivedData, "pageData"> | null): GrantPa
   const data = JSON.parse(derivedData?.pageData ?? "null") as GrantPageData | null
   if (!data || Object.keys(data).length === 0) return null
   return data
+}
+
+async function getGrant(grantId: string) {
+  return database.grant.findUniqueOrThrow({
+    where: { id: grantId, isActive: true, isTopLevel: false },
+    include: {
+      flow: true,
+      derivedData: {
+        select: { pageData: true, grades: true, overallGrade: true, requirementsMetrics: true },
+      },
+    },
+    ...getCacheStrategy(300), // ToDo: Invalidate on edit
+  })
 }

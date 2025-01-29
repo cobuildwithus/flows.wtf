@@ -4,12 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Progress } from "@/components/ui/progress"
 import { AlertCircle } from "lucide-react"
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return "bg-green-500 dark:bg-green-400"
-  if (score >= 60) return "bg-yellow-500 dark:bg-yellow-400"
-  return "bg-red-500 dark:bg-red-400"
-}
+import { getScoreColor } from "./score-color"
 
 export function MetricCard({
   title,
