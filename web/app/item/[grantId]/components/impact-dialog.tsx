@@ -115,11 +115,7 @@ function getLowestScoringGrant(grants: Props["grants"]) {
 function getGrantsWithScoresAndMetrics(grants: Props["grants"]) {
   return grants.map((grant) => {
     const grades = grant.derivedData?.grades as unknown as Grades
-    const overallScore = Math.ceil(
-      grant.derivedData?.overallGrade ||
-        Object.values(grades).reduce((acc, { score }) => acc + score, 0) /
-          Object.keys(grades).length,
-    )
+    const overallScore = Math.ceil(grant.derivedData?.overallGrade || 0)
     const requirementsMetrics = grant.derivedData
       ?.requirementsMetrics as unknown as RequirementMetric[]
     return { grant, grades, overallScore, requirementsMetrics }
