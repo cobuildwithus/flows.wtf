@@ -10,8 +10,8 @@ export function CircularProgress({ value, size = 12 }: { value: number; size?: n
         <circle
           className={cn("transition-all", {
             "fill-green-500/10 stroke-green-500 dark:fill-green-400/10 dark:stroke-green-400":
-              value >= 80,
-            "fill-none stroke-green-500 dark:stroke-green-400": value >= 60 && value < 80,
+              value >= noggleCutoff,
+            "fill-none stroke-green-500 dark:stroke-green-400": value >= 80 && value < noggleCutoff,
             "fill-none stroke-yellow-500 dark:stroke-yellow-400": value >= 60 && value < 80,
             "fill-none stroke-red-500 dark:stroke-red-400": value < 60,
           })}
@@ -28,10 +28,10 @@ export function CircularProgress({ value, size = 12 }: { value: number; size?: n
         {value < noggleCutoff && (
           <span
             className={cn({
-              "text-xs font-bold": size <= 8,
-              "text-sm font-bold": size > 8 && size <= 10,
-              "text-base font-bold": size > 10 && size <= 12,
-              "text-lg font-bold": size > 12,
+              "text-sm font-bold": size <= 8,
+              "text-base font-bold": size > 8 && size <= 10,
+              "text-lg font-bold": size > 10 && size <= 12,
+              "text-xl font-bold": size > 12,
               "text-green-500 dark:text-green-400": value >= 80,
               "text-yellow-500 dark:text-yellow-400": value >= 60 && value < 80,
               "text-red-500 dark:text-red-400": value < 60,
