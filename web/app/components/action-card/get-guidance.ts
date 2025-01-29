@@ -46,7 +46,7 @@ export const getGuidance = cache(
 )
 
 export function cacheKey(address: string) {
-  return `guidance-v11-${address?.toLowerCase()}`
+  return `guidance-v15b-${address?.toLowerCase()}`
 }
 
 const defaultGuidance: Guidance = {
