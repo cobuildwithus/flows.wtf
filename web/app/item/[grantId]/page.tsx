@@ -204,7 +204,7 @@ async function getGrant(grantId: string) {
     include: {
       flow: true,
       derivedData: {
-        select: { pageData: true, grades: true, overallGrade: true, requirementsMetrics: true },
+        select: { pageData: true, overallGrade: true, requirementsMetrics: true },
       },
     },
     ...getCacheStrategy(300), // ToDo: Invalidate on edit

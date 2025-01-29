@@ -49,7 +49,6 @@ model DerivedData {
   template          String?
   lastBuilderUpdate DateTime?
   pageData          String?
-  grades            Json?
   overallGrade      Float?
   ongoingRequirements Json?
   requirementsMetrics Json?

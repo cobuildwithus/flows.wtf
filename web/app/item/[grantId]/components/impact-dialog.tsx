@@ -14,7 +14,7 @@ import { RequirementsSection } from "./requirements-section"
 interface Props {
   grants: Array<
     Pick<Grant, "id" | "title" | "image"> & {
-      derivedData: Pick<DerivedData, "grades" | "overallGrade" | "requirementsMetrics"> | null
+      derivedData: Pick<DerivedData, "overallGrade" | "requirementsMetrics"> | null
       flow: Pick<Grant, "title">
     }
   >
@@ -32,7 +32,7 @@ export function ImpactDialog(props: Props) {
   const { grants, dialogTitle, user } = props
 
   // Return pending if any grant has no grades
-  if (grants.some((grant) => !grant.derivedData?.grades)) {
+  if (grants.some((grant) => !grant.derivedData?.overallGrade)) {
     return <PendingEvaluation user={user} />
   }
 
@@ -50,7 +50,7 @@ export function ImpactDialog(props: Props) {
 
           <div className="space-y-4">
             {lowestScoringGrant.requirementsMetrics
-              .slice(0, 4)
+              ?.slice(0, 4)
               .sort((a, b) => b.met - a.met)
               .map(({ name, met, explanation }) => (
                 <Grade
@@ -77,8 +77,8 @@ export function ImpactDialog(props: Props) {
 
         <div className="mt-4 text-right text-xs text-muted-foreground">
           {lowestScoringGrant.overallScore < 90
-            ? "*Scores update every 2 days when updates are posted"
-            : "*Scores update every 2 weeks"}
+            ? "*Calculated every 2 days on new updates. Based on last 3 months of updates"
+            : "*Calculated every 2 weeks. Based on last 3 months of updates"}
         </div>
       </DialogContent>
     </Dialog>

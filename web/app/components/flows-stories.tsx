@@ -51,7 +51,7 @@ function getStoriesAndGrants(recipient?: `0x${string}`) {
             title: true,
             image: true,
             derivedData: {
-              select: { overallGrade: true, grades: true, requirementsMetrics: true },
+              select: { overallGrade: true, requirementsMetrics: true },
             },
             flow: {
               select: {
