@@ -167,7 +167,7 @@ export default async function Page(props: Props) {
                           src={getIpfsUrl(url, "pinata")}
                           alt=""
                           fill
-                          className="rounded-lg object-cover"
+                          className="rounded-lg object-contain"
                         />
                       )}
                     </div>
