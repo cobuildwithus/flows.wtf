@@ -10,10 +10,12 @@ import { PendingEvaluation } from "./pending-evaluation"
 import type { User } from "@/lib/auth/user"
 import type { RequirementMetric } from "./requirements-section"
 import { RequirementsSection } from "./requirements-section"
+import { isGrantNew } from "@/app/flow/[flowId]/components/is-new"
+import { NewProgress } from "./new-progress"
 
 interface Props {
   grants: Array<
-    Pick<Grant, "id" | "title" | "image"> & {
+    Pick<Grant, "id" | "title" | "image" | "createdAt"> & {
       derivedData: Pick<DerivedData, "overallGrade" | "requirementsMetrics"> | null
       flow: Pick<Grant, "title">
     }
@@ -38,28 +40,25 @@ export function ImpactDialog(props: Props) {
 
   const grantsWithScores: GrantWithScore[] = getGrantsWithScoresAndMetrics(grants)
   const lowestScoringGrant = getLowestScoringGrant(grants)
+  const isNew = isGrantNew(lowestScoringGrant.grant)
+  const text = isNew ? "New builder" : "Impact Score"
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer space-y-6 rounded-xl border bg-card p-5 transition-all duration-300 hover:scale-[1.01] hover:border-primary/10">
           <div className="flex items-center space-x-4">
-            <CircularProgress value={lowestScoringGrant.overallScore} />
-            <span className="font-medium">{dialogTitle || "Impact Score"}</span>
+            {!isNew && <CircularProgress value={lowestScoringGrant.overallScore} />}
+            {isNew && <NewProgress disableTooltip />}
+            <span className="font-medium">{dialogTitle || text}</span>
           </div>
 
           <div className="space-y-4">
             {lowestScoringGrant.requirementsMetrics
               ?.slice(0, 4)
               .sort((a, b) => b.met - a.met)
-              .map(({ name, met, explanation }) => (
-                <Grade
-                  key={name}
-                  label={name}
-                  value={met}
-                  percentage={met}
-                  explanation={explanation}
-                />
+              .map(({ name, met }) => (
+                <Grade key={name} label={name} value={met} isNew={isNew} percentage={met} />
               ))}
           </div>
         </div>

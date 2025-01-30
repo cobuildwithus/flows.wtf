@@ -5,11 +5,11 @@ interface Props {
   label: string
   value: number | string
   percentage: number
-  explanation: string
+  isNew?: boolean
 }
 
 export function Grade(props: Props) {
-  const { label, value, percentage, explanation } = props
+  const { label, value, percentage, isNew } = props
 
   return (
     <div className="space-y-2">
@@ -19,7 +19,8 @@ export function Grade(props: Props) {
           className={cn("font-medium", {
             "text-green-500": percentage >= 80,
             "text-yellow-500 dark:text-yellow-300": percentage >= 60 && percentage < 80,
-            "text-red-500": percentage < 60,
+            "text-blue-500": isNew && percentage < 60,
+            "text-orange-500": !isNew && percentage < 60,
           })}
         >
           {value}
@@ -31,7 +32,8 @@ export function Grade(props: Props) {
         indicatorClassName={cn({
           "bg-green-500/90 dark:bg-green-500/70": percentage >= 80,
           "bg-yellow-500/90 dark:bg-yellow-500/70": percentage >= 60 && percentage < 80,
-          "bg-red-500/90 dark:bg-red-500/70": percentage < 60,
+          "bg-blue-500/90 dark:bg-blue-500/70": isNew && percentage < 60,
+          "bg-orange-500/90 dark:bg-orange-500/70": !isNew && percentage < 60,
         })}
       />
     </div>

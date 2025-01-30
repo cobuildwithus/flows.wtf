@@ -20,7 +20,7 @@ export function CircularProgress(props: Props) {
               value >= noggleCutoff,
             "fill-none stroke-green-500 dark:stroke-green-400": value >= 80 && value < noggleCutoff,
             "fill-none stroke-yellow-500 dark:stroke-yellow-400": value >= 60 && value < 80,
-            "fill-none stroke-red-500 dark:stroke-red-400": value < 60,
+            "fill-none stroke-orange-500 dark:stroke-orange-400": value < 60,
           })}
           strokeWidth="6"
           strokeLinecap="round"
@@ -42,7 +42,7 @@ export function CircularProgress(props: Props) {
               "text-xl font-bold": size > 48,
               "text-green-500 dark:text-green-400": value >= 80,
               "text-yellow-500 dark:text-yellow-400": value >= 60 && value < 80,
-              "text-red-500 dark:text-red-400": value < 60,
+              "text-orange-500 dark:text-orange-400": value < 60,
             })}
           >
             {value.toFixed(0)}

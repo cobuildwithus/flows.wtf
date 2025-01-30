@@ -1,14 +1,16 @@
 import { MonthlyBudget } from "@/app/components/monthly-budget"
 import { CircularProgress } from "@/app/item/[grantId]/components/circular-progress"
+import { NewProgress } from "@/app/item/[grantId]/components/new-progress"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Profile } from "@/components/user-profile/get-user-profile"
+import type { Profile } from "@/components/user-profile/get-user-profile"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
-import { DerivedData, Grant } from "@prisma/flows"
+import type { DerivedData, Grant } from "@prisma/flows"
 import Link from "next/dist/client/link"
 import Image from "next/image"
+import { isGrantNew } from "./is-new"
 
 interface Props {
   grant: Grant & { profile: Profile; derivedData: Pick<DerivedData, "overallGrade"> | null }
@@ -20,6 +22,7 @@ export function GrantCard({ grant }: Props) {
 
   const isChallenged = status === Status.ClearingRequested
   const isActive = !isDisputed && !isChallenged
+  const isNew = isGrantNew(grant)
 
   return (
     <article className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72">
@@ -40,7 +43,8 @@ export function GrantCard({ grant }: Props) {
           {isActive && <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />}
           {!isActive && <DisputedGrantTag />}
 
-          {grade && <CircularProgress value={grade} size={26} />}
+          {grade && !isNew && <CircularProgress value={grade} size={26} />}
+          {isNew && <NewProgress size={26} />}
         </div>
 
         <div className="mt-32 flex translate-y-[26px] flex-col transition-transform duration-300 group-hover:translate-y-0">

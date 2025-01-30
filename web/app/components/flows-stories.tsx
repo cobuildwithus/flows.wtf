@@ -50,6 +50,7 @@ function getStoriesAndGrants(recipient?: `0x${string}`) {
             recipient: true,
             title: true,
             image: true,
+            createdAt: true,
             derivedData: {
               select: { overallGrade: true, requirementsMetrics: true },
             },
