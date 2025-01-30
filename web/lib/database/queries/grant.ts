@@ -68,7 +68,6 @@ async function getActivityFromCasts(recipient: string, grantIds: string[], start
   const casts = await farcasterDb.cast.findMany({
     select: { timestamp: true, computed_tags: true },
     where: {
-      parent_hash: null,
       deleted_at: null,
       OR: [{ computed_tags: { hasSome: grantIds } }, { fid: user?.fid }],
       created_at: { gt: startDate },
@@ -131,7 +130,6 @@ export async function getGrantUpdates(grantIds: string | string[], startDate: Da
 
   const updates = await farcasterDb.cast.findMany({
     where: {
-      parent_hash: null,
       deleted_at: null,
       computed_tags: { hasSome: ids },
       created_at: { gt: startDate },

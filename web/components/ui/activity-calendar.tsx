@@ -4,7 +4,7 @@ import { CastCard } from "@/components/ui/cast-card"
 import { TooltipPortal } from "@radix-ui/react-tooltip"
 import { useTheme } from "next-themes"
 import dynamic from "next/dynamic"
-import { ComponentProps } from "react"
+import type { ComponentProps } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 
 const ReactActivityCalendar = dynamic(() =>
