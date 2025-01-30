@@ -152,7 +152,7 @@ export default async function GrantPage(props: Props) {
             </div>
           ))}
 
-          <Metrics metrics={data.metrics} />
+          {/* <Metrics metrics={data.metrics} /> Hide for now - can reuse once we have impact data */}
 
           <Media media={data.media} />
         </div>

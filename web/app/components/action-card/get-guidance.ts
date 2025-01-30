@@ -1,3 +1,4 @@
+import { isProduction } from "@/lib/utils"
 import { kv } from "@vercel/kv"
 import { cache } from "react"
 import { z } from "zod"
@@ -20,14 +21,18 @@ export const getGuidance = cache(
     if (!address) return defaultGuidance
 
     try {
-      const { data: cachedGuidance } = schema.safeParse(await kv.get(cacheKey(address)))
-      if (cachedGuidance) return cachedGuidance
+      if (isProduction()) {
+        const { data: cachedGuidance } = schema.safeParse(await kv.get(cacheKey(address)))
+        if (cachedGuidance) return cachedGuidance
+      }
 
       if (!identityToken) throw new Error(`Missing identity token for user ${address}`)
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_CHAT_API_URL}/api/guidance`, {
         headers: { "privy-id-token": identityToken },
       })
+
+      if (!response.ok) throw new Error(`Failed to fetch guidance! ${response.statusText}`)
 
       const { data: guidance, error } = schema.safeParse({
         text: await response.text(),
@@ -46,7 +51,7 @@ export const getGuidance = cache(
 )
 
 export function cacheKey(address: string) {
-  return `guidance-v15b-${address?.toLowerCase()}`
+  return `guidance-v15g-${address?.toLowerCase()}`
 }
 
 const defaultGuidance: Guidance = {

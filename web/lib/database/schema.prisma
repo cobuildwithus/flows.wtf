@@ -45,11 +45,11 @@ model DerivedData {
   grant Grant @relation(fields: [grantId], references: [id])
 
   // derived data here (generated from ai etc.)
-  minimumSalary     Int?
-  template          String?
-  lastBuilderUpdate DateTime?
-  pageData          String?
-  overallGrade      Float?
+  minimumSalary       Int?
+  template            String?
+  lastBuilderUpdate   DateTime?
+  pageData            String?
+  overallGrade        Float?
   ongoingRequirements Json?
   requirementsMetrics Json?
 
@@ -185,14 +185,6 @@ view Vote {
 
   @@index([contract])
   @@index([recipientId])
-  @@schema("onchain")
-}
-
-view PonderMeta {
-  key   String @id
-  value String
-
-  @@map("_ponder_meta")
   @@schema("onchain")
 }
 
