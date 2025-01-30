@@ -11,10 +11,6 @@
     {
       "path": "/crons/conversion-rates",
       "schedule": "*/10 * * * *"
-    },
-    {
-      "path": "/crons/total-earned",
-      "schedule": "*/20 * * * *"
     }
   ]
 }
