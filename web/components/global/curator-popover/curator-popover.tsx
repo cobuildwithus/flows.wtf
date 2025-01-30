@@ -97,10 +97,14 @@ export const CuratorPopover = (props: Props) => {
                   <TabsTrigger value="voted">Voted</TabsTrigger>
                 </TabsList>
                 <TabsContent value="active">
-                  <CuratorGrants closePopover={closePopover} grants={activeSubgrants} />
+                  <CuratorGrants
+                    type="active"
+                    closePopover={closePopover}
+                    grants={activeSubgrants}
+                  />
                 </TabsContent>
                 <TabsContent value="voted">
-                  <CuratorGrants closePopover={closePopover} grants={votedSubgrants} />
+                  <CuratorGrants type="voted" closePopover={closePopover} grants={votedSubgrants} />
                 </TabsContent>
               </Tabs>
 

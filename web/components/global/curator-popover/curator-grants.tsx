@@ -6,10 +6,11 @@ import { ActiveCuratorGrant } from "./hooks/get-user-tcr-tokens"
 interface ActiveCuratorGrantsProps {
   grants: ActiveCuratorGrant[]
   closePopover: () => void
+  type: "voted" | "active"
 }
 
 export function CuratorGrants(props: ActiveCuratorGrantsProps) {
-  const { grants, closePopover } = props
+  const { grants, closePopover, type } = props
 
   if (grants.length === 0) {
     return (
@@ -22,7 +23,11 @@ export function CuratorGrants(props: ActiveCuratorGrantsProps) {
   return (
     <div className="flex flex-col divide-y divide-border">
       {grants
-        .sort((a, b) => a.challengePeriodEndsAt - b.challengePeriodEndsAt)
+        .sort((a, b) =>
+          type === "voted"
+            ? b.disputes[0].revealPeriodEndTime - a.disputes[0].revealPeriodEndTime
+            : a.challengePeriodEndsAt - b.challengePeriodEndsAt,
+        )
         .map((grant) => (
           <ActiveCuratorGrantRow closePopover={closePopover} key={grant.title} grant={grant} />
         ))}
