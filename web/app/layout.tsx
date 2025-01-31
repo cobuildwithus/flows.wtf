@@ -76,7 +76,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
               {children}
               <Toaster />
               <Analytics />
-              <CommandPalette identityToken={identityToken} />
+              {identityToken && <CommandPalette identityToken={identityToken} />}
             </Wagmi>
           </TooltipProvider>
         </ThemeProvider>
