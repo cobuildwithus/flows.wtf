@@ -68,6 +68,7 @@ async function handleRecipientCreated(params: {
     ...metadata,
     recipient,
     updatedAt: Number(event.block.timestamp),
+    activatedAt: Number(event.block.timestamp),
     isActive: true,
   })
 
