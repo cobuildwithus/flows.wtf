@@ -1,0 +1,27 @@
+---
+description: General rules you should always follow
+globs: 
+---
+## Code Style and Structure
+- Write concise, readable TypeScript code
+- Use functional and declarative programming patterns; avoid classes
+- Follow DRY (Don't Repeat Yourself) principle
+- Implement early returns for better readability
+
+## Naming Conventions
+- Use lowercase with dashes (kebab-case) for directories (e.g., components/auth-wizard) and files (e.g. my-component.tsx)
+- Use descriptive names with auxiliary verbs (isLoading, hasError)
+- Favor named exports.
+
+## TypeScript Usage
+- Use TypeScript for all code
+- Prefer interfaces over types
+- Avoid enums; use const maps instead
+- Implement proper type safety and inference
+
+## Syntax and Formatting
+- Use the "function" keyword for pure functions
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements
+
+## Other
+- Try to limit installing new packages whenever it makes sense to add code directly to the project. Less dependencies are good for performance

@@ -1,0 +1,100 @@
+---
+description: Information about the project
+globs: 
+---
+# Flows.wtf Platform Overview
+
+## Core Concept
+Flows is a decentralized grant program that provides continuous funding to builders through streaming payments. The platform enables real-time compensation for work, with funds being streamed every second to grant recipients.
+
+## Key Components
+
+### Grants
+- Grants are organized into categories called "flows"
+- Each flow has specific rules, guidelines, and requirements
+- Recipients receive continuous streaming payments based on their performance
+- Grants can be voted on by community members, affecting the streaming rate
+- Maximum of 2 active grants per user
+
+### Application Process
+- Builders apply through structured templates specific to each flow
+- Applications require:
+  - Title
+  - Description (following flow-specific template)
+  - Image
+  - Optional tagline
+- Applications are publicly visible and can be discussed by the community
+
+### Monitoring & Evaluation
+- Grant recipients are expected to share regular updates on Farcaster
+- Progress is tracked through:
+  - Stories (documented by Dr Gonzo)
+  - Social media engagement
+  - Community feedback
+  - Impact metrics
+- Grant grades and streaming rates adjust based on performance
+
+### Community Integration
+- Deep integration with Farcaster for social engagement
+- Community voting system affects grant funding
+- Public discourse and feedback loops
+- Focus on nounish values:
+  - Do good with no expectation of return
+  - Create positive externalities
+  - Embrace absurdity & difference
+  - Teach people about nouns & crypto
+  - Have fun
+
+### Technical Infrastructure
+- Built on blockchain technology for transparent fund distribution
+- Integrated with Farcaster for social engagement
+- Automated evaluation systems
+- AI-powered assistance and documentation
+
+# Grant System Details
+
+## Streaming Mechanics
+- Grants receive continuous funding through streaming payments
+- Flow rates adjust based on performance and community votes
+- Each grant is tied to a specific flow (category) with unique requirements
+- Maximum 2 active grants per user address
+
+## Grant Lifecycle
+- Application submission through flow-specific templates
+- Community voting and feedback period
+- Continuous performance monitoring
+- Regular builder updates on Farcaster
+- Story documentation by Dr Gonzo
+
+# Community & Social Elements
+
+## Farcaster Integration
+- All builder updates happen on Farcaster
+- Stories and threads are published to Farcaster
+- Community discussion and feedback occurs in Flows channel
+- Builders are tagged using their Farcaster names (@fname)
+
+## Voting System
+- Community members can vote on grants
+- Votes affect streaming rates
+- Voting power is tied to token ownership
+- Votes are recorded on-chain
+
+
+# Platform Technical Details
+
+## Data Structure
+- Grants are stored in onchain schema
+- Stories and derived data in web schema
+- Each grant has associated:
+  - Derived data (grades, templates, etc)
+  - Stories (documentation of progress)
+  - Votes (community feedback)
+  - Builder updates (via Farcaster)
+
+## Automation
+- Automatic template generation for flows
+- Story generation from builder updates
+- Embedding generation for content search
+- Automated performance grading
+- Streaming rate adjustments based on grades

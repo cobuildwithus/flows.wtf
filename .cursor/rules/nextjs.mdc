@@ -1,0 +1,35 @@
+---
+description: Rules about writing code in Next.js app
+globs: web/*
+---
+## General rules
+- Follow best practices for React 19 and Next.js 15 (app folder)
+- Favor React Server Components (RSC) where possible
+- Implement proper error boundaries
+- Use Suspense for async operations
+- Optimize for performance and Web Vitals
+- Minimize client-side state
+
+## Performance Optimization
+- Minimize 'use client', 'useEffect', and 'setState' usage
+- Use dynamic loading for non-critical components (next/dynamic)
+- Optimize Web Vitals (LCP, CLS, FID).
+
+## UI and Styling
+- Use Shadcn UI, Radix, and Tailwind for components and styling
+- Implement responsive design with Tailwind CSS; use a mobile-first approach
+- If possible use components we already have in web/components/ui directory
+- For component props interface name use just "Props"
+
+
+### Async Request APIs
+
+```typescript
+// Always use async versions of runtime APIs
+const cookieStore = await cookies()
+const headersList = await headers()
+const { isEnabled } = await draftMode()
+
+// Handle async params in layouts/pages
+const params = await props.params
+const searchParams = await props.searchParams

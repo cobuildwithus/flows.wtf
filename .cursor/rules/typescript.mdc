@@ -1,0 +1,47 @@
+---
+description: Use these rules whenever you're about to write Typescript code
+globs: *.tsx, *.ts
+---
+# TypeScript General Guidelines
+
+## Basic Principles
+- Use English for all code and documentation
+- Always declare explicit types for variables and functions
+  - Avoid using "any"
+  - Create precise, descriptive types
+- Write self-documenting, intention-revealing code
+
+## Nomenclature
+- Use PascalCase for classes and interfaces
+- Use camelCase for variables, functions, methods
+- Use kebab-case for file and directory names
+- Use UPPERCASE for environment variables and constants
+- Start function names with a verb
+- Use verb-based names for boolean variables:
+  - isLoading, hasError, canDelete
+- Use complete words, avoiding unnecessary abbreviations
+  - Exceptions: standard abbreviations like API, URL
+  - Accepted short forms: 
+    - i, j for loop indices
+    - err for errors
+    - ctx for contexts
+
+## Functions
+- Write concise, single-purpose functions
+  - Aim for less than 20-30 lines of code
+- Name functions descriptively with a verb
+- Minimize function complexity:
+  - Use early returns
+  - Extract complex logic to utility functions
+- Leverage functional programming techniques:
+  - Prefer map, filter, reduce
+  - Use arrow functions for simple operations
+  - Use named functions for complex logic
+- Use object parameters for multiple arguments
+- Maintain a single level of abstraction
+
+## Code Quality
+- Follow SOLID principles
+- Prefer composition over inheritance
+- Write clean, readable, and maintainable code
+- Continuously refactor and improve code structure

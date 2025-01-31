@@ -1,0 +1,42 @@
+---
+description: Use these rules whenever you write DB queries with Prisma
+globs: web/*
+---
+# Prisma
+
+## Schema Design
+- Use meaningful, domain-driven model names
+- Leverage Prisma schema features:
+  - Use @id for primary keys
+  - Use @unique for natural unique identifiers
+  - Utilize @relation for explicit relationship definitions
+- Keep schemas normalized and DRY
+- Use meaningful field names and types
+- Use Prisma's native type decorators
+
+## Prisma Client Usage
+- Always use type-safe Prisma client operations
+- Handle optional relations explicitly
+- Use Prisma's filtering and pagination capabilities
+- Log detailed error information for debugging
+
+## Performance Considerations
+- Use select and include judiciously
+- Avoid N+1 query problems
+- Use findMany with take and skip for pagination
+- Leverage Prisma's distinct for unique results
+- Profile and optimize database queries
+- When selecting data select only columns that are needed
+
+## Security Best Practices
+- Never expose raw Prisma client in APIs
+- Do import "server-only" package to ensure DB is not exposed to the client
+- Use input validation before database operations
+- Implement row-level security
+- Sanitize and validate all user inputs
+- Use Prisma's built-in protections against SQL injection
+
+## Coding Style
+- Keep Prisma-related code in dedicated repositories/modules
+- Separate data access logic from business logic
+
