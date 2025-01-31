@@ -61,10 +61,6 @@ export async function postToEmbeddingsQueueRequest(payload: JobBody) {
   }
 }
 
-export async function postBulkToEmbeddingsQueueRequest(payloads: JobBody[]) {
-  await makeRequest("/bulk-add-job", { jobs: payloads })
-}
-
 export async function deleteEmbeddingRequest(contentHash: string, type: EmbeddingType) {
   await makeRequest("/delete-embedding", { contentHash, type })
 }

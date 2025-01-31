@@ -1,7 +1,7 @@
 import "server-only"
 
 import { cn } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { ActionCard } from "./action-card/action-card"
 import { HomepageActivity } from "./homepage-activity"
 

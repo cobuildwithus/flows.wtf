@@ -18,6 +18,8 @@ import { Roboto_Mono } from "next/font/google"
 import Image from "next/image"
 import Link from "next/link"
 import "./globals.css"
+import CommandPalette from "./components/search/command-dialog"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -33,7 +35,12 @@ export const viewport = {
 export default async function RootLayout(props: Readonly<{ children: React.ReactNode }>) {
   const { children } = props
 
-  const [pool, user, sessionPresent] = await Promise.all([getPool(), getUser(), hasSession()])
+  const [pool, user, sessionPresent, identityToken] = await Promise.all([
+    getPool(),
+    getUser(),
+    hasSession(),
+    getPrivyIdToken(),
+  ])
 
   return (
     <html lang="en" suppressHydrationWarning className="h-full">
@@ -69,6 +76,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
               {children}
               <Toaster />
               <Analytics />
+              <CommandPalette identityToken={identityToken} />
             </Wagmi>
           </TooltipProvider>
         </ThemeProvider>
