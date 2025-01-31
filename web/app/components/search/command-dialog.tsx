@@ -7,6 +7,7 @@ import { DialogTitle } from "@radix-ui/react-dialog"
 import { ResultSection } from "./result-section"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 
 interface Props {
   identityToken?: string
@@ -17,6 +18,8 @@ const CommandPalette = ({ identityToken }: Props) => {
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
   const hasSearched = debouncedSearch.length > 0
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   const { results, isLoading } = useSearchEmbeddings(
     {
@@ -26,6 +29,13 @@ const CommandPalette = ({ identityToken }: Props) => {
     },
     identityToken,
   )
+
+  // Check URL for search param on mount
+  useEffect(() => {
+    if (searchParams.has("search")) {
+      setOpen(true)
+    }
+  }, [searchParams])
 
   // Debounce search input
   useEffect(() => {
@@ -52,8 +62,17 @@ const CommandPalette = ({ identityToken }: Props) => {
     return null
   }
 
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open)
+    if (!open) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete("search")
+      router.replace(url.pathname + url.search)
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="!rounded-2xl p-0 sm:max-w-[550px] [&>button]:hidden">
         <div className="hidden">
           <DialogTitle>Search</DialogTitle>

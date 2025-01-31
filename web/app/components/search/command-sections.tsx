@@ -25,8 +25,8 @@ export function CommandItem({ icon, text }: CommandItemProps) {
   return (
     <div className="relative flex select-none items-center rounded-sm px-3 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground">
       <div className="flex flex-1 items-center gap-3">
-        {icon}
-        <span>{text}</span>
+        <div className="flex-shrink-0">{icon}</div>
+        <span className="ellipsis line-clamp-1">{text}</span>
       </div>
     </div>
   )
