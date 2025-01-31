@@ -2,8 +2,9 @@ import "server-only"
 
 import { getShortEthAddress } from "@/lib/utils"
 import { Suspense, type JSX } from "react"
-import { getUserProfile, Profile } from "./get-user-profile"
+import { getUserProfile, type Profile } from "./get-user-profile"
 import { UserProfilePopover } from "./user-popover"
+import { ProfileLink } from "./profile-link"
 
 type Props = {
   address: `0x${string}`
@@ -27,7 +28,13 @@ const UserProfileInner = async (props: Props) => {
   const profile = await getUserProfile(address)
 
   if (withPopover) {
-    return <UserProfilePopover profile={profile}>{children(profile)}</UserProfilePopover>
+    return (
+      <UserProfilePopover profile={profile}>
+        <ProfileLink username={profile.username} address={profile.address}>
+          {children(profile)}
+        </ProfileLink>
+      </UserProfilePopover>
+    )
   }
 
   return children(profile)

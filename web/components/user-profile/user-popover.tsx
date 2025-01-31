@@ -1,11 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { explorerUrl } from "@/lib/utils"
 import { HoverCardPortal } from "@radix-ui/react-hover-card"
 import { ExternalLinkIcon } from "@radix-ui/react-icons"
-import { PropsWithChildren } from "react"
-import { base } from "viem/chains"
-import { Profile } from "./get-user-profile"
+import type { PropsWithChildren } from "react"
+import type { Profile } from "./get-user-profile"
+import { ProfileLink } from "./profile-link"
 
 interface Props {
   profile: Profile
@@ -26,19 +25,11 @@ export const UserProfilePopover = (props: PropsWithChildren<Props>) => {
               <AvatarFallback>{display_name.slice(0, 2)}</AvatarFallback>
             </Avatar>
             <div>
-              <h4 className="flex items-center text-sm font-semibold">
-                {display_name}
-                <a
-                  href={
-                    username
-                      ? `https://warpcast.com/${username}`
-                      : explorerUrl(address, base.id, "address")
-                  }
-                  className="ml-1.5 text-muted-foreground transition-colors hover:text-foreground"
-                  target="_blank"
-                >
+              <h4 className="flex flex-row items-center space-x-1.5 text-sm font-semibold">
+                <span>{display_name}</span>
+                <ProfileLink username={username} address={address}>
                   <ExternalLinkIcon className="size-3.5" />
-                </a>
+                </ProfileLink>
               </h4>
               {bio && <p className="mt-0.5 text-xs text-muted-foreground">{bio}</p>}
             </div>

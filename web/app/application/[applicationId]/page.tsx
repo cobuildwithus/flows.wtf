@@ -16,7 +16,7 @@ import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { getEthAddress, getIpfsUrl, isProduction } from "@/lib/utils"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 import { StatusDisputed } from "./components/status-disputed"
@@ -128,6 +128,21 @@ export default async function ApplicationPage(props: Props) {
                     </UserProfile>
                   </div>
                 </div>
+
+                <div>
+                  <h4 className="text-[13px] text-muted-foreground">Sponsor</h4>
+                  <div className="mt-1 flex space-x-0.5">
+                    <UserProfile address={getEthAddress(grant.submitter)}>
+                      {(profile) => (
+                        <Avatar className="size-7 bg-accent text-xs">
+                          <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+                          <AvatarFallback>{profile.display_name[0].toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                      )}
+                    </UserProfile>
+                  </div>
+                </div>
+
                 <div>
                   <h4 className="text-[13px] text-muted-foreground">Created At</h4>
                   <DateTime
@@ -145,11 +160,6 @@ export default async function ApplicationPage(props: Props) {
                 <div>
                   <h4 className="mb-1 text-[13px] text-muted-foreground">Type</h4>
                   <p className="text-sm">{isFlow ? "Flow" : "Grant"}</p>
-                </div>
-
-                <div>
-                  <h4 className="mb-1 text-[13px] text-muted-foreground">Challenged</h4>
-                  <p className="text-sm">{grant.isDisputed ? "Yes" : "No"}</p>
                 </div>
               </div>
             </CardContent>

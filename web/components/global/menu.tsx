@@ -2,24 +2,29 @@
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { useAuthenticated } from "@/lib/auth/use-authenticated"
 import { cn } from "@/lib/utils"
 import { HamburgerMenuIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
 import { useSelectedLayoutSegments } from "next/navigation"
 import { useState } from "react"
 
-const options = [
+const publicOptions = [
   { name: "Flows", href: "/" },
   { name: "Explore", href: "/explore" },
   { name: "Apply", href: "/apply" },
   { name: "About", href: "/about" },
   { name: "Curate", href: "/curate" },
+] as { name: string; href: string; icon?: React.ReactNode }[]
+
+const authenticatedOptions = [
   { name: "Search", href: "?search", icon: <MagnifyingGlassIcon className="size-5" /> },
 ] as { name: string; href: string; icon?: React.ReactNode }[]
 
 export function MenuMobile() {
   const [open, setOpen] = useState(false)
   const menu = useMenu()
+  const { authenticated } = useAuthenticated()
 
   return (
     <div className="lg:hidden">
@@ -84,6 +89,12 @@ export function MenuDesktop() {
 
 function useMenu() {
   const segments = useSelectedLayoutSegments()
+  const { authenticated } = useAuthenticated()
+
+  const options = [...publicOptions]
+  if (authenticated) {
+    options.push(...authenticatedOptions)
+  }
 
   return options.map((option) => {
     return {

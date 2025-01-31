@@ -37,11 +37,11 @@ export const MenuAvatar = (props: Props) => {
       {user && (
         <Popover>
           <PopoverTrigger>
-            <div className="flex h-[26px] items-center space-x-1.5 rounded-full bg-secondary pr-2.5 transition-opacity hover:bg-accent">
+            <div className="flex h-[26px] items-center rounded-full bg-secondary transition-opacity hover:bg-accent md:space-x-1.5 md:pr-2.5">
               <Avatar className="size-[26px] bg-accent text-xs">
                 <AvatarImage src={user.avatar} alt={user.username} />
               </Avatar>
-              <span className="min-w-2 py-0.5 text-xs font-semibold text-secondary-foreground">
+              <span className="hidden text-xs font-semibold text-secondary-foreground md:block md:min-w-2 md:py-0.5">
                 {votingPower?.toString()}
               </span>
             </div>
