@@ -15,7 +15,7 @@ import { NewProgress } from "./new-progress"
 
 interface Props {
   grants: Array<
-    Pick<Grant, "id" | "title" | "image" | "createdAt"> & {
+    Pick<Grant, "id" | "title" | "image" | "activatedAt"> & {
       derivedData: Pick<DerivedData, "overallGrade" | "requirementsMetrics"> | null
       flow: Pick<Grant, "title">
     }

@@ -85,7 +85,7 @@ export const StatusNotDisputed = async (props: Props) => {
     <div className="flex grow flex-col justify-between space-y-4 text-sm">
       <div className="space-y-4">
         <li className="text-muted-foreground">
-          Created <DateTime date={new Date(grant.createdAt * 1000)} relative />
+          Created <DateTime date={new Date(grant.activatedAt || grant.createdAt * 1000)} relative />
         </li>
         <li className="text-muted-foreground">
           Curators of the &quot;{flow.title}&quot; flow can request the removal of this{" "}
