@@ -1,5 +1,5 @@
 import { createConfig } from "@privy-io/wagmi"
-import { webSocket } from "wagmi"
+import { http, webSocket } from "wagmi"
 import { base, baseSepolia, Chain, mainnet } from "wagmi/chains"
 
 declare module "wagmi" {
@@ -13,18 +13,9 @@ export const chains = [base, baseSepolia, mainnet] satisfies Chain[]
 export const config = createConfig({
   chains: chains as any,
   transports: {
-    [base.id]: webSocket(getRpcUrl(base, "ws"), {
-      retryCount: 5, // Number of reconnection attempts
-      retryDelay: 1000, // Delay between retries in milliseconds
-    }),
-    [baseSepolia.id]: webSocket(getRpcUrl(baseSepolia, "ws"), {
-      retryCount: 5, // Number of reconnection attempts
-      retryDelay: 1000, // Delay between retries in milliseconds
-    }),
-    [mainnet.id]: webSocket(getRpcUrl(mainnet, "ws"), {
-      retryCount: 5, // Number of reconnection attempts
-      retryDelay: 1000, // Delay between retries in milliseconds
-    }),
+    [base.id]: http(getRpcUrl(base, "http")),
+    [baseSepolia.id]: http(getRpcUrl(baseSepolia, "http")),
+    [mainnet.id]: http(getRpcUrl(mainnet, "http")),
   },
 
   batch: { multicall: { wait: 32, batchSize: 2048 } },
