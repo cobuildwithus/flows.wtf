@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { Command, useCommandState } from "cmdk"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useDeferredValue, useEffect, useState } from "react"
 import { useSearchEmbeddings } from "./use-search-embeddings"
 
@@ -18,6 +18,7 @@ export default function CommandPalette({ identityToken }: Props) {
   const deferredQuery = useDeferredValue(query)
   const [open, setOpen] = useState(false)
   const hasSearched = deferredQuery.length > 0
+  const searchParams = useSearchParams()
 
   const { results, isLoading } = useSearchEmbeddings(
     { query: deferredQuery, types: ["grant"], numResults: 7 },
@@ -39,6 +40,13 @@ export default function CommandPalette({ identityToken }: Props) {
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
   }, [])
+
+  // Check URL for search param on mount
+  useEffect(() => {
+    if (searchParams.has("search")) {
+      setOpen(true)
+    }
+  }, [searchParams])
 
   const handleSelect = (path: string) => {
     router.push(path)

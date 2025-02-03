@@ -15,16 +15,20 @@ const publicOptions = [
   { name: "Apply", href: "/apply" },
   { name: "About", href: "/about" },
   { name: "Curate", href: "/curate" },
-] as { name: string; href: string; icon?: React.ReactNode }[]
+] as { name: string; href: string; icon?: React.ReactNode; mobileOnly?: boolean }[]
 
 const authenticatedOptions = [
-  { name: "Search", href: "?search", icon: <MagnifyingGlassIcon className="size-5" /> },
-] as { name: string; href: string; icon?: React.ReactNode }[]
+  {
+    name: "Search",
+    href: "?search",
+    icon: <MagnifyingGlassIcon className="size-5" />,
+    mobileOnly: true,
+  },
+] as { name: string; href: string; icon?: React.ReactNode; mobileOnly?: boolean }[]
 
 export function MenuMobile() {
   const [open, setOpen] = useState(false)
   const menu = useMenu()
-  const { authenticated } = useAuthenticated()
 
   return (
     <div className="lg:hidden">
@@ -67,22 +71,24 @@ export function MenuDesktop() {
 
   return (
     <nav className="hidden lg:flex lg:grow lg:flex-row lg:justify-center lg:space-x-8">
-      {menu.map(({ name, href, isCurrent, icon }) => (
-        <Link
-          key={name}
-          href={href}
-          className={cn(
-            "underline-primary group flex items-center gap-1.5 px-1 font-medium tracking-tight underline-offset-8",
-            {
-              "text-primary underline": isCurrent,
-              "text-muted-foreground hover:text-foreground": !isCurrent,
-            },
-          )}
-        >
-          <span>{name}</span>
-          {icon}
-        </Link>
-      ))}
+      {menu
+        .filter(({ mobileOnly }) => !mobileOnly)
+        .map(({ name, href, isCurrent, icon }) => (
+          <Link
+            key={name}
+            href={href}
+            className={cn(
+              "underline-primary group flex items-center gap-1.5 px-1 font-medium tracking-tight underline-offset-8",
+              {
+                "text-primary underline": isCurrent,
+                "text-muted-foreground hover:text-foreground": !isCurrent,
+              },
+            )}
+          >
+            <span>{name}</span>
+            {icon}
+          </Link>
+        ))}
     </nav>
   )
 }
