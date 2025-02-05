@@ -1,6 +1,6 @@
 ---
-description: General rules you should always follow
-globs: 
+description: Global coding standards and practices for all files
+globs: *
 ---
 ## Code Style and Structure
 - Write concise, readable TypeScript code
