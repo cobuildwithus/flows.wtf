@@ -1,6 +1,6 @@
 ---
-description: Rules about writing code in Next.js app
-globs: web/*
+description: Next.js and React specific development guidelines
+globs: *
 ---
 ## General rules
 - Follow best practices for React 19 and Next.js 15 (app folder)

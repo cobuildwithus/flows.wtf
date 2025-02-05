@@ -1,6 +1,6 @@
 ---
-description: Information about the project
-globs: 
+description: Core platform documentation and concepts - reference for all development
+globs: *
 ---
 # Flows.wtf Platform Overview
 

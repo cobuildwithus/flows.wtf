@@ -1,5 +1,5 @@
 ---
-description: Use these rules whenever you're about to write Typescript code
+description: TypeScript coding standards and type system usage
 globs: *.tsx, *.ts
 ---
 # TypeScript General Guidelines

@@ -1,6 +1,6 @@
 ---
-description: Use these rules whenever you write DB queries with Prisma
-globs: web/*
+description: Database access patterns and Prisma query guidelines
+globs: *
 ---
 # Prisma
 
