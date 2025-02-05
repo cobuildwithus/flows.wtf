@@ -50,7 +50,7 @@ export default async function ApplicationPage(props: Props) {
 
   const grant = await database.grant.findUniqueOrThrow({
     where: { id: applicationId },
-    include: { flow: true, disputes: true },
+    include: { flow: true, disputes: { include: { evidences: true } } },
   })
 
   if (grant.isActive && isProduction()) return redirect(`/item/${grant.id}`)

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { cn } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { StatusDisputed } from "./status-disputed"
 import { StatusNotDisputed } from "./status-not-disputed"
 

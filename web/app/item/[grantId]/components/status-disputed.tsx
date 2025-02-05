@@ -11,8 +11,9 @@ import { DateTime } from "@/components/ui/date-time"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { getEthAddress } from "@/lib/utils"
-import { Dispute, Grant } from "@prisma/flows"
+import type { Dispute, Evidence, Grant } from "@prisma/flows"
 import dynamic from "next/dynamic"
+import { Status } from "@/lib/enums"
 
 const DisputeExecuteButton = dynamic(() =>
   import("@/app/components/dispute/dispute-execute").then((mod) => mod.DisputeExecuteButton),
@@ -24,7 +25,7 @@ const VotesTicker = dynamic(() =>
 
 interface Props {
   grant: Grant
-  dispute: Dispute
+  dispute: Dispute & { evidences: Evidence[] }
   flow: Grant
 }
 
@@ -80,25 +81,45 @@ export async function StatusDisputed(props: Props) {
   }
 
   async function Challenger() {
+    console.log({ dispute })
     return (
       <li>
-        <UserProfile address={getEthAddress(dispute.challenger)}>
-          {(profile) => <span className="font-medium">{profile.display_name}</span>}
-        </UserProfile>
-        <span> requested removal of this {grant.isFlow ? "flow" : "grant"}.</span>
+        {grant.status === Status.ClearingRequested && grant.isDisputed && (
+          <>
+            <UserProfile address={getEthAddress(dispute.evidences[0].party)}>
+              {(profile) => <span className="font-medium">{profile.display_name}</span>}
+            </UserProfile>{" "}
+            <span> requested removal. </span>
+            <UserProfile address={getEthAddress(dispute.challenger)}>
+              {(profile) => <span className="font-medium">{profile.display_name}</span>}
+            </UserProfile>
+            <span> challenged the request.</span>
+          </>
+        )}
       </li>
     )
   }
 
   async function Evidence() {
-    const evidence = await database.evidence.findFirst({
+    const evidence = await database.evidence.findMany({
       where: { evidenceGroupID: grant.evidenceGroupID },
       orderBy: { blockNumber: "asc" },
     })
 
     if (!evidence) return null
 
-    return <li>{formatEvidence(evidence.evidence)}</li>
+    return (
+      <>
+        {evidence.map((e) => (
+          <li key={e.id}>
+            <UserProfile address={getEthAddress(e.party)}>
+              {(profile) => <span className="font-medium">{profile.display_name}</span>}
+            </UserProfile>{" "}
+            {formatEvidence(e.evidence)}
+          </li>
+        ))}
+      </>
+    )
   }
 
   function VotingStartDate() {
