@@ -98,23 +98,15 @@ function isPendingRequest(status: number) {
 
 export function formatEvidence(evidence: string) {
   if (!evidence.includes(" || ")) {
-    return (
-      <>
-        reasoning:
-        <div className="mt-1 pl-5 text-muted-foreground">{evidence}</div>
-      </>
-    )
+    return <div className="mt-1 pl-5 text-muted-foreground">{evidence}</div>
   }
 
   const groups = evidence.split(" || ")
   const [type, ...comments] = groups
   return (
-    <>
-      reasoning:
-      <div className="mt-1 pl-5 text-muted-foreground">
-        <strong className="font-medium capitalize">{type.replaceAll("-", " ")}</strong>
-        {comments.length > 0 && ` - ${comments.join(" ")}`}
-      </div>
-    </>
+    <div className="mt-1 pl-5 text-muted-foreground">
+      <strong className="font-medium capitalize">{type.replaceAll("-", " ")}</strong>
+      {comments.length > 0 && ` - ${comments.join(" ")}`}
+    </div>
   )
 }

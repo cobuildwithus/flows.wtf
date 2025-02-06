@@ -13,8 +13,8 @@ import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
 import { getIpfsUrl } from "@/lib/utils"
-import { DerivedData } from "@prisma/flows"
-import { Metadata } from "next"
+import type { DerivedData } from "@prisma/flows"
+import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { Suspense } from "react"
 import { Builder } from "./cards/builder"
@@ -22,7 +22,6 @@ import { CoverImage } from "./cards/cover-image"
 import { FocusCard } from "./cards/focus"
 import { HowCard } from "./cards/how"
 import { Media } from "./cards/media"
-import { Metrics } from "./cards/metrics"
 import { Plan } from "./cards/plan"
 import { Stats } from "./cards/stats"
 import { Timeline } from "./cards/timeline"
@@ -35,7 +34,7 @@ import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { GrantStories } from "./components/grant-stories"
 import { ImpactDialog } from "./components/impact-dialog"
-import { GrantPageData } from "./page-data/schema"
+import type { GrantPageData } from "./page-data/schema"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -200,7 +199,7 @@ function getPageData(derivedData: Pick<DerivedData, "pageData"> | null): GrantPa
 
 async function getGrant(grantId: string) {
   return database.grant.findUniqueOrThrow({
-    where: { id: grantId, isActive: true, isTopLevel: false },
+    where: { id: grantId, isTopLevel: false },
     include: {
       flow: true,
       derivedData: {

@@ -33,7 +33,22 @@ export const StatusNotDisputed = async (props: Props) => {
     where: { evidenceGroupID: grant.evidenceGroupID },
   })
 
-  console.log({ evidence })
+  if (grant.isRemoved) {
+    return (
+      <div className="flex grow flex-col justify-between space-y-4 text-sm">
+        <li>
+          The {grant.isFlow ? "flow" : "grant"} has been{" "}
+          <span className="font-medium text-orange-500">removed</span>.
+        </li>
+        {evidence && (
+          <>
+            {evidence.party && <Challenger address={getEthAddress(evidence.party)} />}
+            {evidence.evidence && <>{formatEvidence(evidence.evidence)}</>}
+          </>
+        )}
+      </div>
+    )
+  }
 
   if (canRequestBeExecuted(grant)) {
     return (
