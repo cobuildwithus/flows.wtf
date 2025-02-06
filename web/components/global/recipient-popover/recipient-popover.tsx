@@ -17,7 +17,7 @@ import { AnimatedSalary } from "../animated-salary"
 import { WithdrawSalaryButton } from "../withdraw-salary-button"
 import { useUserGrants } from "./use-user-grants"
 import SignInWithNeynar from "../signin-with-neynar"
-import { User } from "@/lib/auth/user"
+import type { User } from "@/lib/auth/user"
 
 interface Props {
   user: User
@@ -64,7 +64,7 @@ export const RecipientPopover = (props: Props) => {
                 You&apos;re earning <Currency>{earnings.yearly}</Currency> per year.
               </p>
               {canPostUpdates && (
-                <a href={channelLink} target="_blank">
+                <a href={channelLink} target="_blank" rel="noreferrer">
                   <Button size="xs" variant="outline">
                     <PlusIcon className="mr-1.5 size-3" /> Post update
                   </Button>
@@ -135,6 +135,7 @@ export const RecipientPopover = (props: Props) => {
                         <a
                           href="https://warpcast.com/~/channel/flows/join?inviteCode=35EHtdIhE-ivqVxl2SaEFg"
                           target="_blank"
+                          rel="noreferrer"
                         >
                           Join /flows
                         </a>

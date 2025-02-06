@@ -20,6 +20,7 @@ import Link from "next/link"
 import "./globals.css"
 import CommandPalette from "./components/search/command-dialog"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
+import { PromptFarcasterSignup } from "@/components/global/prompt-farcaster-signup"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -77,6 +78,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
               <Toaster />
               <Analytics />
               {identityToken && <CommandPalette identityToken={identityToken} />}
+              {user && <PromptFarcasterSignup user={user} />}
             </Wagmi>
           </TooltipProvider>
         </ThemeProvider>
