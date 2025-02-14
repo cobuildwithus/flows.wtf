@@ -17,8 +17,7 @@ export const Voters = async (props: Props) => {
   const voters = await getVoters(contract, grantId)
 
   return (
-    <div className="grow rounded-xl border bg-white/50 p-5 dark:bg-transparent">
-      <h3 className="mb-4 font-medium">Voters</h3>
+    <>
       {voters.length === 0 && (
         <div className="text-sm text-muted-foreground">
           There are no direct votes for this {isFlow ? "flow" : "grant"} yet.
@@ -32,7 +31,7 @@ export const Voters = async (props: Props) => {
       {voters.length > 0 && (
         <div className="grid gap-x-4 gap-y-6 lg:grid-cols-2">
           {voters.map((v) => (
-            <UserProfile address={v.voter} key={v.voter}>
+            <UserProfile address={v.voter} key={v.voter} withPopover={false}>
               {(profile) => (
                 <div className="flex items-center">
                   <Avatar className="mr-2.5 size-7 rounded-full bg-primary">
@@ -51,6 +50,6 @@ export const Voters = async (props: Props) => {
           ))}
         </div>
       )}
-    </div>
+    </>
   )
 }

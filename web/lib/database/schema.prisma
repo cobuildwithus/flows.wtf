@@ -4,6 +4,10 @@ generator client {
   output          = "../../node_modules/@prisma/flows"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -163,6 +167,7 @@ model Grant {
   evidences    Evidence[]
   derivedData  DerivedData?
   votes        Vote[]
+  impacts      Impact[]
 
   @@index([isTopLevel])
   @@index([isFlow])
@@ -262,4 +267,36 @@ view Evidence {
 
   @@index([evidenceGroupID])
   @@schema("onchain")
+}
+
+model Impact {
+  id            String   @id
+  name          String
+  date          DateTime
+  outcomes      String[]
+  location      String?
+  narrative     String?
+  castIds       Int[]    @map("cast_ids")
+  sources       String[]
+  /// [Media[]]
+  images        Json     @map("images")
+  /// [Media[]]
+  videos        Json     @map("videos")
+  /// [BestImage]
+  bestImage     Json     @map("best_image")
+  /// [MediaAnalysis]
+  mediaAnalysis Json?    @map("media_analysis")
+  /// [ImpactUnit[]]
+  impactUnits   Json?    @map("impact_units")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  grantId       String?  @map("grant_id")
+  author        String?
+  complete      Boolean
+
+  grant Grant? @relation(fields: [grantId], references: [id])
+
+  @@index([grantId])
+  @@map("Impact")
+  @@schema("web")
 }
