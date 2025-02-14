@@ -1,9 +1,9 @@
 import "server-only"
 
 import { ActivityCalendar } from "@/components/ui/activity-calendar"
+import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant"
 import { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
-import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant"
 import pluralize from "pluralize"
 
 interface Props {
@@ -16,24 +16,21 @@ export async function GrantActivity(props: Props) {
   const { grant } = props
 
   const nineMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 9))
-  const [{ activities, storiesCount }, updates] = await Promise.all([
+  const [activities, updates] = await Promise.all([
     unstable_cache(
       () => getActivity(grant.recipient, [grant], nineMonthsAgo),
       [`activity-graph-grant-page-${grant.id}`],
-      {
-        revalidate: 180,
-      },
+      { revalidate: 180 },
     )(),
     getGrantUpdates([grant.id], nineMonthsAgo),
   ])
 
   return (
-    <div className="flex w-full items-center justify-center">
+    <div className="flex w-full items-center justify-center py-5">
       <div className="max-lg:w-full max-lg:max-w-full">
-        <h3 className="font-bold tracking-tight">Impact</h3>
+        <h3 className="font-bold tracking-tight">Activity</h3>
         <p className="mb-6 mt-0.5 text-sm tracking-tight text-muted-foreground">
-          {updates.count} {pluralize("update", updates.count)} and {storiesCount}{" "}
-          {pluralize("story", storiesCount)} published
+          {updates.count} {pluralize("update", updates.count)} published on Farcaster
         </p>
 
         <ActivityCalendar

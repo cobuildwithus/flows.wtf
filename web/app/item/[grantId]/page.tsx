@@ -1,4 +1,5 @@
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { AnimatedSalary } from "@/components/global/animated-salary"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,34 +8,34 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Icon } from "@/components/ui/icon"
+import { Currency } from "@/components/ui/currency"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
-import { getIpfsUrl } from "@/lib/utils"
-import type { DerivedData } from "@prisma/flows"
+import { Status } from "@/lib/enums"
+import { cn, getIpfsUrl } from "@/lib/utils"
+import { ZoomInIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { Suspense } from "react"
+import { BeneficiariesCard } from "./cards/beneficiaries"
 import { Builder } from "./cards/builder"
 import { CoverImage } from "./cards/cover-image"
 import { FocusCard } from "./cards/focus"
-import { HowCard } from "./cards/how"
-import { Media } from "./cards/media"
-import { Plan } from "./cards/plan"
-import { Stats } from "./cards/stats"
-import { Timeline } from "./cards/timeline"
+import { Stat } from "./cards/stats"
+import { MissionCard } from "./cards/mission"
+import { ProgressCard } from "./cards/progress"
 import { Voters } from "./cards/voters"
-import { WhoCard } from "./cards/who"
-import { WhyCard } from "./cards/why"
 import { BgGradient } from "./components/bg-gradient"
-import { CurationCard } from "./components/curation-card"
+import { CurationStatus, CurationVote } from "./components/curation-card"
 import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
-import { GrantStories } from "./components/grant-stories"
 import { ImpactDialog } from "./components/impact-dialog"
+import { ImpactChain } from "./impact/impact-chain"
 import type { GrantPageData } from "./page-data/schema"
+import type { DerivedData } from "@prisma/flows"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -45,17 +46,7 @@ export const runtime = "nodejs"
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { grantId } = await props.params
 
-  const grant = await database.grant.findFirstOrThrow({
-    where: { id: grantId, isTopLevel: false },
-    select: {
-      title: true,
-      tagline: true,
-      image: true,
-      derivedData: { select: { pageData: true } },
-    },
-    ...getCacheStrategy(1200),
-  })
-
+  const grant = await getGrant(grantId)
   const data = getPageData(grant.derivedData)
 
   return {
@@ -89,103 +80,131 @@ export default async function GrantPage(props: Props) {
       data={{ grantId: grant.id }}
       identityToken={await getPrivyIdToken()}
     >
-      <div className="container mt-2.5 pb-24 md:mt-6">
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Flows</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/flow/${flow.id}`}>{flow.title}</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="max-sm:hidden" />
-            <BreadcrumbItem className="max-sm:hidden">
-              <BreadcrumbPage>{title}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <div className="grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
-          <CoverImage coverImage={data.coverImage} title={title} tagline={data.tagline} />
-
-          <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
-            <div className="flex flex-col gap-4">
-              <HowCard gradient={how.gradient} icon={how.icon} text={how.text} />
-              <WhoCard gradient={who.gradient} text={who.text} recipient={grant.recipient} />
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <FocusCard gradient={focus.gradient} text={focus.text} />
-              <WhyCard image={why.image} text={why.text} />
-            </div>
-          </div>
-
-          <div className="col-span-full cursor-pointer xl:col-span-3">
-            <ImpactDialog grants={[{ ...grant, flow: { title: flow.title } }]} />
-          </div>
-
-          <div className="col-span-full xl:col-span-9 xl:flex xl:items-center xl:justify-end">
-            <Suspense fallback={<div className="h-[252px]" />}>
-              <GrantActivity grant={grant} />
-            </Suspense>
-          </div>
+      <div className="container mt-2.5 md:mt-6">
+        <div className="flex items-center justify-between">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Flows</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/flow/${flow.id}`}>{flow.title}</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="max-sm:hidden" />
+              <BreadcrumbItem className="max-sm:hidden">
+                <BreadcrumbPage>{title}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           <Builder
-            tags={builder.tags}
             bio={builder.bio}
             links={builder.links}
             recipient={grant.recipient as `0x${string}`}
           />
-
-          {data.cards.map((card) => (
-            <div
-              key={card.title}
-              className="col-span-full rounded-xl border bg-card p-5 lg:col-span-4"
-            >
-              <div className="flex flex-col items-start gap-4">
-                <Icon name={card.icon} className="size-9 text-primary" />
-                <h3 className="font-bold tracking-tight">{card.title}</h3>
-                <p className="leading-relaxed opacity-60 max-sm:text-sm">{card.description}</p>
-              </div>
-            </div>
-          ))}
-
-          {/* <Metrics metrics={data.metrics} /> Hide for now - can reuse once we have impact data */}
-
-          <Media media={data.media} />
         </div>
 
-        <div className="relative mt-4 grid grid-cols-12 gap-4">
-          <BgGradient />
-
-          <div className="col-span-full lg:col-span-4">
-            <Timeline timeline={data.timeline} />
-          </div>
-
-          <div className="col-span-full flex flex-col space-y-4 lg:col-span-4">
-            <Stats grant={grant} />
-
-            <Suspense>
-              <Voters
-                contract={grant.parentContract as `0x${string}`}
-                grantId={grant.id}
-                flowVotesCount={flow.votesCount}
+        <div className="mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
+          <CoverImage coverImage={data.coverImage} title={title} tagline={data.tagline} />
+          <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
+            <div className="flex flex-col gap-4">
+              <MissionCard gradient={how.gradient} icon={how.icon} text={how.text} />
+              <BeneficiariesCard
+                gradient={who.gradient}
+                beneficiaries={[
+                  "Seniors (60+, 70+, 80+)",
+                  "Obese individuals",
+                  "People with paraplegia",
+                ]}
               />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <FocusCard gradient={focus.gradient} text={focus.text} />
+              <ProgressCard
+                image={why.image}
+                text={
+                  "Conducted 14 adapted Pilates classes serving 45 participants in 2 Greater São Paulo communities"
+                }
+              />
+            </div>
+          </div>
+          <div className="col-span-full cursor-pointer xl:col-span-3">
+            <ImpactDialog grants={[{ ...grant, flow: { title: flow.title } }]} />
+          </div>
+          <div className="col-span-full rounded-xl border xl:col-span-9 xl:flex xl:items-center xl:justify-end">
+            <Suspense fallback={<div className="h-[252px]" />}>
+              <GrantActivity grant={grant} />
             </Suspense>
           </div>
+          <Stat label="Budget">
+            <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
+          </Stat>
 
-          <div className="col-span-full lg:col-span-4">
-            <Suspense>
-              <CurationCard grant={grant} flow={flow} className="h-full" />
-            </Suspense>
+          <Stat label="Total Earned">
+            <AnimatedSalary value={grant.totalEarned} monthlyRate={grant.monthlyIncomingFlowRate} />
+          </Stat>
+          <Dialog>
+            <DialogTrigger className="group relative text-left duration-200 hover:scale-[1.02] xl:col-span-3">
+              <Stat label="Community Votes">{grant.votesCount}</Stat>
+              <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>Voters</DialogTitle>
+              <div className="mt-4">
+                <Suspense>
+                  <Voters
+                    contract={grant.parentContract as `0x${string}`}
+                    grantId={grant.id}
+                    flowVotesCount={flow.votesCount}
+                  />
+                </Suspense>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger className="group relative text-left duration-200 hover:scale-[1.02] xl:col-span-3">
+              <Stat label="Curation Status">
+                <span className="lg:text-2xl">
+                  {grant.status === Status.ClearingRequested ? (
+                    <span className="inline-block rounded-sm bg-destructive px-1.5 py-0.5 text-lg text-destructive-foreground">
+                      Removal Requested
+                    </span>
+                  ) : (
+                    "Active"
+                  )}
+                </span>
+              </Stat>
+              <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>Grant Curation</DialogTitle>
+              <Suspense>
+                <div className={cn({ "divide-y divide-border [&>*]:py-5": grant.isDisputed })}>
+                  <CurationStatus grant={grant} flow={flow} />
+                  {grant.isDisputed && <CurationVote grant={grant} flow={flow} />}
+                </div>
+              </Suspense>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      <div className="relative pt-8">
+        <div className="container flex flex-col items-end">
+          <div className="translate-y-6 pr-8">
+            <h1 className="text-4xl font-bold tracking-tighter">Follow our progress</h1>
+            <p className="mt-1.5 text-lg tracking-tighter opacity-60">
+              One step at a time, we're making a difference.
+            </p>
           </div>
         </div>
 
-        <Plan plan={data.plan} className="mt-10" />
-
-        <GrantStories canEdit={canEdit} grantId={grant.id} className="mt-10" />
+        <BgGradient />
+        <ImpactChain grantId={grant.id} activatedAt={new Date((grant.activatedAt || 0) * 1000)} />
       </div>
+
       <GrantChat grant={grant} user={user} canEdit={canEdit} />
     </AgentChatProvider>
   )
@@ -206,6 +225,6 @@ async function getGrant(grantId: string) {
         select: { pageData: true, overallGrade: true, requirementsMetrics: true },
       },
     },
-    ...getCacheStrategy(300), // ToDo: Invalidate on edit
+    ...getCacheStrategy(300),
   })
 }

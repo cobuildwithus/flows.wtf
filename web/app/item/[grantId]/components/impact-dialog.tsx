@@ -1,17 +1,17 @@
 "use client"
 
-import React from "react"
+import { isGrantNew } from "@/app/flow/[flowId]/components/is-new"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import type { Grant, DerivedData } from "@prisma/flows"
+import type { User } from "@/lib/auth/user"
+import type { DerivedData, Grant } from "@prisma/flows"
+import { ZoomInIcon } from "lucide-react"
+import { CircularProgress } from "./circular-progress"
 import { Grade } from "./grade"
 import { GrantHeader } from "./grant-header"
-import { CircularProgress } from "./circular-progress"
+import { NewProgress } from "./new-progress"
 import { PendingEvaluation } from "./pending-evaluation"
-import type { User } from "@/lib/auth/user"
 import type { RequirementMetric } from "./requirements-section"
 import { RequirementsSection } from "./requirements-section"
-import { isGrantNew } from "@/app/flow/[flowId]/components/is-new"
-import { NewProgress } from "./new-progress"
 
 interface Props {
   grants: Array<
@@ -46,14 +46,16 @@ export function ImpactDialog(props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="cursor-pointer space-y-6 rounded-xl border bg-card p-5 transition-all duration-300 hover:scale-[1.01] hover:border-primary/10">
+        <div className="group relative h-full cursor-pointer rounded-xl border bg-card p-5 transition-all duration-200 hover:scale-[1.02]">
+          <ZoomInIcon className="fixed right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
+
           <div className="flex items-center space-x-4">
             {!isNew && <CircularProgress value={lowestScoringGrant.overallScore} />}
             {isNew && <NewProgress disableTooltip />}
             <span className="font-medium">{dialogTitle || text}</span>
           </div>
 
-          <div className="space-y-4">
+          <div className="mt-6 space-y-5">
             {lowestScoringGrant.requirementsMetrics
               ?.slice(0, 4)
               .sort((a, b) => b.met - a.met)

@@ -1,10 +1,7 @@
 import "server-only"
 
 import { DisputeUserVote } from "@/app/components/dispute/dispute-user-vote"
-import { Badge } from "@/components/ui/badge"
 import database, { getCacheStrategy } from "@/lib/database/edge"
-import { Status } from "@/lib/enums"
-import { cn } from "@/lib/utils"
 import type { Grant } from "@prisma/flows"
 import { StatusDisputed } from "./status-disputed"
 import { StatusNotDisputed } from "./status-not-disputed"
@@ -12,44 +9,34 @@ import { StatusNotDisputed } from "./status-not-disputed"
 interface Props {
   grant: Grant
   flow: Grant
-  className?: string
 }
 
-export const CurationCard = async (props: Props) => {
-  const { grant, flow, className } = props
+export async function CurationStatus(props: Props) {
+  const { grant, flow } = props
 
-  const isDisputed = grant.isDisputed
+  if (!grant.isDisputed) return <StatusNotDisputed grant={grant} flow={flow} />
 
-  const dispute = await database.dispute.findFirst({
-    where: { grantId: grant.id },
+  const dispute = await getDispute(grant.id)
+  if (!dispute) return null
+
+  return <StatusDisputed grant={grant} flow={flow} dispute={dispute} />
+}
+
+export async function CurationVote(props: Props) {
+  const { grant, flow } = props
+  if (!grant.isDisputed) return null
+
+  const dispute = await getDispute(grant.id)
+  if (!dispute) return null
+
+  return <DisputeUserVote grant={grant} flow={flow} dispute={dispute} />
+}
+
+async function getDispute(grantId: string) {
+  return await database.dispute.findFirst({
+    where: { grantId },
     orderBy: { creationBlock: "desc" },
     include: { evidences: true },
     ...getCacheStrategy(60),
   })
-
-  return (
-    <div className={cn("flex flex-col space-y-4", className)}>
-      <div className="flex flex-1 flex-col rounded-xl border bg-white/50 p-6 shadow-sm transition-colors hover:bg-white/60 dark:bg-transparent dark:hover:bg-white/5">
-        <h3 className="mb-6 flex items-center justify-between font-medium">
-          Curation Status
-          {grant.status === Status.ClearingRequested && (
-            <Badge variant="destructive" className="font-medium">
-              Removal Requested
-            </Badge>
-          )}
-        </h3>
-        <div className="flex-1">
-          {!isDisputed && <StatusNotDisputed grant={grant} flow={flow} />}
-          {isDisputed && dispute && <StatusDisputed grant={grant} flow={flow} dispute={dispute} />}
-        </div>
-      </div>
-
-      {dispute && isDisputed && (
-        <div className="rounded-xl border bg-white/50 p-6 shadow-sm transition-colors hover:bg-white/60 dark:bg-transparent dark:hover:bg-white/5">
-          <h3 className="mb-6 text-lg font-medium">Your Vote</h3>
-          <DisputeUserVote grant={grant} flow={flow} dispute={dispute} />
-        </div>
-      )}
-    </div>
-  )
 }

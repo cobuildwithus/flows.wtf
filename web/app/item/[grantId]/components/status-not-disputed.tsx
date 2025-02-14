@@ -1,13 +1,13 @@
 import "server-only"
 
+import { Challenger } from "@/app/application/[applicationId]/components/challenger"
 import { canRequestBeExecuted, formatEvidence } from "@/app/components/dispute/helpers"
 import { DateTime } from "@/components/ui/date-time"
 import database from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
+import { getEthAddress } from "@/lib/utils"
 import { Grant } from "@prisma/flows"
 import dynamic from "next/dynamic"
-import { getEthAddress } from "@/lib/utils"
-import { Challenger } from "@/app/application/[applicationId]/components/challenger"
 
 const GrantRemoveRequestButton = dynamic(() =>
   import("./remove-request-button").then((mod) => mod.GrantRemoveRequestButton),
@@ -98,15 +98,9 @@ export const StatusNotDisputed = async (props: Props) => {
 
   return (
     <div className="flex grow flex-col justify-between space-y-4 text-sm">
-      <div className="space-y-4">
-        <li className="text-muted-foreground">
-          Created{" "}
-          <DateTime date={new Date((grant.activatedAt || grant.createdAt) * 1000)} relative />
-        </li>
-        <li className="text-muted-foreground">
-          Curators of the &quot;{flow.title}&quot; flow can request the removal of this{" "}
-          {grant.isFlow ? "flow" : "grant"} if they think there is a valid reason to do so.
-        </li>
+      <div className="leading-relaxed text-muted-foreground">
+        Curators of the &quot;{flow.title}&quot; flow can request the removal of this{" "}
+        {grant.isFlow ? "flow" : "grant"} if they think there is a valid reason to do so.
       </div>
 
       {grant.status === Status.Registered && <GrantRemoveRequestButton grant={grant} flow={flow} />}
