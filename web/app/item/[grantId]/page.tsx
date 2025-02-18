@@ -72,6 +72,12 @@ export default async function GrantPage(props: Props) {
 
   const canEdit = canEditGrant(grant, user?.address)
 
+  const impacts = database.impact.findMany({
+    // where: { grantId },
+    orderBy: { updatedAt: "asc" },
+    take: 15,
+  })
+
   return (
     <AgentChatProvider
       id={`grant-${grant.id}-${user?.address}`}
@@ -146,7 +152,7 @@ export default async function GrantPage(props: Props) {
             <AnimatedSalary value={grant.totalEarned} monthlyRate={grant.monthlyIncomingFlowRate} />
           </Stat>
           <Dialog>
-            <DialogTrigger className="group relative text-left duration-200 hover:scale-[1.02] xl:col-span-3">
+            <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
               <Stat label="Community Votes">{grant.votesCount}</Stat>
               <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
             </DialogTrigger>
@@ -164,7 +170,7 @@ export default async function GrantPage(props: Props) {
             </DialogContent>
           </Dialog>
           <Dialog>
-            <DialogTrigger className="group relative text-left duration-200 hover:scale-[1.02] xl:col-span-3">
+            <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
               <Stat label="Curation Status">
                 <span className="lg:text-2xl">
                   {grant.status === Status.ClearingRequested ? (
@@ -191,18 +197,23 @@ export default async function GrantPage(props: Props) {
         </div>
       </div>
 
-      <div className="relative pt-8">
-        <div className="container flex flex-col items-end">
-          <div className="translate-y-6 pr-8">
-            <h1 className="text-4xl font-bold tracking-tighter">Follow our progress</h1>
-            <p className="mt-1.5 text-lg tracking-tighter opacity-60">
+      <div className="relative pt-8 max-sm:pb-28">
+        <div className="container flex flex-col max-sm:mb-6 md:items-end">
+          <div className="md:translate-y-6 md:pr-8">
+            <h1 className="text-3xl font-bold tracking-tighter md:text-4xl">Follow our progress</h1>
+            <p className="mt-1.5 text-sm tracking-tighter opacity-60 md:text-lg">
               One step at a time, we're making a difference.
             </p>
           </div>
         </div>
 
         <BgGradient />
-        <ImpactChain grantId={grant.id} activatedAt={new Date((grant.activatedAt || 0) * 1000)} />
+        <Suspense fallback={<div className="h-[300px]" />}>
+          <ImpactChain
+            impacts={await impacts}
+            activatedAt={new Date((grant.activatedAt || 0) * 1000)}
+          />
+        </Suspense>
       </div>
 
       <GrantChat grant={grant} user={user} canEdit={canEdit} />
