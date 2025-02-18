@@ -26,7 +26,7 @@ export async function GrantActivity(props: Props) {
   ])
 
   return (
-    <div className="flex w-full items-center justify-center py-5">
+    <div className="flex w-full items-center justify-center p-5">
       <div className="max-lg:w-full max-lg:max-w-full">
         <h3 className="font-bold tracking-tight">Activity</h3>
         <p className="mb-6 mt-0.5 text-sm tracking-tight text-muted-foreground">

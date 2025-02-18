@@ -6,6 +6,7 @@ import { useTheme } from "next-themes"
 import dynamic from "next/dynamic"
 import type { ComponentProps } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
+import { useEffect, useRef } from "react"
 
 const ReactActivityCalendar = dynamic(() =>
   import("react-activity-calendar").then((mod) => mod.ActivityCalendar),
@@ -17,9 +18,22 @@ type Props = ComponentProps<typeof ReactActivityCalendar> & {
 
 export function ActivityCalendar({ updates, ...props }: Props) {
   const { resolvedTheme } = useTheme()
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (ref.current && window.innerWidth <= 768) {
+      const scrollContainer = ref.current.querySelector(
+        ".react-activity-calendar__scroll-container",
+      )
+      if (scrollContainer) {
+        scrollContainer.scrollLeft = scrollContainer.scrollWidth
+      }
+    }
+  }, [])
 
   return (
     <ReactActivityCalendar
+      ref={ref}
       {...props}
       colorScheme={resolvedTheme === "dark" ? "dark" : "light"}
       renderBlock={(block, activity) => {

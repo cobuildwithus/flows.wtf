@@ -18,12 +18,12 @@ export function Builder(props: Props) {
       {(profile) => (
         <Dialog>
           <DialogTrigger>
-            <div className="group flex items-center text-sm">
+            <div className="group flex items-center text-xs md:text-sm">
               <span className="mr-1 opacity-50">by</span>
               <span className="mr-2 transition-colors group-hover:text-primary">
                 {profile.display_name}
               </span>
-              <Avatar className="size-6 rounded-full bg-primary">
+              <Avatar className="size-5 rounded-full bg-primary md:size-6">
                 <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
               </Avatar>
             </div>
