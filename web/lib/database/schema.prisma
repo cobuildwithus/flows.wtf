@@ -270,31 +270,26 @@ view Evidence {
 }
 
 model Impact {
-  id            String   @id
-  name          String
-  date          DateTime
-  outcomes      String[]
-  location      String?
-  narrative     String?
-  castIds       Int[]    @map("cast_ids")
-  sources       String[]
-  /// [Media[]]
-  images        Json     @map("images")
-  /// [Media[]]
-  videos        Json     @map("videos")
+  id             String   @id
+  name           String
+  date           DateTime
+  outcomes       String[]
+  location       String?
+  /// [Proof[]]
+  proofs         Json
   /// [BestImage]
-  bestImage     Json     @map("best_image")
-  /// [MediaAnalysis]
-  mediaAnalysis Json?    @map("media_analysis")
+  bestImage      Json     @map("best_image")
   /// [ImpactUnit[]]
-  impactUnits   Json?    @map("impact_units")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  grantId       String?  @map("grant_id")
-  author        String?
-  complete      Boolean
+  impactUnits    Json     @map("impact_units")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  /// [InvolvedPerson[]]
+  peopleInvolved Json     @map("people_involved")
+  grantId        String   @map("grant_id")
+  complete       Boolean
+  results        String[]
 
-  grant Grant? @relation(fields: [grantId], references: [id])
+  grant Grant @relation(fields: [grantId], references: [id])
 
   @@index([grantId])
   @@map("Impact")

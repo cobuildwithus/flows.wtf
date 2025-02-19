@@ -108,12 +108,12 @@ export function ImpactChain(props: Props) {
             className="fixed inset-0 z-50 flex items-center justify-center duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 focus:outline-none"
           >
             {selectedIndex !== null && (
-              <Carousel setApi={setApi} className="max-w-full">
+              <Carousel setApi={setApi} className="w-full max-w-full">
                 <CarouselContent>
                   {impacts.map((impact, index) => (
                     <CarouselItem key={index}>
                       <div className="mx-auto flex h-[100dvh] max-w-6xl items-center">
-                        <div className="relative h-full w-full overflow-y-auto bg-background p-5 md:h-[620px] md:rounded-xl md:border md:p-6">
+                        <div className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-[80vh] md:min-h-[620px] md:rounded-xl md:border">
                           <ImpactContent impact={impact} />
                         </div>
                       </div>
