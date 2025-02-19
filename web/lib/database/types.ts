@@ -2,12 +2,6 @@ export {}
 
 declare global {
   namespace PrismaJson {
-    type Media = {
-      url: string
-      description: string | null
-      peopleActivities: PersonAndActivities[]
-    }
-
     type ImpactUnit = {
       name: string
       units: string
@@ -15,15 +9,43 @@ declare global {
       description: string
     }
 
-    type MediaAnalysis = {
-      uniquePeople: number
-      activities: PersonAndActivities[]
+    interface Proof {
+      type: ProofType
+      url: string
+      cast: FarcasterCast | null
+      description: string
+      images: Media[]
+      videos: Media[]
+      createdAt: Date
+      updatedAt: Date
+      author: ProofAuthor
+      mentionedFids: number[]
     }
 
-    type PersonAndActivities = {
-      personDescription: string
-      gender: "male" | "female"
-      activities: string[]
+    interface FarcasterCast {
+      id: number
+      url: string
+    }
+
+    type ProofType = "image" | "video" | "farcaster.cast"
+
+    interface ProofAuthor {
+      fid: number
+    }
+
+    type Media = {
+      url: string
+      description: string | null
+      faces: GoodFace[]
+    }
+
+    interface GoodFace {
+      Face: any
+      FaceDetail: any
+      headshotUrl: string
+      quality: number
+      originalImageUrl: string
+      userId?: string
     }
 
     type BestImage = {
@@ -52,6 +74,25 @@ declare global {
       url: string
       width: number
       height: number
+    }
+
+    interface InvolvedPerson {
+      userId: string
+      headshotUrl: string
+      images: string[]
+      age: {
+        low: number
+        high: number
+      }
+      beneficiary: {
+        isBeneficiary: boolean
+        reason: string
+      }
+      impacted: {
+        isPositivelyImpacted: boolean
+        reason: string
+      }
+      gender: string
     }
   }
 }
