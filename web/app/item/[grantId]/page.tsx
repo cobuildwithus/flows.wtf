@@ -34,8 +34,6 @@ import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { ImpactDialog } from "./components/impact-dialog"
 import { ImpactChain } from "./impact/impact-chain"
-import type { GrantPageData } from "./page-data/schema"
-import type { DerivedData } from "@prisma/flows"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -47,14 +45,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { grantId } = await props.params
 
   const grant = await getGrant(grantId)
-  const data = getPageData(grant.derivedData)
+  if (!grant.derivedData) notFound()
+
+  const { title, tagline, coverImage } = grant.derivedData
 
   return {
-    title: grant.title,
-    description: grant.tagline,
-    openGraph: {
-      images: [data?.coverImage ? getIpfsUrl(data.coverImage.url, "pinata") : grant.image],
-    },
+    title,
+    description: tagline,
+    openGraph: { images: [getIpfsUrl(coverImage, "pinata")] },
   }
 }
 
@@ -64,11 +62,19 @@ export default async function GrantPage(props: Props) {
   const [user, { flow, ...grant }] = await Promise.all([getUser(), getGrant(grantId)])
 
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
+  if (!grant.derivedData) notFound()
 
-  const data = getPageData(grant.derivedData)
-  if (!data) notFound()
-
-  const { why, focus, who, how, builder, title } = data
+  const {
+    focus,
+    shortDescription,
+    builder,
+    title,
+    beneficiaries,
+    tagline,
+    coverImage,
+    gradients,
+    progress,
+  } = grant.derivedData
 
   const canEdit = canEditGrant(grant, user?.address)
 
@@ -112,28 +118,16 @@ export default async function GrantPage(props: Props) {
         </div>
 
         <div className="mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
-          <CoverImage coverImage={data.coverImage} title={title} tagline={data.tagline} />
+          <CoverImage coverImage={coverImage} title={title} tagline={tagline} />
           <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
             <div className="flex flex-col gap-4">
-              <MissionCard gradient={how.gradient} icon={how.icon} text={how.text} />
-              <BeneficiariesCard
-                gradient={who.gradient}
-                beneficiaries={[
-                  "Seniors (60+, 70+, 80+)",
-                  "Obese individuals",
-                  "People with paraplegia",
-                ]}
-              />
+              <MissionCard gradient={gradients.mission} text={shortDescription} />
+              <BeneficiariesCard gradient={gradients.beneficiaries} beneficiaries={beneficiaries} />
             </div>
 
             <div className="flex flex-col gap-4">
-              <FocusCard gradient={focus.gradient} text={focus.text} />
-              <ProgressCard
-                image={why.image}
-                text={
-                  "Conducted 14 adapted Pilates classes serving 45 participants in 2 Greater São Paulo communities"
-                }
-              />
+              <FocusCard gradient={gradients.focus} text={focus} />
+              <ProgressCard image={coverImage} text={progress} />
             </div>
           </div>
           <div className="col-span-full cursor-pointer xl:col-span-3">
@@ -221,19 +215,25 @@ export default async function GrantPage(props: Props) {
   )
 }
 
-function getPageData(derivedData: Pick<DerivedData, "pageData"> | null): GrantPageData | null {
-  const data = JSON.parse(derivedData?.pageData ?? "null") as GrantPageData | null
-  if (!data || Object.keys(data).length === 0) return null
-  return data
-}
-
 async function getGrant(grantId: string) {
   return database.grant.findUniqueOrThrow({
     where: { id: grantId, isTopLevel: false },
     include: {
       flow: true,
       derivedData: {
-        select: { pageData: true, overallGrade: true, requirementsMetrics: true },
+        select: {
+          title: true,
+          tagline: true,
+          coverImage: true,
+          shortDescription: true,
+          focus: true,
+          progress: true,
+          builder: true,
+          gradients: true,
+          beneficiaries: true,
+          overallGrade: true,
+          requirementsMetrics: true,
+        },
       },
     },
     ...getCacheStrategy(300),

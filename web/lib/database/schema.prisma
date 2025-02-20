@@ -49,13 +49,27 @@ model DerivedData {
   grant Grant @relation(fields: [grantId], references: [id])
 
   // derived data here (generated from ai etc.)
-  minimumSalary       Int?
-  template            String?
+  beneficiaries       String[]
+  deliverables        String[]
+  grades              Json?
+  impactIdeas         Json?
   lastBuilderUpdate   DateTime?
-  pageData            String?
-  overallGrade        Float?
+  minimumSalary       Int?
   ongoingRequirements Json?
+  overallGrade        Float?
+  pageData            String?
   requirementsMetrics Json?
+  shortDescription    String
+  template            String?
+  title               String
+  tagline             String
+  coverImage          String
+  focus               String
+  progress            String
+  /// [GrantBuilder]
+  builder             Json
+  /// [GrantGradients]
+  gradients           Json
 
   @@index([grantId])
   @@map("DerivedData")
@@ -273,7 +287,6 @@ model Impact {
   id             String   @id
   name           String
   date           DateTime
-  outcomes       String[]
   location       String?
   /// [Proof[]]
   proofs         Json
@@ -287,7 +300,8 @@ model Impact {
   peopleInvolved Json     @map("people_involved")
   grantId        String   @map("grant_id")
   complete       Boolean
-  results        String[]
+  /// [ImpactResult[]]
+  results        Json
 
   grant Grant @relation(fields: [grantId], references: [id])
 
