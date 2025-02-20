@@ -9,6 +9,11 @@ declare global {
       description: string
     }
 
+    type ImpactResult = {
+      headline: string
+      details: string
+    }
+
     interface Proof {
       type: ProofType
       url: string
@@ -93,6 +98,22 @@ declare global {
         reason: string
       }
       gender: string
+    }
+
+    type GrantBuilder = {
+      bio: string
+      links: Array<{ title: string; url: string; icon: string }>
+    }
+
+    type Gradient = {
+      light: { text: string; gradientStart: string; gradientEnd: string }
+      dark: { text: string; gradientStart: string; gradientEnd: string }
+    }
+
+    type GrantGradients = {
+      mission: Gradient
+      beneficiaries: Gradient
+      focus: Gradient
     }
   }
 }

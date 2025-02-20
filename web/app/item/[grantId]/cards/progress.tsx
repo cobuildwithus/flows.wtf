@@ -13,7 +13,7 @@ export function ProgressCard(props: Props) {
     <div className="relative flex flex-col justify-between rounded-xl border p-5 max-sm:aspect-video lg:h-3/5">
       <Image
         src={getIpfsUrl(image, "pinata")}
-        alt=""
+        alt=" "
         fill
         className="pointer-events-none rounded-xl object-cover"
         priority
