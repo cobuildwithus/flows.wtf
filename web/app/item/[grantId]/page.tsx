@@ -66,7 +66,7 @@ export default async function GrantPage(props: Props) {
 
   const {
     focus,
-    shortDescription,
+    mission,
     builder,
     title,
     beneficiaries,
@@ -121,7 +121,7 @@ export default async function GrantPage(props: Props) {
           <CoverImage coverImage={coverImage} title={title} tagline={tagline} />
           <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
             <div className="flex flex-col gap-4">
-              <MissionCard gradient={gradients.mission} text={shortDescription} />
+              <MissionCard gradient={gradients.mission} text={mission} />
               <BeneficiariesCard gradient={gradients.beneficiaries} beneficiaries={beneficiaries} />
             </div>
 
@@ -226,6 +226,7 @@ async function getGrant(grantId: string) {
           tagline: true,
           coverImage: true,
           shortDescription: true,
+          mission: true,
           focus: true,
           progress: true,
           builder: true,

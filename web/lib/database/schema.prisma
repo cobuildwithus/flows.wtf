@@ -66,6 +66,7 @@ model DerivedData {
   coverImage          String
   focus               String
   progress            String
+  mission             String
   /// [GrantBuilder]
   builder             Json
   /// [GrantGradients]
