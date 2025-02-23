@@ -39,9 +39,9 @@ export function NounsVoter(props: { votingPower: bigint; tokenIds: bigint[] }) {
         {votingPower > MAX_VOTING_POWER && (
           <Alert variant="destructive" className="mt-2.5">
             <AlertDescription className="text-xs">
-              Voting power is calculated on the mainnet, but we use Base. Due to current
-              limitations, voting transactions fail when representing more than 6 nouns. Therefore,
-              you will be voting with a maximum of {MAX_VOTING_POWER.toString()} votes.
+              Voting power is calculated on mainnet, but we use Base. Due to current limitations,
+              voting transactions fail when representing more than 8 nouns. Therefore, you will be
+              voting with a maximum of {MAX_VOTING_POWER.toString()} votes.
             </AlertDescription>
           </Alert>
         )}
