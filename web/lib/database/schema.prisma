@@ -49,10 +49,11 @@ model DerivedData {
   grant Grant @relation(fields: [grantId], references: [id])
 
   // derived data here (generated from ai etc.)
-  beneficiaries       String[]
+  /// [Beneficiary[]]
+  beneficiaries       Json
   deliverables        String[]
   grades              Json?
-  impactIdeas         Json?
+  impactMetrics       Json?
   lastBuilderUpdate   DateTime?
   minimumSalary       Int?
   ongoingRequirements Json?
@@ -294,7 +295,7 @@ model Impact {
   /// [BestImage]
   bestImage      Json     @map("best_image")
   /// [ImpactUnit[]]
-  impactUnits    Json     @map("impact_units")
+  impactMetrics    Json     @map("impact_metrics")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   /// [InvolvedPerson[]]
