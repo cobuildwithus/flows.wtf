@@ -77,7 +77,7 @@ export function ImpactContent(props: Props) {
             />
           </header>
 
-          <section className="flex flex-col gap-y-4">
+          <section className="flex flex-col gap-y-4 max-md:mt-4">
             <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Results</h3>
             <ul className="flex flex-col space-y-3">
               {results.map((result) => (
