@@ -10,4 +10,5 @@ export const imageDomains = [
   "res.cloudinary.com",
   "*.w3s.link",
   "ipfs.skatehive.app",
+  "lighthouse.cx",
 ]
