@@ -50,7 +50,7 @@ model DerivedData {
 
   // derived data here (generated from ai etc.)
   /// [Beneficiary[]]
-  beneficiaries       Json
+  beneficiaries       Json?
   deliverables        String[]
   grades              Json?
   impactMetrics       Json?
@@ -60,18 +60,18 @@ model DerivedData {
   overallGrade        Float?
   pageData            String?
   requirementsMetrics Json?
-  shortDescription    String
+  shortDescription    String?
   template            String?
-  title               String
-  tagline             String
-  coverImage          String
-  focus               String
-  progress            String
-  mission             String
+  title               String?
+  tagline             String?
+  coverImage          String?
+  focus               String?
+  progress            String?
+  mission             String?
   /// [GrantBuilder]
-  builder             Json
+  builder             Json?
   /// [GrantGradients]
-  gradients           Json
+  gradients           Json?
 
   @@index([grantId])
   @@map("DerivedData")
@@ -295,7 +295,7 @@ model Impact {
   /// [BestImage]
   bestImage      Json     @map("best_image")
   /// [ImpactUnit[]]
-  impactMetrics    Json     @map("impact_metrics")
+  impactMetrics  Json     @map("impact_metrics")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   /// [InvolvedPerson[]]

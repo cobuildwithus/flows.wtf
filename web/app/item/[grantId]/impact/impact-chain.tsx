@@ -58,12 +58,15 @@ export function ImpactChain(props: Props) {
           type: "impact",
           width: 280,
           height: 240,
-          data: { impact, onClick: () => setSelectedIndex(index) },
+          data: {
+            impact,
+            onClick: () => setSelectedIndex(index),
+          },
         })),
       ],
       width,
     )
-  }, [width, impacts])
+  }, [impacts, width])
 
   if (!diagram || !width) return null
 
@@ -106,24 +109,35 @@ export function ImpactChain(props: Props) {
           <DialogContent
             onOpenAutoFocus={(e) => e.preventDefault()}
             className="fixed inset-0 z-50 flex items-center justify-center duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 focus:outline-none"
+            onClick={(e) => {
+              if ((e.target as HTMLElement).hasAttribute("data-carousel-item")) {
+                setSelectedIndex(null)
+              }
+            }}
           >
-            {selectedIndex !== null && (
-              <Carousel setApi={setApi} className="w-full max-w-full">
-                <CarouselContent>
-                  {impacts.map((impact) => (
-                    <CarouselItem key={impact.id}>
-                      <div className="mx-auto flex h-[100dvh] max-w-6xl items-center">
-                        <div className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border">
-                          <ImpactContent impact={impact} />
+            <Carousel
+              setApi={setApi}
+              className="w-full max-w-full"
+              opts={{ startIndex: selectedIndex ?? 0 }}
+            >
+              {selectedIndex !== null && (
+                <>
+                  <CarouselContent>
+                    {impacts.map((impact) => (
+                      <CarouselItem key={impact.id}>
+                        <div className="mx-auto flex h-[100dvh] max-w-6xl items-center">
+                          <div className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border">
+                            <ImpactContent impact={impact} />
+                          </div>
                         </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-8 z-50 size-10 max-sm:hidden" />
-                <CarouselNext className="right-8 z-50 size-10 max-sm:hidden" />
-              </Carousel>
-            )}
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-8 z-50 size-10 max-sm:hidden" />
+                  <CarouselNext className="right-8 z-50 size-10 max-sm:hidden" />
+                </>
+              )}
+            </Carousel>
             <DialogClose className="fixed right-4 top-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
               <Cross2Icon className="size-5" />
               <span className="sr-only">Close</span>

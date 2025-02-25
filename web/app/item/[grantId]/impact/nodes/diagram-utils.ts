@@ -80,7 +80,7 @@ function getDiagramLayout(width: number, nodes: MinimalNode[]) {
     return Math.max(...rowNodes.map((node) => node.height))
   }).reduce((acc, h) => acc + h, 0)
 
-  const height = rowHeights + (rows - 1) * marginY + rows * (columns * yStep)
+  const height = rowHeights + (rows - 1) * marginY + (rows - 1) * (columns * yStep)
 
   return { columns, rows, marginX, marginY, yStep, height, windowWidth: width }
 }
