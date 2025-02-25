@@ -192,15 +192,6 @@ export default async function GrantPage(props: Props) {
       </div>
 
       <div className="relative pt-8 max-sm:pb-28">
-        <div className="container flex flex-col max-sm:mb-6 md:items-end">
-          <div className="md:translate-y-6 md:pr-8">
-            <h1 className="text-3xl font-bold tracking-tighter md:text-4xl">Follow our progress</h1>
-            <p className="mt-1.5 text-sm tracking-tighter opacity-60 md:text-lg">
-              One step at a time, we're making a difference.
-            </p>
-          </div>
-        </div>
-
         <BgGradient />
         <Suspense fallback={<div className="h-[300px]" />}>
           <ImpactChain

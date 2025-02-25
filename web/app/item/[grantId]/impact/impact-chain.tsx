@@ -96,7 +96,7 @@ export function ImpactChain(props: Props) {
           }}
           edgeTypes={{ "custom-bezier": CustomBezierEdge }}
           viewport={{ x: width > 768 ? 56 : 0, y: 0, zoom: 1 }}
-        ></ReactFlow>
+        />
       </div>
 
       <Dialog open={selectedIndex !== null} onOpenChange={() => setSelectedIndex(null)}>

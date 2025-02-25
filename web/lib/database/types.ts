@@ -7,6 +7,12 @@ declare global {
       units: string
       value: string
       description: string
+      reasoning: string
+    }
+
+    type Beneficiary = {
+      description: string
+      id: string
     }
 
     type ImpactResult = {
@@ -84,6 +90,7 @@ declare global {
     interface InvolvedPerson {
       userId: string
       headshotUrl: string
+      wideHeadshotUrl: string
       images: string[]
       age: {
         low: number

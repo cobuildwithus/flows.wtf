@@ -1,10 +1,11 @@
 import { DateTime } from "@/components/ui/date-time"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import noggles from "@/public/noggles.svg"
-import { Impact } from "@prisma/flows"
+import Noggles from "@/public/noggles.svg"
+import type { Impact } from "@prisma/flows"
 import { CircleCheckBig } from "lucide-react"
 import Image from "next/image"
+import pluralize from "pluralize"
 
 interface Props {
   impact: Impact
@@ -12,7 +13,7 @@ interface Props {
 
 export function ImpactContent(props: Props) {
   const { impact } = props
-  const { name, results, date, impactUnits, bestImage, peopleInvolved, proofs } = impact
+  const { name, results, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
 
   return (
     <>
@@ -20,7 +21,7 @@ export function ImpactContent(props: Props) {
         <div className="absolute -right-8 top-8 z-30">
           <DateTime
             date={date}
-            className="block rotate-45 bg-primary px-12 py-0.5 text-sm font-medium text-primary-foreground"
+            className="block rotate-45 bg-secondary px-12 py-0.5 text-sm font-medium text-primary"
             relative
             short
           />
@@ -48,6 +49,7 @@ export function ImpactContent(props: Props) {
                 <a
                   href={proof.url}
                   target="_blank"
+                  rel="noreferrer"
                   key={`${image.url}`}
                   className="transition-opacity hover:opacity-80"
                 >
@@ -68,7 +70,6 @@ export function ImpactContent(props: Props) {
 
         <aside className="md:sticky md:top-12 md:col-span-6 md:pr-20">
           <header>
-            <h1 className="text-lg font-bold tracking-tight md:text-2xl">{name}</h1>
             <DateTime
               date={date}
               relative
@@ -76,18 +77,21 @@ export function ImpactContent(props: Props) {
             />
           </header>
 
-          <section className="mt-4">
-            <ul className="space-y-3">
+          <section className="flex flex-col gap-y-4">
+            <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Results</h3>
+            <ul className="flex flex-col space-y-3">
               {results.map((result) => (
-                <Tooltip key={result.headline}>
-                  <TooltipTrigger asChild>
-                    <li className="inline-flex cursor-help items-center space-x-2.5 text-sm">
-                      <CircleCheckBig className="size-4 text-green-400/75" />
-                      <span className="font-light opacity-85">{result.headline}</span>
-                    </li>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs py-2">{result.details}</TooltipContent>
-                </Tooltip>
+                <li key={result.headline} className="flex items-start">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="inline-flex cursor-help items-center space-x-2.5 text-sm">
+                        <CircleCheckBig className="size-4 text-green-400/75" />
+                        <span className="font-light opacity-85">{result.headline}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs py-2">{result.details}</TooltipContent>
+                  </Tooltip>
+                </li>
               ))}
             </ul>
           </section>
@@ -95,14 +99,20 @@ export function ImpactContent(props: Props) {
           <section className="mt-8">
             <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
             <dl className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-              {impactUnits
+              {impactMetrics
                 .filter(({ name }) => name.toLowerCase() !== "noggles")
                 .map((unit) => (
                   <div key={unit.name} className="rounded-md border p-3">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
-                          <dt className="text-xs text-muted-foreground">{unit.name}</dt>
+                          <dt className="text-xs text-muted-foreground">
+                            {unit.units === "⌐◨-◨" ? (
+                              <Image src={Noggles} alt="Noggles" height={12} />
+                            ) : (
+                              pluralize(unit.units, Number.parseInt(unit.value))
+                            )}
+                          </dt>
                           <dd className="order-first text-3xl font-bold tracking-tight">
                             {unit.value}
                           </dd>
@@ -134,7 +144,7 @@ export function ImpactContent(props: Props) {
                       alt="Person"
                       width={108}
                       height={108}
-                      className="size-full scale-[1.65] rounded-full"
+                      className="size-full scale-[1.2] rounded-full"
                     />
                   </div>
                 ))}
