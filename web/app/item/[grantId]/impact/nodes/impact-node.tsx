@@ -38,7 +38,7 @@ export function ImpactNode(props: NodeProps<IImpactNode>) {
       <div className="mt-5">
         <h2 className="text-center text-[15px] font-medium">{name}</h2>
         <div className="mt-2 text-center text-xs text-muted-foreground">
-          <DateTime date={impact.date} relative />
+          <DateTime date={impact.date} shortDate />
         </div>
       </div>
 

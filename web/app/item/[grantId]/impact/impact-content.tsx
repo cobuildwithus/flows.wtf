@@ -15,6 +15,8 @@ export function ImpactContent(props: Props) {
   const { impact } = props
   const { name, results, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
 
+  const hasImpactMetrics = impactMetrics.some(({ name }) => name.toLowerCase() !== "noggles")
+
   return (
     <>
       <div className="sticky top-0 h-0 max-sm:hidden">
@@ -96,34 +98,38 @@ export function ImpactContent(props: Props) {
             </ul>
           </section>
 
-          <section className="mt-8">
-            <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
-            <dl className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-              {impactMetrics
-                .filter(({ name }) => name.toLowerCase() !== "noggles")
-                .map((unit) => (
-                  <div key={unit.name} className="rounded-md border p-3">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
-                          <dt className="text-xs text-muted-foreground">
-                            {unit.units === "⌐◨-◨" ? (
-                              <Image src={Noggles} alt="Noggles" height={12} />
-                            ) : (
-                              pluralize(unit.units, Number.parseInt(unit.value))
-                            )}
-                          </dt>
-                          <dd className="order-first text-3xl font-bold tracking-tight">
-                            {unit.value}
-                          </dd>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs py-2">{unit.description}</TooltipContent>
-                    </Tooltip>
-                  </div>
-                ))}
-            </dl>
-          </section>
+          {hasImpactMetrics && (
+            <section className="mt-8">
+              <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
+              <dl className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                {impactMetrics
+                  .filter(({ name }) => name.toLowerCase() !== "noggles")
+                  .map((unit) => (
+                    <div key={unit.name} className="rounded-md border p-3">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
+                            <dt className="text-xs text-muted-foreground">
+                              {unit.units === "⌐◨-◨" ? (
+                                <Image src={Noggles} alt="Noggles" height={12} />
+                              ) : (
+                                pluralize(unit.units, Number.parseInt(unit.value))
+                              )}
+                            </dt>
+                            <dd className="order-first text-3xl font-bold tracking-tight">
+                              {unit.value}
+                            </dd>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs py-2">
+                          {unit.description}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  ))}
+              </dl>
+            </section>
+          )}
 
           {peopleInvolved.length > 0 && (
             <section className="mt-8">

@@ -80,7 +80,7 @@ export default async function GrantPage(props: Props) {
 
   const impacts = await database.impact.findMany({
     where: { grantId },
-    orderBy: { updatedAt: "asc" },
+    orderBy: [{ date: "asc" }, { updatedAt: "asc" }],
     take: 40,
   })
 

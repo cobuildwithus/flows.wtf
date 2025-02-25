@@ -15,17 +15,17 @@ export function LaunchNode(props: NodeProps<ILaunchNode>) {
     <div className="group pointer-events-auto relative flex flex-col items-center overflow-hidden">
       <Image
         src={LaunchImage}
-        alt="Grant launched"
+        alt="Project launch"
         height={180}
-        width={250}
-        className="object-cover"
+        width={180}
+        className="rounded-full object-cover"
       />
 
       <div className="mt-4 px-4">
-        <h2 className="mb-2 text-center text-sm font-medium">Grant launched</h2>
+        <h2 className="mb-2 text-center text-sm font-medium">Project launch</h2>
 
         <div className="text-center text-xs text-muted-foreground">
-          <DateTime date={activatedAt} relative />
+          <DateTime date={activatedAt} shortDate />
         </div>
       </div>
 
