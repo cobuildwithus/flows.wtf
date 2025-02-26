@@ -74,7 +74,7 @@ export const CuratorPopover = (props: Props) => {
         <ScrollArea className="w-full p-2.5 pb-4 md:pb-0">
           <div className="flex flex-row items-center justify-between">
             <p className="pr-2 text-xs text-muted-foreground md:text-sm">
-              You&apos;re earning <Currency>{earnings.yearly}</Currency> per year
+              Earning <Currency>{earnings.yearly}</Currency> per year
               {tokens.length > 0 ? " by" : ","}{" "}
               <Link
                 href="/curate"
