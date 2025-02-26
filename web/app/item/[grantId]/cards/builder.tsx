@@ -1,24 +1,35 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Icon } from "@/components/ui/icon"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import Link from "next/link"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 interface Props {
-  tags: string[]
   bio: string
   links: Array<{ url: string; icon: string }>
   recipient: `0x${string}`
 }
 
 export function Builder(props: Props) {
-  const { tags, bio, links, recipient } = props
+  const { bio, links, recipient } = props
 
   return (
-    <div className="col-span-full lg:col-span-4 lg:row-span-2">
-      <div className="h-full rounded-xl border bg-secondary/50 p-5 text-secondary-foreground dark:bg-secondary">
-        <UserProfile address={recipient} withPopover={false}>
-          {(profile) => (
+    <UserProfile address={recipient} withPopover={false}>
+      {(profile) => (
+        <Dialog>
+          <DialogTrigger>
+            <div className="group flex items-center text-xs md:text-sm">
+              <span className="mr-2 opacity-50">by</span>
+              <span className="mr-2 transition-colors group-hover:text-primary">
+                {profile.display_name}
+              </span>
+              <Avatar className="size-5 rounded-full bg-primary md:size-6">
+                <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+              </Avatar>
+            </div>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle className="sr-only">Builder</DialogTitle>
             <div className="space-y-6">
               <Link
                 target="_blank"
@@ -27,21 +38,13 @@ export function Builder(props: Props) {
                     ? `https://warpcast.com/${profile.username}`
                     : `https://basescan.org/address/${recipient}`
                 }
-                className="flex items-center gap-4 hover:opacity-80"
+                className="inline-flex items-center gap-4 hover:opacity-80"
               >
                 <Avatar className="size-12 bg-primary">
                   <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
                 </Avatar>
                 <h2 className="text-xl font-semibold">{profile.display_name}</h2>
               </Link>
-
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <Badge variant="outline" className="py-1 capitalize" key={tag}>
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
 
               <div className="space-y-4 whitespace-pre-line text-sm leading-relaxed text-secondary-foreground/70">
                 {bio}
@@ -64,9 +67,9 @@ export function Builder(props: Props) {
                 ))}
               </div>
             </div>
-          )}
-        </UserProfile>
-      </div>
-    </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </UserProfile>
   )
 }

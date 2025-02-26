@@ -9,10 +9,19 @@ interface Props extends Omit<HTMLProps<HTMLTimeElement>, "dateTime"> {
   options?: Intl.DateTimeFormatOptions
   relative?: boolean
   short?: boolean
+  shortDate?: boolean
 }
 
 export function DateTime(props: Props) {
-  const { date, locale = "en-US", options, relative = false, short = false, ...rest } = props
+  const {
+    date,
+    locale = "en-US",
+    options,
+    relative = false,
+    short = false,
+    shortDate = false,
+    ...rest
+  } = props
   const [currentDate, setCurrentDate] = useState(new Date())
   const router = useRouter()
 
@@ -42,9 +51,21 @@ export function DateTime(props: Props) {
     <time dateTime={date.toISOString()} title={date.toString()} suppressHydrationWarning {...rest}>
       {relative
         ? getRelativeTime(date, currentDate, locale, short)
-        : date.toLocaleString(locale, options)}
+        : shortDate
+          ? getShortDate(date, currentDate, locale)
+          : date.toLocaleString(locale, options)}
     </time>
   )
+}
+
+function getShortDate(date: Date, currentDate: Date, locale: Intl.LocalesArgument = "en-US") {
+  const isSameYear = date.getFullYear() === currentDate.getFullYear()
+
+  return date.toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
+    year: isSameYear ? undefined : "numeric",
+  })
 }
 
 function getRelativeTime(

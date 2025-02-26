@@ -11,7 +11,7 @@ interface Props {
   flow: Grant
   grants: Array<
     Grant & {
-      derivedData: Pick<DerivedData, "lastBuilderUpdate" | "overallGrade"> | null
+      derivedData: Pick<DerivedData, "lastBuilderUpdate" | "overallGrade" | "title"> | null
       profile: Profile
     }
   >

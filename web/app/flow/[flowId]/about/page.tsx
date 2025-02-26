@@ -1,5 +1,5 @@
 import { Voters } from "@/app/item/[grantId]/cards/voters"
-import { CurationCard } from "@/app/item/[grantId]/components/curation-card"
+import { CurationStatus, CurationVote } from "@/app/item/[grantId]/components/curation-card"
 import { UserVotes } from "@/app/item/[grantId]/components/user-votes"
 import { AnimatedSalary } from "@/components/global/animated-salary"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +9,7 @@ import { Currency } from "@/components/ui/currency"
 import { Markdown } from "@/components/ui/markdown"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getPool } from "@/lib/database/queries/pool"
+import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
 import Link from "next/link"
 import { Suspense } from "react"
@@ -19,7 +20,7 @@ interface Props {
   params: Promise<{ flowId: string }>
 }
 
-export default async function GrantPage(props: Props) {
+export default async function FlowPage(props: Props) {
   const params = await props.params
   const { flowId } = params
 
@@ -81,16 +82,50 @@ export default async function GrantPage(props: Props) {
             </CardContent>
           </Card>
 
-          <CurationCard grant={flow} flow={pool} />
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <h3 className="flex items-center justify-between font-medium">
+                  Status
+                  {flow.status === Status.ClearingRequested && (
+                    <Badge variant="destructive" className="font-medium">
+                      Removal Requested
+                    </Badge>
+                  )}
+                </h3>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CurationStatus grant={flow} flow={pool} />
+            </CardContent>
+          </Card>
 
-          <Suspense>
-            <Voters
-              contract={flow.parentContract as `0x${string}`}
-              grantId={flow.id}
-              flowVotesCount={pool.votesCount}
-              isFlow={true}
-            />
-          </Suspense>
+          {flow.isDisputed && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Vote</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CurationVote grant={flow} flow={pool} />
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Voters</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Suspense>
+                <Voters
+                  contract={flow.parentContract as `0x${string}`}
+                  grantId={flow.id}
+                  flowVotesCount={pool.votesCount}
+                  isFlow={true}
+                />
+              </Suspense>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

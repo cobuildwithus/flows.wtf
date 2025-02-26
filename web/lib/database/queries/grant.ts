@@ -3,8 +3,8 @@ import "server-only"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
-import { Grant } from "@prisma/flows"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
+import { Grant } from "@prisma/flows"
 import { farcasterDb } from "../farcaster-edge"
 
 export async function countUserActiveGrants() {
@@ -28,19 +28,18 @@ export async function getActivity(
   grants: Pick<Grant, "id" | "recipient">[],
   startDate: Date,
 ) {
-  const grantIds = grants.map((grant) => grant.id)
-  const [casts, stories] = await Promise.all([
-    getActivityFromCasts(recipient, grantIds, startDate),
-    getActivityFromStories(grantIds, startDate),
-  ])
+  const casts = await getActivityFromCasts(
+    recipient,
+    grants.map((grant) => grant.id),
+    startDate,
+  )
 
   const data = new Map<string, { count: number; level: number; date: string }>()
 
   data.set(getDate(startDate), { date: getDate(startDate), count: 0, level: 0 }) // start date
   data.set(getDate(new Date()), { date: getDate(new Date()), count: 0, level: 0 }) // end date - today
 
-  const allActivities = [...casts.flat(), ...stories.flat()]
-  allActivities.forEach((activity) => {
+  casts.forEach((activity) => {
     const existingActivity = data.get(activity.date)
 
     if (existingActivity) {
@@ -54,12 +53,9 @@ export async function getActivity(
     }
   })
 
-  return {
-    activities: Array.from(data.values()).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    ),
-    storiesCount: stories.flat().length,
-  }
+  return Array.from(data.values()).sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  )
 }
 
 async function getActivityFromCasts(recipient: string, grantIds: string[], startDate: Date) {
@@ -98,27 +94,6 @@ async function getActivityFromCasts(recipient: string, grantIds: string[], start
     count,
     level: count > 0 ? (aboutGrant >= 2 ? 3 : aboutGrant > 0 ? 2 : 1) : 0,
   }))
-}
-
-async function getActivityFromStories(grantIds: string[], startDate: Date) {
-  const stories = await database.story.findMany({
-    where: {
-      grant_ids: { hasSome: grantIds },
-      complete: true,
-      created_at: { gt: startDate },
-    },
-    select: { id: true, created_at: true },
-    orderBy: { created_at: "asc" },
-  })
-
-  const activityByDate = stories.reduce<Record<string, { count: number }>>((acc, story) => {
-    const date = getDate(story.created_at)
-    if (!acc[date]) acc[date] = { count: 0 }
-    acc[date].count++
-    return acc
-  }, {})
-
-  return Object.entries(activityByDate).map(([date, { count }]) => ({ date, count, level: 3 }))
 }
 
 function getDate(date: Date) {

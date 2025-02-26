@@ -8,7 +8,7 @@ export function PendingEvaluation({ user }: { user?: User }) {
   const requestFarcasterConnect = !user?.fid
 
   return (
-    <div className="flex w-full flex-col justify-between rounded-xl border bg-card p-6 text-center">
+    <div className="flex h-full w-full flex-col justify-between rounded-xl border bg-card p-6 text-center">
       <div>
         <div className="mb-6 flex items-center space-x-4 max-lg:justify-center">
           <div className="relative size-12">

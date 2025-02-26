@@ -1,6 +1,6 @@
 ---
-description: Use these rules while writing code in web directory
-globs: web/*
+description: Web application architecture and component guidelines
+globs: *
 ---
 ## Application Structure
 - Keep pages and layouts in app/ directory

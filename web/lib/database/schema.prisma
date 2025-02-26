@@ -4,6 +4,10 @@ generator client {
   output          = "../../node_modules/@prisma/flows"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -45,13 +49,27 @@ model DerivedData {
   grant Grant @relation(fields: [grantId], references: [id])
 
   // derived data here (generated from ai etc.)
-  minimumSalary       Int?
-  template            String?
+  /// [Beneficiary[]]
+  beneficiaries       Json?
+  deliverables        String[]
+  grades              Json?
+  impactMetrics       Json?
   lastBuilderUpdate   DateTime?
-  pageData            String?
-  overallGrade        Float?
+  minimumSalary       Int?
   ongoingRequirements Json?
+  overallGrade        Float?
+  pageData            String?
   requirementsMetrics Json?
+  shortDescription    String?
+  template            String?
+  title               String?
+  tagline             String?
+  coverImage          String?
+  mission             String?
+  /// [GrantBuilder]
+  builder             Json?
+  /// [GrantGradients]
+  gradients           Json?
 
   @@index([grantId])
   @@map("DerivedData")
@@ -163,6 +181,7 @@ model Grant {
   evidences    Evidence[]
   derivedData  DerivedData?
   votes        Vote[]
+  impacts      Impact[]
 
   @@index([isTopLevel])
   @@index([isFlow])
@@ -262,4 +281,31 @@ view Evidence {
 
   @@index([evidenceGroupID])
   @@schema("onchain")
+}
+
+model Impact {
+  id             String   @id
+  name           String
+  date           DateTime
+  location       String?
+  /// [Proof[]]
+  proofs         Json
+  /// [BestImage]
+  bestImage      Json     @map("best_image")
+  /// [ImpactUnit[]]
+  impactMetrics  Json     @map("impact_metrics")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  /// [InvolvedPerson[]]
+  peopleInvolved Json     @map("people_involved")
+  grantId        String   @map("grant_id")
+  complete       Boolean
+  /// [ImpactResult[]]
+  results        Json
+
+  grant Grant @relation(fields: [grantId], references: [id])
+
+  @@index([grantId])
+  @@map("Impact")
+  @@schema("web")
 }
