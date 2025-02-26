@@ -10,6 +10,15 @@ declare global {
       reasoning: string
     }
 
+    type ImpactVerification = {
+      model: string
+      score: number
+      reason: string
+      grant_id: string
+      prompt_version: string
+      is_grant_update: boolean
+    }
+
     type Beneficiary = {
       description: string
       id: string
