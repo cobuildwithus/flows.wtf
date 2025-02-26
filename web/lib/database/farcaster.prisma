@@ -4,6 +4,10 @@ generator client {
   output          = "../../node_modules/@prisma/farcaster"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("FARCASTER_DATABASE_URL")
@@ -51,6 +55,8 @@ model Cast {
   profile                  Profile   @relation(fields: [fid], references: [fid])
   computed_tags            String[]
   embed_summaries          String[]
+  /// [ImpactVerification[]]
+  impact_verifications     Json?
 
   @@map("farcaster_casts")
   @@schema("production")

@@ -1,13 +1,13 @@
 "use client"
 
-import { CastCard } from "@/components/ui/cast-card"
-import { TooltipPortal } from "@radix-ui/react-tooltip"
+import type { CastCard } from "@/components/ui/cast-card"
 import { useTheme } from "next-themes"
 import dynamic from "next/dynamic"
 import type { ComponentProps } from "react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 import { useEffect, useRef } from "react"
 import React from "react"
+import { GrantCastDialog } from "./grant-cast-dialog"
+import pluralize from "pluralize"
 
 const ReactActivityCalendar = dynamic(() =>
   import("react-activity-calendar").then((mod) => mod.ActivityCalendar),
@@ -42,16 +42,11 @@ export function ActivityCalendar({ updates, ...props }: Props) {
         if (!casts) return block
 
         return (
-          <Tooltip>
-            <TooltipTrigger asChild>{block}</TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent className="scrollbar-thumb-rounded-full max-h-96 min-w-60 max-w-[100vw] space-y-2.5 overflow-y-auto rounded-xl bg-background/80 p-0 scrollbar-thin scrollbar-thumb-foreground/20 sm:max-w-96">
-                {casts.map((cast) => (
-                  <CastCard key={cast.hash.toString()} cast={cast} />
-                ))}
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
+          <GrantCastDialog
+            trigger={block}
+            title={`${new Date(activity.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} ${pluralize("update", casts.length)}`}
+            casts={casts}
+          />
         )
       }}
     />

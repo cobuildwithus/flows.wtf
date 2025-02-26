@@ -123,6 +123,7 @@ export async function getGrantUpdates(grantIds: string | string[], startDate: Da
         },
       },
       mentioned_fids: true,
+      impact_verifications: true,
       mentions_positions_array: true,
     },
     ...getCacheStrategy(180),
