@@ -4,7 +4,7 @@ import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { farcasterDb } from "../farcaster-edge"
 
 export async function countUserActiveGrants() {

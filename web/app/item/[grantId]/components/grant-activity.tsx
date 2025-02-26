@@ -20,7 +20,7 @@ export async function GrantActivity(props: Props) {
   const [activities, updates] = await Promise.all([
     unstable_cache(
       () => getActivity(grant.recipient, [grant], nineMonthsAgo),
-      [`activity-graph-grant-page-${grant.id}`],
+      [`activity-graph-grant-page-v2-${grant.id}`],
       { revalidate: 180 },
     )(),
     getGrantUpdates([grant.id], nineMonthsAgo),

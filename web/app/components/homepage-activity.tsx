@@ -20,7 +20,7 @@ export async function HomepageActivity(props: Props) {
   const [activities, updates] = await Promise.all([
     unstable_cache(
       () => getActivity(grants[0].recipient, grants, sixMonthsAgo),
-      [`activity-graph-${grants[0].id}`],
+      [`activity-graph-v2-${grants[0].id}`],
       {
         revalidate: 180,
       },
