@@ -7,6 +7,7 @@ import dynamic from "next/dynamic"
 import type { ComponentProps } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 import { useEffect, useRef } from "react"
+import React from "react"
 
 const ReactActivityCalendar = dynamic(() =>
   import("react-activity-calendar").then((mod) => mod.ActivityCalendar),

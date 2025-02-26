@@ -19,7 +19,7 @@ export function Builder(props: Props) {
         <Dialog>
           <DialogTrigger>
             <div className="group flex items-center text-xs md:text-sm">
-              <span className="mr-1 opacity-50">by</span>
+              <span className="mr-2 opacity-50">by</span>
               <span className="mr-2 transition-colors group-hover:text-primary">
                 {profile.display_name}
               </span>

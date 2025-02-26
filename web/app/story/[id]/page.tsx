@@ -188,24 +188,6 @@ export default async function Page(props: Props) {
               <Markdown>{story.summary}</Markdown>
               <Sources sources={sources} />
             </div>
-
-            {timeline && Array.isArray(timeline) && timeline.length > 0 && (
-              <div className="mt-8 border-t border-border pt-6">
-                <h2 className="mb-4 text-lg font-semibold md:text-xl">Timeline</h2>
-                <div className="relative space-y-4 pl-7">
-                  <div className="absolute inset-y-2 left-2 w-0.5 bg-secondary"></div>
-                  {(timeline as Array<{ timestamp: string; event: string }>).map((item) => (
-                    <div key={item.timestamp} className="relative">
-                      <div className="absolute -left-6 top-1 size-2.5 rounded-full bg-primary"></div>
-                      <time className="block text-sm text-muted-foreground">
-                        {new Date(item.timestamp).toLocaleDateString()}
-                      </time>
-                      <p className="mt-1 text-sm font-medium">{item.event}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <aside className="space-y-8 md:col-span-4">

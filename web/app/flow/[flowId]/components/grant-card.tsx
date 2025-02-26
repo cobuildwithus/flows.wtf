@@ -13,7 +13,10 @@ import Image from "next/image"
 import { isGrantNew } from "./is-new"
 
 interface Props {
-  grant: Grant & { profile: Profile; derivedData: Pick<DerivedData, "overallGrade"> | null }
+  grant: Grant & {
+    profile: Profile
+    derivedData: Pick<DerivedData, "overallGrade" | "title"> | null
+  }
 }
 
 export function GrantCard({ grant }: Props) {
@@ -49,7 +52,7 @@ export function GrantCard({ grant }: Props) {
 
         <div className="mt-32 flex translate-y-[26px] flex-col transition-transform duration-300 group-hover:translate-y-0">
           <h3 className="line-clamp-3 text-balance text-sm font-medium leading-5 text-white md:text-[15px]">
-            {grant.title}
+            {grant.derivedData?.title || grant.title}
           </h3>
 
           <div className="mt-2.5 flex items-center gap-1.5 text-xs text-white/75">

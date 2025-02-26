@@ -78,7 +78,9 @@ export const StatusNotDisputed = async (props: Props) => {
             the removal request to send it to a vote.
           </li>
           {evidence?.party && <Challenger address={getEthAddress(evidence.party)} />}
-          {evidence?.evidence && <li>{formatEvidence(evidence.evidence)}</li>}
+          {evidence?.evidence && (
+            <div className="text-muted-foreground md:pl-5">{formatEvidence(evidence.evidence)}</div>
+          )}
           <li>
             If no challenges are submitted{" "}
             <DateTime

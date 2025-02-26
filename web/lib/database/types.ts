@@ -120,7 +120,7 @@ declare global {
     type GrantGradients = {
       mission: Gradient
       beneficiaries: Gradient
-      focus: Gradient
+      deliverables: Gradient
     }
   }
 }

@@ -26,7 +26,7 @@ import { CoverImage } from "./cards/cover-image"
 import { FocusCard } from "./cards/focus"
 import { Stat } from "./cards/stats"
 import { MissionCard } from "./cards/mission"
-import { ProgressCard } from "./cards/progress"
+import { DeliverablesCard } from "./cards/deliverables"
 import { Voters } from "./cards/voters"
 import { BgGradient } from "./components/bg-gradient"
 import { CurationStatus, CurationVote } from "./components/curation-card"
@@ -64,17 +64,8 @@ export default async function GrantPage(props: Props) {
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
   if (!grant.derivedData) notFound()
 
-  const {
-    focus,
-    mission,
-    builder,
-    title,
-    beneficiaries,
-    tagline,
-    coverImage,
-    gradients,
-    progress,
-  } = grant.derivedData
+  const { mission, builder, title, beneficiaries, tagline, coverImage, gradients, deliverables } =
+    grant.derivedData
 
   const canEdit = canEditGrant(grant, user?.address)
 
@@ -137,10 +128,9 @@ export default async function GrantPage(props: Props) {
                 )}
               </div>
 
-              <div className="flex flex-col gap-4">
-                {focus && gradients && <FocusCard gradient={gradients?.focus} text={focus} />}
-                {progress && coverImage && <ProgressCard image={coverImage} text={progress} />}
-              </div>
+              {deliverables && gradients && (
+                <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
+              )}
             </div>
             <div className="col-span-full cursor-pointer xl:col-span-3">
               <ImpactDialog grants={[{ ...grant, flow: { title: flow.title } }]} />
@@ -180,7 +170,7 @@ export default async function GrantPage(props: Props) {
             </Dialog>
             <Dialog>
               <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
-                <Stat label="Curation Status">
+                <Stat label="Status">
                   <span className="lg:text-2xl">
                     {grant.status === Status.ClearingRequested ? (
                       <span className="inline-block rounded-sm bg-destructive px-1.5 py-0.5 text-lg text-destructive-foreground">
@@ -235,10 +225,9 @@ async function getGrant(grantId: string) {
           coverImage: true,
           shortDescription: true,
           mission: true,
-          focus: true,
-          progress: true,
           builder: true,
           gradients: true,
+          deliverables: true,
           beneficiaries: true,
           overallGrade: true,
           requirementsMetrics: true,

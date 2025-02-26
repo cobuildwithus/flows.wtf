@@ -1,7 +1,7 @@
 import "server-only"
 
 import { ActivityCalendar } from "@/components/ui/activity-calendar"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
 import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant"
 import pluralize from "pluralize"
@@ -17,7 +17,7 @@ export async function HomepageActivity(props: Props) {
 
   const sixMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 6))
 
-  const [{ activities, storiesCount }, updates] = await Promise.all([
+  const [activities, updates] = await Promise.all([
     unstable_cache(
       () => getActivity(grants[0].recipient, grants, sixMonthsAgo),
       [`activity-graph-${grants[0].id}`],
@@ -31,7 +31,7 @@ export async function HomepageActivity(props: Props) {
     ),
   ])
 
-  const contributions = updates.count + storiesCount
+  const contributions = updates.count
 
   return (
     <div className="flex h-full flex-col items-center justify-start overflow-x-auto max-md:px-5 max-md:pb-7 md:pt-12">

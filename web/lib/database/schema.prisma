@@ -65,8 +65,6 @@ model DerivedData {
   title               String?
   tagline             String?
   coverImage          String?
-  focus               String?
-  progress            String?
   mission             String?
   /// [GrantBuilder]
   builder             Json?

@@ -15,7 +15,7 @@ export function BeneficiariesCard(props: Props) {
   const { gradient, beneficiaries } = props
 
   return (
-    <GradientCard gradient={gradient} className="overflow-hidden p-5 lg:h-2/5">
+    <GradientCard gradient={gradient} className="overflow-hidden overflow-y-scroll p-5 lg:h-2/5">
       <div className="flex flex-col items-start">
         <div className="items-top flex w-full justify-between gap-2">
           <Icon name="person-standing" className="size-6" />

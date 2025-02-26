@@ -10,6 +10,8 @@ export function CircularProgress(props: Props) {
   const { value, size = 48, className } = props
   const noggleCutoff = 97
 
+  const meetsCutoff = value >= noggleCutoff
+
   return (
     <div className={cn("relative rounded-full", className)} style={{ width: size, height: size }}>
       <svg className="size-full" viewBox="0 0 100 100">
@@ -17,8 +19,8 @@ export function CircularProgress(props: Props) {
         <circle
           className={cn("transition-all", {
             "fill-green-500/10 stroke-green-500 dark:fill-green-400/10 dark:stroke-green-400":
-              value >= noggleCutoff,
-            "fill-none stroke-green-500 dark:stroke-green-400": value >= 80 && value < noggleCutoff,
+              meetsCutoff,
+            "fill-none stroke-green-500 dark:stroke-green-400": value >= 80 && !meetsCutoff,
             "fill-none stroke-yellow-500 dark:stroke-yellow-400": value >= 60 && value < 80,
             "fill-none stroke-orange-500 dark:stroke-orange-400": value < 60,
           })}
@@ -27,7 +29,11 @@ export function CircularProgress(props: Props) {
           cx="50"
           cy="50"
           r="45"
-          strokeDasharray={`${(value / 100) * 2 * Math.PI * 45}, ${2 * Math.PI * 45}`}
+          strokeDasharray={
+            meetsCutoff
+              ? `${2 * Math.PI * 45}, 0`
+              : `${(value / 100) * 2 * Math.PI * 45}, ${2 * Math.PI * 45}`
+          }
           transform="rotate(-90 50 50)"
         />
       </svg>

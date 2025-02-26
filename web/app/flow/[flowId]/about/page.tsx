@@ -86,7 +86,7 @@ export default async function FlowPage(props: Props) {
             <CardHeader>
               <CardTitle>
                 <h3 className="flex items-center justify-between font-medium">
-                  Curation Status
+                  Status
                   {flow.status === Status.ClearingRequested && (
                     <Badge variant="destructive" className="font-medium">
                       Removal Requested
