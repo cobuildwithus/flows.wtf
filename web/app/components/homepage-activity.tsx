@@ -15,12 +15,15 @@ const MAX_LEVEL = 3
 export async function HomepageActivity(props: Props) {
   const { grants } = props
 
-  const sixMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 6))
+  const sixMonthsAgo = new Date()
+  // make a bit less than 6 months ago so it fits the graph
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+  sixMonthsAgo.setDate(sixMonthsAgo.getDate() + 10)
 
   const [activities, updates] = await Promise.all([
     unstable_cache(
       () => getActivity(grants[0].recipient, grants, sixMonthsAgo),
-      [`activity-graph-v2-${grants[0].id}`],
+      [`activity-graph-v13-${grants[0].id}`],
       {
         revalidate: 180,
       },
