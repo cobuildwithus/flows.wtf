@@ -44,21 +44,19 @@ export function GrantCastDialog({
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         <div
-          className={cn("mt-4 grid auto-rows-max grid-cols-1 gap-4", {
-            "sm:grid-cols-2": casts.length > 1 && casts.length < 3,
-            "sm:grid-cols-3": casts.length >= 3,
+          className={cn("mt-4 columns-1 gap-4", {
+            "sm:columns-2": casts.length > 1 && casts.length < 3,
+            "sm:columns-3": casts.length >= 3,
           })}
         >
           {casts.length > 0 ? (
             casts.map((cast) => (
-              <div key={cast.hash.toString()} className="break-inside-avoid">
+              <div key={cast.hash.toString()} className="mb-4 break-inside-avoid">
                 <CastCard cast={cast} />
               </div>
             ))
           ) : (
-            <p className="col-span-full text-center text-sm text-muted-foreground">
-              No activity found
-            </p>
+            <p className="text-center text-sm text-muted-foreground">No activity found</p>
           )}
         </div>
       </DialogContent>

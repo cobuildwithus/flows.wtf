@@ -172,9 +172,11 @@ export default async function GrantPage(props: Props) {
               <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
                 <Stat label="Status">
                   <span className="lg:text-2xl">
-                    {grant.status === Status.ClearingRequested ? (
+                    {grant.status === Status.ClearingRequested || grant.status === Status.Absent ? (
                       <span className="inline-block rounded-sm bg-destructive px-1.5 py-0.5 text-lg text-destructive-foreground">
-                        Removal Requested
+                        {grant.status === Status.ClearingRequested
+                          ? "Removal Requested"
+                          : "Removed"}
                       </span>
                     ) : (
                       "Active"
