@@ -80,7 +80,17 @@ function getDiagramLayout(width: number, nodes: MinimalNode[]) {
     return Math.max(...rowNodes.map((node) => node.height))
   }).reduce((acc, h) => acc + h, 0)
 
-  const height = rowHeights + (rows - 1) * marginY + (rows - 1) * (columns * yStep)
+  let height = rowHeights + (rows - 1) * marginY + (rows - 1) * (columns * yStep)
+
+  // Patch: For one-row diagrams, nodes get a y-offset based on their column.
+  // Adjust the height to ensure the bottom of the lowest node is visible.
+  if (rows === 1) {
+    height = nodes.reduce((max, node, i) => {
+      const col = (i % columns) + 1
+      const nodeBottom = col * yStep + node.height
+      return Math.max(max, nodeBottom)
+    }, 0)
+  }
 
   return { columns, rows, marginX, marginY, yStep, height, windowWidth: width }
 }
