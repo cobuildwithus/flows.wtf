@@ -57,7 +57,7 @@ export function ImpactChain(props: Props) {
         ...impacts.map((impact, index) => ({
           type: "impact",
           width: 280,
-          height: 240,
+          height: impact.name.length > 22 ? 300 : 240,
           data: {
             impact,
             onClick: () => setSelectedIndex(index),
