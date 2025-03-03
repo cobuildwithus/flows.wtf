@@ -37,7 +37,7 @@ export const FlowHeader = (props: Props) => {
             </Link>
             {flow.status === Status.ClearingRequested && (
               <Link href={`/flow/${flow.id}/about`}>
-                <Badge variant="destructive">Removal Requested</Badge>
+                <Badge variant="warning">Challenged</Badge>
               </Link>
             )}
           </div>

@@ -71,7 +71,7 @@ export function GrantsTable(props: Props) {
                   </Link>
                 </div>
 
-                {isRemovalRequested && <Badge variant="destructive">Removal Requested</Badge>}
+                {isRemovalRequested && <Badge variant="warning">Challenged</Badge>}
               </TableCell>
               {!flow.isTopLevel && (
                 <TableCell>

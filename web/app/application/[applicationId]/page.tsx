@@ -21,6 +21,7 @@ import Image from "next/image"
 import { redirect } from "next/navigation"
 import { StatusDisputed } from "./components/status-disputed"
 import { StatusNotDisputed } from "./components/status-not-disputed"
+import { ChallengeMessage } from "@/components/ui/challenge-message"
 
 export const runtime = "nodejs"
 
@@ -168,8 +169,8 @@ export default async function ApplicationPage(props: Props) {
             <CardHeader>
               <CardTitle className="flex w-full flex-row items-center justify-between">
                 <span>Application status</span>
-                {grant.status === Status.ClearingRequested && (
-                  <Badge variant="destructive">Removing</Badge>
+                {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
+                  <Badge variant="warning">Challenged</Badge>
                 )}
               </CardTitle>
             </CardHeader>
@@ -179,6 +180,9 @@ export default async function ApplicationPage(props: Props) {
               )}
               {(grant.isDisputed || grant.isResolved) && dispute && (
                 <StatusDisputed grant={grant} dispute={dispute} flow={flow} />
+              )}
+              {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
+                <ChallengeMessage className="mt-4" />
               )}
             </CardContent>
           </Card>

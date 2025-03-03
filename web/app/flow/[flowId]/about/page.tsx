@@ -88,8 +88,8 @@ export default async function FlowPage(props: Props) {
                 <h3 className="flex items-center justify-between font-medium">
                   Status
                   {flow.status === Status.ClearingRequested && (
-                    <Badge variant="destructive" className="font-medium">
-                      Removal Requested
+                    <Badge variant="warning" className="font-medium">
+                      Challenged
                     </Badge>
                   )}
                 </h3>

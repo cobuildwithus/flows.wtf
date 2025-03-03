@@ -42,9 +42,8 @@ export async function StatusDisputed(props: Props) {
       <div className="space-y-4 text-sm">
         <Challenger address={getEthAddress(dispute.challenger)} />
         <Evidence />
-        <VotingStartDate />
         <VotingEndDate />
-        <RevealDate />
+        {isDisputeRevealingVotes(dispute) && <RevealDate />}
       </div>
     )
   }

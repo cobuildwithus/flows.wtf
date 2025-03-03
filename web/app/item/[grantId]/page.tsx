@@ -34,6 +34,7 @@ import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
 import { ImpactDialog } from "./components/impact-dialog"
 import { ImpactChain } from "./impact/impact-chain"
+import { Badge } from "@/components/ui/badge"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -173,11 +174,9 @@ export default async function GrantPage(props: Props) {
                 <Stat label="Status">
                   <span className="lg:text-2xl">
                     {grant.status === Status.ClearingRequested || grant.status === Status.Absent ? (
-                      <span className="inline-block rounded-sm bg-destructive px-1.5 py-0.5 text-lg text-destructive-foreground">
-                        {grant.status === Status.ClearingRequested
-                          ? "Removal Requested"
-                          : "Removed"}
-                      </span>
+                      <Badge variant="warning" className="text-lg">
+                        {grant.status === Status.ClearingRequested ? "Challenged" : "Removed"}
+                      </Badge>
                     ) : (
                       "Active"
                     )}

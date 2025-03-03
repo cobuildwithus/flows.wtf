@@ -9,10 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { isGrantApproved } from "@/lib/database/helpers"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 import { VotingInput } from "../flow/[flowId]/components/voting-input"
@@ -67,7 +66,7 @@ export const FlowsTable = (props: Props) => {
 
                 {flow.status === Status.ClearingRequested && (
                   <Link tabIndex={-1} href={`/item/${flow.id}`}>
-                    <Badge variant="destructive">Removal Requested</Badge>
+                    <Badge variant="warning">Challenged</Badge>
                   </Link>
                 )}
               </TableCell>

@@ -14,6 +14,7 @@ import { getEthAddress } from "@/lib/utils"
 import type { Dispute, Evidence, Grant } from "@prisma/flows"
 import dynamic from "next/dynamic"
 import { Status } from "@/lib/enums"
+import { ChallengeMessage } from "@/components/ui/challenge-message"
 
 const DisputeExecuteButton = dynamic(() =>
   import("@/app/components/dispute/dispute-execute").then((mod) => mod.DisputeExecuteButton),
@@ -41,6 +42,7 @@ export async function StatusDisputed(props: Props) {
         <Evidence />
         <VotingStartDate />
         <li>Token holders vote to keep or remove this {grant.isFlow ? "flow" : "grant"}.</li>
+        <ChallengeMessage />
       </div>
     )
   }
