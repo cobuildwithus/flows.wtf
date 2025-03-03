@@ -7,6 +7,7 @@ import Image from "next/image"
 import { CircleCheckBig, CircleX } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible"
 import { ZeroState } from "./zero-state"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
 
 interface Props {
   cast: Pick<Cast, "impact_verifications" | "id">
@@ -94,10 +95,13 @@ const VerificationStatus = ({
     </div>
   )
 }
-
 const ModelInfo = ({ model }: { model: string }) => (
-  <div className="flex items-center gap-1.5">
-    <Image src={getModelLogo(model)} alt="OpenAI" className="h-3 w-auto opacity-50" />
-    <span className="font-mono text-xs text-muted-foreground">{formatModelId(model)}</span>
-  </div>
+  <Tooltip>
+    <TooltipTrigger>
+      <Image src={getModelLogo(model)} alt="OpenAI" className="h-3 w-auto opacity-50" />
+    </TooltipTrigger>
+    <TooltipContent>
+      <span className="font-mono text-xs">Checked by {formatModelId(model)}</span>
+    </TooltipContent>
+  </Tooltip>
 )
