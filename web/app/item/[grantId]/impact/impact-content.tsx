@@ -6,6 +6,7 @@ import type { Impact } from "@prisma/flows"
 import { CircleCheckBig } from "lucide-react"
 import Image from "next/image"
 import pluralize from "pluralize"
+import SourceBadges from "./source-badges"
 
 interface Props {
   impact: Impact
@@ -16,6 +17,12 @@ export function ImpactContent(props: Props) {
   const { name, results, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
 
   const hasImpactMetrics = impactMetrics.some(({ name }) => name.toLowerCase() !== "noggles")
+  const images = proofs.flatMap((proof) => {
+    return proof.images.map((image) => ({
+      ...image,
+      proofUrl: proof.url,
+    }))
+  })
 
   return (
     <>
@@ -43,30 +50,28 @@ export function ImpactContent(props: Props) {
           </h3>
           <div
             className={cn("grid grid-cols-2 gap-1.5", {
-              "md:grid-cols-1": proofs.length < 3,
+              "md:grid-cols-1": images.length < 3,
             })}
           >
-            {proofs.map((proof) =>
-              proof.images.map((image) => (
-                <a
-                  href={proof.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  key={`${image.url}`}
-                  className="transition-opacity hover:opacity-80"
-                >
-                  <Image
-                    src={image.url}
-                    alt={name}
-                    width={330}
-                    height={330}
-                    className={cn("w-full object-cover max-sm:aspect-square max-sm:rounded-md", {
-                      "md:aspect-square": proofs.length >= 3,
-                    })}
-                  />
-                </a>
-              )),
-            )}
+            {images.map((image) => (
+              <a
+                href={image.proofUrl}
+                target="_blank"
+                rel="noreferrer"
+                key={`${image.url}`}
+                className="transition-opacity hover:opacity-80"
+              >
+                <Image
+                  src={image.url}
+                  alt={name}
+                  width={330}
+                  height={330}
+                  className={cn("w-full object-cover max-sm:aspect-square max-sm:rounded-md", {
+                    "md:aspect-square": images.length >= 3,
+                  })}
+                />
+              </a>
+            ))}
           </div>
         </div>
 
@@ -157,6 +162,17 @@ export function ImpactContent(props: Props) {
               </div>
             </section>
           )}
+          <section className="mt-8">
+            <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Sources</h3>
+            <div className="mt-4">
+              <SourceBadges
+                sources={proofs.map((proof) => ({
+                  url: proof.url,
+                  image: proof.images[0].url,
+                }))}
+              />
+            </div>
+          </section>
         </aside>
       </div>
     </>
