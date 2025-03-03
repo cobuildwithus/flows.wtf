@@ -2,7 +2,7 @@
 
 import {
   Carousel,
-  CarouselApi,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/carousel"
 import { Dialog, DialogClose, DialogOverlay, DialogTitle } from "@/components/ui/dialog"
 import useWindowSize from "@/lib/hooks/use-window-size"
-import { Impact } from "@prisma/flows"
+import type { Impact } from "@prisma/flows"
 import { DialogContent, DialogPortal } from "@radix-ui/react-dialog"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import { ReactFlow } from "@xyflow/react"
@@ -66,7 +66,7 @@ export function ImpactChain(props: Props) {
       ],
       width,
     )
-  }, [impacts, width])
+  }, [impacts, width, activatedAt])
 
   if (!diagram || !width) return null
 

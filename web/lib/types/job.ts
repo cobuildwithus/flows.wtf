@@ -30,12 +30,7 @@ export enum EmbeddingTag {
 export const validTags = [EmbeddingTag.Flows, EmbeddingTag.Drafts, EmbeddingTag.Grants] as const
 
 export interface IsGrantUpdateJobBody {
-  castContent: string
-  grantDescription: string
-  parentFlowDescription: string
-  castHash: string
-  grantId: string
-  urls: string[]
+  castId: number
 }
 
 export interface BuilderProfileJobBody {

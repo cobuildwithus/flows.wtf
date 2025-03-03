@@ -3,7 +3,7 @@ import "server-only"
 import { ActivityCalendar } from "@/components/ui/activity-calendar"
 import type { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
-import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant"
+import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant-updates"
 import pluralize from "pluralize"
 
 interface Props {
@@ -28,10 +28,7 @@ export async function HomepageActivity(props: Props) {
         revalidate: 180,
       },
     )(),
-    getGrantUpdates(
-      grants.map((grant) => grant.id),
-      sixMonthsAgo,
-    ),
+    getGrantUpdates(grants, sixMonthsAgo),
   ])
 
   const contributions = updates.count

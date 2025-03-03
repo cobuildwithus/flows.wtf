@@ -1,14 +1,15 @@
 "use client"
 
-import { Cast } from "@prisma/farcaster"
+import type { Cast } from "@prisma/farcaster"
 import OpenAI from "@/public/openai.svg"
 import ClaudeColor from "@/public/claude-color.svg"
 import Image from "next/image"
-import { CircleCheckBig } from "lucide-react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./collapsible"
+import { CircleCheckBig, CircleX } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible"
+import { ZeroState } from "./zero-state"
 
 interface Props {
-  cast: Pick<Cast, "impact_verifications">
+  cast: Pick<Cast, "impact_verifications" | "id">
 }
 
 export const ImpactVerification = ({ cast }: Props) => {
@@ -17,36 +18,19 @@ export const ImpactVerification = ({ cast }: Props) => {
     !Array.isArray(cast.impact_verifications) ||
     cast.impact_verifications.length === 0
   ) {
-    return null
+    return <ZeroState cast={cast} />
   }
 
   const verification = cast.impact_verifications[0]
+  const isGrantUpdate = verification.is_grant_update
 
   return (
     <Collapsible>
       <div className="rounded-b-md border bg-muted/50 px-7 pb-1.5 pt-2">
         <CollapsibleTrigger className="w-full focus:outline-none">
           <div className="flex items-center justify-between">
-            <div className="group flex items-center gap-2">
-              <CircleCheckBig className="size-4 text-green-400/75" />
-              <span className="text-xs font-medium text-muted-foreground">
-                {verification.score}%
-                <span className="opacity-0 transition-opacity group-hover:opacity-100">
-                  {" "}
-                  confident
-                </span>
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Image
-                src={getModelLogo(verification.model)}
-                alt="OpenAI"
-                className="h-3 w-auto opacity-50"
-              />
-              <span className="font-mono text-xs text-muted-foreground">
-                {formatModelId(verification.model)}
-              </span>
-            </div>
+            <VerificationStatus isGrantUpdate={isGrantUpdate} verification={verification} />
+            <ModelInfo model={verification.model} />
           </div>
         </CollapsibleTrigger>
 
@@ -83,3 +67,37 @@ const formatModelId = (modelId: string) => {
 
   return versionSuffixRemoved
 }
+
+const VerificationStatus = ({
+  isGrantUpdate,
+  verification,
+}: {
+  isGrantUpdate: boolean
+  verification: PrismaJson.ImpactVerification
+}) => {
+  return (
+    <div className="group flex items-center gap-2">
+      {isGrantUpdate ? (
+        <>
+          <CircleCheckBig className="size-4 text-green-400/75" />
+          <span className="text-xs font-medium text-muted-foreground">
+            {verification.score}%
+            <span className="opacity-0 transition-opacity group-hover:opacity-100"> confident</span>
+          </span>
+        </>
+      ) : (
+        <>
+          <CircleX className="size-4 text-red-400/75" />
+          <span className="text-xs font-medium text-muted-foreground">Not update</span>
+        </>
+      )}
+    </div>
+  )
+}
+
+const ModelInfo = ({ model }: { model: string }) => (
+  <div className="flex items-center gap-1.5">
+    <Image src={getModelLogo(model)} alt="OpenAI" className="h-3 w-auto opacity-50" />
+    <span className="font-mono text-xs text-muted-foreground">{formatModelId(model)}</span>
+  </div>
+)

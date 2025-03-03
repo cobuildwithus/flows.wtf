@@ -2,7 +2,7 @@ import "server-only"
 
 import { StoryCard } from "@/app/components/story-card"
 import { ImpactDialog } from "@/app/item/[grantId]/components/impact-dialog"
-import { User } from "@/lib/auth/user"
+import type { User } from "@/lib/auth/user"
 import database from "@/lib/database/edge"
 import { BuilderSection } from "./builder-section"
 import { FeaturedStoryCard } from "./story-card-featured"

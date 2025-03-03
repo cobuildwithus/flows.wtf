@@ -6,13 +6,10 @@ import { DateTime } from "@/components/ui/date-time"
 import { useCastsText } from "@/lib/casts/use-casts-text"
 import { getCastImages } from "@/lib/farcaster/get-cast-images"
 import { getCastVideos } from "@/lib/farcaster/get-cast-videos"
-import { Cast, Profile } from "@prisma/farcaster"
-import { Grant } from "@prisma/flows"
+import type { Cast, Profile } from "@prisma/farcaster"
 import { VideoPlayer } from "./video-player"
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "./carousel"
-import OpenAI from "@/public/openai.svg"
-import Image from "next/image"
-import { ImpactVerification } from "./impact-verification"
+import { ImpactVerification } from "./impact-verification/impact-verification"
 
 interface Props {
   cast: Pick<
@@ -24,9 +21,9 @@ interface Props {
     | "mentions_positions_array"
     | "mentioned_fids"
     | "impact_verifications"
+    | "id"
   > & {
     profile: Pick<Profile, "fname" | "avatar_url" | "display_name">
-    grant?: Pick<Grant, "title" | "image"> | null
   }
 }
 

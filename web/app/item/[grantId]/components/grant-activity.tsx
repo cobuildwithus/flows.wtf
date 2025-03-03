@@ -1,7 +1,7 @@
 import "server-only"
 
 import { ActivityCalendar } from "@/components/ui/activity-calendar"
-import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant"
+import { getActivity, getGrantUpdates } from "@/lib/database/queries/grant-updates"
 import type { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
 import pluralize from "pluralize"
@@ -20,10 +20,10 @@ export async function GrantActivity(props: Props) {
   const [activities, updates] = await Promise.all([
     unstable_cache(
       () => getActivity(grant.recipient, [grant], nineMonthsAgo),
-      [`activity-graph-grant-page-v2-${grant.id}`],
+      [`activity-graph-grant-page-v3-${grant.id}`],
       { revalidate: 180 },
     )(),
-    getGrantUpdates([grant.id], nineMonthsAgo),
+    getGrantUpdates([grant], nineMonthsAgo),
   ])
 
   const startDate = new Date(grant.createdAt * 1000)

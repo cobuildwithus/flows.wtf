@@ -1,7 +1,7 @@
 "use client"
 
 import { CastCard } from "@/components/ui/cast-card"
-import { ComponentProps, useState } from "react"
+import { type ComponentProps, useState } from "react"
 import {
   Dialog,
   DialogContent,
