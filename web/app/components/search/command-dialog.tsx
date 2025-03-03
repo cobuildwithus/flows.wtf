@@ -23,6 +23,7 @@ export default function CommandPalette({ identityToken }: Props) {
   const { results, isLoading } = useSearchEmbeddings(
     { query: deferredQuery, types: ["grant"], numResults: 7 },
     identityToken,
+    !open,
   )
 
   const grants = results?.grant ?? []

@@ -37,13 +37,14 @@ interface SearchParams {
 export function useSearchEmbeddings(
   params: SearchParams,
   identityToken?: string,
+  skip?: boolean,
 ): {
   results: z.infer<typeof searchResultSchema> | undefined
   error: Error | null
   isLoading: boolean
 } {
   const { data, error, isLoading } = useSWR(
-    params.query ? ["search-embeddings", params] : null,
+    params.query && !skip ? ["search-embeddings", params] : null,
     async ([_, params]) => {
       try {
         const queryParams = new URLSearchParams()
