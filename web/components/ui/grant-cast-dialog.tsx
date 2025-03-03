@@ -44,9 +44,9 @@ export function GrantCastDialog({
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         <div
-          className={cn("mt-4 columns-1 gap-4", {
-            "sm:columns-2": casts.length > 1 && casts.length < 3,
-            "sm:columns-3": casts.length >= 3,
+          className={cn("mt-4 grid grid-cols-1 gap-4", {
+            "sm:grid-cols-2": casts.length > 1 && casts.length < 3,
+            "sm:grid-cols-3": casts.length >= 3,
           })}
         >
           {casts.length > 0 ? (

@@ -1,4 +1,6 @@
-import useSWR, { SWRConfiguration, SWRResponse } from "swr"
+"use client"
+
+import useSWR, { type SWRConfiguration, type SWRResponse } from "swr"
 
 type ServerFunction<T, P extends any[]> = (...args: P) => Promise<T>
 

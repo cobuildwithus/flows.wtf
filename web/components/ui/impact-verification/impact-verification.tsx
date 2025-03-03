@@ -8,6 +8,10 @@ import { CircleCheckBig, CircleX } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible"
 import { ZeroState } from "./zero-state"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
+import { useParams } from "next/navigation"
+import { useServerFunction } from "@/lib/hooks/use-server-function"
+import { getGrantById } from "./get-grant"
+import { cn } from "@/lib/utils"
 
 interface Props {
   cast: Pick<Cast, "impact_verifications" | "id">
@@ -22,23 +26,42 @@ export const ImpactVerification = ({ cast }: Props) => {
     return <ZeroState cast={cast} />
   }
 
-  const numVerifications = cast.impact_verifications.length
+  const { grantId } = useParams()
 
+  const numVerifications = cast.impact_verifications.length
   const verification = cast.impact_verifications[numVerifications - 1]
-  const isGrantUpdate = verification.is_grant_update
+
+  const isForDifferentGrant =
+    !!grantId && verification.grant_id !== grantId && verification.grant_id.startsWith("0x")
+  const isGrantUpdate = verification.is_grant_update && !isForDifferentGrant
+
+  const { data: grant } = isForDifferentGrant
+    ? useServerFunction(getGrantById, "getGrantById", [verification?.grant_id ?? ""], {
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+      })
+    : { data: undefined }
 
   return (
     <Collapsible>
       <div className="rounded-b-md border bg-muted/50 px-7 pb-1.5 pt-2">
         <CollapsibleTrigger className="w-full focus:outline-none">
           <div className="flex items-center justify-between">
-            <VerificationStatus isGrantUpdate={isGrantUpdate} verification={verification} />
+            <VerificationStatus
+              isGrantUpdate={isGrantUpdate}
+              verification={verification}
+              isForDifferentGrant={isForDifferentGrant}
+              grantTitle={grant?.title}
+            />
             <ModelInfo model={verification.model} />
           </div>
         </CollapsibleTrigger>
 
         <CollapsibleContent>
           <div className="pb-2 pt-1">
+            {isForDifferentGrant && (
+              <span className="text-xs font-medium">This update is for another grant.</span>
+            )}
             <p className="text-xs text-muted-foreground">{verification.reason}</p>
           </div>
         </CollapsibleContent>
@@ -74,9 +97,13 @@ const formatModelId = (modelId: string) => {
 const VerificationStatus = ({
   isGrantUpdate,
   verification,
+  isForDifferentGrant,
+  grantTitle,
 }: {
   isGrantUpdate: boolean
   verification: PrismaJson.ImpactVerification
+  isForDifferentGrant: boolean
+  grantTitle?: string
 }) => {
   return (
     <div className="group flex items-center gap-2">
@@ -90,13 +117,21 @@ const VerificationStatus = ({
         </>
       ) : (
         <>
-          <CircleX className="size-4 text-red-400/75" />
-          <span className="text-xs font-medium text-muted-foreground">Not update</span>
+          <CircleX
+            className={cn("size-4 text-red-400/75", {
+              "text-red-400/75": !isForDifferentGrant,
+              "text-muted-foreground": isForDifferentGrant,
+            })}
+          />
+          <span className="max-w-[200px] truncate text-ellipsis text-xs font-medium text-muted-foreground">
+            {isForDifferentGrant ? `${grantTitle || "For another grant"}` : "Not verified"}
+          </span>
         </>
       )}
     </div>
   )
 }
+
 const ModelInfo = ({ model }: { model: string }) => (
   <Tooltip>
     <TooltipTrigger>
