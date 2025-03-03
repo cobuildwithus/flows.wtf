@@ -28,12 +28,15 @@ const ImpactVerificationContent = ({
     !!grantId && verification.grant_id !== grantId && verification.grant_id.startsWith("0x")
   const isGrantUpdate = verification.is_grant_update && !isForDifferentGrant
 
-  const { data: grant } = isForDifferentGrant
-    ? useServerFunction(getGrantById, "getGrantById", [verification?.grant_id ?? ""], {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-      })
-    : { data: undefined }
+  const { data: grant } = useServerFunction(
+    getGrantById,
+    "getGrantById",
+    [isForDifferentGrant ? (verification?.grant_id ?? "") : ""],
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  )
 
   return (
     <Collapsible>
