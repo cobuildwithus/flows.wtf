@@ -31,7 +31,7 @@ export default function SourceBadges({ sources, maxVisible = 4 }: SourceBadgesPr
             {source.image ? (
               <div className="h-7 w-7 overflow-hidden rounded-full border-2 border-white shadow-sm">
                 <Image
-                  src={source.image || "/placeholder.svg"}
+                  src={source.image}
                   alt="Source logo"
                   width={28}
                   height={28}
@@ -47,7 +47,7 @@ export default function SourceBadges({ sources, maxVisible = 4 }: SourceBadgesPr
                   .toUpperCase()}
                 {source.url.startsWith("https://warpcast.com") && (
                   <Image
-                    src={FarcasterLogo || "/placeholder.svg"}
+                    src={FarcasterLogo}
                     alt="Farcaster"
                     className="absolute inset-0 m-auto h-5 text-white opacity-90"
                     width={10}

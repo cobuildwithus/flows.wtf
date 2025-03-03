@@ -18,6 +18,8 @@ interface Props {
 }
 
 export const ImpactVerification = ({ cast }: Props) => {
+  const { grantId } = useParams()
+
   if (
     !cast.impact_verifications ||
     !Array.isArray(cast.impact_verifications) ||
@@ -25,8 +27,6 @@ export const ImpactVerification = ({ cast }: Props) => {
   ) {
     return <ZeroState cast={cast} />
   }
-
-  const { grantId } = useParams()
 
   const numVerifications = cast.impact_verifications.length
   const verification = cast.impact_verifications[numVerifications - 1]
