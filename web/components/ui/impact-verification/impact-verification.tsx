@@ -17,20 +17,13 @@ interface Props {
   cast: Pick<Cast, "impact_verifications" | "id">
 }
 
-export const ImpactVerification = ({ cast }: Props) => {
-  const { grantId } = useParams()
-
-  if (
-    !cast.impact_verifications ||
-    !Array.isArray(cast.impact_verifications) ||
-    cast.impact_verifications.length === 0
-  ) {
-    return <ZeroState cast={cast} />
-  }
-
-  const numVerifications = cast.impact_verifications.length
-  const verification = cast.impact_verifications[numVerifications - 1]
-
+const ImpactVerificationContent = ({
+  verification,
+  grantId,
+}: {
+  verification: PrismaJson.ImpactVerification
+  grantId?: string
+}) => {
   const isForDifferentGrant =
     !!grantId && verification.grant_id !== grantId && verification.grant_id.startsWith("0x")
   const isGrantUpdate = verification.is_grant_update && !isForDifferentGrant
@@ -68,6 +61,23 @@ export const ImpactVerification = ({ cast }: Props) => {
       </div>
     </Collapsible>
   )
+}
+
+export const ImpactVerification = ({ cast }: Props) => {
+  const { grantId } = useParams()
+
+  if (
+    !cast.impact_verifications ||
+    !Array.isArray(cast.impact_verifications) ||
+    cast.impact_verifications.length === 0
+  ) {
+    return <ZeroState cast={cast} />
+  }
+
+  const numVerifications = cast.impact_verifications.length
+  const verification = cast.impact_verifications[numVerifications - 1]
+
+  return <ImpactVerificationContent verification={verification} grantId={grantId as string} />
 }
 
 const getModelLogo = (modelId: string) => {
