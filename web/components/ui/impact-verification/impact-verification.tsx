@@ -22,7 +22,9 @@ export const ImpactVerification = ({ cast }: Props) => {
     return <ZeroState cast={cast} />
   }
 
-  const verification = cast.impact_verifications[0]
+  const numVerifications = cast.impact_verifications.length
+
+  const verification = cast.impact_verifications[numVerifications - 1]
   const isGrantUpdate = verification.is_grant_update
 
   return (

@@ -17,6 +17,7 @@ declare global {
       grant_id: string
       prompt_version: string
       is_grant_update: boolean
+      date_verified: Date | undefined
     }
 
     type Beneficiary = {

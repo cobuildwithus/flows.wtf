@@ -48,7 +48,7 @@ export async function GrantActivity(props: Props) {
           theme={{
             light: [
               "hsl(var(--secondary) / 0.2)",
-              "hsl(var(--primary) / 0.1)",
+              "hsl(var(--primary) / 0.18)",
               "hsl(var(--primary) / 0.6)",
               "hsl(var(--primary))",
             ],
