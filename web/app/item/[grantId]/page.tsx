@@ -32,7 +32,7 @@ import { BgGradient } from "./components/bg-gradient"
 import { CurationStatus, CurationVote } from "./components/curation-card"
 import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
-import { ImpactDialog } from "./components/impact-dialog"
+import { ImpactDialog } from "./components/grades-dialog"
 import { ImpactChain } from "./impact/impact-chain"
 import { Badge } from "@/components/ui/badge"
 

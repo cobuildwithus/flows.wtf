@@ -21,6 +21,7 @@ import { CustomBezierEdge } from "./nodes/custom-edge"
 import { generateDiagram } from "./nodes/diagram-utils"
 import { ImpactNode } from "./nodes/impact-node"
 import { LaunchNode } from "./nodes/launch-node"
+import { useQueryParams } from "@/lib/update-search-params"
 
 interface Props {
   impacts: Impact[]
@@ -30,6 +31,7 @@ interface Props {
 export function ImpactChain(props: Props) {
   const { impacts, activatedAt } = props
   const { width } = useWindowSize()
+  const { updateQueryParam } = useQueryParams()
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   const [api, setApi] = React.useState<CarouselApi>()
 
@@ -47,6 +49,23 @@ export function ImpactChain(props: Props) {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [api, selectedIndex])
+
+  useEffect(() => {
+    if (!api) return
+    const handleSelect = () => {
+      const currentIndex = api.selectedScrollSnap()
+      if (currentIndex !== undefined && currentIndex < impacts.length) {
+        updateQueryParam("impactId", impacts[currentIndex].id, { replace: true })
+      }
+    }
+
+    handleSelect()
+
+    api.on("select", handleSelect)
+    return () => {
+      api.off("select", handleSelect)
+    }
+  }, [api, impacts, updateQueryParam])
 
   const diagram = useMemo(() => {
     if (!width) return null
