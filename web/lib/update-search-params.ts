@@ -39,13 +39,13 @@ export function useQueryParams() {
    * @param options Optional configuration for navigation
    */
   const updateQueryParam = useCallback(
-    (name: string, value: string, { replace = true } = {}) => {
+    (name: string, value: string | null | undefined, { replace = true, scroll = false } = {}) => {
       const queryString = createQueryString(name, value)
       const url = queryString ? `${pathname}?${queryString}` : pathname
       if (replace) {
-        router.replace(url)
+        router.replace(url, { scroll })
       } else {
-        router.push(url)
+        router.push(url, { scroll })
       }
     },
     [pathname, router, createQueryString],

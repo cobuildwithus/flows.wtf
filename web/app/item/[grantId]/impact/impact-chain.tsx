@@ -21,6 +21,7 @@ import { CustomBezierEdge } from "./nodes/custom-edge"
 import { generateDiagram } from "./nodes/diagram-utils"
 import { ImpactNode } from "./nodes/impact-node"
 import { LaunchNode } from "./nodes/launch-node"
+import { useQueryParams } from "@/lib/update-search-params"
 
 interface Props {
   impacts: Impact[]
@@ -32,6 +33,7 @@ export function ImpactChain(props: Props) {
   const { width } = useWindowSize()
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   const [api, setApi] = React.useState<CarouselApi>()
+  const { updateQueryParam } = useQueryParams()
 
   useEffect(() => {
     if (selectedIndex === null) return
@@ -47,6 +49,28 @@ export function ImpactChain(props: Props) {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [api, selectedIndex])
+
+  useEffect(() => {
+    if (!api) return
+
+    const handleSelect = () => {
+      if (selectedIndex === null) return
+      const currentIndex = api.selectedScrollSnap()
+      const currentImpactId = impacts[currentIndex]?.id
+      if (currentImpactId) {
+        updateQueryParam("impactId", currentImpactId)
+      }
+    }
+
+    api.on("select", handleSelect)
+
+    // Set initial impactId when carousel loads
+    handleSelect()
+
+    return () => {
+      api.off("select", handleSelect)
+    }
+  }, [api, impacts, updateQueryParam, selectedIndex])
 
   const diagram = useMemo(() => {
     if (!width) return null
@@ -67,6 +91,11 @@ export function ImpactChain(props: Props) {
       width,
     )
   }, [impacts, width, activatedAt])
+
+  const closeDialog = () => {
+    setSelectedIndex(null)
+    updateQueryParam("impactId", null)
+  }
 
   if (!diagram || !width) return null
 
@@ -102,7 +131,14 @@ export function ImpactChain(props: Props) {
         />
       </div>
 
-      <Dialog open={selectedIndex !== null} onOpenChange={() => setSelectedIndex(null)}>
+      <Dialog
+        open={selectedIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeDialog()
+          }
+        }}
+      >
         <DialogPortal>
           <DialogTitle className="hidden">Impact Details</DialogTitle>
           <DialogOverlay />
@@ -111,7 +147,7 @@ export function ImpactChain(props: Props) {
             className="fixed inset-0 z-50 flex items-center justify-center duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 focus:outline-none"
             onClick={(e) => {
               if ((e.target as HTMLElement).hasAttribute("data-carousel-item")) {
-                setSelectedIndex(null)
+                closeDialog()
               }
             }}
           >
@@ -125,7 +161,10 @@ export function ImpactChain(props: Props) {
                   <CarouselContent>
                     {impacts.map((impact) => (
                       <CarouselItem key={impact.id}>
-                        <div className="mx-auto flex h-[100dvh] max-w-6xl items-center">
+                        <div
+                          onClick={closeDialog}
+                          className="mx-auto flex h-[100dvh] max-w-6xl items-center"
+                        >
                           <div className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border">
                             <ImpactContent impact={impact} />
                           </div>
