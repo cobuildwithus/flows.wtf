@@ -33,7 +33,18 @@ export function ImpactChain(props: Props) {
   const { width } = useWindowSize()
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   const [api, setApi] = React.useState<CarouselApi>()
-  const { updateQueryParam } = useQueryParams()
+  const { getParam, updateQueryParam } = useQueryParams()
+
+  useEffect(() => {
+    const initialImpactId = getParam("impactId")
+    if (initialImpactId) {
+      const index = impacts.findIndex((impact) => impact.id === initialImpactId)
+      if (index !== -1) {
+        setSelectedIndex(index)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (selectedIndex === null) return
@@ -161,10 +172,7 @@ export function ImpactChain(props: Props) {
                   <CarouselContent>
                     {impacts.map((impact) => (
                       <CarouselItem key={impact.id}>
-                        <div
-                          onClick={closeDialog}
-                          className="mx-auto flex h-[100dvh] max-w-6xl items-center"
-                        >
+                        <div className="mx-auto flex h-[100dvh] max-w-6xl items-center">
                           <div className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border">
                             <ImpactContent impact={impact} />
                           </div>
