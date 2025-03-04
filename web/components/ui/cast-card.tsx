@@ -80,8 +80,17 @@ export const CastCard = (props: Props) => {
                 <CarouselContent>
                   {videos.map((video) => (
                     <CarouselItem key={video}>
-                      <div className="h-auto w-full overflow-hidden rounded-lg">
-                        <VideoPlayer url={video} width="100%" height="100%" controls />
+                      <div
+                        className="relative h-0 max-h-[400px] w-full overflow-hidden rounded-lg"
+                        style={{ paddingBottom: "60%" }}
+                      >
+                        <VideoPlayer
+                          url={video}
+                          width="100%"
+                          height="100%"
+                          style={{ position: "absolute", top: 0, left: 0 }}
+                          controls
+                        />
                       </div>
                     </CarouselItem>
                   ))}

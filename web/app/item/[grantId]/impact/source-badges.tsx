@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useState } from "react"
 import Image from "next/image"
 import FarcasterLogo from "@/public/farcaster.svg"
 
@@ -14,13 +15,18 @@ interface SourceBadgesProps {
 }
 
 export default function SourceBadges({ sources, maxVisible = 4 }: SourceBadgesProps) {
-  const visibleSources = sources.slice(0, maxVisible)
-  const remainingSources = sources.length - maxVisible
+  // Hold state to track whether the list is expanded or not.
+  const [expanded, setExpanded] = useState(false)
+
+  // If not expanded, only slice the sources to maxVisible.
+  const displaySources = expanded ? sources : sources.slice(0, maxVisible)
+  // Calculate the remaining sources only if not expanded.
+  const remainingSources = expanded ? 0 : sources.length - maxVisible
 
   return (
     <div className="flex-0 inline-flex items-center rounded-lg border p-3">
       <div className="flex -space-x-2">
-        {visibleSources.map((source) => (
+        {displaySources.map((source) => (
           <a
             key={source.url}
             href={source.url}
@@ -50,8 +56,8 @@ export default function SourceBadges({ sources, maxVisible = 4 }: SourceBadgesPr
                     src={FarcasterLogo}
                     alt="Farcaster"
                     className="absolute inset-0 m-auto h-5 text-white opacity-90"
-                    width={10}
-                    height={10}
+                    width={12}
+                    height={12}
                   />
                 )}
               </div>
@@ -60,8 +66,15 @@ export default function SourceBadges({ sources, maxVisible = 4 }: SourceBadgesPr
         ))}
       </div>
 
-      {remainingSources > 0 && (
-        <span className="ml-2 text-xs font-medium text-gray-600">+{remainingSources} more</span>
+      {/* Only show the +X more button if there are remaining sources and the list is not already expanded */}
+      {!expanded && remainingSources > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="ml-2 text-xs font-medium text-gray-600 focus:outline-none"
+        >
+          +{remainingSources} more
+        </button>
       )}
     </div>
   )

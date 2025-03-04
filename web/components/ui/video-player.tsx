@@ -22,7 +22,9 @@ export function VideoPlayer(props: Props) {
           },
         },
       }}
-      onError={(e) => console.error("Video Player Error:", e)}
+      onError={(e) => {
+        console.error("Video Player Error:", e?.message)
+      }}
       {...props}
     />
   )

@@ -85,9 +85,13 @@ function getRelativeTime(
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
 
-  // Custom thresholds for days
+  // Custom thresholds for days and months
   if (hours >= 48) {
     const days = Math.floor(hours / 24)
+    if (days >= 60) {
+      const months = Math.floor(days / 30)
+      return formatter.format(diff >= 0 ? months : -months, "month")
+    }
     return formatter.format(diff >= 0 ? days : -days, "day")
   }
 
