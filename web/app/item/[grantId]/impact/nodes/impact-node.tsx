@@ -27,13 +27,15 @@ export function ImpactNode(props: NodeProps<IImpactNode>) {
       style={{ width, height, maxHeight: height }}
       onClick={onClick}
     >
-      <Image
-        src={bestImage.url}
-        alt={name}
-        width={width}
-        height={height}
-        className="pointer-events-none aspect-video rounded-xl object-cover transition-all duration-300 group-hover:scale-110"
-      />
+      {bestImage.url && (
+        <Image
+          src={bestImage.url}
+          alt={name}
+          width={width}
+          height={height}
+          className="pointer-events-none aspect-video rounded-xl object-cover transition-all duration-300 group-hover:scale-110"
+        />
+      )}
 
       <div className="mt-5">
         <h2 className="text-center text-[15px] font-medium">{name}</h2>

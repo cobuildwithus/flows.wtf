@@ -179,7 +179,7 @@ export function ImpactContent(props: Props) {
               <SourceBadges
                 sources={proofs.map((proof) => ({
                   url: proof.url,
-                  image: proof.images[0].url,
+                  image: proof.images[0]?.url,
                 }))}
               />
             </div>
