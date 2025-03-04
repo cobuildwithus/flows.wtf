@@ -126,9 +126,7 @@ export function ImpactContent(props: Props) {
                             </dd>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs py-2">
-                          {unit.description}
-                        </TooltipContent>
+                        <TooltipContent className="max-w-xs py-2">{unit.reasoning}</TooltipContent>
                       </Tooltip>
                     </div>
                   ))}
@@ -146,18 +144,31 @@ export function ImpactContent(props: Props) {
               </h3>
               <div className="mt-4 grid grid-cols-8 gap-2.5">
                 {peopleInvolved.map((person) => (
-                  <div
-                    key={`${person.userId}`}
-                    className="flex size-full items-center space-x-2.5 overflow-hidden rounded-full text-sm"
-                  >
-                    <Image
-                      src={person.headshotUrl}
-                      alt="Person"
-                      width={108}
-                      height={108}
-                      className="size-full scale-[1.2] rounded-full"
-                    />
-                  </div>
+                  <Tooltip key={`${person.userId}`}>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={cn(
+                          "flex size-full items-center space-x-2.5 overflow-hidden rounded-full text-sm",
+                          {
+                            "border-2 border-primary": person.beneficiary.isBeneficiary,
+                          },
+                        )}
+                      >
+                        <Image
+                          src={person.headshotUrl}
+                          alt="Person"
+                          width={108}
+                          height={108}
+                          className="size-full scale-[1.2] rounded-full"
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    {person.beneficiary.isBeneficiary && (
+                      <TooltipContent className="max-w-xs py-2">
+                        {person.beneficiary.reason}
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 ))}
               </div>
             </section>
