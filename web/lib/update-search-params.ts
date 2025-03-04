@@ -19,9 +19,14 @@ export function useQueryParams() {
    * @returns Updated query string
    */
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (name: string, value: string | null | undefined) => {
       const params = new URLSearchParams(searchParams.toString())
-      params.set(name, value)
+      if (value !== null && value !== undefined && value !== "") {
+        params.set(name, value)
+      } else {
+        // Remove the parameter if the value is empty
+        params.delete(name)
+      }
       return params.toString()
     },
     [searchParams],
@@ -36,17 +41,21 @@ export function useQueryParams() {
   const updateQueryParam = useCallback(
     (name: string, value: string, { replace = true } = {}) => {
       const queryString = createQueryString(name, value)
+      const url = queryString ? `${pathname}?${queryString}` : pathname
       if (replace) {
-        router.replace(`${pathname}?${queryString}`)
+        router.replace(url)
       } else {
-        router.push(`${pathname}?${queryString}`)
+        router.push(url)
       }
     },
     [pathname, router, createQueryString],
   )
 
   return {
-    getParam: (name: string) => searchParams.get(name),
+    getParam: (name: string) => {
+      const value = searchParams.get(name)
+      return value === null || value === "" ? null : value
+    },
     updateQueryParam,
     createQueryString,
   }
