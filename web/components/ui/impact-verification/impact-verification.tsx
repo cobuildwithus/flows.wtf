@@ -12,6 +12,7 @@ import { useParams } from "next/navigation"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
 import { getGrantById } from "./get-grant"
 import { cn } from "@/lib/utils"
+import { CheckUpdateButton } from "./check-update-button"
 
 interface Props {
   cast: Pick<Cast, "impact_verifications" | "id">
@@ -20,9 +21,11 @@ interface Props {
 const ImpactVerificationContent = ({
   verification,
   grantId,
+  castId,
 }: {
   verification: PrismaJson.ImpactVerification
   grantId?: string
+  castId: number
 }) => {
   const isForDifferentGrant =
     !!grantId && verification.grant_id !== grantId && verification.grant_id.startsWith("0x")
@@ -49,7 +52,13 @@ const ImpactVerificationContent = ({
               isForDifferentGrant={isForDifferentGrant}
               grantTitle={grant?.title}
             />
-            <ModelInfo model={verification.model} />
+            {isForDifferentGrant ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <CheckUpdateButton text="Re-check" castId={castId} grantId={grantId as string} />
+              </div>
+            ) : (
+              <ModelInfo model={verification.model} />
+            )}
           </div>
         </CollapsibleTrigger>
 
@@ -74,7 +83,7 @@ export const ImpactVerification = ({ cast }: Props) => {
     !Array.isArray(cast.impact_verifications) ||
     cast.impact_verifications.length === 0
   ) {
-    return <ZeroState cast={cast} />
+    return <ZeroState cast={cast} grantId={grantId as string} />
   }
 
   const numVerifications = cast.impact_verifications.length
@@ -82,7 +91,15 @@ export const ImpactVerification = ({ cast }: Props) => {
     cast.impact_verifications.find((v) => v.is_grant_update && v.grant_id === grantId) ||
     cast.impact_verifications[numVerifications - 1]
 
-  return <ImpactVerificationContent verification={verification} grantId={grantId as string} />
+  console.log(cast.impact_verifications)
+
+  return (
+    <ImpactVerificationContent
+      verification={verification}
+      grantId={grantId as string}
+      castId={Number(cast.id)}
+    />
+  )
 }
 
 const getModelLogo = (modelId: string) => {

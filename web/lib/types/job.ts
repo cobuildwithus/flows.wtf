@@ -31,6 +31,7 @@ export const validTags = [EmbeddingTag.Flows, EmbeddingTag.Drafts, EmbeddingTag.
 
 export interface IsGrantUpdateJobBody {
   castId: number
+  grantId?: string
 }
 
 export interface BuilderProfileJobBody {
