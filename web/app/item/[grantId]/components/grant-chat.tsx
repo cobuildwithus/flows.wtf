@@ -34,7 +34,7 @@ export function GrantChat(props: Props) {
       >
         <MultimodalInput
           rows={1}
-          className="rounded-xl border border-background md:max-w-2xl"
+          className="max-w-[90vw] rounded-2xl border border-background md:max-w-2xl"
           placeholder={canEdit ? `Edit this grant...` : `Ask about this grant...`}
           onSubmit={() => {
             if (!isOpen) setIsOpen(true)

@@ -23,7 +23,9 @@ export function CoverImage(props: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         <div className="absolute bottom-0 p-5 lg:p-6">
           <h1 className="text-balance text-xl font-bold text-white lg:text-3xl">{title}</h1>
-          <p className="mt-2 text-pretty text-base text-white/80 lg:text-lg">{tagline}</p>
+          <p className="mt-2 hidden text-pretty text-base text-white/80 sm:block lg:text-lg">
+            {tagline}
+          </p>
         </div>
       </div>
     </div>

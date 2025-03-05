@@ -10,6 +10,7 @@ import type { Cast, Profile } from "@prisma/farcaster"
 import { VideoPlayer } from "./video-player"
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "./carousel"
 import { ImpactVerification } from "./impact-verification/impact-verification"
+import { cn } from "@/lib/utils"
 
 interface Props {
   cast: Pick<
@@ -78,40 +79,40 @@ export const CastCard = (props: Props) => {
             <div className="mt-4">
               <Carousel className="w-full">
                 <CarouselContent>
-                  {videos.map((video) => (
-                    <CarouselItem key={video}>
-                      <div
-                        className="relative h-0 max-h-[400px] w-full overflow-hidden rounded-lg"
-                        style={{ paddingBottom: "60%" }}
-                      >
-                        <VideoPlayer
-                          url={video}
-                          width="100%"
-                          height="100%"
-                          style={{ position: "absolute", top: 0, left: 0 }}
-                          controls
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                  {images.map((image) => (
-                    <CarouselItem key={image}>
-                      <div className="flex h-full w-full items-center justify-center overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={image}
-                          alt=""
-                          className="h-auto max-h-[350px] w-auto max-w-full rounded-md object-contain"
-                          loading="lazy"
-                        />
-                      </div>
+                  {[...videos, ...images].map((media, index) => (
+                    <CarouselItem key={index}>
+                      {videos.includes(media) ? (
+                        <div
+                          className={cn(
+                            "relative h-0 w-full overflow-hidden rounded-lg pb-[350px] md:max-h-[400px]",
+                          )}
+                        >
+                          <VideoPlayer
+                            url={media}
+                            width="100%"
+                            height="100%"
+                            style={{ position: "absolute", top: 0, left: 0 }}
+                            controls
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={media}
+                            alt=""
+                            className="h-auto max-h-[350px] w-auto max-w-full rounded-md object-contain"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                {(videos.length || images.length) > 1 && (
+                {videos.length + images.length > 1 && (
                   <>
-                    <CarouselPrevious className="left-2 top-1/2" />
-                    <CarouselNext className="right-2 top-1/2" />
+                    <CarouselPrevious className="left-2 top-2 z-10" />
+                    <CarouselNext className="right-2 top-2 z-10" />
                   </>
                 )}
               </Carousel>

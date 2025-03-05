@@ -103,7 +103,7 @@ export function ImpactContent(props: Props) {
           </div>
         </div>
 
-        <aside className="md:sticky md:top-12 md:col-span-6 md:pr-20">
+        <aside className="md:sticky md:col-span-6 md:mt-12 md:pr-20">
           <header>
             <DateTime
               date={date}
