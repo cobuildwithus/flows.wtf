@@ -81,7 +81,7 @@ const reasons: Reason[] = [
     label: (
       <>
         Requirements Not Met -{" "}
-        <span className="text-xs text-muted-foreground">Poor deliverables or outcomes</span>
+        <span className="text-xs text-muted-foreground">Breaking requirements</span>
       </>
     ),
   },
@@ -103,7 +103,7 @@ const reasons: Reason[] = [
       <>
         Too Many Grants -{" "}
         <span className="text-xs text-muted-foreground">
-          Builders has &gt; 2 grants w/ salary &gt; $50/month.
+          &gt; 2 grants w/ salary &gt; $50/month.
         </span>
       </>
     ),
@@ -114,9 +114,7 @@ const reasons: Reason[] = [
     label: (
       <>
         Double-Dipping -{" "}
-        <span className="text-xs text-muted-foreground">
-          Already funded by Nouns for the exact same work.
-        </span>
+        <span className="text-xs text-muted-foreground">Already funded for the same work.</span>
       </>
     ),
     isGrantOnly: true,
