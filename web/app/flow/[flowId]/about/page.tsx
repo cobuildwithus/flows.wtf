@@ -27,7 +27,7 @@ export default async function FlowPage(props: Props) {
   const flow = await getFlowWithGrants(flowId)
   const pool = await getPool()
 
-  const { description, parentContract } = flow
+  const { description, parentContract, isTopLevel } = flow
 
   return (
     <div className="container mt-2.5 pb-24 md:mt-6">
@@ -39,66 +39,70 @@ export default async function FlowPage(props: Props) {
         </div>
 
         <div className="space-y-4 md:col-span-2">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>About</CardTitle>
-                <Link href={`/flow/${flowId}`}>
-                  <Button variant="outline" size="sm">
-                    View grants
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">Budget</h4>
-                  <Badge className="mt-2">
-                    <Currency>{flow.monthlyIncomingFlowRate}</Currency>
-                    /mo
-                  </Badge>
+          {!isTopLevel && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>About</CardTitle>
+                  <Link href={`/flow/${flowId}`}>
+                    <Button variant="outline" size="sm">
+                      View grants
+                    </Button>
+                  </Link>
                 </div>
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">Paid out</h4>
-                  <p className="mt-1 text-lg font-medium">
-                    <AnimatedSalary
-                      value={flow.totalEarned}
-                      monthlyRate={flow.monthlyIncomingFlowRate}
-                    />
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">Community Votes</h4>
-                  <p className="mt-1 text-lg font-medium">{flow.votesCount}</p>
-                </div>
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">Your Vote</h4>
-                  <p className="mt-1 text-lg font-medium">
-                    <UserVotes recipientId={flow.id} contract={getEthAddress(parentContract)} />
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h3 className="flex items-center justify-between font-medium">
-                  Status
-                  {flow.status === Status.ClearingRequested && (
-                    <Badge variant="warning" className="font-medium">
-                      Challenged
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">Budget</h4>
+                    <Badge className="mt-2">
+                      <Currency>{flow.monthlyIncomingFlowRate}</Currency>
+                      /mo
                     </Badge>
-                  )}
-                </h3>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CurationStatus grant={flow} flow={pool} />
-            </CardContent>
-          </Card>
+                  </div>
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">Paid out</h4>
+                    <p className="mt-1 text-lg font-medium">
+                      <AnimatedSalary
+                        value={flow.totalEarned}
+                        monthlyRate={flow.monthlyIncomingFlowRate}
+                      />
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">Community Votes</h4>
+                    <p className="mt-1 text-lg font-medium">{flow.votesCount}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">Your Vote</h4>
+                    <p className="mt-1 text-lg font-medium">
+                      <UserVotes recipientId={flow.id} contract={getEthAddress(parentContract)} />
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {!isTopLevel && (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <h3 className="flex items-center justify-between font-medium">
+                    Status
+                    {flow.status === Status.ClearingRequested && (
+                      <Badge variant="warning" className="font-medium">
+                        Challenged
+                      </Badge>
+                    )}
+                  </h3>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CurationStatus grant={flow} flow={pool} />
+              </CardContent>
+            </Card>
+          )}
 
           {flow.isDisputed && (
             <Card>
@@ -111,21 +115,23 @@ export default async function FlowPage(props: Props) {
             </Card>
           )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Voters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <Voters
-                  contract={flow.parentContract as `0x${string}`}
-                  grantId={flow.id}
-                  flowVotesCount={pool.votesCount}
-                  isFlow={true}
-                />
-              </Suspense>
-            </CardContent>
-          </Card>
+          {!isTopLevel && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Voters</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Suspense>
+                  <Voters
+                    contract={flow.parentContract as `0x${string}`}
+                    grantId={flow.id}
+                    flowVotesCount={pool.votesCount}
+                    isFlow={true}
+                  />
+                </Suspense>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

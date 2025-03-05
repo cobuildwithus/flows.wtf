@@ -55,10 +55,11 @@ export const CheckUpdateButton = ({
       variant="outline"
       size="xs"
       loading={loading}
+      disabled={loading}
       className="ml-auto text-xs font-medium"
       onClick={checkUpdate}
     >
-      {text}
+      {loading ? "Checking..." : text}
     </Button>
   )
 }

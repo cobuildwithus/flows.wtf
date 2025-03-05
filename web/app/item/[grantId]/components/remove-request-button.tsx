@@ -39,7 +39,14 @@ interface Props {
 
 const chainId = base.id
 
-const reasons = [
+interface Reason {
+  value: string
+  label: React.ReactNode
+  isGrantOnly?: boolean
+  isFlowOnly?: boolean
+}
+
+const reasons: Reason[] = [
   {
     value: "inactive",
     label: (
@@ -67,15 +74,52 @@ const reasons = [
         </span>
       </>
     ),
+    isFlowOnly: true,
   },
   {
     value: "low-quality",
     label: (
       <>
-        Low Quality -{" "}
+        Requirements Not Met -{" "}
         <span className="text-xs text-muted-foreground">Poor deliverables or outcomes</span>
       </>
     ),
+  },
+  {
+    value: "duplicate",
+    label: (
+      <>
+        Duplicate -{" "}
+        <span className="text-xs text-muted-foreground">
+          Project has &gt; 1 grant in this flow.
+        </span>
+      </>
+    ),
+    isGrantOnly: true,
+  },
+  {
+    value: "salary-threshold",
+    label: (
+      <>
+        Too Many Grants -{" "}
+        <span className="text-xs text-muted-foreground">
+          Builders has &gt; 2 grants w/ salary &gt; $50/month.
+        </span>
+      </>
+    ),
+    isGrantOnly: true,
+  },
+  {
+    value: "double-dipping",
+    label: (
+      <>
+        Double-Dipping -{" "}
+        <span className="text-xs text-muted-foreground">
+          Already funded by Nouns for the exact same work.
+        </span>
+      </>
+    ),
+    isGrantOnly: true,
   },
   {
     value: "other",
@@ -86,7 +130,7 @@ const reasons = [
       </>
     ),
   },
-] as const
+] as Reason[]
 
 export function GrantRemoveRequestButton(props: Props) {
   const { grant, flow } = props
@@ -152,11 +196,18 @@ export function GrantRemoveRequestButton(props: Props) {
                     <SelectValue placeholder="Select a reason" />
                   </SelectTrigger>
                   <SelectContent>
-                    {reasons.map((reason) => (
-                      <SelectItem key={reason.value} value={reason.value}>
-                        {reason.label}
-                      </SelectItem>
-                    ))}
+                    {reasons
+                      .filter((reason) => {
+                        if (grant.isFlow) {
+                          return !reason.isGrantOnly
+                        }
+                        return !reason.isFlowOnly
+                      })
+                      .map((reason) => (
+                        <SelectItem key={reason.value} value={reason.value}>
+                          {reason.label}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
                 <Textarea
