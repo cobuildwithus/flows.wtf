@@ -1,7 +1,7 @@
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { getPool } from "@/lib/database/queries/pool"
 import { FullDiagram } from "./diagram"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
 export const runtime = "nodejs"
 
@@ -17,7 +17,19 @@ export default async function ExplorePage() {
   const [flows, pool] = await Promise.all([
     database.grant.findMany({
       where: { isActive: true, isFlow: true, isTopLevel: false },
-      include: { subgrants: { where: { isActive: true } } },
+      select: {
+        id: true,
+        title: true,
+        image: true,
+        subgrants: {
+          where: { isActive: true },
+          select: {
+            id: true,
+            title: true,
+            image: true,
+          },
+        },
+      },
       ...getCacheStrategy(3600),
     }),
     getPool(),

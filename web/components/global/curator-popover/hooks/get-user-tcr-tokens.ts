@@ -35,7 +35,8 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
     getVoterDisputeVotes(address),
   ])
 
-  // merge tokens and votes per disputeId and arbitrator
+  // merge tokens and votes per disputeId and arbitrator,
+  // and slim down each subgrant to only the needed fields
   const mergedTokens = tokens.map((token) => {
     const mergedSubgrants = token.flow.subgrants
       .filter((subgrant) => subgrant.challengePeriodEndsAt > token.firstPurchase)
@@ -51,11 +52,19 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
           }
         })
         return {
-          ...subgrant,
-          parentArbitrator: token.flow.arbitrator,
+          id: subgrant.id,
+          title: subgrant.title,
+          image: subgrant.image,
+          challengePeriodEndsAt: subgrant.challengePeriodEndsAt,
+          isResolved: subgrant.isResolved,
+          isDisputed: subgrant.isDisputed,
+          status: subgrant.status,
+          isActive: subgrant.isActive,
           disputes,
+          parentArbitrator: token.flow.arbitrator,
         }
       })
+
     return {
       ...token,
       flow: {

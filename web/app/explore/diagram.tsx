@@ -1,13 +1,17 @@
 import FlowNode from "@/components/diagram/flow-node"
 import grantNode from "@/components/diagram/grant-node"
 import PoolNode from "@/components/diagram/pool-node"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { Background, Edge, MarkerType, Node, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 import { diagramLayout, createPoolNode, placeFlowAndSubgrants, dimensions } from "./diagram-utils"
 
+export type DiagramGrant = Pick<Grant, "id" | "title" | "image">
+
 type Props = {
-  flows: (Grant & { subgrants: Grant[] })[]
+  flows: (DiagramGrant & {
+    subgrants: DiagramGrant[]
+  })[]
   pool: Grant
   noScroll?: boolean
 }
@@ -36,7 +40,7 @@ export const FullDiagram = (props: Props) => {
   // We'll define a small helper that places a ring of flows evenly,
   // but also applies an angular offset so each ring is "rotated" relative to the others.
   function placeRing(
-    ringFlows: (Grant & { subgrants: Grant[] })[],
+    ringFlows: (DiagramGrant & { subgrants: DiagramGrant[] })[],
     radius: number,
     offset: number = 0,
   ) {

@@ -1,6 +1,7 @@
 import { IPoolNode } from "@/components/diagram/pool-node"
 import { Grant } from "@prisma/flows"
 import { Edge, MarkerType, Node, Position } from "@xyflow/react"
+import { DiagramGrant } from "./diagram"
 
 // Node dimensions
 export const dimensions = {
@@ -93,7 +94,7 @@ export function getOppositePosition(position: Position): Position {
 }
 
 export function createFlowNode(
-  flow: Grant,
+  flow: DiagramGrant,
   position: { x: number; y: number },
   angle: number,
 ): Node {
@@ -114,7 +115,7 @@ export function createFlowNode(
 }
 
 export function createGrantNode(
-  grant: Grant,
+  grant: DiagramGrant,
   position: { x: number; y: number },
   angle: number,
 ): Node {
@@ -137,7 +138,7 @@ export function createGrantNode(
 // This helper places a single flow node on a given ring, connects it from the pool,
 // and also places its subgrants in a small circle around it.
 export function placeFlowAndSubgrants(
-  flow: Grant & { subgrants: Grant[] },
+  flow: DiagramGrant & { subgrants: DiagramGrant[] },
   angle: number,
   ringRadius: number,
   mainNodes: Node[],
