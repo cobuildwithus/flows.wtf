@@ -17,7 +17,7 @@ import { base as baseContracts } from "./addresses"
 const isDev = process.env.NODE_ENV === "development"
 
 const START_BLOCK = 21519031
-const CRON_START_BLOCK = 25742256 // need to statically define this until ponder's crash recovery supports dynamic configs
+const CRON_START_BLOCK = 27257924 // need to statically define this until ponder's crash recovery supports dynamic configs
 
 export default createConfig({
   database: { kind: "postgres" },
