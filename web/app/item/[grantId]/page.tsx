@@ -34,6 +34,7 @@ import { GrantChat } from "./components/grant-chat"
 import { ImpactDialog } from "./components/grades-dialog"
 import { ImpactChain } from "./impact/impact-chain"
 import { Badge } from "@/components/ui/badge"
+import { EmptyState } from "@/components/ui/empty-state"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -196,17 +197,26 @@ export default async function GrantPage(props: Props) {
           </div>
         </div>
 
-        {impacts.length > 0 && (
-          <div className="relative">
-            <BgGradient />
-            <Suspense fallback={<div className="h-[300px]" />}>
-              <ImpactChain
-                impacts={impacts}
-                activatedAt={new Date((grant.activatedAt || 0) * 1000)}
-              />
-            </Suspense>
-          </div>
-        )}
+        <div className="relative">
+          {impacts.length > 0 ? (
+            <>
+              <BgGradient />
+              <Suspense fallback={<div className="h-[300px]" />}>
+                <ImpactChain
+                  impacts={impacts}
+                  activatedAt={new Date((grant.activatedAt || 0) * 1000)}
+                />
+              </Suspense>
+            </>
+          ) : (
+            <EmptyState
+              size={150}
+              title="No impact yet"
+              description="Impact will be generated soon."
+              className="mt-16"
+            />
+          )}
+        </div>
       </div>
       <GrantChat grant={grant} user={user} canEdit={canEdit} />
     </AgentChatProvider>

@@ -1,13 +1,16 @@
+import { cn } from "@/lib/utils"
+
 interface Props {
   title: string
   description: string
   size?: number
+  className?: string
 }
 
 export function EmptyState(props: Props) {
-  const { title, description, size = 200 } = props
+  const { title, description, size = 200, className } = props
   return (
-    <div className="flex flex-col items-center justify-center text-primary">
+    <div className={cn("flex flex-col items-center justify-center text-primary", className)}>
       <svg
         height={size}
         viewBox="0 0 550.71039 567.98584"
