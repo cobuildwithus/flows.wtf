@@ -68,7 +68,7 @@ export function ImpactChain(props: Props) {
       if (selectedIndex === null) return
       const currentIndex = api.selectedScrollSnap()
       const currentImpactId = impacts[currentIndex]?.id
-      if (currentImpactId) {
+      if (currentImpactId && currentImpactId !== getParam("impactId")) {
         updateQueryParam("impactId", currentImpactId)
       }
     }
