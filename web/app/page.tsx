@@ -10,8 +10,6 @@ import FlowsList from "./components/flows-list"
 import { FlowsStories } from "./components/flows-stories"
 import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
 import { VotingBar } from "./flow/[flowId]/components/voting-bar"
-import { FullDiagram } from "./explore/diagram"
-import { Suspense } from "react"
 import { getUser } from "@/lib/auth/user"
 
 export default async function Home() {
@@ -77,15 +75,6 @@ export default async function Home() {
               </div>
               <CTAButtons />
             </div>
-          </div>
-          <div className="flex h-[450px] grow flex-col md:h-[750px]">
-            <Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center">Loading diagram...</div>
-              }
-            >
-              <FullDiagram noScroll flows={await getFlows()} pool={pool} />
-            </Suspense>
           </div>
         </div>
       </main>
