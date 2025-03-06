@@ -11,6 +11,8 @@ export function generateDiagram(nodes: MinimalNode[], width: number) {
 function positionNodes(nodes: MinimalNode[], layout: DiagramLayout): Node[] {
   const { columns, marginX, marginY, yStep } = layout
 
+  let accumulatedY = 0 // Track accumulated height for single-column layout
+
   return nodes.map((node, index) => {
     const row = Math.floor(index / columns) + 1
     const isReverseRow = row % 2 === 0
@@ -22,14 +24,22 @@ function positionNodes(nodes: MinimalNode[], layout: DiagramLayout): Node[] {
       return (col - 1) * (node.width + marginX) + (isReverseRow ? node.width / 2 : 0)
     }
 
+    function getY() {
+      if (columns === 1) {
+        const y = accumulatedY
+        accumulatedY += node.height + marginY // increment for next node
+        return y
+      }
+      const baseY = (row - 1) * (node.height + marginY)
+      return baseY + (isReverseRow ? Math.abs(col - columns) : col) * yStep
+    }
+
     return {
       ...node,
       id: `i${index + 1}`,
       position: {
         x: getX(),
-        y:
-          (row - 1) * (node.height + marginY) +
-          (isReverseRow ? Math.abs(col - columns) : col) * yStep,
+        y: getY(),
       },
       data: {
         ...node.data,
