@@ -41,10 +41,10 @@ export function ImpactContent(props: Props) {
         height={360}
         className="aspect-video w-full rounded-b-lg object-cover md:hidden"
       />
-      <div className="relative grid grid-cols-1 items-start gap-12 max-sm:gap-y-8 max-sm:p-5 md:grid-cols-12">
-        <div className="max-sm:order-last md:col-span-6">
+      <div className="relative grid grid-cols-1 items-start gap-12 max-md:gap-y-8 max-md:p-5 md:grid-cols-12">
+        <div className="max-md:order-last md:col-span-6">
           <h3 className="pb-4 text-xs font-medium uppercase tracking-wide opacity-85 md:hidden">
-            {hasMedia ? "Media" : "Updates"}
+            {hasMedia ? "Media" : "Proof"}
           </h3>
           {hasMedia ? (
             <ImpactMedia impact={impact} name={name} />
@@ -53,7 +53,7 @@ export function ImpactContent(props: Props) {
           )}
         </div>
 
-        <aside className="md:sticky md:col-span-6 md:mt-12 md:pr-20">
+        <aside className="md:col-span-6 md:mt-12 md:pr-20">
           <header>
             <DateTime
               date={date}

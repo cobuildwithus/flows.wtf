@@ -25,7 +25,7 @@ export function ImpactUpdates({ impact }: Props) {
   if (error) return <div>Error: {error.message}</div>
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 md:p-4">
       {casts.map((cast) => (
         <CastCard key={cast.id.toString()} cast={cast} showVerification={false} />
       ))}
