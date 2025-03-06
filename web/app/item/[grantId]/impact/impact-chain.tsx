@@ -50,6 +50,8 @@ export function ImpactChain(props: Props) {
     if (selectedIndex === null) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return
+
       if (e.key === "ArrowLeft") {
         api?.scrollPrev()
       } else if (e.key === "ArrowRight") {
