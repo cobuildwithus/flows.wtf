@@ -1,4 +1,4 @@
-import "server-only"
+"use server"
 
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"

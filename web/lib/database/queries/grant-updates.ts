@@ -1,4 +1,4 @@
-import "server-only"
+"use server"
 
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import type { Grant } from "@prisma/flows"

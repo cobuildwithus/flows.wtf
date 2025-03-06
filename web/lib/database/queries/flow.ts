@@ -1,3 +1,5 @@
+"use server"
+
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { cache } from "react"
 

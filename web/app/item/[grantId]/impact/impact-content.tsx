@@ -9,6 +9,7 @@ import pluralize from "pluralize"
 import SourceBadges from "./source-badges"
 import { VideoPlayer } from "@/components/ui/video-player"
 import { ImpactMedia } from "./impact-media"
+import { ImpactUpdates } from "./impact-updates"
 
 interface Props {
   impact: Impact
@@ -19,18 +20,7 @@ export function ImpactContent(props: Props) {
   const { name, results, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
 
   const hasImpactMetrics = impactMetrics.some(({ name }) => name.toLowerCase() !== "noggles")
-  const images = proofs.flatMap((proof) => {
-    return proof.images.map((image) => ({
-      ...image,
-      proofUrl: proof.url,
-    }))
-  })
-  const videos = proofs.flatMap((proof) => {
-    return proof.videos.map((video) => ({
-      ...video,
-      proofUrl: proof.url,
-    }))
-  })
+  const hasMedia = impactHasMedia(impact)
 
   return (
     <>
@@ -54,9 +44,13 @@ export function ImpactContent(props: Props) {
       <div className="relative grid grid-cols-1 items-start gap-12 max-sm:gap-y-8 max-sm:p-5 md:grid-cols-12">
         <div className="max-sm:order-last md:col-span-6">
           <h3 className="pb-4 text-xs font-medium uppercase tracking-wide opacity-85 md:hidden">
-            Media
+            {hasMedia ? "Media" : "Updates"}
           </h3>
-          <ImpactMedia impact={impact} name={name} />
+          {hasMedia ? (
+            <ImpactMedia impact={impact} name={name} />
+          ) : (
+            <ImpactUpdates impact={impact} />
+          )}
         </div>
 
         <aside className="md:sticky md:col-span-6 md:mt-12 md:pr-20">
@@ -172,4 +166,8 @@ export function ImpactContent(props: Props) {
       </div>
     </>
   )
+}
+
+function impactHasMedia(impact: Impact) {
+  return impact.proofs.some((proof) => proof.images.length > 0 || proof.videos.length > 0)
 }

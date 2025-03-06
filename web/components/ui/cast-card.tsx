@@ -26,10 +26,11 @@ interface Props {
   > & {
     profile: Pick<Profile, "fname" | "avatar_url" | "display_name">
   }
+  showVerification?: boolean
 }
 
 export const CastCard = (props: Props) => {
-  const { cast } = props
+  const { cast, showVerification = true } = props
 
   const videos = getCastVideos(cast)
   const images = getCastImages(cast)
@@ -42,7 +43,11 @@ export const CastCard = (props: Props) => {
 
   return (
     <>
-      <Card className="w-full break-inside-avoid rounded-b-none">
+      <Card
+        className={cn("w-full break-inside-avoid", {
+          "rounded-b-none": showVerification,
+        })}
+      >
         <a
           href={`https://warpcast.com/${cast.profile.fname}/0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`}
           target="_blank"
@@ -121,7 +126,7 @@ export const CastCard = (props: Props) => {
         </CardContent>
       </Card>
 
-      <ImpactVerification cast={cast} />
+      {showVerification && <ImpactVerification cast={cast} />}
     </>
   )
 }
