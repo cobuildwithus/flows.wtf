@@ -172,8 +172,14 @@ export function ImpactChain(props: Props) {
                   <CarouselContent>
                     {impacts.map((impact) => (
                       <CarouselItem key={impact.id}>
-                        <div className="mx-auto flex h-[100dvh] max-w-6xl items-center">
-                          <div className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border">
+                        <div
+                          onClick={() => closeDialog()}
+                          className="mx-auto flex h-[100dvh] max-w-6xl items-center"
+                        >
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border"
+                          >
                             <ImpactContent impact={impact} />
                           </div>
                         </div>
