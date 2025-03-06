@@ -12,7 +12,9 @@ interface Props {
 
 export function ImpactUpdates({ impact }: Props) {
   const castIds = useMemo(() => {
-    return impact.proofs.flatMap((proof) => proof.cast?.id).filter((id) => id !== null)
+    return impact.proofs
+      .flatMap((proof) => proof.cast?.id)
+      .filter((id) => id !== null && id !== undefined)
   }, [impact.proofs])
 
   const {
