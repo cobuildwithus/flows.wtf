@@ -1,13 +1,11 @@
 import { DateTime } from "@/components/ui/date-time"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import Noggles from "@/public/noggles.svg"
 import type { Impact } from "@prisma/flows"
 import { CircleCheckBig } from "lucide-react"
 import Image from "next/image"
 import pluralize from "pluralize"
 import SourceBadges from "./source-badges"
-import { VideoPlayer } from "@/components/ui/video-player"
 import { ImpactMedia } from "./impact-media"
 import { ImpactUpdates } from "./impact-updates"
 
@@ -93,18 +91,17 @@ export function ImpactContent(props: Props) {
                         <TooltipTrigger asChild>
                           <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
                             <dt className="text-xs text-muted-foreground">
-                              {unit.units === "⌐◨-◨" ? (
-                                <Image src={Noggles} alt="Noggles" height={12} />
-                              ) : (
-                                pluralize(unit.units, Number.parseInt(unit.value))
-                              )}
+                              {pluralize(unit.units, Number.parseInt(unit.value))}
                             </dt>
                             <dd className="order-first text-3xl font-bold tracking-tight">
-                              {unit.value}
+                              {Number(unit.value) > 0 ? unit.value : "?"}
                             </dd>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs py-2">{unit.reasoning}</TooltipContent>
+                        <TooltipContent className="max-w-xs py-2">
+                          <p className="text-sm font-medium">{unit.name}</p>
+                          <p className="text-xs">{unit.reasoning}</p>
+                        </TooltipContent>
                       </Tooltip>
                     </div>
                   ))}

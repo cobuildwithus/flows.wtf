@@ -23,8 +23,21 @@ export function ImpactUpdates({ impact }: Props) {
     isLoading,
   } = useServerFunction(getCastsByIds, "casts", [castIds])
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+        Loading updates...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+        Oops! Something went wrong: {error.message}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4 md:p-4">
