@@ -8,6 +8,7 @@ import pluralize from "pluralize"
 import SourceBadges from "./source-badges"
 import { ImpactMedia } from "./impact-media"
 import { ImpactUpdates } from "./impact-updates"
+import { ImpactMetrics } from "./impact-metrics"
 
 interface Props {
   impact: Impact
@@ -87,34 +88,7 @@ export function ImpactContent(props: Props) {
             )}
           </section>
 
-          {hasImpactMetrics && (
-            <section className="mt-8">
-              <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
-              <dl className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                {impactMetrics
-                  .filter(
-                    ({ name, value }) => name.toLowerCase() !== "noggles" && Number(value) > 0,
-                  )
-                  .map((unit) => (
-                    <div key={unit.name} className="rounded-md border p-3">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
-                            <dt className="text-xs text-muted-foreground">{unit.name}</dt>
-                            <dd className="order-first text-3xl font-bold tracking-tight">
-                              {unit.value}
-                            </dd>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs py-2">
-                          <p className="text-xs">{unit.reasoning}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  ))}
-              </dl>
-            </section>
-          )}
+          {hasImpactMetrics && <ImpactMetrics impact={impact} />}
 
           {peopleInvolved.length > 0 && (
             <section className="mt-8">
