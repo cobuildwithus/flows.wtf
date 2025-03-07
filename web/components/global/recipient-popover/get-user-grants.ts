@@ -11,7 +11,7 @@ export const getUserGrants = unstable_cache(
       where: {
         recipient: address,
         isFlow: false,
-        isRemoved: false,
+        // isRemoved: false,
       },
       select: {
         flow: true,
