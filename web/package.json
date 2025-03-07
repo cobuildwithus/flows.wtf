@@ -15,7 +15,7 @@
     "@chainsafe/ssz": "^0.17.1",
     "@lodestar/types": "^1.22.0",
     "@number-flow/react": "^0.4.4",
-    "@prisma/client": "^6.3.0",
+    "@prisma/client": "^6.4.1",
     "@prisma/extension-accelerate": "^1.2.1",
     "@prisma/extension-optimize": "^1.1.4",
     "@privy-io/react-auth": "^2.6.2",
@@ -66,8 +66,8 @@
     "swr": "^2.3.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "~2.21.36",
-    "wagmi": "^2.14.1",
+    "viem": "~2.23.7",
+    "wagmi": "^2.14.12",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -84,7 +84,7 @@
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
-    "prisma": "^6.3.0",
+    "prisma": "^6.4.1",
     "prisma-json-types-generator": "^3.2.2",
     "tailwind-scrollbar": "^3.1.0",
     "tailwindcss": "^3.4.16",
