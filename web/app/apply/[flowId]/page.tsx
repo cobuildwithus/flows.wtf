@@ -4,8 +4,6 @@ import { getUser } from "@/lib/auth/user"
 import { getFlow } from "@/lib/database/queries/flow"
 import { ApplicationChat } from "./components/application-chat"
 
-export const runtime = "nodejs"
-
 interface Props {
   params: Promise<{ flowId: string }>
 }

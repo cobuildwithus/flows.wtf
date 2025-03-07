@@ -1,4 +1,3 @@
-import { Icon } from "@/components/ui/icon"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 

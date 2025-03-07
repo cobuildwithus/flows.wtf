@@ -11,8 +11,6 @@ import { FlowHeader } from "./components/flow-header"
 import { getVotingPower } from "@/lib/voting/get-voting-power"
 import { getUser } from "@/lib/auth/user"
 
-export const runtime = "nodejs"
-
 interface Props {
   params: Promise<{ flowId: string }>
 }

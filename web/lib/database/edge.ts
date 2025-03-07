@@ -1,4 +1,3 @@
-// this will be updated by the edge-prebuild.js script to pull in the edge client
 import { PrismaClient } from "@prisma/flows"
 import { withAccelerate } from "@prisma/extension-accelerate"
 // import { withOptimize } from "@prisma/extension-optimize"

@@ -12,6 +12,12 @@ function processSchema() {
       return
     }
 
+    // Don't modify if on preview deployment
+    if (process.env.VERCEL_ENV === "preview") {
+      console.debug("Skipping schema modification on preview deployment")
+      return
+    }
+
     const commitSha = process.env.VERCEL_GIT_COMMIT_SHA
 
     if (!commitSha) {

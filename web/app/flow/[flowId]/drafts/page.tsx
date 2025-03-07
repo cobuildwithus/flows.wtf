@@ -19,8 +19,6 @@ import { GrantLogoCell } from "../components/grant-logo-cell"
 import { GrantTitleCell } from "../components/grant-title-cell"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 
-export const runtime = "nodejs"
-
 interface Props {
   params: Promise<{ flowId: string }>
 }
