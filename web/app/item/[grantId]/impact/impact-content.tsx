@@ -90,7 +90,7 @@ export function ImpactContent(props: Props) {
           {hasImpactMetrics && (
             <section className="mt-8">
               <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
-              <dl className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              <dl className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {impactMetrics
                   .filter(
                     ({ name, value }) => name.toLowerCase() !== "noggles" && Number(value) > 0,
