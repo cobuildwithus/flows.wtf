@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button"
 import { erc20VotesMintableImplAbi, flowTcrImplAbi, nounsFlowImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { useRouter } from "next/navigation"
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
 
 interface Props {
-  grant: Grant
-  flow: Grant
+  grant: Omit<Grant, "description">
+  flow: Omit<Grant, "description">
   className?: string
   size?: "default" | "sm"
 }

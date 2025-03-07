@@ -1,6 +1,6 @@
 import { Status } from "@/lib/enums"
 import { Party } from "@/lib/kv/disputeVote"
-import { Dispute, Grant } from "@prisma/flows"
+import type { Dispute, Grant } from "@prisma/flows"
 
 export function canRequestBeExecuted(
   grant: Pick<Grant, "challengePeriodEndsAt" | "isDisputed" | "status">,
@@ -54,7 +54,7 @@ export function isDisputeResolvedForNoneParty(dispute?: Dispute) {
   return ruling === 0
 }
 
-export function isRequestRejected(grant: Grant, dispute?: Dispute) {
+export function isRequestRejected(grant: Omit<Grant, "description">, dispute?: Dispute) {
   if (!dispute) return false
   const { isDisputed, isResolved } = grant
   const { isExecuted, ruling } = dispute

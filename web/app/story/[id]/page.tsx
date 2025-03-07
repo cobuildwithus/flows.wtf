@@ -27,7 +27,7 @@ import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditStory } from "@/lib/database/helpers"
 import { getIpfsUrl } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import pluralize from "pluralize"
@@ -50,10 +50,12 @@ const getStory = cache(async (id: string) => {
   const [grants, flows] = await Promise.all([
     database.grant.findMany({
       where: { id: { in: story.grant_ids } },
+      omit: { description: true },
       ...getCacheStrategy(24 * 60 * 60),
     }),
     database.grant.findMany({
       where: { id: { in: story.parent_flow_ids } },
+      omit: { description: true },
       ...getCacheStrategy(24 * 60 * 60),
     }),
   ])
@@ -151,8 +153,8 @@ export default async function Page(props: Props) {
 
             <Carousel className="mt-4 w-full">
               <CarouselContent>
-                {story.media_urls.map((url, index) => (
-                  <CarouselItem key={index}>
+                {story.media_urls.map((url) => (
+                  <CarouselItem key={url}>
                     <div className="relative aspect-video">
                       {url.endsWith(".m3u8") ? (
                         <VideoPlayer

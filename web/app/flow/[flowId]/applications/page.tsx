@@ -52,6 +52,7 @@ export default async function FlowApplicationsPage(props: Props) {
     database.grant.findMany({
       where: { flowId, status: { in: [Status.RegistrationRequested] } },
       include: { disputes: true },
+      omit: { description: true },
     }),
   ])
 

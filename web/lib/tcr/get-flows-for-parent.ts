@@ -9,6 +9,7 @@ export const getFlowsForParent = unstable_cache(
 
     const grants = await database.grant.findMany({
       where: { parentContract, isRemoved: false, isFlow: true, isActive: true },
+      omit: { description: true },
     })
 
     const parent = await database.grant.findFirstOrThrow({

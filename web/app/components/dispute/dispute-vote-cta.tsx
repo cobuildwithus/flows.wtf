@@ -2,15 +2,15 @@
 
 import { isDisputeResolvedForNoneParty, isRequestRejected } from "@/app/components/dispute/helpers"
 import { Button } from "@/components/ui/button"
-import { Dispute, Grant } from "@prisma/flows"
+import type { Dispute, Grant } from "@prisma/flows"
 import Link from "next/link"
-import { Address } from "viem"
+import type { Address } from "viem"
 import { useAccount } from "wagmi"
 import { useVotingReceipt } from "./useVotingReceipt"
 
 interface Props {
   dispute: Dispute
-  grant: Grant
+  grant: Omit<Grant, "description">
   className?: string
   size?: "default" | "sm"
 }
