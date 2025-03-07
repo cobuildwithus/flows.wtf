@@ -13,6 +13,13 @@ async function handleTotalEarned(params: {
   context: Context<"TotalEarned:block">
 }) {
   const { context } = params
+  const blockTimestamp = Number(params.event.block.timestamp)
+
+  const FIVE_MINUTES = 5 * 60
+  const currentTime = Math.floor(Date.now() / 1000)
+  if (currentTime - blockTimestamp < FIVE_MINUTES) {
+    return
+  }
 
   // Get active grants
   const activeGrants = await context.db.sql.query.grants.findMany({
