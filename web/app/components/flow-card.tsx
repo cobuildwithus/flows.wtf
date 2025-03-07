@@ -1,12 +1,12 @@
 import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
 import { getIpfsUrl } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { LimitedFlow } from "./flows-table"
 import Image from "next/image"
 import Link from "next/link"
 import { MonthlyBudget } from "./monthly-budget"
 
 interface Props {
-  flow: Grant
+  flow: LimitedFlow
 }
 
 export function FlowCard({ flow }: Props) {

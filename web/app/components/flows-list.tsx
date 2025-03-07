@@ -2,12 +2,12 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { useVoting } from "@/lib/voting/voting-context"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { FlowCard } from "./flow-card"
-import { FlowsTable } from "./flows-table"
+import { FlowsTable, type LimitedFlow } from "./flows-table"
 
 interface Props {
-  flows: Array<Grant>
+  flows: Array<LimitedFlow>
 }
 
 export default function FlowsList(props: Props) {

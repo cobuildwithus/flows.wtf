@@ -3,21 +3,23 @@ import { Badge } from "@/components/ui/badge"
 import { Currency } from "@/components/ui/currency"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import pluralize from "pluralize"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
+
+export type FlowWithBudget = Pick<
+  Grant,
+  | "isFlow"
+  | "monthlyOutgoingFlowRate"
+  | "monthlyIncomingFlowRate"
+  | "monthlyIncomingBaselineFlowRate"
+  | "monthlyIncomingBonusFlowRate"
+  | "monthlyBaselinePoolFlowRate"
+  | "monthlyBonusPoolFlowRate"
+  | "baselineMemberUnits"
+  | "bonusMemberUnits"
+>
 
 interface Props {
-  flow: Pick<
-    Grant,
-    | "isFlow"
-    | "monthlyOutgoingFlowRate"
-    | "monthlyIncomingFlowRate"
-    | "monthlyIncomingBaselineFlowRate"
-    | "monthlyIncomingBonusFlowRate"
-    | "monthlyBaselinePoolFlowRate"
-    | "monthlyBonusPoolFlowRate"
-    | "baselineMemberUnits"
-    | "bonusMemberUnits"
-  >
+  flow: FlowWithBudget
   approvedGrants?: number
   display: string
 }
@@ -44,52 +46,50 @@ export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
         </Badge>
       </TooltipTrigger>
       <TooltipContent>
-        <>
-          {isGoingNegative ? (
-            <>
-              Warning: More outgoing funds than incoming.{" "}
-              <Currency>{monthlyOutgoingFlowRate}</Currency> vs{" "}
-              <Currency>{monthlyIncomingFlowRate}</Currency>.
-              {isGoingNegativeSignificant && (
-                <>
-                  <br /> This will be automatically fixed within 1 minute.
-                </>
-              )}
-            </>
-          ) : isNotStreamingEnough ? (
-            <>
-              Warning: Not streaming enough funds. <Currency>{monthlyIncomingFlowRate}</Currency> vs{" "}
-              <Currency>{monthlyOutgoingFlowRate}</Currency>.
-              {isGoingNegativeSignificant && (
-                <>
-                  <br /> This will be automatically fixed within 1 minute.
-                </>
-              )}
-            </>
-          ) : approvedGrants ? (
-            <>
-              Streaming <Currency>{monthlyOutgoingFlowRate}</Currency>/mo to {approvedGrants}{" "}
-              {pluralize("builder", approvedGrants)}.
-            </>
-          ) : isFlow ? (
-            <>
-              Streaming <Currency>{monthlyOutgoingFlowRate}</Currency>/mo to builders.
-            </>
-          ) : (
-            <>
-              <Currency>{Number(flow.monthlyIncomingBaselineFlowRate)}</Currency>/mo baseline grant.
-              <br />
-              {Number(flow.monthlyIncomingBonusFlowRate) < 1 ? (
-                "No bonus from voters."
-              ) : (
-                <>
-                  <Currency>{Number(flow.monthlyIncomingBonusFlowRate)}</Currency>/mo as a bonus
-                  from voters.
-                </>
-              )}
-            </>
-          )}
-        </>
+        {isGoingNegative ? (
+          <>
+            Warning: More outgoing funds than incoming.{" "}
+            <Currency>{monthlyOutgoingFlowRate}</Currency> vs{" "}
+            <Currency>{monthlyIncomingFlowRate}</Currency>.
+            {isGoingNegativeSignificant && (
+              <>
+                <br /> This will be automatically fixed within 1 minute.
+              </>
+            )}
+          </>
+        ) : isNotStreamingEnough ? (
+          <>
+            Warning: Not streaming enough funds. <Currency>{monthlyIncomingFlowRate}</Currency> vs{" "}
+            <Currency>{monthlyOutgoingFlowRate}</Currency>.
+            {isGoingNegativeSignificant && (
+              <>
+                <br /> This will be automatically fixed within 1 minute.
+              </>
+            )}
+          </>
+        ) : approvedGrants ? (
+          <>
+            Streaming <Currency>{monthlyOutgoingFlowRate}</Currency>/mo to {approvedGrants}{" "}
+            {pluralize("builder", approvedGrants)}.
+          </>
+        ) : isFlow ? (
+          <>
+            Streaming <Currency>{monthlyOutgoingFlowRate}</Currency>/mo to builders.
+          </>
+        ) : (
+          <>
+            <Currency>{Number(flow.monthlyIncomingBaselineFlowRate)}</Currency>/mo baseline grant.
+            <br />
+            {Number(flow.monthlyIncomingBonusFlowRate) < 1 ? (
+              "No bonus from voters."
+            ) : (
+              <>
+                <Currency>{Number(flow.monthlyIncomingBonusFlowRate)}</Currency>/mo as a bonus from
+                voters.
+              </>
+            )}
+          </>
+        )}
       </TooltipContent>
     </Tooltip>
   )

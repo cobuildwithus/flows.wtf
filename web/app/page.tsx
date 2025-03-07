@@ -3,7 +3,6 @@ import database, { getCacheStrategy } from "@/lib/database/edge"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
 import { VotingProvider } from "@/lib/voting/voting-context"
-import { Grant } from "@prisma/flows"
 import Link from "next/link"
 import { base } from "viem/chains"
 import FlowsList from "./components/flows-list"
@@ -11,18 +10,20 @@ import { FlowsStories } from "./components/flows-stories"
 import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
 import { VotingBar } from "./flow/[flowId]/components/voting-bar"
 import { getUser } from "@/lib/auth/user"
+import type { LimitedFlow } from "./components/flows-table"
 
 export default async function Home() {
   const [pool, activeFlows, user] = await Promise.all([
     getPool(),
     database.grant.findMany({
       where: { isFlow: true, isActive: true, isTopLevel: false },
+      omit: { description: true },
       ...getCacheStrategy(120),
     }),
     getUser(),
   ])
 
-  activeFlows.sort(sortGrants)
+  activeFlows.sort(sortFlows)
 
   return (
     <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
@@ -59,44 +60,17 @@ export default async function Home() {
         <div className="container mt-6">
           <FlowsList flows={activeFlows} />
         </div>
-
-        <div className="mt-12 max-sm:hidden">
-          <div className="container mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold leading-none tracking-tight md:text-lg">
-                  <Link href="/explore" className="hover:text-primary">
-                    Dive into the flow
-                  </Link>
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground max-sm:hidden">
-                  Explore the builders making impact
-                </p>
-              </div>
-              <CTAButtons />
-            </div>
-          </div>
-        </div>
       </main>
       <VotingBar />
     </VotingProvider>
   )
 }
 
-const getFlows = async () => {
-  const flows = await database.grant.findMany({
-    where: { isActive: true, isFlow: true, isTopLevel: false },
-    include: { subgrants: { where: { isActive: true } } },
-    ...getCacheStrategy(3600),
-  })
-  return flows
-}
-
-function getSum(flows: Grant[], key: keyof Grant): number {
+function getSum(flows: LimitedFlow[], key: keyof LimitedFlow): number {
   return flows.reduce((sum, flow) => sum + (flow[key] as number), 0)
 }
 
-function sortGrants(a: Grant, b: Grant) {
+function sortFlows(a: LimitedFlow, b: LimitedFlow) {
   const aApproved = a.activeRecipientCount
   const bApproved = b.activeRecipientCount
   const aChallenged = a.challengedRecipientCount
@@ -106,11 +80,12 @@ function sortGrants(a: Grant, b: Grant) {
 
   if (aApproved !== bApproved) {
     return bApproved - aApproved
-  } else if (aChallenged !== bChallenged) {
-    return bChallenged - aChallenged
-  } else if (aAwaiting !== bAwaiting) {
-    return bAwaiting - aAwaiting
-  } else {
-    return 0
   }
+  if (aChallenged !== bChallenged) {
+    return bChallenged - aChallenged
+  }
+  if (aAwaiting !== bAwaiting) {
+    return bAwaiting - aAwaiting
+  }
+  return 0
 }

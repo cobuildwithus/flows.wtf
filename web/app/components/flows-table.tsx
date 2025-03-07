@@ -15,10 +15,26 @@ import type { Grant } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 import { VotingInput } from "../flow/[flowId]/components/voting-input"
-import { MonthlyBudget } from "./monthly-budget"
+import { MonthlyBudget, type FlowWithBudget } from "./monthly-budget"
+
+export type LimitedFlow = FlowWithBudget &
+  Pick<
+    Grant,
+    | "id"
+    | "title"
+    | "image"
+    | "tagline"
+    | "status"
+    | "activeRecipientCount"
+    | "awaitingRecipientCount"
+    | "challengedRecipientCount"
+    | "totalEarned"
+    | "isFlow"
+    | "votesCount"
+  >
 
 interface Props {
-  flows: Array<Grant>
+  flows: Array<LimitedFlow>
 }
 
 export const FlowsTable = (props: Props) => {
