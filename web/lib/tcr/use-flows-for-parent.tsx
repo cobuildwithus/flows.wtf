@@ -5,9 +5,10 @@ import useSWR from "swr"
 import { getFlowsForParent } from "./get-flows-for-parent"
 
 export function useFlowsForParent(parent: string | undefined) {
-  const { data, ...rest } = useSWR(parent ? `${parent}_grants` : null, () =>
-    getFlowsForParent(getEthAddress(parent!!)),
-  )
+  const { data, ...rest } = useSWR(parent ? `${parent}_grants` : null, () => {
+    if (!parent) return []
+    return getFlowsForParent(getEthAddress(parent))
+  })
 
   return {
     grants: data || [],
