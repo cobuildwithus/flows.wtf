@@ -62,24 +62,26 @@ async function handleRecipientCreated(params: {
   const recipient = rawRecipient.toLowerCase()
 
   const flowAddress = event.log.address.toLowerCase()
-  const parentFlow = await getParentFlow(context.db, flowAddress)
 
-  const grant = await context.db.update(grants, { id: recipientId.toString() }).set({
-    ...metadata,
-    recipient,
-    updatedAt: Number(event.block.timestamp),
-    activatedAt: Number(event.block.timestamp),
-    isActive: true,
-  })
+  const [parentFlow, grant] = await Promise.all([
+    getParentFlow(context.db, flowAddress),
+    context.db.update(grants, { id: recipientId.toString() }).set({
+      ...metadata,
+      recipient,
+      updatedAt: Number(event.block.timestamp),
+      activatedAt: Number(event.block.timestamp),
+      isActive: true,
+    }),
+  ])
 
-  await context.db.update(grants, { id: parentFlow.id }).set({
-    awaitingRecipientCount: parentFlow.awaitingRecipientCount - 1,
-    activeRecipientCount: parentFlow.activeRecipientCount + 1,
-  })
-
-  await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
-
-  await addGrantEmbedding(grant, recipientType, parentFlow.id)
+  await Promise.all([
+    context.db.update(grants, { id: parentFlow.id }).set({
+      awaitingRecipientCount: parentFlow.awaitingRecipientCount - 1,
+      activeRecipientCount: parentFlow.activeRecipientCount + 1,
+    }),
+    handleRecipientMappings(context.db, recipient, flowAddress, grant.id),
+    addGrantEmbedding(grant, recipientType, parentFlow.id),
+  ])
 }
 
 async function handleRecipientRemoved(params: {
@@ -102,7 +104,7 @@ async function handleRecipientRemoved(params: {
     activeRecipientCount: parentFlow.activeRecipientCount - 1,
   })
 
-  await handleRecipientRemovedMappings(context.db, removedGrant.recipient, flowAddress, recipientId)
+  await handleRecipientRemovedMappings(context.db, removedGrant.recipient)
 
   await removeGrantEmbedding(removedGrant)
 }
@@ -162,12 +164,7 @@ async function handleRecipientMappings(
   ])
 }
 
-async function handleRecipientRemovedMappings(
-  db: Context["db"],
-  recipient: string,
-  flowContract: string,
-  grantId: string
-) {
+async function handleRecipientRemovedMappings(db: Context["db"], recipient: string) {
   await Promise.all([
     db.delete(parentFlowToChildren, {
       parentFlowContract: recipient,
