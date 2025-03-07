@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Icon } from "@/components/ui/icon"
+import { GeneralLinkIcon } from "@/components/ui/general-link-icon"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -62,7 +62,7 @@ export function Builder(props: Props) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Icon name={link.icon} className="size-4" />
+                    <GeneralLinkIcon name={link.icon} className="size-4" />
                   </a>
                 ))}
               </div>
