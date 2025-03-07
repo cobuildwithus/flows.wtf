@@ -195,7 +195,7 @@ export default async function GrantPage(props: Props) {
         </div>
 
         {impacts.length > 0 && (
-          <div className="relative">
+          <div className="relative mt-8">
             <BgGradient />
             <Suspense fallback={<div className="h-[300px]" />}>
               <ImpactChain
