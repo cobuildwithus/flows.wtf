@@ -15,7 +15,7 @@ export function FlowCard({ flow }: Props) {
       <Image
         alt=""
         src={getIpfsUrl(flow.image)}
-        className="pointer-events-none absolute inset-0 -z-10 size-full scale-100 object-cover transition-transform group-hover:scale-110"
+        className="pointer-events-none absolute inset-0 -z-10 size-full scale-100 object-cover transition-transform md:group-hover:scale-110"
         width={312}
         height={312}
       />
