@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "date-fns"],
+  },
 }
 
 export default nextConfig

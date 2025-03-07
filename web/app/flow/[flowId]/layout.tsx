@@ -4,14 +4,12 @@ import { getFlow, getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
 import { VotingProvider } from "@/lib/voting/voting-context"
-import { Metadata } from "next"
-import { PropsWithChildren } from "react"
+import type { Metadata } from "next"
+import type { PropsWithChildren } from "react"
 import { base } from "viem/chains"
 import { FlowHeader } from "./components/flow-header"
 import { getVotingPower } from "@/lib/voting/get-voting-power"
 import { getUser } from "@/lib/auth/user"
-
-export const runtime = "nodejs"
 
 interface Props {
   params: Promise<{ flowId: string }>

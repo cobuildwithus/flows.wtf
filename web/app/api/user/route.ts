@@ -9,7 +9,6 @@ import { NextResponse } from "next/server"
 // Configure Next.js route behavior
 export const dynamic = "force-dynamic"
 export const revalidate = 0
-export const runtime = "nodejs"
 
 // Expiry time in seconds (7 days)
 const EXPIRY_TIME = 60 * 60 * 24 * 7

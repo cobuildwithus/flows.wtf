@@ -11,8 +11,6 @@ import GrantsList from "./components/grants-list"
 import { GrantsStories } from "./components/grants-stories"
 import { VotingBar } from "./components/voting-bar"
 
-export const runtime = "nodejs"
-
 interface Props {
   params: Promise<{ flowId: string }>
 }
