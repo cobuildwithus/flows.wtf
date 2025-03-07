@@ -65,9 +65,15 @@ function showUnits(unit: Impact["impactMetrics"][number]) {
     return !regex.test(unitName)
   }
 
-  // Default behavior: don't show units if the unit name already includes the unit label
-  const defaultRegex = new RegExp(`\\b${unitLabel}\\b`, "i")
-  return !defaultRegex.test(unitName)
+  // Special handling for singular/plural forms
+  const singularForm = pluralize.singular(unitLabel)
+  const pluralForm = pluralize.plural(unitLabel)
+
+  // Check if either singular or plural form is in the name
+  const regex = new RegExp(`\\b(${singularForm}|${pluralForm})\\b`, "i")
+
+  // Don't show units if the unit name already includes the unit label (singular or plural)
+  return !regex.test(unitName)
 }
 
 function formatName(unit: Impact["impactMetrics"][number]) {
