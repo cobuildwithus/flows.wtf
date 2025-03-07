@@ -9,7 +9,7 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Status } from "@/lib/enums"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import Link from "next/link"
 import { useRef } from "react"
 import { AnimatedSalary } from "../animated-salary"
@@ -64,7 +64,7 @@ export const CuratorPopover = (props: Props) => {
               monthlyRate={earnings.monthly}
             />
             {hasActiveSubgrants && (
-              <div className="size-1.5 animate-pulse rounded-full bg-white/50"></div>
+              <div className="size-1.5 animate-pulse rounded-full bg-white/50" />
             )}
           </Badge>
         </div>
@@ -137,7 +137,7 @@ export const CuratorPopover = (props: Props) => {
           ) : (
             <>
               <div className="mt-8 flex flex-col items-center justify-center space-x-2 space-y-4 rounded-xl border border-border bg-gray-200/30 py-6 text-sm text-muted-foreground dark:bg-gray-800">
-                <Link href={`/curate`} onClick={closePopover}>
+                <Link href="/curate" onClick={closePopover}>
                   <Button size="lg">Become a curator</Button>
                 </Link>
                 <p className="px-2">Buy TCR tokens to curate grants and earn rewards.</p>

@@ -11,9 +11,10 @@ import type { DerivedData, Grant } from "@prisma/flows"
 import Link from "next/dist/client/link"
 import Image from "next/image"
 import { isGrantNew } from "./is-new"
+import type { LimitedGrant } from "./grants-list"
 
 interface Props {
-  grant: Grant & {
+  grant: LimitedGrant & {
     profile: Profile
     derivedData: Pick<DerivedData, "overallGrade" | "title"> | null
   }

@@ -1,16 +1,18 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Profile } from "@/components/user-profile/get-user-profile"
+import type { Profile } from "@/components/user-profile/get-user-profile"
 import { useVoting } from "@/lib/voting/voting-context"
-import { DerivedData, Grant } from "@prisma/flows"
+import type { DerivedData, Grant } from "@prisma/flows"
 import { GrantCard } from "./grant-card"
 import { GrantsTable } from "./grants-table"
 
+export type LimitedGrant = Omit<Grant, "description">
+
 interface Props {
-  flow: Grant
+  flow: LimitedGrant
   grants: Array<
-    Grant & {
+    LimitedGrant & {
       derivedData: Pick<DerivedData, "lastBuilderUpdate" | "overallGrade" | "title"> | null
       profile: Profile
     }

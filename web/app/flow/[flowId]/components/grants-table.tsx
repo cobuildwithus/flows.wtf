@@ -12,18 +12,19 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Profile } from "@/components/user-profile/get-user-profile"
 import { Status } from "@/lib/enums"
 import { cn, getIpfsUrl } from "@/lib/utils"
-import { DerivedData, Grant } from "@prisma/flows"
+import type { DerivedData } from "@prisma/flows"
+import type { Profile } from "@/components/user-profile/get-user-profile"
 import Link from "next/link"
 import { GrantLogoCell } from "./grant-logo-cell"
 import { VotingInput } from "./voting-input"
+import type { LimitedGrant } from "./grants-list"
 
 interface Props {
-  flow: Grant
+  flow: LimitedGrant
   grants: Array<
-    Grant & { derivedData: Pick<DerivedData, "lastBuilderUpdate"> | null; profile: Profile }
+    LimitedGrant & { derivedData: Pick<DerivedData, "lastBuilderUpdate"> | null; profile: Profile }
   >
 }
 

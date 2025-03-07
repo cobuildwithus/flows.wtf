@@ -1,5 +1,5 @@
 import { getPool } from "@/lib/database/queries/pool"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import AboutSections from "./AboutSections"
 
 export async function generateMetadata(): Promise<Metadata> {

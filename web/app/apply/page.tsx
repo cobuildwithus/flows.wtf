@@ -6,7 +6,7 @@ import database from "@/lib/database/edge"
 import { getPool } from "@/lib/database/queries/pool"
 import { getIpfsUrl } from "@/lib/utils"
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -20,12 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ApplyPage() {
-  const flows = await database.grant.findMany({
-    where: { isFlow: true, isActive: true, isTopLevel: false },
-    orderBy: [{ title: "asc" }],
-  })
-
-  const pool = await getPool()
+  const [flows, pool] = await Promise.all([
+    database.grant.findMany({
+      where: { isFlow: true, isActive: true, isTopLevel: false },
+      orderBy: [{ title: "asc" }],
+      omit: { description: true },
+    }),
+    getPool(),
+  ])
 
   return (
     <div className="container relative isolate mt-8 pb-12 pt-4 md:pt-12">

@@ -5,7 +5,7 @@ import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { FlowSubmenu } from "./components/flow-submenu"
 import GrantsList from "./components/grants-list"
 import { GrantsStories } from "./components/grants-stories"
@@ -30,6 +30,7 @@ export default async function FlowPage(props: Props) {
       include: {
         derivedData: { select: { lastBuilderUpdate: true, overallGrade: true, title: true } },
       },
+      omit: { description: true },
       ...getCacheStrategy(1200),
     }),
   ])
@@ -56,14 +57,15 @@ export default async function FlowPage(props: Props) {
   )
 }
 
-function sortGrants(a: Grant, b: Grant) {
+function sortGrants(a: Omit<Grant, "description">, b: Omit<Grant, "description">) {
   const aIsClearingRequested = a.status === Status.ClearingRequested
   const bIsClearingRequested = b.status === Status.ClearingRequested
+
   if (aIsClearingRequested && !bIsClearingRequested) {
     return -1
-  } else if (!aIsClearingRequested && bIsClearingRequested) {
-    return 1
-  } else {
-    return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
   }
+  if (!aIsClearingRequested && bIsClearingRequested) {
+    return 1
+  }
+  return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
 }

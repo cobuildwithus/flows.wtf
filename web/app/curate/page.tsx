@@ -12,7 +12,7 @@ import {
   TargetIcon,
   TokensIcon,
 } from "@radix-ui/react-icons"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import Image from "next/image"
 import { SwapTokenButton } from "../token/swap-token-button"
 import Illustration from "./curate.svg"
@@ -27,12 +27,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CurateAndEarnPage() {
-  const pool = await getPool()
-
-  const flows = await database.grant.findMany({
-    where: { isFlow: true, isActive: true, isTopLevel: false },
-    orderBy: { title: "asc" },
-  })
+  const [pool, flows] = await Promise.all([
+    getPool(),
+    database.grant.findMany({
+      where: { isFlow: true, isActive: true, isTopLevel: false },
+      orderBy: { title: "asc" },
+      select: {
+        id: true,
+        title: true,
+      },
+    }),
+  ])
 
   return (
     <>
