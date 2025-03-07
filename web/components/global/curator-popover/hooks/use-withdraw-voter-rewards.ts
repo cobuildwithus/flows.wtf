@@ -1,10 +1,12 @@
-import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { erc20VotesArbitratorImplAbi } from "@/lib/abis"
-import { useAccount, useReadContract } from "wagmi"
-import { base } from "viem/chains"
-import { toast } from "sonner"
 import { getEthAddress } from "@/lib/utils"
-import { useRouter } from "next/navigation"
+import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
+import { toast } from "sonner"
+import { base } from "viem/chains"
+import { useAccount, useReadContract } from "wagmi"
+import { useUserTcrTokens } from "./use-user-tcr-tokens"
+
+const chainId = base.id
 
 export const useWithdrawVoterRewards = (
   arbitratorAddress: `0x${string}`,
@@ -12,8 +14,7 @@ export const useWithdrawVoterRewards = (
   round: bigint,
 ) => {
   const { address } = useAccount()
-  const chainId = base.id
-  const router = useRouter()
+  const { mutateEarnings } = useUserTcrTokens(address)
 
   const { data: voterRewardsBalance, isLoading: isBalanceLoading } = useReadContract({
     address: getEthAddress(arbitratorAddress),
@@ -27,7 +28,7 @@ export const useWithdrawVoterRewards = (
     chainId,
     success: "Rewards withdrawn successfully!",
     onSuccess: (hash) => {
-      router.refresh()
+      mutateEarnings()
     },
   })
 

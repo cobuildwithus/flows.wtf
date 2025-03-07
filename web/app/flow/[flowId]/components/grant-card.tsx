@@ -33,7 +33,7 @@ export function GrantCard({ grant }: Props) {
       <Image
         alt=""
         src={getIpfsUrl(grant.image)}
-        className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 group-hover:scale-110"
+        className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 md:group-hover:scale-110"
         width={256}
         height={256}
       />

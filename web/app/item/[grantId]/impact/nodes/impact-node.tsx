@@ -33,7 +33,7 @@ export function ImpactNode(props: NodeProps<IImpactNode>) {
           alt={name}
           width={width}
           height={height}
-          className="pointer-events-none aspect-video rounded-xl object-cover transition-all duration-300 group-hover:scale-110"
+          className="pointer-events-none aspect-video rounded-xl object-cover transition-all duration-300 md:group-hover:scale-110"
         />
       )}
 
