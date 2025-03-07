@@ -13,14 +13,12 @@ import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { getTcrCosts } from "@/lib/tcr/get-tcr-costs"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import { CreatorCard } from "./creator-card"
 import DraftContent from "./draft-content"
 import { DraftEditButton } from "./draft-edit-button"
 import { DraftPublishButton } from "./draft-publish-button"
-
-export const runtime = "nodejs"
 
 interface Props {
   params: Promise<{ draftId: string }>

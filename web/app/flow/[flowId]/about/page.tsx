@@ -14,8 +14,6 @@ import { getEthAddress } from "@/lib/utils"
 import Link from "next/link"
 import { Suspense } from "react"
 
-export const runtime = "nodejs"
-
 interface Props {
   params: Promise<{ flowId: string }>
 }

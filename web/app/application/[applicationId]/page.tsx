@@ -23,8 +23,6 @@ import { StatusDisputed } from "./components/status-disputed"
 import { StatusNotDisputed } from "./components/status-not-disputed"
 import { ChallengeMessage } from "@/components/ui/challenge-message"
 
-export const runtime = "nodejs"
-
 interface Props {
   params: Promise<{
     applicationId: string

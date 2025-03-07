@@ -5,7 +5,6 @@ import { getItem, saveItem } from "@/lib/kv/kvStore"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
-export const runtime = "nodejs"
 
 const DAILY_LIMIT = 50
 

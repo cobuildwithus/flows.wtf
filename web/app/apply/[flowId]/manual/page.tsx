@@ -7,10 +7,8 @@ import database from "@/lib/database/edge"
 import { getFlow } from "@/lib/database/queries/flow"
 import { countUserActiveGrants } from "@/lib/database/queries/grant"
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { ApplyForm } from "../components/apply-form"
-
-export const runtime = "nodejs"
 
 interface Props {
   params: Promise<{ flowId: string }>
