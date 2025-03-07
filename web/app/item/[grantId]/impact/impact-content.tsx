@@ -2,7 +2,7 @@ import { DateTime } from "@/components/ui/date-time"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import type { Impact } from "@prisma/flows"
-import { CircleCheckBig } from "lucide-react"
+import { CircleCheckBig, CircleX } from "lucide-react"
 import Image from "next/image"
 import pluralize from "pluralize"
 import SourceBadges from "./source-badges"
@@ -19,6 +19,7 @@ export function ImpactContent(props: Props) {
 
   const hasImpactMetrics = impactMetrics.some(({ name }) => name.toLowerCase() !== "noggles")
   const hasMedia = impactHasMedia(impact)
+  const hasResults = results.length > 0
 
   return (
     <>
@@ -62,21 +63,28 @@ export function ImpactContent(props: Props) {
 
           <section className="flex flex-col gap-y-4 max-md:mt-4">
             <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Results</h3>
-            <ul className="flex flex-col space-y-3">
-              {results.map((result) => (
-                <li key={result.headline} className="flex items-start">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="inline-flex cursor-help items-center space-x-2.5 text-sm">
-                        <CircleCheckBig className="size-4 text-green-400/75" />
-                        <span className="font-light opacity-85">{result.headline}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs py-2">{result.details}</TooltipContent>
-                  </Tooltip>
-                </li>
-              ))}
-            </ul>
+            {hasResults ? (
+              <ul className="flex flex-col space-y-3">
+                {results.map((result) => (
+                  <li key={result.headline} className="flex items-start">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="inline-flex cursor-help items-center space-x-2.5 text-sm">
+                          <CircleCheckBig className="size-4 text-green-400/75" />
+                          <span className="font-light opacity-85">{result.headline}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs py-2">{result.details}</TooltipContent>
+                    </Tooltip>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="inline-flex cursor-help items-center space-x-2.5 text-sm">
+                <CircleX className="size-4 text-gray-400/75" />
+                <span className="font-light opacity-85">No clear results</span>
+              </div>
+            )}
           </section>
 
           {hasImpactMetrics && (
@@ -84,22 +92,21 @@ export function ImpactContent(props: Props) {
               <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
               <dl className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                 {impactMetrics
-                  .filter(({ name }) => name.toLowerCase() !== "noggles")
+                  .filter(
+                    ({ name, value }) => name.toLowerCase() !== "noggles" && Number(value) > 0,
+                  )
                   .map((unit) => (
                     <div key={unit.name} className="rounded-md border p-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
-                            <dt className="text-xs text-muted-foreground">
-                              {pluralize(unit.units, Number.parseInt(unit.value))}
-                            </dt>
+                            <dt className="text-xs text-muted-foreground">{unit.name}</dt>
                             <dd className="order-first text-3xl font-bold tracking-tight">
-                              {Number(unit.value) > 0 ? unit.value : "?"}
+                              {unit.value}
                             </dd>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs py-2">
-                          <p className="text-sm font-medium">{unit.name}</p>
                           <p className="text-xs">{unit.reasoning}</p>
                         </TooltipContent>
                       </Tooltip>
