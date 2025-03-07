@@ -84,8 +84,8 @@ export const CastCard = (props: Props) => {
             <div className="mt-4">
               <Carousel className="w-full">
                 <CarouselContent>
-                  {[...videos, ...images].map((media, index) => (
-                    <CarouselItem key={index}>
+                  {[...videos, ...images].map((media) => (
+                    <CarouselItem key={media}>
                       {videos.includes(media) ? (
                         <div
                           className={cn(

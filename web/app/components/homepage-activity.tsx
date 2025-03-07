@@ -43,7 +43,7 @@ export async function HomepageActivity(props: Props) {
 
       <ActivityCalendar
         data={activities}
-        updates={structuredClone(updates.byDate)}
+        updates={updates.byDate}
         maxLevel={MAX_LEVEL}
         weekStart={1}
         blockSize={19}
