@@ -117,9 +117,6 @@ async function handleRemovedGrant(db: Context["db"], recipient: string, parentCo
     db.delete(recipientAndParentToGrantId, {
       recipientAndParent: `${recipient.toLowerCase()}-${parentContract.toLowerCase()}`,
     }),
-    db.delete(flowContractToGrantId, {
-      contract: recipient,
-    }),
     db.update(parentFlowToChildren, { parentFlowContract: parentContract }).set((row) => ({
       childGrantIds: row.childGrantIds.filter((id) => id !== grant.id),
     })),

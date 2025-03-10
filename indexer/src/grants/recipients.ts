@@ -102,8 +102,6 @@ async function handleRecipientRemoved(params: {
     activeRecipientCount: parentFlow.activeRecipientCount - 1,
   })
 
-  await handleRecipientRemovedMappings(context.db, removedGrant.recipient, flowAddress, recipientId)
-
   await removeGrantEmbedding(removedGrant)
 }
 
@@ -159,18 +157,5 @@ async function handleRecipientMappings(
     db.update(parentFlowToChildren, { parentFlowContract: flowContract }).set((row) => ({
       childGrantIds: [...row.childGrantIds, grantId],
     })),
-  ])
-}
-
-async function handleRecipientRemovedMappings(
-  db: Context["db"],
-  recipient: string,
-  flowContract: string,
-  grantId: string
-) {
-  await Promise.all([
-    db.delete(parentFlowToChildren, {
-      parentFlowContract: recipient,
-    }),
   ])
 }
