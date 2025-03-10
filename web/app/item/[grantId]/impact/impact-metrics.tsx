@@ -61,7 +61,7 @@ function showUnits(unit: Impact["impactMetrics"][number]) {
 
   // Special handling for "person" and "people"
   if (unitLabel === "person" || unitLabel === "people") {
-    const regex = new RegExp(`\\b(${unitLabel}|people|participant|participants)\\b`, "i")
+    const regex = new RegExp(`\\b(${unitLabel}|people|participant|participants|user|users)\\b`, "i")
     return !regex.test(unitName)
   }
 
