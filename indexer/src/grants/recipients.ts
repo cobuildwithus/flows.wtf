@@ -8,7 +8,7 @@ import {
   parentFlowToChildren,
 } from "ponder:schema"
 import { addGrantEmbedding, removeGrantEmbedding } from "./embeddings/embed-grants"
-import { isNewEvent } from "../utils"
+import { isBlockRecent } from "../utils"
 
 ponder.on("NounsFlowChildren:RecipientCreated", handleRecipientCreated)
 ponder.on("NounsFlow:RecipientCreated", handleRecipientCreated)
@@ -63,7 +63,7 @@ async function handleRecipientCreated(params: {
   const recipient = rawRecipient.toLowerCase()
 
   const flowAddress = event.log.address.toLowerCase()
-  const isNew = isNewEvent(Number(event.block.timestamp))
+  const isRecent = isBlockRecent(Number(event.block.timestamp))
 
   const [parentFlow, grant] = await Promise.all([
     getParentFlow(context.db, flowAddress),
@@ -82,7 +82,7 @@ async function handleRecipientCreated(params: {
       activeRecipientCount: parentFlow.activeRecipientCount + 1,
     }),
     handleRecipientMappings(context.db, recipient, flowAddress, grant.id),
-    isNew ? addGrantEmbedding(grant, recipientType, parentFlow.id) : Promise.resolve(),
+    isRecent ? addGrantEmbedding(grant, recipientType, parentFlow.id) : Promise.resolve(),
   ])
 }
 
@@ -94,7 +94,7 @@ async function handleRecipientRemoved(params: {
   const { recipientId } = event.args
 
   const flowAddress = event.log.address.toLowerCase()
-  const isNew = isNewEvent(Number(event.block.timestamp))
+  const isRecent = isBlockRecent(Number(event.block.timestamp))
 
   const [parentFlow, removedGrant] = await Promise.all([
     getParentFlow(context.db, flowAddress),
@@ -109,7 +109,7 @@ async function handleRecipientRemoved(params: {
     context.db.update(grants, { id: parentFlow.id }).set({
       activeRecipientCount: parentFlow.activeRecipientCount - 1,
     }),
-    isNew ? removeGrantEmbedding(removedGrant) : Promise.resolve(),
+    isRecent ? removeGrantEmbedding(removedGrant) : Promise.resolve(),
   ])
 }
 

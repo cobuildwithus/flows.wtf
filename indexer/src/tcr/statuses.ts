@@ -3,6 +3,7 @@ import { Status } from "../enums"
 import { getAddress } from "viem"
 import { removeApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants } from "ponder:schema"
+import { isBlockRecent } from "../utils"
 
 ponder.on("FlowTcr:ItemStatusChange", handleItemStatusChange)
 ponder.on("FlowTcrChildren:ItemStatusChange", handleItemStatusChange)
@@ -13,6 +14,7 @@ async function handleItemStatusChange(params: {
 }) {
   const { event, context } = params
   const { _itemID, _itemStatus, _disputed, _resolved } = event.args
+  const isRecent = isBlockRecent(Number(event.block.timestamp))
 
   const grant = await context.db.find(grants, { id: _itemID })
   if (!grant) throw new Error(`Grant not found: ${_itemID}`)
@@ -33,7 +35,7 @@ async function handleItemStatusChange(params: {
     challengePeriodEndsAt = Number(event.block.timestamp + challengePeriodDuration)
   }
 
-  if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Absent) {
+  if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Absent && isRecent) {
     await removeApplicationEmbedding(grant)
   }
 
