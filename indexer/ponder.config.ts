@@ -17,7 +17,6 @@ import { base as baseContracts } from "./addresses"
 const isDev = process.env.NODE_ENV === "development"
 
 const START_BLOCK = 21519031
-const CRON_START_BLOCK = 27257924 // need to statically define this until ponder's crash recovery supports dynamic configs
 
 export default createConfig({
   database: { kind: "postgres" },
@@ -189,7 +188,7 @@ export default createConfig({
   blocks: {
     TotalEarned: {
       network: "base",
-      startBlock: CRON_START_BLOCK,
+      startBlock: "latest",
       interval: (6 * 60 * 60) / 2, // Every 6 hours (base block time is 2s)
     },
   },

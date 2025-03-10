@@ -1,10 +1,8 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { formatEther, getAddress } from "viem"
 import { grants } from "ponder:schema"
-import { eq } from "ponder"
-import { and } from "ponder"
 
-const BATCH_SIZE = 10
+const BATCH_SIZE = 20
 
 ponder.on("TotalEarned:block", handleTotalEarned)
 
@@ -13,17 +11,9 @@ async function handleTotalEarned(params: {
   context: Context<"TotalEarned:block">
 }) {
   const { context } = params
-  const blockTimestamp = Number(params.event.block.timestamp)
-
-  const FIVE_MINUTES = 5 * 60
-  const currentTime = Math.floor(Date.now() / 1000)
-  if (currentTime - blockTimestamp < FIVE_MINUTES) {
-    return
-  }
 
   // Get active grants
   const activeGrants = await context.db.sql.query.grants.findMany({
-    where: (grants) => and(eq(grants.isActive, true), eq(grants.isRemoved, false)),
     columns: {
       id: true,
       parentContract: true,
