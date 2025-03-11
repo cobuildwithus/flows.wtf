@@ -1,6 +1,6 @@
 "use client"
 
-import { CastCard } from "@/components/ui/cast-card"
+import type { CastCard } from "@/components/ui/cast-card"
 import { type ComponentProps, useState } from "react"
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { CastColumns } from "./cast-columns"
 
 interface GrantCastDialogProps {
   trigger: React.ReactNode
@@ -43,22 +44,7 @@ export function GrantCastDialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <div
-          className={cn("mt-4 grid grid-cols-1 gap-4", {
-            "sm:grid-cols-2": casts.length > 1 && casts.length < 3,
-            "sm:grid-cols-3": casts.length >= 3,
-          })}
-        >
-          {casts.length > 0 ? (
-            casts.map((cast) => (
-              <div key={cast.hash.toString()} className="mb-4 break-inside-avoid">
-                <CastCard cast={cast} />
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-sm text-muted-foreground">No activity found</p>
-          )}
-        </div>
+        <CastColumns casts={casts} />
       </DialogContent>
     </Dialog>
   )

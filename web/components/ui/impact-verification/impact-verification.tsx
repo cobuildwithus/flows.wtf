@@ -27,14 +27,18 @@ const ImpactVerificationContent = ({
   grantId?: string
   castId: number
 }) => {
+  const verificationGrantId = verification.grant_id
   const isForDifferentGrant =
-    !!grantId && verification.grant_id !== grantId && verification.grant_id.startsWith("0x")
+    !!grantId &&
+    verificationGrantId !== grantId &&
+    verificationGrantId.startsWith("0x") &&
+    verificationGrantId !== "0x0000"
   const isGrantUpdate = verification.is_grant_update && !isForDifferentGrant
 
   const { data: grant } = useServerFunction(
     getGrantById,
     "getGrantById",
-    [isForDifferentGrant ? (verification?.grant_id ?? "") : ""],
+    [isForDifferentGrant ? (verificationGrantId ?? "") : ""],
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
