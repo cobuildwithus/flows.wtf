@@ -1,15 +1,13 @@
-import { tokenEmitterImplAbi } from "@/lib/abis"
-import { Address, createPublicClient, http } from "viem"
-import { base } from "viem/chains"
+"use server"
 
-const publicClient = createPublicClient({
-  chain: base,
-  transport: http(),
-})
+import { tokenEmitterImplAbi } from "@/lib/abis"
+import { l2Client } from "@/lib/viem/client"
+import { Address } from "viem"
+import { base } from "viem/chains"
 
 export async function getTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
   try {
-    const data = await publicClient.readContract({
+    const data = await l2Client.readContract({
       abi: tokenEmitterImplAbi,
       address: contract,
       functionName: "buyTokenQuote",
@@ -37,7 +35,7 @@ export async function getTokenQuoteWithRewards(
   chainId = base.id,
 ) {
   try {
-    const data = await publicClient.readContract({
+    const data = await l2Client.readContract({
       abi: tokenEmitterImplAbi,
       address: contract,
       functionName: "buyTokenQuoteWithRewards",
