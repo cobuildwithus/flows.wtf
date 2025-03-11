@@ -16,7 +16,14 @@ async function handleItemSubmitted(params: {
 
   const { _submitter, _data, _itemID, _evidenceGroupID } = event.args
 
-  const flow = await getFlowFromTcr(context.db, tcr)
+  const [flow, challengePeriodDuration] = await Promise.all([
+    getFlowFromTcr(context.db, tcr),
+    context.client.readContract({
+      address: getAddress(tcr),
+      abi: context.contracts.FlowTcr.abi,
+      functionName: "challengePeriodDuration",
+    }),
+  ])
 
   const [recipient, metadata, recipientType] = decodeAbiParameters(
     [
@@ -36,12 +43,6 @@ async function handleItemSubmitted(params: {
     ],
     _data
   )
-
-  const challengePeriodDuration = await context.client.readContract({
-    address: getAddress(tcr),
-    abi: context.contracts.FlowTcr.abi,
-    functionName: "challengePeriodDuration",
-  })
 
   await context.db.insert(grants).values({
     id: _itemID,
