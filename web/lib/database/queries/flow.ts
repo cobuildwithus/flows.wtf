@@ -5,7 +5,7 @@ import { cache } from "react"
 
 export const getFlowWithGrants = cache(async (flowId: string) => {
   return await database.grant.findFirstOrThrow({
-    where: { id: flowId, isActive: true },
+    where: { id: flowId },
     include: { subgrants: true, derivedData: true },
     ...getCacheStrategy(120),
   })
@@ -13,7 +13,7 @@ export const getFlowWithGrants = cache(async (flowId: string) => {
 
 export const getFlow = cache(async (flowId: string) => {
   return await database.grant.findFirstOrThrow({
-    where: { id: flowId, isFlow: true, isActive: true },
+    where: { id: flowId, isFlow: true },
     ...getCacheStrategy(120),
   })
 })

@@ -20,11 +20,11 @@ export default async function FlowPage(props: Props) {
 
   const [flow, subgrants] = await Promise.all([
     database.grant.findFirstOrThrow({
-      where: { id: flowId, isActive: true },
+      where: { id: flowId },
       ...getCacheStrategy(1200),
     }),
     database.grant.findMany({
-      where: { flowId, isActive: true },
+      where: { flowId },
       include: {
         derivedData: { select: { lastBuilderUpdate: true, overallGrade: true, title: true } },
       },

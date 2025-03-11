@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
-import { FlowWithGrants } from "@/lib/database/queries/flow"
+import type { FlowWithGrants } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { cn, getEthAddress, getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
@@ -38,6 +38,11 @@ export const FlowHeader = (props: Props) => {
             {flow.status === Status.ClearingRequested && (
               <Link href={`/flow/${flow.id}/about`}>
                 <Badge variant="warning">Challenged</Badge>
+              </Link>
+            )}
+            {flow.status === Status.Absent && (
+              <Link href={`/flow/${flow.id}/about`}>
+                <Badge variant="warning">Removed</Badge>
               </Link>
             )}
           </div>
