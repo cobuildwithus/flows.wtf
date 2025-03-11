@@ -3,6 +3,7 @@ import { decodeAbiParameters, getAddress } from "viem"
 import { RecipientType, Status } from "../enums"
 import { addApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants, tcrToGrantId } from "ponder:schema"
+import { isBlockRecent } from "../utils"
 
 ponder.on("FlowTcr:ItemSubmitted", handleItemSubmitted)
 ponder.on("FlowTcrChildren:ItemSubmitted", handleItemSubmitted)
@@ -13,6 +14,7 @@ async function handleItemSubmitted(params: {
 }) {
   const { event, context } = params
   const tcr = event.log.address.toLowerCase()
+  const isRecent = isBlockRecent(Number(event.block.timestamp))
 
   const { _submitter, _data, _itemID, _evidenceGroupID } = event.args
 
@@ -95,7 +97,9 @@ async function handleItemSubmitted(params: {
 
   if (!grant) throw new Error("Grant not found")
 
-  await addApplicationEmbedding(grant, flow.id)
+  if (isRecent) {
+    await addApplicationEmbedding(grant, flow.id)
+  }
 }
 
 async function getFlowFromTcr(db: Context["db"], tcr: string) {

@@ -1,7 +1,7 @@
-import { Draft } from "@prisma/flows"
+import type { Draft } from "@prisma/flows"
 import { cleanTextForEmbedding } from "./utils"
 import { getContentHash } from "./utils"
-import { EmbeddingTag, EmbeddingType, JobBody } from "../types/job"
+import { EmbeddingTag, type EmbeddingType, type JobBody } from "../types/job"
 import { deleteEmbeddingRequest, postToEmbeddingsQueueRequest } from "./queue"
 
 export async function addDraftEmbedding(draft: Draft, parentId: string) {

@@ -1,11 +1,11 @@
 import { postToEmbeddingsQueueRequest } from "../../queue/queue"
-import { EmbeddingTag, JobBody } from "../../queue/job"
+import { EmbeddingTag, type JobBody } from "../../queue/job"
 import { RecipientType } from "../../enums"
 import { getNonzeroLowercasedAddresses } from "../../queue/helpers"
 import { deleteEmbeddingRequest } from "../../queue/queue"
 import { getContentHash } from "../../hash"
 import { cleanTextForEmbedding } from "../../clean"
-import { Grant } from "../../../types"
+import type { Grant } from "../../../types"
 
 export async function addGrantEmbedding(
   grant: Grant,

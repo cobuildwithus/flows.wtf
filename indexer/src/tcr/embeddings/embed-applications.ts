@@ -1,11 +1,10 @@
-import { schema } from "ponder:registry"
 import { postToEmbeddingsQueueRequest } from "../../queue/queue"
-import { EmbeddingTag, JobBody } from "../../queue/job"
+import { EmbeddingTag, type JobBody } from "../../queue/job"
 import { getNonzeroLowercasedAddresses } from "../../queue/helpers"
 import { deleteEmbeddingRequest } from "../../queue/queue"
 import { getContentHash } from "../../hash"
 import { cleanTextForEmbedding } from "../../clean"
-import { Grant } from "../../../types"
+import type { Grant } from "../../../types"
 
 export async function addApplicationEmbedding(grant: Grant, parentId: string) {
   const users = getNonzeroLowercasedAddresses([grant.recipient])
