@@ -1,9 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import { getMonthlyIncomingFlowRate } from "./lib/monthly-flow"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
-import { eq, not } from "ponder"
-import { and } from "ponder"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
@@ -30,11 +27,11 @@ async function handleVoteCast(params: {
   // Mark old votes for this token as stale
   const oldVotes = await getOldVotes(context.db, contract, tokenId, blockNumber)
 
-  oldVotes.forEach((oldVote) => {
+  for (const oldVote of oldVotes) {
     const existingVotes = affectedGrantsIds.get(oldVote.recipientId) ?? BigInt(0)
     affectedGrantsIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.votesCount))
     hasPreviousVotes = true
-  })
+  }
 
   const voteId = `${contract}_${recipientId}_${voter}_${blockNumber}_${tokenId}`
 
@@ -63,15 +60,8 @@ async function handleVoteCast(params: {
     }))
 
   for (const [affectedGrantId, votesDelta] of affectedGrantsIds) {
-    const monthlyIncomingFlowRate = await getGrantBudget(
-      context as Context,
-      contract,
-      affectedGrantId
-    )
-
     await context.db.update(grants, { id: affectedGrantId }).set((row) => ({
       votesCount: (BigInt(row.votesCount) + votesDelta).toString(),
-      monthlyIncomingFlowRate,
     }))
   }
 
@@ -80,14 +70,6 @@ async function handleVoteCast(params: {
   if (!hasPreviousVotes) {
     await handleIncomingFlowRates(context.db, contract)
   }
-}
-
-async function getGrantBudget(context: Context, parentContract: `0x${string}`, id: string) {
-  const grant = await context.db.find(grants, { id })
-
-  if (!grant) throw new Error(`Could not find grant ${id}`)
-
-  return getMonthlyIncomingFlowRate(context, parentContract, grant.recipient)
 }
 
 async function getOldVotes(
