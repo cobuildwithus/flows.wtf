@@ -13,7 +13,7 @@ import { useFlowForToken } from "@/lib/tcr/use-flow-for-token"
 import { getIpfsUrl } from "@/lib/utils"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { useRef } from "react"
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
 import { CurrencyDisplay } from "./currency-display"
 import { TokenList } from "./token-list"
@@ -42,7 +42,7 @@ export function TokenSwitcherDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button ref={ref} className="flex flex-shrink-0">
+        <button type="button" ref={ref} className="flex flex-shrink-0">
           <CurrencyDisplay>
             {flow?.image && <TokenLogo src={getIpfsUrl(flow?.image || "")} alt="TCR token" />}
             <span className="px-1">

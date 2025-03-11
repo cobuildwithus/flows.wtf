@@ -57,7 +57,7 @@ async function handleMemberUnitsUpdated(params: {
 
   if (shouldUpdateBaseline && newUnits === 0n) {
     // we assume that if the new units are 0 in the baseline pool, the grant is being removed
-    await handleRemovedGrant(context.db, grant.recipient, parentGrant.recipient)
+    await handleRemovedGrant(context.db, grant.recipient, parentGrant.recipient, grant.isFlow)
   }
 }
 
@@ -110,7 +110,12 @@ async function getGrant(db: Context["db"], recipient: string, parentContract: st
   return grant
 }
 
-async function handleRemovedGrant(db: Context["db"], recipient: string, parentContract: string) {
+async function handleRemovedGrant(
+  db: Context["db"],
+  recipient: string,
+  parentContract: string,
+  isFlow: boolean
+) {
   const grant = await getGrant(db, recipient, parentContract)
 
   await Promise.all([
@@ -120,5 +125,10 @@ async function handleRemovedGrant(db: Context["db"], recipient: string, parentCo
     db.update(parentFlowToChildren, { parentFlowContract: parentContract }).set((row) => ({
       childGrantIds: row.childGrantIds.filter((id) => id !== grant.id),
     })),
+    isFlow
+      ? db.update(grants, { id: grant.id }).set({
+          monthlyOutgoingFlowRate: "0",
+        })
+      : Promise.resolve(),
   ])
 }

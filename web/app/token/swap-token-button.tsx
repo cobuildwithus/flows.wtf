@@ -1,6 +1,6 @@
 "use client"
 
-import { ButtonProps } from "@/components/ui/button"
+import type { ButtonProps } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import Link from "next/link"
 import { useRef } from "react"
 import { SwapTokenBox } from "./swap-token-box"
@@ -46,6 +46,7 @@ export function SwapTokenButton(props: Props) {
 
   const { address } = useAccount()
   const { balances } = useERC20Balances([getEthAddress(flow.erc20)], address)
+  const isRemoved = flow.isRemoved
 
   const text =
     props.text || (balances?.[0] ? (!flow.isTopLevel ? "Buy TCR" : "Buy FLOWS") : "Become curator")
@@ -63,69 +64,99 @@ export function SwapTokenButton(props: Props) {
             Buy and sell {flow.title} tokens
           </DialogTitle>
         </DialogHeader>
-        <ul className="my-4 space-y-6 text-sm">
-          {extraInfo && (
-            <li className="flex items-start space-x-4">
-              <>
+        {isRemoved ? (
+          <RemovedFlowInfo flow={flow} />
+        ) : (
+          <ul className="my-4 space-y-6 text-sm">
+            {extraInfo && (
+              <li className="flex items-start space-x-4">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
                   1
                 </span>
-                {extraInfo === "curator" && (
-                  <p>
-                    Buy TCR tokens to{" "}
-                    <Link
-                      href="/curate"
-                      className="text-primary underline transition-colors hover:text-primary/80"
-                    >
-                      become a curator
-                    </Link>{" "}
-                    and earn a stream of USDC for verifying impact of grantees.
-                  </p>
-                )}
+                {extraInfo === "curator" && <CuratorInfo />}
 
                 {extraInfo === "challenge" && (
-                  <p>
-                    Buy {Number(defaultTokenAmount) / 1e18} TCR tokens to challenge a grant. If your
-                    challenge is successful, you will win the applicant&apos;s bond and be repaid
-                    your challenge fee.
-                  </p>
+                  <ChallengeInfo defaultTokenAmount={defaultTokenAmount} />
                 )}
-              </>
-            </li>
-          )}
-          <li className="flex items-start space-x-4">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
-              {!extraInfo ? "1" : "2"}
-            </span>
-            <p>
-              Prices change based on supply and demand according to an S shaped{" "}
-              <a
-                href="https://github.com/rocketman-21/flow-contracts/blob/main/src/token-issuance/BondingSCurve.sol"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline transition-colors hover:text-primary/80"
-              >
-                bonding curve
-              </a>
-              . View a visualization{" "}
-              <a
-                href={
-                  flow.isTopLevel
-                    ? "https://www.desmos.com/calculator/qd8zchfxvu"
-                    : "https://www.desmos.com/calculator/hizmijfgno"
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline transition-colors hover:text-primary/80"
-              >
-                here
-              </a>
-              .
-            </p>
-          </li>
-        </ul>
+              </li>
+            )}
+            <PriceInfo extraInfo={extraInfo} flow={flow} />
+          </ul>
+        )}
+
         <SwapTokenBox onSuccess={onSuccess} flow={flow} defaultTokenAmount={defaultTokenAmount} />
       </DialogContent>
     </Dialog>
   )
 }
+
+const CuratorInfo = () => (
+  <p>
+    Buy TCR tokens to{" "}
+    <Link href="/curate" className="text-primary underline transition-colors hover:text-primary/80">
+      become a curator
+    </Link>{" "}
+    and earn a stream of USDC for verifying impact of grantees.
+  </p>
+)
+
+const ChallengeInfo = ({ defaultTokenAmount }: { defaultTokenAmount: bigint }) => (
+  <p>
+    Buy {Number(defaultTokenAmount) / 1e18} TCR tokens to challenge a grant. If your challenge is
+    successful, you will win the applicant&apos;s bond and be repaid your challenge fee.
+  </p>
+)
+
+const PriceInfo = ({
+  extraInfo,
+  flow,
+}: {
+  extraInfo: "curator" | "challenge" | undefined
+  flow: Grant
+}) => (
+  <li className="flex items-start space-x-4">
+    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
+      {!extraInfo ? "1" : "2"}
+    </span>
+    <p>
+      Prices change based on supply and demand according to an S shaped{" "}
+      <a
+        href="https://github.com/rocketman-21/flow-contracts/blob/main/src/token-issuance/BondingSCurve.sol"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary underline transition-colors hover:text-primary/80"
+      >
+        bonding curve
+      </a>
+      . View a visualization{" "}
+      <a
+        href={
+          flow.isTopLevel
+            ? "https://www.desmos.com/calculator/qd8zchfxvu"
+            : "https://www.desmos.com/calculator/hizmijfgno"
+        }
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary underline transition-colors hover:text-primary/80"
+      >
+        here
+      </a>
+      .
+    </p>
+  </li>
+)
+
+const RemovedFlowInfo = ({ flow }: { flow: Grant }) => (
+  <div className="my-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-700 dark:border-yellow-900/50 dark:bg-yellow-900/20">
+    Warning: This flow has been removed.{" "}
+    <a
+      href={`https://basescan.org/address/${flow.tokenEmitter}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline hover:text-yellow-800"
+    >
+      Trading tokens
+    </a>{" "}
+    for this flow is not advised. You can sell your tokens below.
+  </div>
+)

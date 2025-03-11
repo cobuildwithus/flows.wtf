@@ -29,6 +29,7 @@ export const FlowSubmenu = async (props: Props) => {
 
   const approvedCount = flow.subgrants.filter(isGrantApproved).length
   const awaitingCount = flow.subgrants.filter(isGrantAwaiting).length
+  const isRemoved = flow.isRemoved
 
   return (
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
@@ -90,7 +91,7 @@ export const FlowSubmenu = async (props: Props) => {
             defaultTokenAmount={BigInt(1e18)}
           />
           {isApproved && approvedCount > 0 && <VotingToggle />}
-          {(isDrafts || isApplications || (isApproved && approvedCount === 0)) && (
+          {(isDrafts || isApplications || (isApproved && approvedCount === 0)) && !isRemoved && (
             <Link href={`/apply/${flowId}`}>
               <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for a grant"}</Button>
             </Link>

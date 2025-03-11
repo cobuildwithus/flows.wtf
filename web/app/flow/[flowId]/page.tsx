@@ -24,7 +24,7 @@ export default async function FlowPage(props: Props) {
       ...getCacheStrategy(1200),
     }),
     database.grant.findMany({
-      where: { flowId },
+      where: { flowId, isActive: true },
       include: {
         derivedData: { select: { lastBuilderUpdate: true, overallGrade: true, title: true } },
       },

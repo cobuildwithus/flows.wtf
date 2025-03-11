@@ -1,4 +1,4 @@
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
 import { useFlowsForParent } from "./use-flows-for-parent"
 import { useERC20Tokens } from "./use-erc20s"

@@ -1,5 +1,4 @@
-import { and, eq } from "ponder"
-import { type Context } from "ponder:registry"
+import type { Context } from "ponder:registry"
 import { flowContractToGrantId, grants, parentFlowToChildren } from "ponder:schema"
 
 async function getRelevantGrants(db: Context["db"], parentContract: string) {
@@ -71,7 +70,7 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
     const monthlyIncomingBaselineFlowRate = baselineFlowRate * secondsPerMonth
     const monthlyIncomingBonusFlowRate = bonusFlowRate * secondsPerMonth
 
-    if (isNaN(monthlyIncomingFlowRate)) {
+    if (Number.isNaN(monthlyIncomingFlowRate)) {
       console.error(totalSiblingFlowRate, baselineFlowRate, bonusFlowRate)
       throw new Error(`Invalid monthly incoming flow rate: ${monthlyIncomingFlowRate}`)
     }

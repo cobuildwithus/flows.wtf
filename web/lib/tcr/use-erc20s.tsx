@@ -1,4 +1,4 @@
-import { Address, erc20Abi } from "viem"
+import { type Address, erc20Abi } from "viem"
 import { base } from "viem/chains"
 import { useReadContracts } from "wagmi"
 
