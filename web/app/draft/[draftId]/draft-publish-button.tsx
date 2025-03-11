@@ -154,7 +154,7 @@ export function DraftPublishButton(props: Props) {
             </span>
             <p className="text-muted-foreground">
               For {challengePeriodFormatted}, anyone can challenge your application. You may lose
-              your deposit if the community votes against you.
+              your deposit if your application does not meet the requirements.
             </p>
           </li>
           <li className="flex items-start space-x-4">
