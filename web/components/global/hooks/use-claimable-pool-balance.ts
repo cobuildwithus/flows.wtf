@@ -1,17 +1,17 @@
 "use client"
 
-import useSWR from "swr"
 import type { Address } from "viem"
 import { getClaimablePoolBalance } from "./get-claimable-pool-balance"
+import { useServerFunction } from "@/lib/hooks/use-server-function"
 
 export const useClaimablePoolBalance = (pool: Address | undefined, user: Address | undefined) => {
   const {
     data: balance,
     isLoading,
     mutate: refetch,
-  } = useSWR(pool && user ? ["claimable-pool-balance", pool, user] : null, () =>
-    pool && user ? getClaimablePoolBalance(pool, user) : Promise.resolve(BigInt(0)),
-  )
+  } = useServerFunction(getClaimablePoolBalance, "claimable-pool-balance", [pool, user], {
+    fallbackData: BigInt(0),
+  })
 
   return {
     balance: balance || BigInt(0),

@@ -3,9 +3,15 @@
 import { superfluidPoolAbi } from "@/lib/abis"
 import { l2Client } from "@/lib/viem/client"
 import type { Address } from "viem"
-import { base } from "viem/chains"
 
-export async function getClaimablePoolBalance(pool: Address, user: Address) {
+export async function getClaimablePoolBalance(
+  pool: Address | undefined,
+  user: Address | undefined,
+) {
+  if (!pool || !user) {
+    return BigInt(0)
+  }
+
   try {
     const balance = await l2Client.readContract({
       address: pool,
