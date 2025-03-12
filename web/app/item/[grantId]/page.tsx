@@ -34,7 +34,6 @@ import { GrantChat } from "./components/grant-chat"
 import { ImpactDialog } from "./components/grades-dialog"
 import { ImpactChain } from "./impact/impact-chain"
 import { Badge } from "@/components/ui/badge"
-import { FlowRemovedCard } from "./components/flow-removed-card"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -171,9 +170,7 @@ export default async function GrantPage(props: Props) {
               <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
                 <Stat label="Status">
                   <span className="lg:text-2xl">
-                    {grant.status === Status.ClearingRequested ||
-                    grant.status === Status.Absent ||
-                    !grant.isActive ? (
+                    {grant.status === Status.ClearingRequested || grant.status === Status.Absent ? (
                       <Badge variant="warning" className="text-lg">
                         {grant.status === Status.ClearingRequested ? "Challenged" : "Removed"}
                       </Badge>
@@ -188,8 +185,7 @@ export default async function GrantPage(props: Props) {
                 <DialogTitle>Grant Curation</DialogTitle>
                 <Suspense>
                   <div className={cn({ "divide-y divide-border [&>*]:py-5": grant.isDisputed })}>
-                    {grant.isActive && <CurationStatus grant={grant} flow={flow} />}
-                    {!grant.isActive && !grant.isRemoved && <FlowRemovedCard flow={flow} />}
+                    <CurationStatus grant={grant} flow={flow} />
                     {grant.isDisputed && <CurationVote grant={grant} flow={flow} />}
                   </div>
                 </Suspense>

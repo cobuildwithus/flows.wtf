@@ -105,37 +105,12 @@ async function handleRecipientRemoved(params: {
     }),
   ])
 
-  const isFlow = removedGrant.isFlow
-
   await Promise.all([
     context.db.update(grants, { id: parentFlow.id }).set({
       activeRecipientCount: parentFlow.activeRecipientCount - 1,
     }),
     isRecent ? removeGrantEmbedding(removedGrant) : Promise.resolve(),
-    isFlow
-      ? markChildrenAsInactive(context.db, removedGrant.recipient, isRecent)
-      : Promise.resolve(),
   ])
-}
-
-async function markChildrenAsInactive(db: Context["db"], parentFlow: string, isRecent: boolean) {
-  const children = await db.find(parentFlowToChildren, { parentFlowContract: parentFlow })
-  if (!children || !children.childGrantIds || children.childGrantIds.length === 0) return
-
-  const childGrants = await Promise.all(
-    children.childGrantIds.map((childGrantId) => db.find(grants, { id: childGrantId }))
-  )
-
-  await Promise.all(
-    childGrants.map(async (childGrant) => {
-      if (!childGrant) return
-      await db.update(grants, { id: childGrant.id }).set({
-        isActive: false,
-      })
-
-      await removeGrantEmbedding(childGrant)
-    })
-  )
 }
 
 async function getParentFlow(db: Context["db"], parentFlow: string) {
