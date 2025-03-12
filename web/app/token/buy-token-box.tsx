@@ -96,7 +96,7 @@ export function BuyTokenBox({
             <TokenBalanceAndUSDValue
               balance={tokenBalance}
               ethPrice={ethPrice || 0}
-              ethAmount={BigInt(rawCost - addedSurgeCost)}
+              ethAmount={BigInt(rawCost) - BigInt(addedSurgeCost)}
             />
           </div>
         </ConversionBox>
