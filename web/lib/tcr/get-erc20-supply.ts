@@ -3,7 +3,11 @@
 import { type Address, erc20Abi } from "viem"
 import { l2Client } from "@/lib/viem/client"
 
-export async function getERC20Supply(contract: Address) {
+export async function getERC20Supply(contract: Address | undefined) {
+  if (!contract) {
+    return 0
+  }
+
   try {
     const totalSupply = await l2Client.readContract({
       abi: erc20Abi,
