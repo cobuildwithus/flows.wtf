@@ -1,9 +1,8 @@
 "use server"
 
 import { getUser } from "@/lib/auth/user"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
-import type { Grant } from "@prisma/flows"
 
 export async function countUserActiveGrants() {
   const user = await getUser()
@@ -14,7 +13,7 @@ export async function countUserActiveGrants() {
       recipient: user.address,
       isFlow: false,
       status: { in: [Status.ClearingRequested, Status.Registered, Status.RegistrationRequested] },
+      monthlyIncomingBaselineFlowRate: { not: "0" },
     },
-    ...getCacheStrategy(360),
   })
 }

@@ -116,6 +116,7 @@ async function getExistingGrantsCount() {
     by: ["recipient"],
     where: {
       isActive: true,
+      monthlyIncomingBaselineFlowRate: { not: "0" },
     },
     _count: {
       recipient: true,

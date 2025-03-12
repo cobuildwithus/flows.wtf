@@ -83,7 +83,6 @@ export async function StatusDisputed(props: Props) {
   }
 
   async function Challenger() {
-    console.log({ dispute })
     return (
       <li>
         {grant.status === Status.ClearingRequested && grant.isDisputed && (

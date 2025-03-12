@@ -50,7 +50,11 @@ export default async function DraftPage(props: Props) {
   })
 
   const existingGrants = await database.grant.count({
-    where: { recipient: draft.users[0], isActive: true },
+    where: {
+      recipient: draft.users[0],
+      isActive: true,
+      monthlyIncomingBaselineFlowRate: { not: "0" },
+    },
   })
 
   const { title, flow, isOnchain, createdAt, users, isFlow, description } = draft
