@@ -2,7 +2,7 @@
 
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { l2Client } from "@/lib/viem/client"
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
 
 export async function getTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
@@ -15,14 +15,14 @@ export async function getTokenQuote(contract: Address, amount: bigint, chainId =
     })
 
     return {
-      totalCost: data[0] || BigInt(0),
-      addedSurgeCost: data[1] || BigInt(0),
+      totalCost: Number(data[0]) || 0,
+      addedSurgeCost: Number(data[1]) || 0,
       isError: false,
     }
   } catch (error) {
     return {
-      totalCost: BigInt(0),
-      addedSurgeCost: BigInt(0),
+      totalCost: 0,
+      addedSurgeCost: 0,
       isError: true,
       error,
     }
@@ -43,14 +43,14 @@ export async function getTokenQuoteWithRewards(
     })
 
     return {
-      totalCost: data[0] || BigInt(0),
-      addedSurgeCost: data[1] || BigInt(0),
+      totalCost: Number(data[0]) || 0,
+      addedSurgeCost: Number(data[1]) || 0,
       isError: false,
     }
   } catch (error) {
     return {
-      totalCost: BigInt(0),
-      addedSurgeCost: BigInt(0),
+      totalCost: 0,
+      addedSurgeCost: 0,
       isError: true,
       error,
     }

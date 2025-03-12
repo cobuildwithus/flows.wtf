@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 import { useERC20Supply } from "@/lib/tcr/use-erc20-supply"
 import { useSellTokenQuote } from "@/app/token/hooks/useSellTokenQuote"
 import { base } from "viem/chains"
-import { TokenHolder } from "@prisma/flows"
+import type { TokenHolder } from "@prisma/flows"
 import { formatUSDValue } from "@/app/token/hooks/useETHPrice"
 import { formatEther } from "viem"
 
@@ -50,15 +50,15 @@ const TcrTokenBalanceWithTooltip = ({
   ethPrice,
   holderInfo,
 }: {
-  totalSupply: bigint
+  totalSupply: number
   monthlyRewardPoolRate: string
-  worthInETH: bigint
+  worthInETH: number
   ethPrice: number
   holderInfo: TokenHolder
 }) => {
   const { amount, costBasis, totalBought, totalSold, totalSaleProceeds } = holderInfo
   const balance = formatEther(BigInt(amount))
-  const balanceUSD = formatUSDValue(ethPrice, worthInETH)
+  const balanceUSD = formatUSDValue(ethPrice, BigInt(worthInETH))
   const hasSold = Number(totalSold) > 0
   return (
     <Tooltip>
@@ -116,7 +116,7 @@ const TcrTokenBalanceWithTooltip = ({
   )
 }
 
-function formatPercentage(balance: string, totalSupply: bigint) {
+function formatPercentage(balance: string, totalSupply: number) {
   const percentage = (Number(balance) / (Number(totalSupply) / 10 ** 18)) * 100
   const decimalPlaces = percentage < 1 ? 4 : percentage < 10 ? 1 : 0
   return percentage.toFixed(decimalPlaces)

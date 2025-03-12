@@ -1,22 +1,18 @@
 "use client"
 
-import { tokenEmitterImplAbi } from "@/lib/abis"
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
-import { useReadContract } from "wagmi"
+import useSWR from "swr"
+import { getSellTokenQuote } from "./sell-token-quotes"
 
 export function useSellTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
-  const { data, isError, isLoading } = useReadContract({
-    abi: tokenEmitterImplAbi,
-    address: contract,
-    chainId,
-    functionName: "sellTokenQuote",
-    args: [amount],
-  })
+  const { data, error, isLoading } = useSWR(["sellTokenQuote", contract, amount, chainId], () =>
+    getSellTokenQuote(contract, amount, chainId),
+  )
 
   return {
-    payment: data || BigInt(0),
-    isError,
+    payment: data?.payment || 0,
+    isError: error || data?.isError || false,
     isLoading,
   }
 }

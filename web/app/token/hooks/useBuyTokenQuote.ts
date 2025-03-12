@@ -1,9 +1,9 @@
 "use client"
 
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
 import useSWR from "swr"
-import { getTokenQuote, getTokenQuoteWithRewards } from "./get-token-quotes"
+import { getTokenQuote, getTokenQuoteWithRewards } from "./buy-token-quotes"
 
 export function useBuyTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
   const { data, error, isLoading } = useSWR(["buyTokenQuote", contract, amount, chainId], () =>

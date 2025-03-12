@@ -2,7 +2,7 @@
 
 import { TcrTokenBalance } from "@/components/ui/tcr-token-balance"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
-import { Grant, TokenHolder } from "@prisma/flows"
+import type { Grant, TokenHolder } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 import { getAddress } from "viem"
