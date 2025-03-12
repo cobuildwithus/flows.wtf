@@ -11,8 +11,8 @@ export function useBuyTokenQuote(contract: Address, amount: bigint, chainId = ba
   )
 
   return {
-    totalCost: data?.totalCost || BigInt(0),
-    addedSurgeCost: data?.addedSurgeCost || BigInt(0),
+    totalCost: data?.totalCost || 0,
+    addedSurgeCost: data?.addedSurgeCost || 0,
     isError: error || data?.isError || false,
     isLoading,
   }
@@ -25,8 +25,8 @@ export function useBuyTokenQuoteWithRewards(contract: Address, amount: bigint, c
   )
 
   return {
-    totalCost: data?.totalCost || BigInt(0),
-    addedSurgeCost: data?.addedSurgeCost || BigInt(0),
+    totalCost: data?.totalCost || 0,
+    addedSurgeCost: data?.addedSurgeCost || 0,
     isError: error || data?.isError || false,
     isLoading,
     error,

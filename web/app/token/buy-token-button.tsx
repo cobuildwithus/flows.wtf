@@ -4,9 +4,9 @@ import { tokenEmitterImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { useWaitForTransactions } from "@/lib/wagmi/use-wait-for-transactions"
-import { ComponentProps, PropsWithChildren } from "react"
+import type { ComponentProps, PropsWithChildren } from "react"
 import { toast } from "sonner"
-import { Address, zeroAddress } from "viem"
+import { type Address, zeroAddress } from "viem"
 import { base } from "viem/chains"
 import { useAccount, useBalance } from "wagmi"
 import { useBuyTokenRelay } from "./hooks/use-buy-token-relay"
@@ -16,7 +16,7 @@ const toChainId = base.id
 interface Props extends ComponentProps<typeof Button> {
   onSuccess: (hash: string) => void
   tokenEmitter: Address
-  costWithRewardsFee: bigint
+  costWithRewardsFee: number
   tokenAmountBigInt: bigint
   isReady: boolean
   chainId: number
