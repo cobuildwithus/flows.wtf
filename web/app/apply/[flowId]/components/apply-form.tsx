@@ -30,6 +30,7 @@ interface Props {
 export function ApplyForm(props: Props) {
   const { flow, isFlow, template, userActiveGrants } = props
   const { isConnected, address } = useAccount()
+  const { isRemoved } = flow
 
   const router = useRouter()
   const [isGuest, setIsGuest] = useState(true)
@@ -100,7 +101,17 @@ export function ApplyForm(props: Props) {
         </Alert>
       )}
 
-      {!isFlow && !meetsMinimumSalary(flow) && (
+      {isRemoved && (
+        <Alert variant="warning">
+          <AlertTitle className="text-base">This flow is not accepting new grants</AlertTitle>
+          <AlertDescription>
+            &quot;{flow.title}&quot; is no longer accepting new grants as it has been removed by the
+            community.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {!isRemoved && !isFlow && !meetsMinimumSalary(flow) && (
         <Alert variant="warning">
           <AlertTitle className="text-base">This flow is not accepting new grants</AlertTitle>
           <AlertDescription>
@@ -167,7 +178,7 @@ export function ApplyForm(props: Props) {
           </div>
         </div>
 
-        <SubmitButton disabled={recipientExists || isGuest || isMaxGrantsReached} />
+        <SubmitButton disabled={recipientExists || isGuest || isMaxGrantsReached || isRemoved} />
       </div>
     </form>
   )

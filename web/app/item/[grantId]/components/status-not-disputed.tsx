@@ -6,7 +6,7 @@ import { DateTime } from "@/components/ui/date-time"
 import database from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import dynamic from "next/dynamic"
 
 const GrantRemoveRequestButton = dynamic(() =>
