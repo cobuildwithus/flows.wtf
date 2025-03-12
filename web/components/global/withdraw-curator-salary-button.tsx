@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@/components/ui/button"
+import { Button, type ButtonProps } from "@/components/ui/button"
 import { Currency } from "@/components/ui/currency"
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
