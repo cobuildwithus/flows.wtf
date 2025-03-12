@@ -8,12 +8,14 @@ import { useClaimablePoolBalance } from "./hooks/use-claimable-pool-balance"
 
 export const WithdrawCuratorSalaryButton = ({
   pool,
+  user,
   size = "xs",
 }: {
   pool: `0x${string}`
+  user: `0x${string}`
   size?: ButtonProps["size"]
 }) => {
-  const { balance, isLoading, refetch } = useClaimablePoolBalance(pool)
+  const { balance, isLoading, refetch } = useClaimablePoolBalance(pool, user)
 
   const { withdraw } = useBulkPoolWithdrawMacro([pool], () => refetch())
 

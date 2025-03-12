@@ -59,7 +59,10 @@ export function TokenRow(props: Props) {
       />
 
       <div className="pr-2 text-right text-sm font-medium">
-        <WithdrawCuratorSalaryButton pool={getEthAddress(flow.managerRewardSuperfluidPool)} />
+        <WithdrawCuratorSalaryButton
+          user={getEthAddress(holderInfo.holder)}
+          pool={getEthAddress(flow.managerRewardSuperfluidPool)}
+        />
       </div>
     </div>
   )
