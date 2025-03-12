@@ -12,5 +12,5 @@ export function TcrInUsd(props: Props) {
 
   const { totalCost } = useBuyTokenQuoteWithRewards(getEthAddress(tokenEmitter), amount)
 
-  return <EthInUsd amount={totalCost} />
+  return <EthInUsd amount={BigInt(totalCost)} />
 }

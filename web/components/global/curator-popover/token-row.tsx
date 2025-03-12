@@ -2,7 +2,7 @@
 
 import { TcrTokenBalance } from "@/components/ui/tcr-token-balance"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
-import { Grant, TokenHolder } from "@prisma/flows"
+import type { Grant, TokenHolder } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 import { getAddress } from "viem"
@@ -59,7 +59,10 @@ export function TokenRow(props: Props) {
       />
 
       <div className="pr-2 text-right text-sm font-medium">
-        <WithdrawCuratorSalaryButton pool={getEthAddress(flow.managerRewardSuperfluidPool)} />
+        <WithdrawCuratorSalaryButton
+          user={getEthAddress(holderInfo.holder)}
+          pool={getEthAddress(flow.managerRewardSuperfluidPool)}
+        />
       </div>
     </div>
   )

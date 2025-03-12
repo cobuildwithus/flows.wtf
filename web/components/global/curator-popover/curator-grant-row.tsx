@@ -14,7 +14,7 @@ import { DownloadIcon } from "@radix-ui/react-icons"
 import Image from "next/image"
 import Link from "next/link"
 import { formatEther } from "viem"
-import { ActiveCuratorGrant } from "./hooks/get-user-tcr-tokens"
+import type { ActiveCuratorGrant } from "./hooks/get-user-tcr-tokens"
 import { useWithdrawVoterRewards } from "./hooks/use-withdraw-voter-rewards"
 import { Status } from "@/lib/enums"
 
@@ -111,7 +111,7 @@ export function ActiveCuratorGrantRow({
                 <TooltipTrigger className="flex items-center">
                   <Button
                     onClick={() => {
-                      withdrawRewards(BigInt(disputes[0].disputeId), BigInt(0))
+                      withdrawRewards()
                     }}
                     size="xs"
                     variant="ghost"

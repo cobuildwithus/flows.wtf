@@ -3,9 +3,8 @@
 import { BuyTokenButton } from "@/app/token/buy-token-button"
 import { useEthBalances } from "@/app/token/hooks/use-eth-balances"
 import { useBuyTokenQuoteWithRewards } from "@/app/token/hooks/useBuyTokenQuote"
-import { EthInUsd } from "@/components/global/eth-in-usd"
 import { getEthAddress } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { base } from "viem/chains"
 
 interface Props {
@@ -29,7 +28,7 @@ export function BuyApplicationFee(props: Props) {
 
   return (
     <BuyTokenButton
-      chainId={preferredFor(totalCost).chainId}
+      chainId={preferredFor(BigInt(totalCost)).chainId}
       tokenEmitter={getEthAddress(flow.tokenEmitter)}
       costWithRewardsFee={totalCost}
       tokenAmountBigInt={amount}

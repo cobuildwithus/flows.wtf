@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@/components/ui/button"
+import { Button, type ButtonProps } from "@/components/ui/button"
 import { Currency } from "@/components/ui/currency"
 import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -8,12 +8,14 @@ import { useClaimablePoolBalance } from "./hooks/use-claimable-pool-balance"
 
 export const WithdrawCuratorSalaryButton = ({
   pool,
+  user,
   size = "xs",
 }: {
   pool: `0x${string}`
+  user: `0x${string}`
   size?: ButtonProps["size"]
 }) => {
-  const { balance, isLoading, refetch } = useClaimablePoolBalance(pool)
+  const { balance, isLoading, refetch } = useClaimablePoolBalance(pool, user)
 
   const { withdraw } = useBulkPoolWithdrawMacro([pool], () => refetch())
 

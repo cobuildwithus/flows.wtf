@@ -1,25 +1,20 @@
-import { superfluidPoolAbi } from "@/lib/abis"
-import { useAccount, useReadContract } from "wagmi"
-import { base } from "viem/chains"
+"use client"
 
-export const useClaimablePoolBalance = (pool: `0x${string}`) => {
-  const { address } = useAccount()
-  const chainId = base.id
+import type { Address } from "viem"
+import { getClaimablePoolBalance } from "./get-claimable-pool-balance"
+import { useServerFunction } from "@/lib/hooks/use-server-function"
 
+export const useClaimablePoolBalance = (pool: Address | undefined, user: Address | undefined) => {
   const {
     data: balance,
     isLoading,
-    refetch,
-  } = useReadContract({
-    address: pool,
-    abi: superfluidPoolAbi,
-    chainId,
-    functionName: "getClaimableNow",
-    args: address ? [address] : undefined,
+    mutate: refetch,
+  } = useServerFunction(getClaimablePoolBalance, "claimable-pool-balance", [pool, user], {
+    fallbackData: BigInt(0),
   })
 
   return {
-    balance: balance?.length ? balance[0] : BigInt(0),
+    balance: balance || BigInt(0),
     isLoading,
     refetch,
   }
