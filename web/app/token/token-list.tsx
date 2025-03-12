@@ -1,7 +1,7 @@
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
 import { TokenLogo } from "./token-logo"
 import { useAccount } from "wagmi"
-import { Address, formatEther } from "viem"
+import { type Address, formatEther } from "viem"
 import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
 import { formatUSDValue, useETHPrice } from "./hooks/useETHPrice"
 import { useSellTokenQuote } from "./hooks/use-sell-token-quote"
@@ -45,7 +45,7 @@ export const TokenList = ({ tokens, switchToken }: TokenListProps) => {
     <ul>
       {tokensWithBalances.map(({ token, balance }, index) => (
         <TokenListItem
-          key={index}
+          key={token.address}
           token={token}
           onClick={() =>
             switchToken(
@@ -91,7 +91,7 @@ const TokenListItem = ({
         </div>
         {balance && (
           <div className="flex flex-col items-end justify-between">
-            <span className="text-xl">{formatUSDValue(ethPrice || 0, payment)}</span>
+            <span className="text-xl">{formatUSDValue(ethPrice || 0, BigInt(payment))}</span>
             <span className="text-sm opacity-50">
               {Number(formatEther(balance)).toFixed(Number(formatEther(balance)) % 1 ? 2 : 0)}
             </span>
