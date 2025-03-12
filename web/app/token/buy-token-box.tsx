@@ -96,7 +96,7 @@ export function BuyTokenBox({
             <TokenBalanceAndUSDValue
               balance={tokenBalance}
               ethPrice={ethPrice || 0}
-              ethAmount={rawCost - addedSurgeCost}
+              ethAmount={BigInt(rawCost - addedSurgeCost)}
             />
           </div>
         </ConversionBox>
@@ -117,7 +117,7 @@ export function BuyTokenBox({
             />
           }
           label="Pay"
-          amount={costWithRewardsFee}
+          amount={BigInt(costWithRewardsFee)}
           isLoadingQuote={isLoadingRewardsQuote}
         >
           <TokenBalanceWithWarning

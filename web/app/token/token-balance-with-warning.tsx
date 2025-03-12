@@ -11,16 +11,16 @@ export const TokenBalanceWithWarning = ({
   balance,
 }: {
   ethPrice: number
-  costWithRewardsFee: bigint
-  rawCost: bigint
-  addedSurgeCost: bigint
+  costWithRewardsFee: number
+  rawCost: number
+  addedSurgeCost: number
   balance: bigint
 }) => {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-1">
         <span className="text-xs text-gray-500 dark:text-white">
-          {formatUSDValue(ethPrice || 0, costWithRewardsFee)}
+          {formatUSDValue(ethPrice || 0, BigInt(costWithRewardsFee))}
         </span>
         <CostDifferenceTooltip
           rawCost={rawCost}

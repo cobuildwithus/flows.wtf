@@ -2,7 +2,7 @@
 
 import { getEthAddress } from "@/lib/utils"
 import { useState } from "react"
-import { Address } from "viem"
+import type { Address } from "viem"
 import { base } from "viem/chains"
 import { useAccount, useBalance } from "wagmi"
 import { useSellTokenQuote } from "./hooks/use-sell-token-quote"
@@ -89,7 +89,7 @@ export function SellTokenBox(props: Props) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500 dark:text-white">
-                {formatUSDValue(ethPrice || 0, payment)}
+                {formatUSDValue(ethPrice || 0, BigInt(payment))}
               </span>
               <div
                 onClick={() =>
@@ -116,13 +116,13 @@ export function SellTokenBox(props: Props) {
             </CurrencyDisplay>
           }
           label="Receive"
-          amount={payment}
+          amount={BigInt(payment)}
           isLoadingQuote={isLoadingQuote}
         >
           <TokenBalanceAndUSDValue
             balance={balance?.value || BigInt(0)}
             ethPrice={ethPrice || 0}
-            ethAmount={payment}
+            ethAmount={BigInt(payment)}
           />
         </EthConversionBox>
       </div>
@@ -133,7 +133,7 @@ export function SellTokenBox(props: Props) {
         tokenEmitter={tokenEmitter}
         tokenBalance={tokenBalance}
         tokenAmountBigInt={tokenAmountBigInt}
-        payment={payment}
+        payment={BigInt(payment)}
         onSuccess={(hash) => {
           refetch()
           onSuccess(hash)

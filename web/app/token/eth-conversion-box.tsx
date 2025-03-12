@@ -1,7 +1,5 @@
 import { cn } from "@/lib/utils"
 import { CurrencyInput } from "./currency-input"
-import { CurrencyDisplay } from "./currency-display"
-import { BaseEthLogo } from "./base-eth-logo"
 import { formatEther } from "viem"
 import { ConversionBox } from "./conversion-box"
 
