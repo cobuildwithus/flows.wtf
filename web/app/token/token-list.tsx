@@ -4,7 +4,7 @@ import { useAccount } from "wagmi"
 import { Address, formatEther } from "viem"
 import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
 import { formatUSDValue, useETHPrice } from "./hooks/useETHPrice"
-import { useSellTokenQuote } from "./hooks/useSellTokenQuote"
+import { useSellTokenQuote } from "./hooks/use-sell-token-quote"
 import { base } from "viem/chains"
 
 const chainId = base.id
