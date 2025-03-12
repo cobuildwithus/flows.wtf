@@ -163,8 +163,9 @@ export async function StatusDisputed(props: Props) {
     const noDecision = dispute.ruling === 0 && dispute.isExecuted
     const isPending = dispute.ruling === 0
     const isApproved = dispute.ruling === 1
-    const didArbitrate = dispute.challengerPartyVotes !== dispute.requesterPartyVotes
-    const requesterWon = dispute.challengerPartyVotes < dispute.requesterPartyVotes
+    const didArbitrate =
+      Number(dispute.challengerPartyVotes) !== Number(dispute.requesterPartyVotes)
+    const requesterWon = Number(dispute.challengerPartyVotes) < Number(dispute.requesterPartyVotes)
     return (
       <>
         <li>
