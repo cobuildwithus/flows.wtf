@@ -5,13 +5,13 @@ import { l2Client } from "@/lib/viem/client"
 import type { Address } from "viem"
 import { base } from "viem/chains"
 
-export async function getSellTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
+export async function getSellTokenQuote(contract: Address, amount: number, chainId = base.id) {
   try {
     const data = await l2Client.readContract({
       abi: tokenEmitterImplAbi,
       address: contract,
       functionName: "sellTokenQuote",
-      args: [amount],
+      args: [BigInt(amount)],
     })
 
     return {
