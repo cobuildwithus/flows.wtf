@@ -14,11 +14,10 @@ interface Props {
 
 export function ImpactContent(props: Props) {
   const { impact } = props
-  const { name, results, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
+  const { name, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
 
   const hasImpactMetrics = impactMetrics.some(({ name }) => name.toLowerCase() !== "noggles")
   const hasMedia = impactHasMedia(impact)
-  const hasResults = results.length > 0
 
   return (
     <>
@@ -60,7 +59,7 @@ export function ImpactContent(props: Props) {
             />
           </header>
 
-          <section className="flex flex-col gap-y-4 max-md:mt-4">
+          <section className="max-md:mt-4">
             <ResultsSection impact={impact} />
           </section>
 

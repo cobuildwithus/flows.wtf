@@ -13,7 +13,7 @@ export function ResultsSection(props: Props) {
   const hasResults = results.length > 0
 
   return (
-    <div>
+    <div className="flex flex-col gap-y-4">
       <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Results</h3>
       {hasResults ? (
         <ul className="flex flex-col space-y-3">
