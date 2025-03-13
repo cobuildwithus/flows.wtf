@@ -1,14 +1,12 @@
 import { DateTime } from "@/components/ui/date-time"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
 import type { Impact } from "@prisma/flows"
-import { CircleCheckBig, CircleX } from "lucide-react"
 import Image from "next/image"
-import pluralize from "pluralize"
 import SourceBadges from "./source-badges"
 import { ImpactMedia } from "./impact-media"
 import { ImpactUpdates } from "./impact-updates"
 import { ImpactMetrics } from "./impact-metrics"
+import { PeopleSection } from "./people-involved"
+import { ResultsSection } from "./results"
 
 interface Props {
   impact: Impact
@@ -63,70 +61,14 @@ export function ImpactContent(props: Props) {
           </header>
 
           <section className="flex flex-col gap-y-4 max-md:mt-4">
-            <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Results</h3>
-            {hasResults ? (
-              <ul className="flex flex-col space-y-3">
-                {results.map((result) => (
-                  <li key={result.headline} className="flex items-start">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="inline-flex cursor-help items-center space-x-2.5 text-sm">
-                          <CircleCheckBig className="size-4 text-green-400/75" />
-                          <span className="font-light opacity-85">{result.headline}</span>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs py-2">{result.details}</TooltipContent>
-                    </Tooltip>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="inline-flex cursor-help items-center space-x-2.5 text-sm">
-                <CircleX className="size-4 text-gray-400/75" />
-                <span className="font-light opacity-85">No clear results</span>
-              </div>
-            )}
+            <ResultsSection impact={impact} />
           </section>
 
           {hasImpactMetrics && <ImpactMetrics impact={impact} />}
 
           {peopleInvolved.length > 0 && (
             <section className="mt-8">
-              <h3 className="flex items-center text-xs font-medium uppercase tracking-wide opacity-85">
-                People{" "}
-                <span className="ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1">
-                  {peopleInvolved.length}
-                </span>
-              </h3>
-              <div className="mt-4 grid grid-cols-8 gap-2.5">
-                {peopleInvolved.map((person) => (
-                  <Tooltip key={`${person.userId}`}>
-                    <TooltipTrigger asChild>
-                      <div
-                        className={cn(
-                          "flex size-full items-center space-x-2.5 overflow-hidden rounded-full text-sm",
-                          {
-                            "border-2 border-primary": person.beneficiary.isBeneficiary,
-                          },
-                        )}
-                      >
-                        <Image
-                          src={person.headshotUrl}
-                          alt="Person"
-                          width={108}
-                          height={108}
-                          className="size-full scale-[1.2] rounded-full"
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    {person.beneficiary.isBeneficiary && (
-                      <TooltipContent className="max-w-xs py-2">
-                        {person.beneficiary.reason}
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                ))}
-              </div>
+              <PeopleSection peopleInvolved={peopleInvolved} />
             </section>
           )}
           <section className="mt-8">
