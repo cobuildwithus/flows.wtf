@@ -1,23 +1,28 @@
+"use client"
+
 import { DateTime } from "@/components/ui/date-time"
 import type { Impact } from "@prisma/flows"
+import { motion } from "framer-motion"
 import Image from "next/image"
-import SourceBadges from "./source-badges"
-import { ImpactMedia } from "./impact-media"
-import { ImpactUpdates } from "./impact-updates"
-import { ImpactMetrics } from "./impact-metrics"
-import { PeopleSection } from "./people-involved"
-import { ResultsSection } from "./results"
+import { useState } from "react"
+import { BlockChat } from "./content/block-chat"
+import { BlockEdit } from "./content/block-edit"
+import { BlockMetrics } from "./content/block-metrics"
+import { BlockPeople } from "./content/block-people"
+import { BlockProofs } from "./content/block-proofs"
+import { BlockResults } from "./content/block-results"
+import BlockSources from "./content/block-sources"
 
 interface Props {
   impact: Impact
+  canEdit: boolean
 }
 
 export function ImpactContent(props: Props) {
-  const { impact } = props
-  const { name, date, impactMetrics, bestImage, peopleInvolved, proofs } = impact
+  const { impact, canEdit } = props
+  const { name, results, date, bestImage, peopleInvolved, proofs, impactMetrics } = impact
 
-  const hasImpactMetrics = impactMetrics.some(({ name }) => name.toLowerCase() !== "noggles")
-  const hasMedia = impactHasMedia(impact)
+  const [isEditing, setIsEditing] = useState(false)
 
   return (
     <>
@@ -25,7 +30,7 @@ export function ImpactContent(props: Props) {
         <div className="absolute -right-8 top-8 z-30">
           <DateTime
             date={date}
-            className="block rotate-45 bg-secondary px-12 py-0.5 text-sm font-medium text-primary"
+            className="block rotate-45 bg-primary px-12 py-0.5 text-sm font-medium text-primary-foreground"
             relative
             short
           />
@@ -38,55 +43,41 @@ export function ImpactContent(props: Props) {
         height={360}
         className="aspect-video w-full rounded-b-lg object-cover md:hidden"
       />
-      <div className="relative grid grid-cols-1 items-start gap-12 max-md:gap-y-8 max-md:p-5 md:grid-cols-12">
-        <div className="max-md:order-last md:col-span-6">
-          <h3 className="pb-4 text-xs font-medium uppercase tracking-wide opacity-85 md:hidden">
-            {hasMedia ? "Media" : "Proof"}
-          </h3>
-          {hasMedia ? (
-            <ImpactMedia impact={impact} name={name} />
-          ) : (
-            <ImpactUpdates impact={impact} />
-          )}
+      <div className="relative grid grid-cols-1 items-start gap-10 max-md:gap-y-8 max-md:p-5 md:grid-cols-12">
+        <div className="relative max-md:order-last md:col-span-7">
+          <motion.div
+            variants={{
+              hidden: { maxHeight: "calc(80vh - 2px)", overflow: "hidden" },
+              visible: { maxHeight: "auto", overflow: "visible" },
+            }}
+            animate={isEditing ? "hidden" : "visible"}
+            initial="visible"
+          >
+            <BlockProofs proofs={proofs} name={name} />
+          </motion.div>
+          {isEditing && <BlockChat impact={impact} />}
         </div>
 
-        <aside className="md:col-span-6 md:mt-12 md:pr-20">
-          <header>
-            <DateTime
-              date={date}
-              relative
-              className="mt-1 text-sm text-muted-foreground md:hidden"
-            />
+        <aside className="md:sticky md:top-10 md:col-span-5 md:pr-20">
+          <header className="md:hidden">
+            <DateTime date={date} relative className="mt-1 text-sm text-muted-foreground" />
           </header>
 
-          <section className="max-md:mt-4">
-            <ResultsSection impact={impact} />
-          </section>
+          <BlockResults results={results} />
 
-          {hasImpactMetrics && <ImpactMetrics impact={impact} />}
+          <BlockMetrics impactMetrics={impactMetrics} />
 
-          {peopleInvolved.length > 0 && (
-            <section className="mt-8">
-              <PeopleSection peopleInvolved={peopleInvolved} />
-            </section>
+          <BlockPeople peopleInvolved={peopleInvolved} />
+
+          <BlockSources
+            sources={proofs.map((proof) => ({ url: proof.url, image: proof.images[0]?.url }))}
+          />
+
+          {canEdit && (
+            <BlockEdit isEditing={isEditing} setIsEditing={setIsEditing} impactId={impact.id} />
           )}
-          <section className="mt-8">
-            <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Sources</h3>
-            <div className="mt-4">
-              <SourceBadges
-                sources={proofs.map((proof) => ({
-                  url: proof.url,
-                  image: proof.images[0]?.url,
-                }))}
-              />
-            </div>
-          </section>
         </aside>
       </div>
     </>
   )
-}
-
-function impactHasMedia(impact: Impact) {
-  return impact.proofs.some((proof) => proof.images.length > 0 || proof.videos.length > 0)
 }

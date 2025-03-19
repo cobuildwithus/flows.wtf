@@ -3,18 +3,17 @@ import type { Impact } from "@prisma/flows"
 import pluralize from "pluralize"
 
 interface Props {
-  impact: Impact
+  impactMetrics: Impact["impactMetrics"]
 }
 
-export function ImpactMetrics(props: Props) {
-  const { impact } = props
-  const { impactMetrics } = impact
-
-  const filteredMetrics = impactMetrics.filter(
+export function BlockMetrics(props: Props) {
+  const impactMetrics = props.impactMetrics.filter(
     ({ name, value }) => name.toLowerCase() !== "noggles" && Number(value) > 0,
   )
 
-  const sortedMetrics = filteredMetrics.sort((a, b) => {
+  if (impactMetrics.length === 0) return null
+
+  const sortedMetrics = impactMetrics.sort((a, b) => {
     const aShowsUnits = showUnits(a) ? 0 : 1
     const bShowsUnits = showUnits(b) ? 0 : 1
     return aShowsUnits - bShowsUnits
