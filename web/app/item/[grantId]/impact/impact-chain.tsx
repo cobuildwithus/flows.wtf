@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel"
 import { Dialog, DialogClose, DialogOverlay, DialogTitle } from "@/components/ui/dialog"
 import useWindowSize from "@/lib/hooks/use-window-size"
+import { useQueryParams } from "@/lib/update-search-params"
 import type { Impact } from "@prisma/flows"
 import { DialogContent, DialogPortal } from "@radix-ui/react-dialog"
 import { Cross2Icon } from "@radix-ui/react-icons"
@@ -21,69 +22,63 @@ import { CustomBezierEdge } from "./nodes/custom-edge"
 import { generateDiagram } from "./nodes/diagram-utils"
 import { ImpactNode } from "./nodes/impact-node"
 import { LaunchNode } from "./nodes/launch-node"
-import { useQueryParams } from "@/lib/update-search-params"
 
 interface Props {
   impacts: Impact[]
   activatedAt: Date
+  canEdit: boolean
+  impactId?: string
 }
 
 export function ImpactChain(props: Props) {
-  const { impacts, activatedAt } = props
+  const { impacts, activatedAt, canEdit, impactId } = props
   const { width } = useWindowSize()
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
   const [api, setApi] = React.useState<CarouselApi>()
-  const { getParam, updateQueryParam } = useQueryParams()
+  const { updateQueryParam } = useQueryParams()
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
+
+  const isModalOpen = selectedIndex !== null
 
   useEffect(() => {
-    const initialImpactId = getParam("impactId")
-    if (initialImpactId) {
-      const index = impacts.findIndex((impact) => impact.id === initialImpactId)
-      if (index !== -1) {
-        setSelectedIndex(index)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (!impactId) return
+    const index = impacts.findIndex((impact) => impact.id === impactId)
+    if (index !== -1) setSelectedIndex(index)
+  }, [impactId])
 
   useEffect(() => {
-    if (selectedIndex === null) return
+    if (!isModalOpen || !api) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return
 
       if (e.key === "ArrowLeft") {
-        api?.scrollPrev()
+        api.scrollPrev()
       } else if (e.key === "ArrowRight") {
-        api?.scrollNext()
+        api.scrollNext()
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [api, selectedIndex])
+  }, [api])
 
   useEffect(() => {
     if (!api) return
 
-    const handleSelect = () => {
-      if (selectedIndex === null) return
+    const indexChanged = () => {
       const currentIndex = api.selectedScrollSnap()
       const currentImpactId = impacts[currentIndex]?.id
-      if (currentImpactId && currentImpactId !== getParam("impactId")) {
+      if (currentImpactId && currentImpactId !== impactId) {
         updateQueryParam("impactId", currentImpactId)
       }
     }
 
-    api.on("select", handleSelect)
-
-    // Set initial impactId when carousel loads
-    handleSelect()
+    api.on("select", indexChanged)
 
     return () => {
-      api.off("select", handleSelect)
+      api.off("select", indexChanged)
     }
-  }, [api, impacts, updateQueryParam, selectedIndex])
+  }, [api])
 
   const diagram = useMemo(() => {
     if (!width) return null
@@ -145,11 +140,9 @@ export function ImpactChain(props: Props) {
       </div>
 
       <Dialog
-        open={selectedIndex !== null}
+        open={isModalOpen}
         onOpenChange={(open) => {
-          if (!open) {
-            closeDialog()
-          }
+          if (!open) closeDialog()
         }}
       >
         <DialogPortal>
@@ -169,20 +162,22 @@ export function ImpactChain(props: Props) {
               className="w-full max-w-full"
               opts={{ startIndex: selectedIndex ?? 0 }}
             >
-              {selectedIndex !== null && (
+              {isModalOpen && (
                 <>
                   <CarouselContent>
-                    {impacts.map((impact) => (
+                    {impacts.map((impact, index) => (
                       <CarouselItem key={impact.id}>
                         <div
                           onClick={() => closeDialog()}
-                          className="mx-auto flex h-[100dvh] max-w-6xl items-center"
+                          className="mx-auto flex h-[100dvh] max-w-6xl flex-col items-center justify-center"
                         >
                           <div
                             onClick={(e) => e.stopPropagation()}
-                            className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-background scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[640px] md:rounded-xl md:border"
+                            className="relative h-full w-full overflow-y-auto overflow-x-hidden bg-secondary scrollbar scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 md:h-auto md:max-h-[80vh] md:min-h-[560px] md:rounded-xl md:border"
                           >
-                            <ImpactContent impact={impact} />
+                            {Math.abs(index - selectedIndex) <= 1 && (
+                              <ImpactContent impact={impact} canEdit={canEdit} />
+                            )}
                           </div>
                         </div>
                       </CarouselItem>

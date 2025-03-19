@@ -1,28 +1,22 @@
+import { VideoPlayer } from "@/components/ui/video-player"
 import { cn } from "@/lib/utils"
 import type { Impact } from "@prisma/flows"
 import Image from "next/image"
-import { VideoPlayer } from "@/components/ui/video-player"
 
 interface Props {
-  impact: Impact
+  proofs: Impact["proofs"]
   name: string
 }
 
-export function ImpactMedia({ impact, name }: Props) {
-  const { proofs } = impact
+export function BlockMedia(props: Props) {
+  const { proofs, name } = props
 
   const images = proofs.flatMap((proof) => {
-    return proof.images.map((image) => ({
-      ...image,
-      proofUrl: proof.url,
-    }))
+    return proof.images.map((image) => ({ ...image, proofUrl: proof.url }))
   })
 
   const videos = proofs.flatMap((proof) => {
-    return proof.videos.map((video) => ({
-      ...video,
-      proofUrl: proof.url,
-    }))
+    return proof.videos.map((video) => ({ ...video, proofUrl: proof.url }))
   })
 
   return (
@@ -48,11 +42,7 @@ export function ImpactMedia({ impact, name }: Props) {
           ))}
         </div>
       )}
-      <div
-        className={cn("grid grid-cols-2 gap-1.5", {
-          "md:grid-cols-1": images.length < 3,
-        })}
-      >
+      <div className={cn("grid grid-cols-2 gap-1.5", { "md:grid-cols-1": images.length < 3 })}>
         {images.map((image) => (
           <a
             href={image.proofUrl}

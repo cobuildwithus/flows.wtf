@@ -18,8 +18,8 @@ export function isGrantAwaiting(grant: Pick<Grant, "status">) {
   return grant.status === Status.RegistrationRequested
 }
 
-const rocketman = "0x289715ffbb2f4b482e2917d2f183feab564ec84f"
-const woj = "0x6cc34d9fb4ae289256fc1896308d387aee2bcc52"
+const rocketman = "0x289715ffbb2f4b482e2917d2f183feab564ec84f" as const
+const riderway = "0x2830e21792019ce670fbc548aacb004b08c7f71f" as const
 
 export function canEditStory(
   story: Pick<Story, "participants" | "author">,
@@ -27,13 +27,16 @@ export function canEditStory(
 ): boolean {
   if (!user) return false
   return (
-    story.participants.includes(user) || story.author === user || user === rocketman || user === woj
+    story.participants.includes(user) ||
+    story.author === user ||
+    user === rocketman ||
+    user === riderway
   )
 }
 
 export function canEditGrant(grant: Pick<Grant, "recipient">, user: string | undefined): boolean {
   if (!user) return false
-  return [grant.recipient, rocketman, woj].includes(user)
+  return [grant.recipient, rocketman, riderway].includes(user)
 }
 
 export function meetsMinimumSalary(

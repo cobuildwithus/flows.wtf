@@ -8,6 +8,7 @@ import { Attachment, ToolInvocation } from "ai"
 import Image from "next/image"
 import { ReactNode } from "react"
 import { PreviewAttachment } from "./preview-attachment"
+import { CastPreview } from "./tools/cast-preview"
 import { SubmitApplicationResult } from "./tools/submit-application"
 import { SuccessMessageResult } from "./tools/success-message"
 
@@ -68,6 +69,8 @@ export const MessageItem = (props: Props) => {
                 case "updateStory":
                 case "updateGrant":
                   return <SuccessMessageResult key={toolCallId} message={tool.result} />
+                case "castPreview":
+                  return <CastPreview key={toolCallId} message={tool.result} />
                 default:
                   return null
               }

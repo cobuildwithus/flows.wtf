@@ -7,15 +7,13 @@ import type { Impact } from "@prisma/flows"
 import { useMemo } from "react"
 
 interface Props {
-  impact: Impact
+  proofs: Impact["proofs"]
 }
 
-export function ImpactUpdates({ impact }: Props) {
+export function BlockCasts({ proofs }: Props) {
   const castIds = useMemo(() => {
-    return impact.proofs
-      .flatMap((proof) => proof.cast?.id)
-      .filter((id) => id !== null && id !== undefined)
-  }, [impact.proofs])
+    return proofs.flatMap((proof) => proof.cast?.id).filter((id) => id !== null && id !== undefined)
+  }, [proofs])
 
   const {
     data: casts = [],
