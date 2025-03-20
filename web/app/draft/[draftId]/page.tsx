@@ -19,6 +19,7 @@ import { CreatorCard } from "./creator-card"
 import DraftContent from "./draft-content"
 import { DraftEditButton } from "./draft-edit-button"
 import { DraftPublishButton } from "./draft-publish-button"
+import { getUser } from "@/lib/auth/user"
 
 interface Props {
   params: Promise<{ draftId: string }>
@@ -49,13 +50,16 @@ export default async function DraftPage(props: Props) {
     include: { flow: { include: { derivedData: true } } },
   })
 
-  const existingGrants = await database.grant.count({
-    where: {
-      recipient: draft.users[0],
-      isActive: true,
-      monthlyIncomingBaselineFlowRate: { not: "0" },
-    },
-  })
+  const [existingGrants, user] = await Promise.all([
+    database.grant.count({
+      where: {
+        recipient: draft.users[0],
+        isActive: true,
+        monthlyIncomingBaselineFlowRate: { not: "0" },
+      },
+    }),
+    getUser(),
+  ])
 
   const { title, flow, isOnchain, createdAt, users, isFlow, description } = draft
 
@@ -87,7 +91,12 @@ export default async function DraftPage(props: Props) {
         <div className="flex items-center space-x-1.5">
           <DraftEditButton draft={draft} edit={edit} />
           {!isOnchain && !edit && (
-            <DraftPublishButton grantsCount={existingGrants} draft={draft} flow={flow} />
+            <DraftPublishButton
+              grantsCount={existingGrants}
+              draft={draft}
+              flow={flow}
+              user={user}
+            />
           )}
         </div>
       </div>
