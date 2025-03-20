@@ -16,7 +16,7 @@ import type { LimitedGrant } from "./grants-list"
 interface Props {
   grant: LimitedGrant & {
     profile: Profile
-    derivedData: Pick<DerivedData, "overallGrade" | "title"> | null
+    derivedData: Pick<DerivedData, "overallGrade" | "title" | "coverImage"> | null
   }
 }
 
@@ -26,13 +26,14 @@ export function GrantCard({ grant }: Props) {
 
   const isChallenged = status === Status.ClearingRequested
   const isActive = !isDisputed && !isChallenged
+  const { coverImage } = derivedData || {}
   const isNew = isGrantNew(grant)
 
   return (
     <article className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72">
       <Image
         alt=""
-        src={getIpfsUrl(grant.image)}
+        src={getIpfsUrl(coverImage || grant.image)}
         className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 md:group-hover:scale-110"
         width={256}
         height={256}
