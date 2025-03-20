@@ -1,7 +1,7 @@
 "use client"
 
 import useSWR from "swr"
-import { hasSignerUUID } from "../auth/has-farcaster-signer-uuid"
+import { hasSignerUUID } from "../auth/farcaster-signer-uuid"
 
 interface Props {
   fid?: number

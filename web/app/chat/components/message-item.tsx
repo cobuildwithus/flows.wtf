@@ -70,7 +70,7 @@ export const MessageItem = (props: Props) => {
                 case "updateGrant":
                   return <SuccessMessageResult key={toolCallId} message={tool.result} />
                 case "castPreview":
-                  return <CastPreview key={toolCallId} message={tool.result} />
+                  return <CastPreview key={toolCallId} {...tool.result} />
                 default:
                   return null
               }

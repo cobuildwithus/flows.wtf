@@ -19,7 +19,7 @@ interface Props {
   identityToken: string | undefined
 }
 
-interface AgentChatContext extends UseChatHelpers {
+interface AgentChatContext extends Omit<UseChatHelpers, "data" | "setData"> {
   restart: () => void
   attachments: Attachment[]
   setAttachments: React.Dispatch<React.SetStateAction<Attachment[]>>
@@ -29,6 +29,7 @@ interface AgentChatContext extends UseChatHelpers {
   type: AgentType
   hasStartedStreaming: boolean
   appendData: (data: ChatData) => void
+  data: ChatData | undefined
 }
 
 const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
@@ -105,6 +106,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
             setData((prev) => ({ ...prev, ...data }))
           })
         },
+        data,
       }}
     >
       {children}
