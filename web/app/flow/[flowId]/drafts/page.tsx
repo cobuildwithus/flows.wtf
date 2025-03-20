@@ -18,6 +18,7 @@ import { FlowSubmenu } from "../components/flow-submenu"
 import { GrantLogoCell } from "../components/grant-logo-cell"
 import { GrantTitleCell } from "../components/grant-title-cell"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
+import { getUser } from "@/lib/auth/user"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -29,7 +30,7 @@ export const revalidate = 0
 export default async function FlowDraftsPage(props: Props) {
   const { flowId } = await props.params
 
-  const [flow, drafts, existingGrants] = await Promise.all([
+  const [flow, drafts, existingGrants, user] = await Promise.all([
     database.grant.findFirstOrThrow({
       where: { id: flowId, isFlow: true },
       include: { derivedData: true },
@@ -39,6 +40,7 @@ export default async function FlowDraftsPage(props: Props) {
       orderBy: { createdAt: "desc" },
     }),
     getExistingGrantsCount(),
+    getUser(),
   ])
 
   const { isTopLevel } = flow
@@ -99,6 +101,7 @@ export default async function FlowDraftsPage(props: Props) {
                     grantsCount={existingGrants[draft.users[0]] || 0}
                     draft={draft}
                     flow={flow}
+                    user={user}
                     size="sm"
                   />
                 </div>
