@@ -4,6 +4,7 @@ import { cookies, headers } from "next/headers"
 import { cache } from "react"
 import { getFarcasterUserByEthAddress } from "../farcaster/get-user"
 import { getEnsAvatar, getEnsNameFromAddress } from "./ens"
+import { hasSignerUUID } from "./farcaster-signer-uuid"
 import { getUserAddressFromCookie } from "./get-user-from-cookie"
 
 export type User = {
@@ -25,12 +26,15 @@ export const getUser = cache(async () => {
   const city = headersList.get("X-Vercel-IP-City")
 
   const farcasterUser = await getFarcasterUserByEthAddress(address)
+  const fid = Number(farcasterUser?.fid)
+
   return {
     address,
     username: farcasterUser?.fname || (await getEnsNameFromAddress(address)) || "",
     avatar: farcasterUser?.avatar_url || (await getEnsAvatar(address)) || undefined,
-    fid: Number(farcasterUser?.fid),
+    fid,
     location: { city, country, countryRegion },
+    hasSignerUUID: fid ? await hasSignerUUID(fid) : false,
   } satisfies User
 })
 
