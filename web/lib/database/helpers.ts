@@ -1,4 +1,4 @@
-import { DerivedData, Grant, Story } from "@prisma/flows"
+import type { DerivedData, Grant, Story } from "@prisma/flows"
 import { Status } from "../enums"
 import { MAX_GRANTS_PER_USER } from "../config"
 

@@ -1,5 +1,6 @@
 "use client"
-import { User } from "@/lib/auth/user"
+
+import type { User } from "@/lib/auth/user"
 import SignInWithNeynar from "./signin-with-neynar"
 
 export function FarcasterSignIn({ user, className }: { user: User; className?: string }) {

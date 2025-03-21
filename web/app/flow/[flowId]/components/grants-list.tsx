@@ -13,7 +13,10 @@ interface Props {
   flow: LimitedGrant
   grants: Array<
     LimitedGrant & {
-      derivedData: Pick<DerivedData, "lastBuilderUpdate" | "overallGrade" | "title"> | null
+      derivedData: Pick<
+        DerivedData,
+        "lastBuilderUpdate" | "overallGrade" | "title" | "coverImage"
+      > | null
       profile: Profile
     }
   >

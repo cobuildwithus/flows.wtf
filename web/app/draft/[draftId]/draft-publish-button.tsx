@@ -36,18 +36,21 @@ import { useAccount } from "wagmi"
 import { BuyApplicationFee } from "./buy-application-fee"
 import { publishDraft } from "./publish-draft"
 import { AuthButton } from "@/components/ui/auth-button"
+import type { User } from "@/lib/auth/user"
+import SignInWithNeynar from "@/components/global/signin-with-neynar"
 
 interface Props {
   draft: Draft
   flow: Grant & { derivedData: DerivedData | null }
   size?: "default" | "sm"
   grantsCount: number
+  user?: User
 }
 
 const chainId = base.id
 
 export function DraftPublishButton(props: Props) {
-  const { draft, flow, size = "default", grantsCount } = props
+  const { draft, flow, size = "default", grantsCount, user } = props
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
@@ -76,6 +79,31 @@ export function DraftPublishButton(props: Props) {
 
   const hasEnoughBalance = token.balance >= addItemCost
   const hasEnoughAllowance = token.allowance >= addItemCost
+
+  if (!hasFarcasterAccount(user)) {
+    return (
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button type="button" ref={ref} size={size}>
+            {action}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Farcaster required</AlertDialogTitle>
+            <AlertDialogDescription className="pt-1.5 leading-relaxed">
+              Connect your Farcaster account to your wallet to {action.toLowerCase()} this{" "}
+              {draft.isFlow ? "flow" : "grant"}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            {user && <SignInWithNeynar variant="secondary" user={user} />}
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    )
+  }
 
   if (!userBelowMaxGrants(grantsCount)) {
     return (
@@ -239,4 +267,8 @@ export function DraftPublishButton(props: Props) {
       </DialogContent>
     </Dialog>
   )
+}
+
+function hasFarcasterAccount(user?: User) {
+  return user?.fid !== undefined
 }
