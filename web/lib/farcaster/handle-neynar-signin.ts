@@ -1,6 +1,6 @@
 "use server"
 
-import { saveOrGetEncrypted } from "../kv/kvStore"
+import { saveOrGetEncrypted, deleteItem } from "../kv/kvStore"
 import { generateNeynarSignerKVKey } from "../kv/neynarSignerUUID"
 import { saveNewVerifiedAddress } from "./save-new-verified-address"
 
@@ -10,7 +10,9 @@ export const handleNeynarSignin = async (
   signer_permissions: string[],
   userAddress: `0x${string}`,
 ) => {
-  await saveOrGetEncrypted(generateNeynarSignerKVKey(fid), {
+  const key = generateNeynarSignerKVKey(fid)
+  await deleteItem(key)
+  await saveOrGetEncrypted(key, {
     fid,
     signer_uuid,
     signer_permissions,

@@ -38,6 +38,7 @@ import { FlowRemovedCard } from "./components/flow-removed-card"
 
 interface Props {
   params: Promise<{ grantId: string }>
+  searchParams: Promise<{ impactId?: string }>
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -57,6 +58,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function GrantPage(props: Props) {
   const { grantId } = await props.params
+  const { impactId } = await props.searchParams
 
   const [user, { flow, ...grant }] = await Promise.all([getUser(), getGrant(grantId)])
 
@@ -75,13 +77,7 @@ export default async function GrantPage(props: Props) {
   })
 
   return (
-    <AgentChatProvider
-      id={`grant-${grant.id}-${user?.address}`}
-      type="flo"
-      user={user}
-      data={{ grantId: grant.id }}
-      identityToken={await getPrivyIdToken()}
-    >
+    <>
       <div className="mt-2.5 pb-24 md:mt-6">
         <div className="container">
           <div className="flex items-center justify-between">
@@ -204,17 +200,36 @@ export default async function GrantPage(props: Props) {
         {impacts.length > 0 && (
           <div className="relative mt-8">
             <BgGradient />
-            <Suspense fallback={<div className="h-[300px]" />}>
-              <ImpactChain
-                impacts={impacts}
-                activatedAt={new Date((grant.activatedAt || 0) * 1000)}
-              />
-            </Suspense>
+            <AgentChatProvider
+              id={`grant-edit-${grant.id}-${user?.address}`}
+              type="flo"
+              user={user}
+              data={{ grantId: grant.id }}
+              identityToken={await getPrivyIdToken()}
+              initialMessages={[]}
+            >
+              <Suspense fallback={<div className="h-[300px]" />}>
+                <ImpactChain
+                  impacts={impacts}
+                  activatedAt={new Date((grant.activatedAt || 0) * 1000)}
+                  canEdit={canEdit}
+                  impactId={impactId}
+                />
+              </Suspense>
+            </AgentChatProvider>
           </div>
         )}
       </div>
-      <GrantChat grant={grant} user={user} canEdit={canEdit} />
-    </AgentChatProvider>
+      <AgentChatProvider
+        id={`grant-${grant.id}-${user?.address}`}
+        type="flo"
+        user={user}
+        data={{ grantId: grant.id }}
+        identityToken={await getPrivyIdToken()}
+      >
+        <GrantChat grant={grant} user={user} canEdit={canEdit} />
+      </AgentChatProvider>
+    </>
   )
 }
 

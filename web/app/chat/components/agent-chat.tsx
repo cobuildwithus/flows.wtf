@@ -6,6 +6,7 @@ import { Attachment, Message } from "ai"
 import { useChat, UseChatHelpers } from "ai/react"
 import { useRouter } from "next/navigation"
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
+import { flushSync } from "react-dom"
 import { ChatBody, ChatData } from "../chat-body"
 import { useChatHistory } from "./use-chat-history"
 
@@ -18,7 +19,7 @@ interface Props {
   identityToken: string | undefined
 }
 
-interface AgentChatContext extends UseChatHelpers {
+interface AgentChatContext extends Omit<UseChatHelpers, "data" | "setData"> {
   restart: () => void
   attachments: Attachment[]
   setAttachments: React.Dispatch<React.SetStateAction<Attachment[]>>
@@ -27,17 +28,20 @@ interface AgentChatContext extends UseChatHelpers {
   setContext: React.Dispatch<React.SetStateAction<string>>
   type: AgentType
   hasStartedStreaming: boolean
+  appendData: (data: ChatData) => void
+  data: ChatData | undefined
 }
 
 const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
 
 export function AgentChatProvider(props: PropsWithChildren<Props>) {
-  const { id, type, user, initialMessages, children, data, identityToken } = props
+  const { id, type, user, initialMessages, children, identityToken } = props
   const { readChatHistory, storeChatHistory, resetChatHistory } = useChatHistory({ id })
   const [attachments, setAttachments] = useState<Array<Attachment>>([])
   const [context, setContext] = useState("")
   const [hasStartedStreaming, setHasStartedStreaming] = useState(false)
   const router = useRouter()
+  const [data, setData] = useState<ChatData | undefined>(props.data)
 
   const chat = useChat({
     id,
@@ -56,6 +60,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
       switch (toolCall.toolName) {
         case "updateGrant":
         case "updateStory":
+        case "updateImpact":
           router.refresh()
           break
         default:
@@ -97,6 +102,12 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
         context,
         setContext,
         hasStartedStreaming,
+        appendData: (data: ChatData) => {
+          flushSync(() => {
+            setData((prev) => ({ ...prev, ...data }))
+          })
+        },
+        data,
       }}
     >
       {children}

@@ -13,4 +13,6 @@ export type ChatData = {
   flowId?: string
   grantId?: string
   storyId?: string
+  impactId?: string
+  castId?: string
 }
