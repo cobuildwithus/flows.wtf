@@ -9,9 +9,9 @@ export function generateDiagram(nodes: MinimalNode[], width: number) {
 }
 
 function positionNodes(nodes: MinimalNode[], layout: DiagramLayout): Node[] {
-  const { columns, marginX, marginY, yStep } = layout
+  const { columns, marginY, yStep, rowHeights } = layout
 
-  let accumulatedY = 0 // Track accumulated height for single-column layout
+  let accumulatedY = 0 // Used only for single-column layout
 
   return nodes.map((node, index) => {
     const row = Math.floor(index / columns) + 1
@@ -21,17 +21,21 @@ function positionNodes(nodes: MinimalNode[], layout: DiagramLayout): Node[] {
     function getX() {
       if (columns === 1 && !isReverseRow) return 12
       if (columns === 1 && isReverseRow) return layout.windowWidth - node.width - 12
-      return (col - 1) * (node.width + marginX) + (isReverseRow ? node.width / 2 : 0)
+      return (col - 1) * (node.width + layout.marginX) + (isReverseRow ? node.width / 2 : 0)
     }
 
     function getY() {
       if (columns === 1) {
         const y = accumulatedY
-        accumulatedY += node.height + marginY // increment for next node
+        accumulatedY += node.height + layout.marginY // increment for next node
         return y
       }
-      const baseY = (row - 1) * (node.height + marginY)
-      return baseY + (isReverseRow ? Math.abs(col - columns) : col) * yStep
+      const rowIndex = row - 1
+      // Calculate baseY as sum of the maximum heights of all previous rows plus vertical margins
+      const baseY =
+        rowHeights.slice(0, rowIndex).reduce((acc, h) => acc + h, 0) + rowIndex * layout.marginY
+      // Adjust using yStep per column; first column has no extra offset
+      return baseY + (isReverseRow ? (columns - col) * yStep : (col - 1) * yStep)
     }
 
     return {
@@ -84,25 +88,25 @@ function getDiagramLayout(width: number, nodes: MinimalNode[]) {
   const marginY = width < 768 ? 80 : 200
   const yStep = width < 768 ? 0 : 25
 
-  // Row heights are the highest node in each row
+  // Compute maximum height for each row
   const rowHeights = Array.from({ length: rows }, (_, rowIndex) => {
     const rowNodes = nodes.slice(rowIndex * columns, (rowIndex + 1) * columns)
     return Math.max(...rowNodes.map((node) => node.height))
-  }).reduce((acc, h) => acc + h, 0)
+  })
 
-  let height = rowHeights + (rows - 1) * marginY + (rows - 1) * (columns * yStep)
+  const totalRowsHeight = rowHeights.reduce((acc, h) => acc + h, 0)
+  let height = totalRowsHeight + (rows - 1) * marginY + (rows - 1) * (columns * yStep)
 
-  // Patch: For one-row diagrams, nodes get a y-offset based on their column.
-  // Adjust the height to ensure the bottom of the lowest node is visible.
+  // Patch: For one-row diagrams, adjust the height to ensure the bottom of the lowest node is visible.
   if (rows === 1) {
     height = nodes.reduce((max, node, i) => {
       const col = (i % columns) + 1
-      const nodeBottom = col * yStep + node.height
+      const nodeBottom = (col - 1) * yStep + node.height
       return Math.max(max, nodeBottom)
     }, 0)
   }
 
-  return { columns, rows, marginX, marginY, yStep, height, windowWidth: width }
+  return { columns, rows, marginX, marginY, yStep, height, windowWidth: width, rowHeights }
 }
 
 function getColumnsCount(width: number) {
