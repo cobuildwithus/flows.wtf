@@ -71,7 +71,7 @@ export default async function GrantPage(props: Props) {
   const canEdit = canEditGrant(grant, user?.address)
 
   const impacts = await database.impact.findMany({
-    where: { grantId },
+    where: { grantId, deletedAt: null },
     orderBy: [{ date: "asc" }, { updatedAt: "asc" }],
     take: 40,
   })

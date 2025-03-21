@@ -21,7 +21,10 @@ export async function deleteImpact(impactId: string) {
       throw new Error("Failed to delete impact")
     }
 
-    await database.impact.delete({ where: { id: impactId } })
+    await database.impact.update({
+      where: { id: impactId },
+      data: { deletedAt: new Date() },
+    })
 
     return { error: false, grantId: impact.grantId }
   } catch (error) {

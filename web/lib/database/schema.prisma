@@ -288,6 +288,7 @@ model Impact {
   name           String
   date           DateTime
   location       String?
+  deletedAt      DateTime? @map("deleted_at")
   /// [Proof[]]
   proofs         Json
   /// [BestImage]
