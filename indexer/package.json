@@ -16,11 +16,11 @@
     "hono": "^4.6.14",
     "pg": "^8.13.3",
     "ponder": "^0.9.27",
-    "viem": "^2.23.9"
+    "viem": "^2.23.13"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
-    "@types/pg": "^8.10.9",
+    "@types/pg": "^8.11.11",
     "eslint": "^9.17.0",
     "eslint-config-ponder": "^0.8.7",
     "typescript": "^5.7.2"
