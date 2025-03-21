@@ -32,12 +32,18 @@ export async function publishCast(signer_uuid: string, cast: NewCastData) {
     throw new Error(`Failed to publish cast: ${error.message}`)
   }
 
-  return response.json() as Promise<{
+  const result = await response.json()
+
+  if (!result.success) {
+    throw new Error(`Failed to publish cast`)
+  }
+
+  return result as {
     success: boolean
     cast: {
       hash: string
       text: string
       author: { fid: number }
     }
-  }>
+  }
 }

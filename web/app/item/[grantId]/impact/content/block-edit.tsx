@@ -2,6 +2,9 @@
 
 import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { deleteImpact } from "../delete-impact"
 
 interface Props {
   isEditing: boolean
@@ -12,6 +15,7 @@ interface Props {
 export function BlockEdit(props: Props) {
   const { isEditing, setIsEditing, impactId } = props
   const { setMessages, reload, appendData } = useAgentChat()
+  const router = useRouter()
 
   return (
     <section className="mt-8 pb-4">
@@ -22,13 +26,13 @@ export function BlockEdit(props: Props) {
           variant="outline"
           className="rounded-2xl bg-transparent"
           onClick={() => {
-            const confirmed = confirm("Are you sure you want to abort editing?")
+            const confirmed = confirm("Are you sure you want to finish editing?")
             if (confirmed) {
               setIsEditing(false)
             }
           }}
         >
-          Abort editing
+          Finish editing
         </Button>
       )}
 
@@ -46,7 +50,22 @@ export function BlockEdit(props: Props) {
           >
             Edit Impact
           </Button>
-          <Button variant="outline" className="rounded-2xl bg-transparent">
+          <Button
+            variant="outline"
+            className="rounded-2xl bg-transparent"
+            onClick={async () => {
+              const confirmed = confirm("Are you sure you want to delete this impact?")
+              if (!confirmed) return
+
+              const result = await deleteImpact(impactId)
+              if (result.error) {
+                toast.error(result.error)
+              } else {
+                toast.success("Impact deleted")
+                router.refresh()
+              }
+            }}
+          >
             Delete
           </Button>
         </div>

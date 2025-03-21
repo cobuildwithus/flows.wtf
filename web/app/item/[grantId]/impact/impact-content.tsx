@@ -12,6 +12,7 @@ import { BlockPeople } from "./content/block-people"
 import { BlockProofs } from "./content/block-proofs"
 import { BlockResults } from "./content/block-results"
 import BlockSources from "./content/block-sources"
+import { cn } from "@/lib/utils"
 
 interface Props {
   impact: Impact
@@ -44,7 +45,11 @@ export function ImpactContent(props: Props) {
         className="aspect-video w-full rounded-b-lg object-cover md:hidden"
       />
       <div className="relative grid grid-cols-1 items-start gap-10 max-md:gap-y-8 max-md:p-5 md:grid-cols-12">
-        <div className="relative max-md:order-last md:col-span-7">
+        <div
+          className={cn("relative max-md:order-last md:col-span-7", {
+            "min-h-[75vh] max-md:-m-5 max-md:min-h-[85dvh]": isEditing,
+          })}
+        >
           <motion.div
             variants={{
               hidden: { maxHeight: "calc(80vh - 2px)", overflow: "hidden" },

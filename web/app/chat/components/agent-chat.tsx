@@ -60,6 +60,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
       switch (toolCall.toolName) {
         case "updateGrant":
         case "updateStory":
+        case "updateImpact":
           router.refresh()
           break
         default:

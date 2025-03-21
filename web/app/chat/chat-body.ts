@@ -14,4 +14,5 @@ export type ChatData = {
   grantId?: string
   storyId?: string
   impactId?: string
+  castId?: string
 }
