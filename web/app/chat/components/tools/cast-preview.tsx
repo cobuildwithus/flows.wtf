@@ -4,7 +4,7 @@ import SignInWithNeynar from "@/components/global/signin-with-neynar"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { getSignerUUID } from "@/lib/auth/farcaster-signer-uuid"
-import { NewCastData, publishCast } from "@/lib/farcaster/publish-cast"
+import { type NewCastData, publishCast } from "@/lib/farcaster/publish-cast"
 import FarcasterLogo from "@/public/farcaster.svg"
 import Image from "next/image"
 import { useState } from "react"
@@ -72,7 +72,7 @@ export const CastPreview = (props: NewCastData) => {
               }}
             >
               <Image src={FarcasterLogo} alt="Farcaster" className="mr-1 h-5 w-auto" priority />
-              Publish <span className="hidden md:inline">&nbsp;on Farcaster</span>
+              Publish <span className="hidden md:inline">&nbsp;reply</span>
             </Button>
           )}
           {!user.hasSignerUUID && <SignInWithNeynar user={user} />}

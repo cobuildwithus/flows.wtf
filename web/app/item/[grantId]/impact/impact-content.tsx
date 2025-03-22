@@ -63,7 +63,7 @@ export function ImpactContent(props: Props) {
           {isEditing && <BlockChat impact={impact} />}
         </div>
 
-        <aside className="md:sticky md:top-10 md:col-span-5 md:pr-20">
+        <aside className="md:sticky md:col-span-5 md:pr-20 md:pt-10">
           <header className="md:hidden">
             <DateTime date={date} relative className="mt-1 text-sm text-muted-foreground" />
           </header>

@@ -2,12 +2,12 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { DateTime } from "@/components/ui/date-time"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { getIpfsUrl } from "@/lib/utils"
-import { Story } from "@prisma/flows"
+import type { Story } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 
 export function StoryCard(props: { story: Story }) {
-  const { header_image, title, tagline, created_at, id, participants } = props.story
+  const { header_image, title, created_at, id, participants } = props.story
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow dark:border dark:bg-card">
@@ -28,15 +28,14 @@ export function StoryCard(props: { story: Story }) {
           </div>
         </div>
       )}
-      <div className="grow p-4">
+      <div className="grow p-4 pb-1 pt-3">
         <Link
           href={`/story/${id}`}
-          className="line-clamp-2 text-base font-semibold leading-snug group-hover:text-primary"
+          className="line-clamp-2 text-base font-medium leading-snug group-hover:text-primary"
         >
           {title}
           <span className="absolute inset-0" />
         </Link>
-        <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{tagline}</p>
       </div>
 
       <div className="flex items-center justify-between space-x-1.5 p-4">
