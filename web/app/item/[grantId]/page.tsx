@@ -146,7 +146,7 @@ export default async function GrantPage(props: Props) {
             </Stat>
             <Dialog>
               <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
-                <Stat label="Community Votes">{grant.votesCount}</Stat>
+                <Stat label="Votes">{grant.votesCount}</Stat>
                 <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
               </DialogTrigger>
               <DialogContent>

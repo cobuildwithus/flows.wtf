@@ -68,7 +68,7 @@ export default async function FlowPage(props: Props) {
                     </p>
                   </div>
                   <div>
-                    <h4 className="text-[13px] text-muted-foreground">Community Votes</h4>
+                    <h4 className="text-[13px] text-muted-foreground">Votes</h4>
                     <p className="mt-1 text-lg font-medium">{flow.votesCount}</p>
                   </div>
                   <div>

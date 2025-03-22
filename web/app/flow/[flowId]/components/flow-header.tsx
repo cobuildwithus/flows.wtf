@@ -69,7 +69,7 @@ export const FlowHeader = (props: Props) => {
         {!flow.isTopLevel && (
           <>
             <div className="md:text-center">
-              <p className="mb-1.5 text-muted-foreground">Community Votes</p>
+              <p className="mb-1.5 text-muted-foreground">Votes</p>
               <p className="text-sm font-medium">{flow.votesCount} </p>
             </div>
 

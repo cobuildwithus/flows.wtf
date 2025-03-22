@@ -48,7 +48,7 @@ export const FlowsTable = (props: Props) => {
           <TableHead className="text-center">Grants</TableHead>
           <TableHead className="text-center">Paid out</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
-          <TableHead className="text-center">Community Votes</TableHead>
+          <TableHead className="text-center">Votes</TableHead>
           <TableHead className="text-center">Your Vote</TableHead>
         </TableRow>
       </TableHeader>
