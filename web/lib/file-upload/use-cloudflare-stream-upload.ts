@@ -26,8 +26,7 @@ function useCloudflareStreamUpload(): CloudflareUploadHook {
     try {
       // 1. Request a one-time upload URL and video ID from the backend
       const res = await fetch("/api/get-cloudflare-upload-url", { method: "POST" })
-      const text = await res.text()
-      if (!res.ok) throw new Error(text || "Failed to get upload URL")
+      if (!res.ok) throw new Error((await res.text()) || "Failed to get upload URL")
       const { uploadURL, videoId } = await res.json()
       if (!uploadURL || !videoId) throw new Error("Invalid upload URL response")
 
