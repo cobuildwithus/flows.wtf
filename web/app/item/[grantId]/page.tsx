@@ -35,6 +35,7 @@ import { ImpactDialog } from "./components/grades-dialog"
 import { ImpactChain } from "./impact/impact-chain"
 import { Badge } from "@/components/ui/badge"
 import { FlowRemovedCard } from "./components/flow-removed-card"
+import { EmptyState } from "@/components/ui/empty-state"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -196,7 +197,7 @@ export default async function GrantPage(props: Props) {
           </div>
         </div>
 
-        {impacts.length > 0 && (
+        {impacts.length > 0 ? (
           <div className="relative mt-8">
             <BgGradient />
             <AgentChatProvider
@@ -216,6 +217,14 @@ export default async function GrantPage(props: Props) {
                 />
               </Suspense>
             </AgentChatProvider>
+          </div>
+        ) : (
+          <div className="my-32">
+            <EmptyState
+              size={100}
+              title="No impact"
+              description="No clear impact verified for this grant yet"
+            />
           </div>
         )}
       </div>
