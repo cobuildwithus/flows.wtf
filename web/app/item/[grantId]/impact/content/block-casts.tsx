@@ -1,16 +1,24 @@
 "use client"
 
+import { useAgentChat } from "@/app/chat/components/agent-chat"
+import { Button } from "@/components/ui/button"
 import { CastCard } from "@/components/ui/cast-card"
 import { getCastsByIds } from "@/lib/database/queries/casts"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
+import { cn } from "@/lib/utils"
 import type { Impact } from "@prisma/flows"
 import { useMemo } from "react"
 
 interface Props {
   proofs: Impact["proofs"]
+  impactId: string
+  isEditing: boolean
+  setIsEditing: (isEditing: boolean) => void
 }
 
-export function BlockCasts({ proofs }: Props) {
+export function BlockCasts({ proofs, impactId, isEditing, setIsEditing }: Props) {
+  const { setMessages, reload, appendData } = useAgentChat()
+
   const castIds = useMemo(() => {
     return proofs.flatMap((proof) => proof.cast?.id).filter((id) => id !== null && id !== undefined)
   }, [proofs])
@@ -39,6 +47,32 @@ export function BlockCasts({ proofs }: Props) {
 
   return (
     <div className="space-y-4 md:p-4">
+      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-muted/20 px-6 py-8 text-center">
+        <p className="text-sm text-muted-foreground">
+          Add pictures or videos as proof of your impact.
+        </p>
+
+        <Button
+          variant={isEditing ? "outline" : "default"}
+          className={cn("mt-4 rounded-2xl", { "bg-transparent": isEditing })}
+          onClick={() => {
+            setIsEditing(true)
+            appendData({
+              impactId,
+            })
+            setMessages([
+              {
+                role: "user",
+                content: "I want to add pictures or videos as proof of my impact",
+                id: "1",
+              },
+            ])
+            reload()
+          }}
+        >
+          Add
+        </Button>
+      </div>
       {casts.map((cast) => (
         <CastCard key={cast.id.toString()} cast={cast} showVerification={false} />
       ))}

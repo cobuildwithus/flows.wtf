@@ -38,7 +38,7 @@ export function BlockMetrics(props: Props) {
       ) : (
         <div className="mt-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-muted/20 px-6 py-8 text-center">
           <p className="text-sm text-muted-foreground">
-            {isEditing ? "Adding metrics..." : "No impact metrics added yet. "}
+            {isEditing ? "Editing impact..." : "No impact metrics added yet. "}
           </p>
 
           <Button

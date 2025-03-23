@@ -58,7 +58,13 @@ export function ImpactContent(props: Props) {
             animate={isEditing ? "hidden" : "visible"}
             initial="visible"
           >
-            <BlockProofs proofs={proofs} name={name} />
+            <BlockProofs
+              impactId={impact.id}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+              proofs={proofs}
+              name={name}
+            />
           </motion.div>
           {isEditing && <BlockChat impact={impact} />}
         </div>
