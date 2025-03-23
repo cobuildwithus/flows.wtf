@@ -82,7 +82,10 @@ export function MultimodalInput(props: Props) {
   return (
     <form
       className={cn("relative z-10 mx-auto flex w-full md:max-w-3xl", className)}
-      onSubmit={handleSubmit}
+      onSubmit={(e) => {
+        e.preventDefault()
+        submitForm()
+      }}
     >
       {!user && (
         <div className="absolute inset-0 z-20 cursor-pointer bg-transparent" onClick={login} />

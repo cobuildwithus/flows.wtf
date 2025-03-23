@@ -18,8 +18,8 @@ export const fetchAndSetEthRates = async () => {
 
   const ethRate = Number.parseFloat(json.data?.amount)
 
-  if (!ethRate) {
-    throw new Error("No rates fetched")
+  if (!ethRate || Number.isNaN(ethRate)) {
+    throw new Error("Invalid or missing ETH rate fetched")
   }
 
   const rates = { eth: ethRate }
