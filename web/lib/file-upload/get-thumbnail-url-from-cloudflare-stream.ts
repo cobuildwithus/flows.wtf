@@ -12,7 +12,7 @@ export function getThumbnailUrlFromCloudflareStream(
 ): string | null {
   const { time, height } = options
 
-  const match = streamUrl.match(/videodelivery\.net\/([^\/]+)\//)
+  const match = streamUrl.match(/customer-[^.]+\.cloudflarestream\.com\/([^\/]+)\//)
   if (!match || !match[1]) return null
 
   const videoId = match[1]
