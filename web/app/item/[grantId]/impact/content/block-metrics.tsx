@@ -1,17 +1,24 @@
+import { useAgentChat } from "@/app/chat/components/agent-chat"
+import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
 import type { Impact } from "@prisma/flows"
 import pluralize from "pluralize"
 
 interface Props {
   impactMetrics: Impact["impactMetrics"]
+  isEditing: boolean
+  setIsEditing: (isEditing: boolean) => void
+  impactId: string
 }
 
 export function BlockMetrics(props: Props) {
+  const { isEditing, setIsEditing, impactId } = props
+  const { setMessages, reload, appendData } = useAgentChat()
+
   const impactMetrics = props.impactMetrics.filter(
     ({ name, value }) => name.toLowerCase() !== "noggles" && Number(value) > 0,
   )
-
-  if (impactMetrics.length === 0) return null
 
   const sortedMetrics = impactMetrics.sort((a, b) => {
     const aShowsUnits = showUnits(a) ? 0 : 1
@@ -22,29 +29,60 @@ export function BlockMetrics(props: Props) {
   return (
     <section className="mt-8">
       <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Impact</h3>
-      <dl className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        {sortedMetrics.map((unit) => (
-          <div key={unit.name} className="rounded-md border p-3">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
-                  <dt className="text-xs text-muted-foreground">{formatName(unit)}</dt>
-                  <dd className="order-first text-3xl font-bold tracking-tight">
-                    {unit.value}
-                    <span className="ml-1.5 text-xs font-normal opacity-75">
-                      {formatUnits(unit)}
-                    </span>
-                  </dd>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs py-2">
-                <p className="text-xs">{unit.reasoning}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        ))}
-      </dl>
+      {sortedMetrics.length > 0 ? (
+        <dl className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          {sortedMetrics.map((unit) => (
+            <IndividualMetric key={unit.name} unit={unit} />
+          ))}
+        </dl>
+      ) : (
+        <div className="mt-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-muted/20 px-6 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            {isEditing ? "Adding metrics..." : "No impact metrics added yet. "}
+          </p>
+
+          <Button
+            variant={isEditing ? "outline" : "default"}
+            className={cn("mt-4 rounded-2xl", { "bg-transparent": isEditing })}
+            onClick={() => {
+              if (isEditing) {
+                setIsEditing(false)
+              } else {
+                setIsEditing(true)
+                appendData({ impactId })
+                setMessages([
+                  { role: "user", content: "I want to add metrics to this impact block", id: "1" },
+                ])
+                reload()
+              }
+            }}
+          >
+            {isEditing ? "Finish" : "Add"}
+          </Button>
+        </div>
+      )}
     </section>
+  )
+}
+
+function IndividualMetric({ unit }: { unit: Impact["impactMetrics"][number] }) {
+  return (
+    <div key={unit.name} className="rounded-md border p-3">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex h-full cursor-help flex-col items-start justify-start gap-y-2.5">
+            <dt className="text-xs text-muted-foreground">{formatName(unit)}</dt>
+            <dd className="order-first text-3xl font-bold tracking-tight">
+              {unit.value}
+              <span className="ml-1.5 text-xs font-normal opacity-75">{formatUnits(unit)}</span>
+            </dd>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs py-2">
+          <p className="text-xs">{unit.reasoning}</p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
   )
 }
 

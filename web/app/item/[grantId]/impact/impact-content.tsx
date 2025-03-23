@@ -70,7 +70,12 @@ export function ImpactContent(props: Props) {
 
           <BlockResults results={results} />
 
-          <BlockMetrics impactMetrics={impactMetrics} />
+          <BlockMetrics
+            impactMetrics={impactMetrics}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            impactId={impact.id}
+          />
 
           <BlockPeople peopleInvolved={peopleInvolved} />
 

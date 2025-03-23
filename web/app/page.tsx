@@ -57,7 +57,7 @@ export default async function Home() {
           <CTAButtons />
         </div>
 
-        <div className="container mt-6">
+        <div className="container my-6">
           <FlowsList flows={activeFlows} />
         </div>
       </main>
