@@ -27,17 +27,8 @@ interface Props {
 
 export function MultimodalInput(props: Props) {
   const { rows = 3, placeholder = "Ask anything", className, onSubmit, autoFocus = false } = props
-  const {
-    input,
-    setInput,
-    isLoading,
-    stop,
-    attachments,
-    setAttachments,
-    handleSubmit,
-    user,
-    appendData,
-  } = useAgentChat()
+  const { input, setInput, isLoading, stop, attachments, setAttachments, handleSubmit, user } =
+    useAgentChat()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { width } = useWindowSize()
   const { login } = useLogin()
