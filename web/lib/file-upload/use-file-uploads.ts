@@ -51,6 +51,8 @@ export function useFileUploads() {
         } catch (error) {
           console.error(`Upload error (${file.name}):`, error)
           return { error, name: file.name }
+        } finally {
+          setIsUploading(false)
         }
       }),
     )
