@@ -98,6 +98,8 @@ export function MultimodalInput(props: Props) {
           onChange={async (event: ChangeEvent<HTMLInputElement>) => {
             const files = Array.from(event.target.files || [])
 
+            const validFiles: File[] = []
+
             for (const file of files) {
               const fileType = file.type.startsWith("image/")
                 ? "image"
@@ -107,21 +109,25 @@ export function MultimodalInput(props: Props) {
               const maxAllowedSize = fileType ? maxFileSizes[fileType] : null
 
               if (!maxAllowedSize) {
-                toast.error("Unsupported file type", { duration: 3000 })
-                return
+                toast.error(`Unsupported file type: ${file.name}`, { duration: 3000 })
+                continue
               }
 
               if (file.size > maxAllowedSize) {
                 toast.error(
-                  `Max file size for ${fileType === "image" ? "images" : "videos"} is ${maxAllowedSize / 1024 / 1024}MB`,
+                  `Max file size for ${fileType === "image" ? "images" : "videos"} (${file.name}) is ${maxAllowedSize / 1024 / 1024}MB`,
                   { duration: 3000 },
                 )
-                return
+                continue
               }
+
+              validFiles.push(file)
             }
 
-            const uploadedAttachments = await uploadFiles(Array.from(event.target.files || []))
-            setUploadedFiles(uploadedAttachments)
+            if (validFiles.length === 0) return
+
+            const uploadedAttachments = await uploadFiles(validFiles)
+            setUploadedFiles((c) => [...c, ...uploadedAttachments])
 
             setAttachments((c) => [
               ...c,
