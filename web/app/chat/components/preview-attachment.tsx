@@ -10,29 +10,19 @@ interface Props {
 
 export const PreviewAttachment = (props: Props) => {
   const { attachment, isUploading = false, progress } = props
-  const { name, imageUrl, videoUrl, contentType } = attachment
+  const { name, imageUrl, videoUrl } = attachment
 
   return (
     <div className="flex size-16">
-      <div className="relative flex aspect-video w-full items-center justify-center rounded-md bg-secondary">
-        {contentType?.startsWith("image") && (
+      <div className="relative flex aspect-square w-full items-center justify-center rounded-md bg-secondary">
+        {imageUrl && (
           <img
-            key={imageUrl}
             src={imageUrl}
             alt={name ?? " "}
             className="aspect-square size-full rounded-md object-cover"
           />
         )}
-        {contentType?.startsWith("video") && (
-          <div className="relative flex size-full items-center justify-center">
-            <img
-              src={imageUrl}
-              alt={name ?? " "}
-              className="aspect-square size-full rounded-md object-cover"
-            />
-            <Video className="absolute inset-0 m-auto size-8 text-white" />
-          </div>
-        )}
+        {videoUrl && <Video className="absolute inset-0 m-auto size-8 text-white" />}
 
         {isUploading && (
           <div className="absolute inset-0 flex items-center justify-center rounded-md bg-primary text-secondary-foreground">
