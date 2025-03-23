@@ -21,15 +21,17 @@ export function ImpactNode(props: NodeProps<IImpactNode>) {
   const { incomingPosition, outcomingPosition, impact, onClick } = data
   const { name, bestImage } = impact
 
+  const imageUrl = bestImage.urlFromBuilder ?? bestImage.url
+
   return (
     <div
       className="group pointer-events-auto relative isolate flex cursor-pointer flex-col items-center"
       style={{ width, height, maxHeight: height }}
       onClick={onClick}
     >
-      {bestImage.url && (
+      {imageUrl && (
         <Image
-          src={bestImage.url}
+          src={imageUrl}
           alt={name}
           width={width}
           height={height}

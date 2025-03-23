@@ -74,6 +74,7 @@ declare global {
       width: number
       height: number
       url: string
+      urlFromBuilder: string | null
       illustration: ImageWithUrl | null
       rawImage: (ImageWithUrl & { transparent: string }) | null
       cloudinaryPublicId?: string
