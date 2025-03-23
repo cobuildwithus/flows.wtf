@@ -92,13 +92,16 @@ export function ImpactChain(props: Props) {
           height: impact.name.length > 22 ? 300 : 240,
           data: {
             impact,
-            onClick: () => setSelectedIndex(index),
+            onClick: () => {
+              setSelectedIndex(index)
+              updateQueryParam("impactId", impact.id)
+            },
           },
         })),
       ],
       width,
     )
-  }, [impacts, width, activatedAt])
+  }, [impacts, width, activatedAt, updateQueryParam])
 
   const closeDialog = () => {
     setSelectedIndex(null)
