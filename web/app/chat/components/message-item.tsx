@@ -60,14 +60,7 @@ export const MessageItem = (props: Props) => {
                 {attachments.map((attachment) => (
                   <PreviewAttachment
                     key={attachment.url}
-                    attachment={{
-                      ...attachment,
-                      imageUrl: attachment.url.includes(".m3u8")
-                        ? (getThumbnailUrlFromCloudflareStream(attachment.url) ?? "")
-                        : attachment.url,
-                      name: attachment.url.split("/").pop() ?? "",
-                      contentType: attachment.url.split(".").pop() ?? "",
-                    }}
+                    attachment={getPreviewFromAttachment(attachment)}
                   />
                 ))}
               </div>
@@ -103,4 +96,15 @@ export const MessageItem = (props: Props) => {
       )}
     </div>
   )
+}
+
+function getPreviewFromAttachment(attachment: Attachment) {
+  return {
+    ...attachment,
+    imageUrl: attachment.url.includes(".m3u8")
+      ? (getThumbnailUrlFromCloudflareStream(attachment.url) ?? "")
+      : attachment.url,
+    name: attachment.url.split("/").pop() ?? "",
+    contentType: attachment.url.split(".").pop() ?? "",
+  }
 }
