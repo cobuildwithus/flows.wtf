@@ -32,7 +32,6 @@ export function useFileUploads() {
         try {
           if (file.type.startsWith("video/")) {
             const videoResult = await uploadVideo(file)
-            if (!videoResult) throw new Error("Video upload failed")
             return {
               videoUrl: videoResult.hlsUrl,
               name: file.name,
@@ -65,7 +64,12 @@ export function useFileUploads() {
 
     if (failedUploads.length > 0) {
       console.error("Some files failed to upload:", failedUploads)
-      toast.error(`${failedUploads.length} file(s) failed to upload`)
+      const errorMessages = failedUploads
+        .map((upload) => (upload.error instanceof Error ? upload.error.message : "Unknown error"))
+        .join(", ")
+      toast.error(`${failedUploads.length} file(s) failed to upload: ${errorMessages}`, {
+        duration: 10000,
+      })
     }
 
     if (uploadedFiles.length > 0) {

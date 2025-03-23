@@ -7,7 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 export function StoryCard(props: { story: Story }) {
-  const { header_image, title, created_at, id, participants } = props.story
+  const { header_image, title, created_at, id, participants, tagline } = props.story
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow dark:border dark:bg-card">
@@ -28,7 +28,7 @@ export function StoryCard(props: { story: Story }) {
           </div>
         </div>
       )}
-      <div className="grow p-4 pb-1 pt-3">
+      <div className="grow p-4">
         <Link
           href={`/story/${id}`}
           className="line-clamp-2 text-base font-medium leading-snug group-hover:text-primary"
@@ -36,6 +36,7 @@ export function StoryCard(props: { story: Story }) {
           {title}
           <span className="absolute inset-0" />
         </Link>
+        <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{tagline}</p>
       </div>
 
       <div className="flex items-center justify-between space-x-1.5 p-4">

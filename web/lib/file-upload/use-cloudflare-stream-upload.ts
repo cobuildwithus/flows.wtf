@@ -7,7 +7,7 @@ interface UploadResult {
 }
 
 interface CloudflareUploadHook {
-  uploadVideo: (file: File) => Promise<UploadResult | null>
+  uploadVideo: (file: File) => Promise<UploadResult>
   progress: number // upload progress in percentage (0-100)
   isUploading: boolean
   error: string | null
@@ -19,14 +19,15 @@ function useCloudflareStreamUpload(): CloudflareUploadHook {
   const [error, setError] = useState<string | null>(null)
 
   // Main upload function
-  const uploadVideo = async (file: File): Promise<UploadResult | null> => {
+  const uploadVideo = async (file: File): Promise<UploadResult> => {
     setError(null)
     setProgress(0)
     setIsUploading(true)
     try {
       // 1. Request a one-time upload URL and video ID from the backend
       const res = await fetch("/api/get-cloudflare-upload-url", { method: "POST" })
-      if (!res.ok) throw new Error("Failed to get upload URL")
+      const text = await res.text()
+      if (!res.ok) throw new Error(text || "Failed to get upload URL")
       const { uploadURL, videoId } = await res.json()
       if (!uploadURL || !videoId) throw new Error("Invalid upload URL response")
 
@@ -71,7 +72,7 @@ function useCloudflareStreamUpload(): CloudflareUploadHook {
         console.error("Upload error:", err)
         setError("Upload failed")
       }
-      return null
+      throw err
     } finally {
       setIsUploading(false)
     }

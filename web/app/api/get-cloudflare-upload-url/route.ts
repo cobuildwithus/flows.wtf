@@ -1,11 +1,45 @@
+import { getUser } from "@/lib/auth/user"
 import { NextResponse } from "next/server"
+import { getItem, saveItem } from "@/lib/kv/kvStore"
+import { getUserGrants } from "@/components/global/recipient-popover/get-user-grants"
+import database from "@/lib/database/edge"
 
-const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID!
-const CF_STREAM_TOKEN = process.env.CF_STREAM_TOKEN!
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID
+const CF_STREAM_TOKEN = process.env.CF_STREAM_TOKEN
+const BUILDER_DAILY_LIMIT = 100
+const DAILY_LIMIT = 5
 
 export async function POST(request: Request): Promise<NextResponse> {
   if (request.method !== "POST") {
     return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 })
+  }
+
+  const user = await getUser()
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const grantsCount = await database.grant.count({
+    where: {
+      recipient: user.address,
+      isFlow: false,
+      isRemoved: false,
+    },
+  })
+  const isGrantsBuilder = grantsCount > 0
+
+  const dailyLimit = isGrantsBuilder ? BUILDER_DAILY_LIMIT : DAILY_LIMIT
+
+  const today = new Date().toISOString().split("T")[0]
+  const rateLimitKey = `cloudflare-upload-${user.address}-${today}`
+
+  const currentCount = (await getItem<number>(rateLimitKey)) || 0
+
+  if (currentCount >= dailyLimit) {
+    return NextResponse.json(
+      { error: "Daily rate limit exceeded. Please try again tomorrow." },
+      { status: 429 },
+    )
   }
 
   try {
@@ -29,6 +63,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const { uploadURL, uid } = data.result
+
+    await saveItem(rateLimitKey, currentCount + 1)
 
     return NextResponse.json({ uploadURL, videoId: uid }, { status: 200 })
   } catch (err) {
