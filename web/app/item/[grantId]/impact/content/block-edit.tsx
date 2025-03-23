@@ -30,6 +30,7 @@ export function BlockEdit(props: Props) {
             if (confirmed) {
               setIsEditing(false)
             }
+            router.refresh()
           }}
         >
           Finish editing
