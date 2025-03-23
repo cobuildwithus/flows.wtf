@@ -60,9 +60,8 @@ function useCloudflareStreamUpload(): CloudflareUploadHook {
       })
 
       // 3. Construct the HLS URL and thumbnail URL using the video ID
-      const hlsUrl = `https://videodelivery.net/${videoId}/manifest/video.m3u8`
-      // e.g., thumbnail at 3s into the video, height 320px
-      const thumbnailUrl = `https://videodelivery.net/${videoId}/thumbnails/thumbnail.jpg?time=3s&height=320`
+      const hlsUrl = `https://customer-3q4p4o6b2z3t9lrn.cloudflarestream.com/${videoId}/manifest/video.m3u8`
+      const thumbnailUrl = `https://customer-3q4p4o6b2z3t9lrn.cloudflarestream.com/${videoId}/thumbnails/thumbnail.jpg`
 
       // (Optionally, you might poll Cloudflare or use a webhook to ensure the video
       // is ready before using the HLS URL. Small uploads are usually ready quickly.)

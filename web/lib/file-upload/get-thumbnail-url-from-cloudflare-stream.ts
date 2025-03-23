@@ -17,7 +17,7 @@ export function getThumbnailUrlFromCloudflareStream(
 
   const videoId = match[1]
 
-  const url = `https://videodelivery.net/${videoId}/thumbnails/thumbnail.jpg`
+  const url = `https://customer-3q4p4o6b2z3t9lrn.cloudflarestream.com/${videoId}/thumbnails/thumbnail.jpg`
 
   const params = new URLSearchParams()
   if (time) params.append("time", time)
