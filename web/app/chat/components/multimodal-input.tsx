@@ -42,6 +42,7 @@ export function MultimodalInput(props: Props) {
   const { width } = useWindowSize()
   const { login } = useLogin()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
+  const { uploadQueue, uploadFiles, progressMap } = useFileUploads()
 
   useEffect(() => {
     if (textareaRef.current) adjustHeight()
@@ -62,7 +63,6 @@ export function MultimodalInput(props: Props) {
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const { uploadQueue, uploadFiles } = useFileUploads()
 
   const submitForm = useCallback(() => {
     if (!input.trim() && uploadedFiles.length === 0) return
@@ -147,7 +147,11 @@ export function MultimodalInput(props: Props) {
         {(uploadedFiles.length > 0 || uploadQueue.length > 0) && (
           <div className="flex space-x-2.5 overflow-x-auto">
             {uploadedFiles.map((attachment) => (
-              <PreviewAttachment key={attachment.imageUrl} attachment={attachment} />
+              <PreviewAttachment
+                key={attachment.imageUrl}
+                attachment={attachment}
+                progress={progressMap[attachment.name]}
+              />
             ))}
 
             {uploadQueue.map((filename) => (
@@ -155,6 +159,7 @@ export function MultimodalInput(props: Props) {
                 key={filename}
                 attachment={{ imageUrl: "", name: filename, contentType: "", videoUrl: "" }}
                 isUploading={true}
+                progress={progressMap[filename]}
               />
             ))}
           </div>

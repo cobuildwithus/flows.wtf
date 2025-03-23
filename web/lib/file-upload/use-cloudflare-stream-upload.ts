@@ -7,7 +7,7 @@ interface UploadResult {
 }
 
 interface CloudflareUploadHook {
-  uploadVideo: (file: File) => Promise<UploadResult>
+  uploadVideo: (file: File, onProgress?: (progress: number) => void) => Promise<UploadResult>
   progress: number // upload progress in percentage (0-100)
   isUploading: boolean
   error: string | null
@@ -19,7 +19,10 @@ function useCloudflareStreamUpload(): CloudflareUploadHook {
   const [error, setError] = useState<string | null>(null)
 
   // Main upload function
-  const uploadVideo = async (file: File): Promise<UploadResult> => {
+  const uploadVideo = async (
+    file: File,
+    onProgress?: (progress: number) => void,
+  ): Promise<UploadResult> => {
     setError(null)
     setProgress(0)
     setIsUploading(true)
@@ -39,6 +42,7 @@ function useCloudflareStreamUpload(): CloudflareUploadHook {
           if (event.lengthComputable) {
             const percent = Math.round((event.loaded / event.total) * 100)
             setProgress(percent)
+            if (onProgress) onProgress(percent)
           }
         }
         xhr.onerror = () => reject(new Error("Network error during upload"))

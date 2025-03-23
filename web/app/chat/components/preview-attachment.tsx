@@ -5,10 +5,11 @@ import { Loader2, Video } from "lucide-react"
 interface Props {
   attachment: UploadedFile
   isUploading?: boolean
+  progress?: number
 }
 
 export const PreviewAttachment = (props: Props) => {
-  const { attachment, isUploading = false } = props
+  const { attachment, isUploading = false, progress } = props
   const { name, imageUrl, videoUrl, contentType } = attachment
 
   return (
@@ -34,8 +35,11 @@ export const PreviewAttachment = (props: Props) => {
         )}
 
         {isUploading && (
-          <div className="animate-spin text-muted-foreground">
-            <Loader2 className="size-8" />
+          <div className="absolute inset-0 flex items-center justify-center rounded-md bg-primary text-secondary-foreground">
+            <Loader2 className="size-12 animate-spin text-white" />
+            {progress !== undefined && (
+              <span className="absolute text-xs text-white">{progress}%</span>
+            )}
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import { compressImage } from "./compress-image"
 import { uploadFile } from "./upload-file"
@@ -17,6 +17,11 @@ export function useFileUploads() {
   const [isUploading, setIsUploading] = useState(false)
   const [queue, setQueue] = useState<string[]>([])
   const { uploadVideo } = useCloudflareStreamUpload()
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({})
+
+  const updateProgress = useCallback((fileName: string, progress: number) => {
+    setProgressMap((prev) => ({ ...prev, [fileName]: progress }))
+  }, [])
 
   const uploadFiles = async (files: File[]): Promise<UploadedFile[]> => {
     if (!files.length) {
@@ -31,7 +36,9 @@ export function useFileUploads() {
       files.map(async (file) => {
         try {
           if (file.type.startsWith("video/")) {
-            const videoResult = await uploadVideo(file)
+            const videoResult = await uploadVideo(file, (progress) =>
+              updateProgress(file.name, progress),
+            )
             return {
               videoUrl: videoResult.hlsUrl,
               name: file.name,
@@ -86,5 +93,6 @@ export function useFileUploads() {
     isUploading,
     uploadQueue: queue,
     uploadFiles,
+    progressMap,
   }
 }
