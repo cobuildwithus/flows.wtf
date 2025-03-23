@@ -42,7 +42,7 @@ export function MultimodalInput(props: Props) {
   const { width } = useWindowSize()
   const { login } = useLogin()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const { uploadQueue, uploadFiles, progressMap } = useFileUploads()
+  const { uploadQueue, uploadFiles, progressMap, uploadingMap } = useFileUploads()
 
   useEffect(() => {
     if (textareaRef.current) adjustHeight()
@@ -129,16 +129,18 @@ export function MultimodalInput(props: Props) {
 
             if (validFiles.length === 0) return
 
-            const uploadedAttachments = await uploadFiles(validFiles)
-            setUploadedFiles((c) => [...c, ...uploadedAttachments])
+            const uploadedAttachments = await uploadFiles(validFiles, (uploadedFile) => {
+              setUploadedFiles((current) => [...current, uploadedFile])
+              setAttachments((current) => [
+                ...current,
+                {
+                  ...uploadedFile,
+                  url: uploadedFile.videoUrl ? uploadedFile.videoUrl : uploadedFile.imageUrl,
+                },
+              ])
+            })
 
-            setAttachments((c) => [
-              ...c,
-              ...uploadedAttachments.map((a) => ({
-                ...a,
-                url: a.videoUrl ? a.videoUrl : a.imageUrl,
-              })),
-            ])
+            if (fileInputRef.current) fileInputRef.current.value = ""
           }}
           tabIndex={-1}
           accept="image/*,video/*"
@@ -151,6 +153,7 @@ export function MultimodalInput(props: Props) {
                 key={attachment.imageUrl}
                 attachment={attachment}
                 progress={progressMap[attachment.name]}
+                isUploading={uploadingMap[attachment.name]}
               />
             ))}
 
@@ -158,7 +161,7 @@ export function MultimodalInput(props: Props) {
               <PreviewAttachment
                 key={filename}
                 attachment={{ imageUrl: "", name: filename, contentType: "", videoUrl: "" }}
-                isUploading={true}
+                isUploading={uploadingMap[filename]}
                 progress={progressMap[filename]}
               />
             ))}

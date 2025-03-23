@@ -34,6 +34,10 @@ export function canEditStory(
   )
 }
 
+export function isAdmin(user: string | undefined): boolean {
+  return user === rocketman || user === riderway
+}
+
 export function canEditGrant(grant: Pick<Grant, "recipient">, user: string | undefined): boolean {
   if (!user) return false
   return [grant.recipient, rocketman, riderway].includes(user)

@@ -18,12 +18,20 @@ export function useFileUploads() {
   const [queue, setQueue] = useState<string[]>([])
   const { uploadVideo } = useCloudflareStreamUpload()
   const [progressMap, setProgressMap] = useState<Record<string, number>>({})
+  const [uploadingMap, setUploadingMap] = useState<Record<string, boolean>>({})
 
   const updateProgress = useCallback((fileName: string, progress: number) => {
     setProgressMap((prev) => ({ ...prev, [fileName]: progress }))
   }, [])
 
-  const uploadFiles = async (files: File[]): Promise<UploadedFile[]> => {
+  const setFileUploading = useCallback((fileName: string, uploading: boolean) => {
+    setUploadingMap((prev) => ({ ...prev, [fileName]: uploading }))
+  }, [])
+
+  const uploadFiles = async (
+    files: File[],
+    onFileUploaded?: (uploadedFile: UploadedFile) => void,
+  ): Promise<UploadedFile[]> => {
     if (!files.length) {
       toast.error("Please select files to upload")
       return []
@@ -34,31 +42,37 @@ export function useFileUploads() {
 
     const uploads = await Promise.all(
       files.map(async (file) => {
+        setFileUploading(file.name, true)
         try {
+          let uploadedFile: UploadedFile
+
           if (file.type.startsWith("video/")) {
             const videoResult = await uploadVideo(file, (progress) =>
               updateProgress(file.name, progress),
             )
-            return {
+            uploadedFile = {
               videoUrl: videoResult.hlsUrl,
               name: file.name,
               contentType: file.type,
               imageUrl: videoResult.thumbnailUrl,
             }
+          } else {
+            const fileToUpload = file.type.startsWith("image/") ? await compressImage(file) : file
+            const result = await uploadFile(fileToUpload)
+            uploadedFile = {
+              imageUrl: result,
+              name: file.name,
+              contentType: file.type,
+            }
           }
 
-          const fileToUpload = file.type.startsWith("image/") ? await compressImage(file) : file
-          const result = await uploadFile(fileToUpload)
-          return {
-            imageUrl: result,
-            name: file.name,
-            contentType: file.type,
-          }
+          onFileUploaded?.(uploadedFile)
+          return uploadedFile
         } catch (error) {
           console.error(`Upload error (${file.name}):`, error)
           return { error, name: file.name }
         } finally {
-          setIsUploading(false)
+          setFileUploading(file.name, false)
         }
       }),
     )
@@ -94,5 +108,6 @@ export function useFileUploads() {
     uploadQueue: queue,
     uploadFiles,
     progressMap,
+    uploadingMap,
   }
 }

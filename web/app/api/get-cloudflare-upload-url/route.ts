@@ -1,8 +1,8 @@
 import { getUser } from "@/lib/auth/user"
 import { NextResponse } from "next/server"
 import { getItem, saveItem } from "@/lib/kv/kvStore"
-import { getUserGrants } from "@/components/global/recipient-popover/get-user-grants"
 import database from "@/lib/database/edge"
+import { isAdmin } from "@/lib/database/helpers"
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID
 const CF_STREAM_TOKEN = process.env.CF_STREAM_TOKEN
@@ -28,7 +28,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   })
   const isGrantsBuilder = grantsCount > 0
 
-  const dailyLimit = isGrantsBuilder ? BUILDER_DAILY_LIMIT : DAILY_LIMIT
+  const dailyLimit = isGrantsBuilder || isAdmin(user.address) ? BUILDER_DAILY_LIMIT : DAILY_LIMIT
 
   const today = new Date().toISOString().split("T")[0]
   const rateLimitKey = `cloudflare-upload-${user.address}-${today}`
