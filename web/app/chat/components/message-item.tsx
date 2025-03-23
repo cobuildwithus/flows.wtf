@@ -1,17 +1,18 @@
 "use client"
 
 import { Markdown } from "@/components/ui/markdown"
-import { AgentType } from "@/lib/enums"
+import type { AgentType } from "@/lib/enums"
 import { cn } from "@/lib/utils"
 import Flo from "@/public/flo.png"
 import Gonzo from "@/public/gonzo.svg"
-import { Attachment, ToolInvocation } from "ai"
+import type { Attachment, ToolInvocation } from "ai"
 import Image from "next/image"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { PreviewAttachment } from "./preview-attachment"
 import { CastPreview } from "./tools/cast-preview"
 import { SubmitApplicationResult } from "./tools/submit-application"
 import { SuccessMessageResult } from "./tools/success-message"
+import { getThumbnailUrlFromCloudflareStream } from "@/lib/file-upload/get-thumbnail-url-from-cloudflare-stream"
 
 interface Props {
   role: string
@@ -57,7 +58,10 @@ export const MessageItem = (props: Props) => {
             {attachments && (
               <div className="flex gap-2.5 overflow-x-auto">
                 {attachments.map((attachment) => (
-                  <PreviewAttachment key={attachment.url} attachment={attachment} />
+                  <PreviewAttachment
+                    key={attachment.url}
+                    attachment={getPreviewFromAttachment(attachment)}
+                  />
                 ))}
               </div>
             )}
@@ -92,4 +96,15 @@ export const MessageItem = (props: Props) => {
       )}
     </div>
   )
+}
+
+function getPreviewFromAttachment(attachment: Attachment) {
+  return {
+    ...attachment,
+    imageUrl: attachment.url.includes(".m3u8")
+      ? (getThumbnailUrlFromCloudflareStream(attachment.url) ?? "")
+      : attachment.url,
+    name: attachment.url.split("/").pop() ?? "",
+    contentType: attachment.url.split(".").pop() ?? "",
+  }
 }

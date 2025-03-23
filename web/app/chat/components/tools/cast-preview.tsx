@@ -4,12 +4,13 @@ import SignInWithNeynar from "@/components/global/signin-with-neynar"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { getSignerUUID } from "@/lib/auth/farcaster-signer-uuid"
-import { NewCastData, publishCast } from "@/lib/farcaster/publish-cast"
+import { type NewCastData, publishCast } from "@/lib/farcaster/publish-cast"
 import FarcasterLogo from "@/public/farcaster.svg"
 import Image from "next/image"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useAgentChat } from "../agent-chat"
+import { VideoPlayer } from "@/components/ui/video-player"
 
 export const CastPreview = (props: NewCastData) => {
   const { text, embeds } = props
@@ -26,16 +27,30 @@ export const CastPreview = (props: NewCastData) => {
         <div className="flex flex-col gap-2 rounded-xl border-[3px] border-[#7C65C1] bg-background/50 p-5">
           <p className="text-sm text-foreground dark:text-white">{text}</p>
           <div className="flex gap-2.5 overflow-x-auto">
-            {embeds?.map((embed) => (
-              <img
-                src={embed.url}
-                alt="Embed"
-                className="aspect-video h-20 w-auto rounded-md object-cover"
-                width={142}
-                height={80}
-                key={embed.url}
-              />
-            ))}
+            {embeds?.map((embed) =>
+              embed.url.endsWith(".m3u8") ? (
+                <div
+                  className="aspect-video h-32 w-auto overflow-hidden rounded-md"
+                  key={embed.url}
+                >
+                  <VideoPlayer
+                    url={embed.url}
+                    width="100%"
+                    height="100%"
+                    className="aspect-video"
+                  />
+                </div>
+              ) : (
+                <img
+                  src={embed.url}
+                  alt="Embed"
+                  className="aspect-video h-32 w-auto rounded-md object-cover"
+                  width={142}
+                  height={80}
+                  key={embed.url}
+                />
+              ),
+            )}
           </div>
         </div>
         <div className="flex w-full justify-between gap-2.5">
@@ -62,7 +77,7 @@ export const CastPreview = (props: NewCastData) => {
                   setStatus("published")
                   append({
                     role: "user",
-                    content: `I've published cast! https://warpcast.com/${user.username}/${publication.cast.hash}`,
+                    content: `I've published the cast! https://warpcast.com/${user.username}/${publication.cast.hash}`,
                   })
                 } catch (error) {
                   console.error(error)
@@ -72,7 +87,7 @@ export const CastPreview = (props: NewCastData) => {
               }}
             >
               <Image src={FarcasterLogo} alt="Farcaster" className="mr-1 h-5 w-auto" priority />
-              Publish <span className="hidden md:inline">&nbsp;on Farcaster</span>
+              Publish <span className="hidden md:inline">&nbsp;reply</span>
             </Button>
           )}
           {!user.hasSignerUUID && <SignInWithNeynar user={user} />}

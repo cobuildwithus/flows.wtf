@@ -1,41 +1,38 @@
 /* eslint-disable @next/next/no-img-element */
-import { Attachment } from "ai"
+import type { UploadedFile } from "@/lib/file-upload/use-file-uploads"
 import { Loader2, Video } from "lucide-react"
 
 interface Props {
-  attachment: Attachment
+  attachment: UploadedFile
   isUploading?: boolean
+  progress?: number
 }
 
 export const PreviewAttachment = (props: Props) => {
-  const { attachment, isUploading = false } = props
-  const { name, url, contentType } = attachment
+  const { attachment, isUploading = false, progress } = props
+  const { name, imageUrl, videoUrl } = attachment
 
   return (
-    <div className="flex w-20 shrink-0 flex-col md:w-28">
-      <div className="relative flex aspect-video w-full items-center justify-center rounded-md bg-secondary">
-        {contentType?.startsWith("image") && (
+    <div className="flex size-16">
+      <div className="relative flex aspect-square w-full items-center justify-center rounded-md bg-secondary">
+        {imageUrl && (
           <img
-            key={url}
-            src={url}
+            src={imageUrl}
             alt={name ?? " "}
-            className="aspect-video size-full rounded-md object-cover"
+            className="aspect-square size-full rounded-md object-cover"
           />
         )}
-
-        {contentType?.startsWith("video") && (
-          <div className="flex size-full items-center justify-center">
-            <Video className="size-6 text-secondary-foreground" />
-          </div>
-        )}
+        {videoUrl && <Video className="absolute inset-0 m-auto size-8 text-white" />}
 
         {isUploading && (
-          <div className="animate-spin text-muted-foreground">
-            <Loader2 className="size-4" />
+          <div className="absolute inset-0 flex items-center justify-center rounded-md bg-primary text-secondary-foreground">
+            <Loader2 className="size-12 animate-spin text-white" />
+            {progress !== undefined && (
+              <span className="absolute text-xs text-white">{progress}%</span>
+            )}
           </div>
         )}
       </div>
-      {/* <div className="mt-1.5 max-w-full text-xs text-muted-foreground">{name}</div> */}
     </div>
   )
 }

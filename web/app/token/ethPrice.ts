@@ -13,20 +13,17 @@ async function storeConversionRates(rates: ETHRates) {
 }
 
 export const fetchAndSetEthRates = async () => {
-  const response = await fetch(
-    "https://production.api.coindesk.com/v2/tb/price/ticker?assets=ETH",
-  ).then((coinRes) => coinRes.json())
+  const response = await fetch("https://api.coinbase.com/v2/prices/ETH-USD/spot")
+  const json = await response.json()
 
-  const ethRate = response.data?.ETH?.ohlc?.c
+  const ethRate = Number.parseFloat(json.data?.amount)
 
-  if (!ethRate) {
-    throw new Error("No rates fetched")
-  } else {
-    const rates = {
-      eth: ethRate,
-    }
-    await storeConversionRates(rates)
+  if (!ethRate || Number.isNaN(ethRate)) {
+    throw new Error("Invalid or missing ETH rate fetched")
   }
+
+  const rates = { eth: ethRate }
+  await storeConversionRates(rates)
 }
 
 export async function getConversionRates() {
