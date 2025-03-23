@@ -10,16 +10,19 @@ export function getThumbnailUrlFromCloudflareStream(
   streamUrl: string,
   options: { time?: string; height?: number } = {},
 ): string | null {
-  // Default options
-  const { time = "3s", height = 320 } = options
+  const { time, height } = options
 
-  // Extract video ID from the HLS URL
-  // Expected format: https://videodelivery.net/{videoId}/manifest/video.m3u8
   const match = streamUrl.match(/videodelivery\.net\/([^\/]+)\//)
   if (!match || !match[1]) return null
 
   const videoId = match[1]
 
-  // Construct the thumbnail URL using the same format as in useCloudflareStreamUpload
-  return `https://videodelivery.net/${videoId}/thumbnails/thumbnail.jpg?time=${time}&height=${height}`
+  const url = `https://videodelivery.net/${videoId}/thumbnails/thumbnail.jpg`
+
+  const params = new URLSearchParams()
+  if (time) params.append("time", time)
+  if (height) params.append("height", height.toString())
+
+  const queryString = params.toString()
+  return queryString ? `${url}?${queryString}` : url
 }
