@@ -8,10 +8,11 @@ interface Props {
   impactId: string
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
+  canEdit: boolean
 }
 
 export function BlockProofs(props: Props) {
-  const { proofs, name, impactId, isEditing, setIsEditing } = props
+  const { proofs, name, impactId, isEditing, setIsEditing, canEdit } = props
 
   const hasMedia = proofs.some((proof) => proof.images.length > 0 || proof.videos.length > 0)
 
@@ -28,6 +29,7 @@ export function BlockProofs(props: Props) {
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           proofs={proofs}
+          canEdit={canEdit}
         />
       )}
     </>
