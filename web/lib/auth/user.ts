@@ -26,7 +26,7 @@ export const getUser = cache(async () => {
   const city = headersList.get("X-Vercel-IP-City")
 
   const farcasterUser = await getFarcasterUserByEthAddress(address)
-  const fid = Number(farcasterUser?.fid)
+  const fid = farcasterUser?.fid ? Number(farcasterUser.fid) : undefined
 
   return {
     address,
