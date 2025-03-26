@@ -14,9 +14,10 @@ interface Props {
   impactId: string
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
+  canEdit: boolean
 }
 
-export function BlockCasts({ proofs, impactId, isEditing, setIsEditing }: Props) {
+export function BlockCasts({ proofs, impactId, isEditing, setIsEditing, canEdit }: Props) {
   const { setMessages, reload, appendData } = useAgentChat()
 
   const castIds = useMemo(() => {
@@ -47,32 +48,34 @@ export function BlockCasts({ proofs, impactId, isEditing, setIsEditing }: Props)
 
   return (
     <div className="space-y-4 md:p-4">
-      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-muted/20 px-6 py-8 text-center">
-        <p className="text-sm text-muted-foreground">
-          Add pictures or videos as proof of your impact.
-        </p>
+      {canEdit && (
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted px-6 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Add pictures or videos as proof of your impact.
+          </p>
 
-        <Button
-          variant={isEditing ? "outline" : "default"}
-          className={cn("mt-4 rounded-2xl", { "bg-transparent": isEditing })}
-          onClick={() => {
-            setIsEditing(true)
-            appendData({
-              impactId,
-            })
-            setMessages([
-              {
-                role: "user",
-                content: "I want to add pictures or videos as proof of my impact",
-                id: "1",
-              },
-            ])
-            reload()
-          }}
-        >
-          Add
-        </Button>
-      </div>
+          <Button
+            variant={isEditing ? "outline" : "default"}
+            className={cn("mt-4 rounded-2xl", { "bg-transparent": isEditing })}
+            onClick={() => {
+              setIsEditing(true)
+              appendData({
+                impactId,
+              })
+              setMessages([
+                {
+                  role: "user",
+                  content: "I want to add pictures or videos as proof of my impact",
+                  id: "1",
+                },
+              ])
+              reload()
+            }}
+          >
+            Add media
+          </Button>
+        </div>
+      )}
       {casts.map((cast) => (
         <CastCard key={cast.id.toString()} cast={cast} showVerification={false} />
       ))}

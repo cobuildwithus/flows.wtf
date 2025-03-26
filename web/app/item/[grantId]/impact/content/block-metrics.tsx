@@ -10,10 +10,11 @@ interface Props {
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
   impactId: string
+  canEdit: boolean
 }
 
 export function BlockMetrics(props: Props) {
-  const { isEditing, setIsEditing, impactId } = props
+  const { isEditing, setIsEditing, impactId, canEdit } = props
   const { setMessages, reload, appendData } = useAgentChat()
 
   const impactMetrics = props.impactMetrics.filter(
@@ -36,29 +37,33 @@ export function BlockMetrics(props: Props) {
           ))}
         </dl>
       ) : (
-        <div className="mt-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted bg-muted/20 px-6 py-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            {isEditing ? "Editing impact..." : "No impact metrics added yet. "}
-          </p>
+        <div className="mt-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted px-6 py-8 text-center">
+          <p className="text-sm text-muted-foreground">No impact metrics added yet.</p>
 
-          <Button
-            variant={isEditing ? "outline" : "default"}
-            className={cn("mt-4 rounded-2xl", { "bg-transparent": isEditing })}
-            onClick={() => {
-              if (isEditing) {
-                setIsEditing(false)
-              } else {
-                setIsEditing(true)
-                appendData({ impactId })
-                setMessages([
-                  { role: "user", content: "I want to add metrics to this impact block", id: "1" },
-                ])
-                reload()
-              }
-            }}
-          >
-            {isEditing ? "Finish" : "Add"}
-          </Button>
+          {canEdit && !isEditing && (
+            <Button
+              variant={"default"}
+              className={cn("mt-4 rounded-2xl")}
+              onClick={() => {
+                if (isEditing) {
+                  setIsEditing(false)
+                } else {
+                  setIsEditing(true)
+                  appendData({ impactId })
+                  setMessages([
+                    {
+                      role: "user",
+                      content: "I want to add metrics to this impact block",
+                      id: "1",
+                    },
+                  ])
+                  reload()
+                }
+              }}
+            >
+              Add metrics
+            </Button>
+          )}
         </div>
       )}
     </section>

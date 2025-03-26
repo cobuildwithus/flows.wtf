@@ -1,6 +1,7 @@
 "use client"
 
 import { DateTime } from "@/components/ui/date-time"
+import { cn } from "@/lib/utils"
 import type { Impact } from "@prisma/flows"
 import { motion } from "framer-motion"
 import Image from "next/image"
@@ -12,7 +13,6 @@ import { BlockPeople } from "./content/block-people"
 import { BlockProofs } from "./content/block-proofs"
 import { BlockResults } from "./content/block-results"
 import BlockSources from "./content/block-sources"
-import { cn } from "@/lib/utils"
 
 interface Props {
   impact: Impact
@@ -64,6 +64,7 @@ export function ImpactContent(props: Props) {
               setIsEditing={setIsEditing}
               proofs={proofs}
               name={name}
+              canEdit={canEdit}
             />
           </motion.div>
           {isEditing && <BlockChat impact={impact} />}
@@ -81,6 +82,7 @@ export function ImpactContent(props: Props) {
             isEditing={isEditing}
             setIsEditing={setIsEditing}
             impactId={impact.id}
+            canEdit={canEdit}
           />
 
           <BlockPeople peopleInvolved={peopleInvolved} />
