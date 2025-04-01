@@ -1,4 +1,4 @@
-import { Context, ponder } from "ponder:registry"
+import { ponder, type Context } from "ponder:registry"
 import { zeroAddress } from "viem"
 import { rewardPoolImplAbi } from "../../abis"
 import { Status } from "../enums"
@@ -36,7 +36,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
       abi: context.contracts.NounsFlow.abi,
       functionName: "flowMetadata",
     }),
-    managerRewardPool != zeroAddress
+    managerRewardPool !== zeroAddress
       ? context.client.readContract({
           address: managerRewardPool,
           abi: rewardPoolImplAbi,
@@ -63,6 +63,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     superToken: superToken.toLowerCase(),
     submitter: zeroAddress,
     votesCount: "0",
+    totalVoteWeightCastOnFlow: "0",
     monthlyIncomingFlowRate: "0",
     monthlyIncomingBaselineFlowRate: "0",
     monthlyIncomingBonusFlowRate: "0",
@@ -76,6 +77,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     activeRecipientCount: 0,
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,
+    bonusPoolQuorum: 0,
     tcr: baseContracts.FlowTCR,
     erc20: baseContracts.ERC20VotesMintable,
     arbitrator: baseContracts.ERC20VotesArbitrator,

@@ -172,6 +172,8 @@ model Grant {
   managerRewardSuperfluidPool      String  @map("manager_reward_superfluid_pool")
   managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")
   baselinePoolFlowRatePercent      Int     @map("baseline_pool_flow_rate_percent")
+  bonusPoolQuorum                  Int     @map("bonus_pool_quorum")
+  totalVoteWeightCastOnFlow        String  @map("total_vote_weight_cast_on_flow")
 
   flow         Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants    Grant[]       @relation("Subgrants")

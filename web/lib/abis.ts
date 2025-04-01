@@ -4256,7 +4256,7 @@ export const multicall3Config = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x2367dc09d9f7816dc77edb867ea1c57dadeeabe6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x493ed7912895cfbd2cf0a187a71c54f5d6d974f4)
  */
 export const nounsFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -4350,6 +4350,25 @@ export const nounsFlowImplAbi = [
       },
     ],
     name: 'BeaconUpgraded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldBonusPoolQuorum',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'newBonusPoolQuorum',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'BonusPoolQuorumUpdated',
   },
   {
     type: 'event',
@@ -4746,6 +4765,11 @@ export const nounsFlowImplAbi = [
             internalType: 'uint32',
             type: 'uint32',
           },
+          {
+            name: 'bonusPoolQuorumBps',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
         ],
       },
       {
@@ -5005,6 +5029,12 @@ export const nounsFlowImplAbi = [
       },
       { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
       { name: 'cachedFlowRate', internalType: 'int96', type: 'int96' },
+      {
+        name: 'totalActiveVoteWeight',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: 'bonusPoolQuorumBps', internalType: 'uint32', type: 'uint32' },
     ],
     stateMutability: 'view',
   },
@@ -5169,6 +5199,11 @@ export const nounsFlowImplAbi = [
             internalType: 'uint32',
             type: 'uint32',
           },
+          {
+            name: 'bonusPoolQuorumBps',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
         ],
       },
       {
@@ -5280,6 +5315,13 @@ export const nounsFlowImplAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_quorumBps', internalType: 'uint32', type: 'uint32' }],
+    name: 'setBonusPoolQuorum',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'description', internalType: 'string', type: 'string' }],
     name: 'setDescription',
     outputs: [],
@@ -5370,6 +5412,20 @@ export const nounsFlowImplAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'totalActiveVoteWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalTokenSupplyVoteWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
     name: 'transferOwnership',
     outputs: [],
@@ -5379,6 +5435,13 @@ export const nounsFlowImplAbi = [
     type: 'function',
     inputs: [{ name: '_verifier', internalType: 'address', type: 'address' }],
     name: 'updateVerifier',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'upgradeAllChildFlows',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -5420,14 +5483,14 @@ export const nounsFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x2367dc09d9f7816dc77edb867ea1c57dadeeabe6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x493ed7912895cfbd2cf0a187a71c54f5d6d974f4)
  */
 export const nounsFlowImplAddress = {
-  8453: '0x2367dC09d9F7816dC77edb867Ea1C57DaDEeAbE6',
+  8453: '0x493ed7912895CFBD2cF0a187A71C54F5d6D974F4',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x2367dc09d9f7816dc77edb867ea1c57dadeeabe6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x493ed7912895cfbd2cf0a187a71c54f5d6d974f4)
  */
 export const nounsFlowImplConfig = {
   address: nounsFlowImplAddress,

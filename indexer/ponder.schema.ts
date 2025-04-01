@@ -50,6 +50,8 @@ export const grants = onchainTable(
     activatedAt: t.integer(),
     managerRewardPoolFlowRatePercent: t.integer().notNull(),
     baselinePoolFlowRatePercent: t.integer().notNull(),
+    bonusPoolQuorum: t.integer().notNull(),
+    totalVoteWeightCastOnFlow: t.text().notNull(),
   }),
   (table) => ({
     isTopLevelIdx: index().on(table.isTopLevel),

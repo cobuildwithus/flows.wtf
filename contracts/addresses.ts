@@ -7,7 +7,7 @@ export const base = {
   TCRFactoryImpl: "0xa267acd543b3106fc421266286de1cd95773c004",
   ERC20VotesMintableImpl: "0x92f1bce6e6f6c48a7fba9be8413c83a3d3fd0349",
   TokenEmitterImpl: "0x1c6f23fb1348cc3936b774725d855bc3e9d1fbf3",
-  NounsFlowImpl: "0x2367dc09d9f7816dc77edb867ea1c57dadeeabe6",
+  NounsFlowImpl: "0x493ed7912895cfbd2cf0a187a71c54f5d6d974f4",
   RewardPoolImpl: "0xb1898c5de9b4ac8643362196f7a11cd5db42f43c",
   FlowTCRImpl: "0xe0dbe3ea8f5bae3c43475ee61fb620aec88121f7",
   TokenVerifier: "0x08009fcf85af4724589706a22ddf2844607b8853",
