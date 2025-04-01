@@ -1,3 +1,5 @@
+"use server"
+
 import { Badge } from "@/components/ui/badge"
 import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
 import type { FlowWithGrants } from "@/lib/database/queries/flow"
@@ -7,15 +9,24 @@ import Image from "next/image"
 import Link from "next/link"
 import { BudgetDialog } from "./budget-dialog"
 import { FlowHeaderUserVotes } from "./flow-header-user-votes"
+import { erc20Abi } from "viem"
+import { nounsTokenAddress } from "@/lib/abis"
+import { l1Client } from "@/lib/viem/client"
 
 interface Props {
   flow: FlowWithGrants
   votingPower: number
 }
 
-export const FlowHeader = (props: Props) => {
+export const FlowHeader = async (props: Props) => {
   const { flow, votingPower } = props
   const { isTopLevel } = flow
+
+  const nounsTokenSupply = await l1Client.readContract({
+    abi: erc20Abi,
+    address: nounsTokenAddress[1],
+    functionName: "totalSupply",
+  })
 
   return (
     <div className="flex flex-col items-start justify-between space-y-6 md:flex-row md:items-center md:space-x-4 md:space-y-0">
@@ -64,7 +75,7 @@ export const FlowHeader = (props: Props) => {
         </div>
         <div className="md:text-center">
           <p className="mb-1.5 text-muted-foreground">Budget</p>
-          <BudgetDialog flow={flow} />
+          <BudgetDialog nounsTokenSupply={Number(nounsTokenSupply)} flow={flow} />
         </div>
         {!flow.isTopLevel && (
           <>

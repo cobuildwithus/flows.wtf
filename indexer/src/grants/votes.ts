@@ -1,6 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
+import { votes, grants, votesByTokenIdAndContract, flowContractToGrantId } from "ponder:schema"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
@@ -23,6 +23,8 @@ async function handleVoteCast(params: {
   affectedGrantsIds.set(recipientId.toString(), votesCount)
 
   let hasPreviousVotes = false
+
+  await updateTotalVoteWeightCastOnFlow(context.db, contract, tokenId, totalWeight)
 
   // Mark old votes for this token as stale
   const oldVotes = await getOldVotes(context.db, contract, tokenId, blockNumber)
@@ -69,6 +71,25 @@ async function handleVoteCast(params: {
   // so must handle all sibling flow rates
   if (!hasPreviousVotes) {
     await handleIncomingFlowRates(context.db, contract)
+  }
+}
+
+async function updateTotalVoteWeightCastOnFlow(
+  db: Context["db"],
+  contract: `0x${string}`,
+  tokenId: bigint,
+  totalWeight: bigint
+) {
+  const parentFlow = await db.find(flowContractToGrantId, { contract })
+  if (parentFlow) {
+    const existingVoteIds = await db.find(votesByTokenIdAndContract, {
+      contractTokenId: `${contract}_${tokenId}`,
+    })
+    if (!existingVoteIds || existingVoteIds.voteIds.length === 0) {
+      await db.update(grants, { id: parentFlow.grantId }).set((row) => ({
+        totalVoteWeightCastOnFlow: (BigInt(row.totalVoteWeightCastOnFlow) + totalWeight).toString(),
+      }))
+    }
   }
 }
 

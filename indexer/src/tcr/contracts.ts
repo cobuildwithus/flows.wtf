@@ -1,4 +1,4 @@
-import { Context, ponder } from "ponder:registry"
+import { ponder, type Context } from "ponder:registry"
 import { rewardPoolImplAbi } from "../../abis"
 import {
   arbitratorToGrantId,

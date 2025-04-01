@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { ArrowDownIcon, ArrowUpIcon, InfoIcon } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -16,10 +16,11 @@ import { Separator } from "@radix-ui/react-select"
 
 interface Props {
   flow: FlowWithGrants
+  nounsTokenSupply: number
 }
 
 export const BudgetDialog = (props: Props) => {
-  const { flow } = props
+  const { flow, nounsTokenSupply } = props
 
   const managerFlowRatePercent = Number(flow.managerRewardPoolFlowRatePercent)
   const remainingFlowRatePercent = 1e6 - managerFlowRatePercent
@@ -36,12 +37,14 @@ export const BudgetDialog = (props: Props) => {
   const bonusPercent = (Number(flow.monthlyBonusPoolFlowRate ?? 0) / totalFlowRate) * 100
   const managerPercent = (Number(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
 
-  // Sample quorum data
+  const tokenVoteWeight = 1000
+  const currentVotes = Number(flow.totalVoteWeightCastOnFlow) / 1e18
+  const requiredVotes = (nounsTokenSupply * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6
+
   const quorumData = {
-    quorumPercentage: 45,
-    currentVotes: 450,
-    requiredVotes: 1000,
-    maxPotentialAmount: 1191,
+    quorumPercentage: (currentVotes / requiredVotes) * 100,
+    currentVotes,
+    requiredVotes,
   }
 
   return (
@@ -86,16 +89,19 @@ export const BudgetDialog = (props: Props) => {
                       </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                      At quorum the bonus
+                      When full quorum
                       <br />
-                      pool is {bonusFlowRatePercent / 1e4}% of
+                      is reached, the bonus
+                      <br />
+                      pool will be {bonusFlowRatePercent / 1e4}% of
                       <br />
                       the total flow.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 <span className="text-sm font-medium">
-                  {quorumData.currentVotes}/{quorumData.requiredVotes} votes
+                  {formatValue(quorumData.currentVotes)}/{formatValue(quorumData.requiredVotes)}{" "}
+                  votes
                 </span>
               </div>
               <Progress value={quorumData.quorumPercentage} className="h-2" />
@@ -108,22 +114,22 @@ export const BudgetDialog = (props: Props) => {
             {/* Total Flows Section */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/30">
-                  <ArrowDownIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
+                  <ArrowDownIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Incoming Flow</p>
+                  <p className="text-sm font-medium text-muted-foreground">Incoming Flow</p>
                   <p className="text-xl font-bold">
                     <Currency>{flow.monthlyIncomingFlowRate || 0}</Currency>/month
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
-                  <ArrowUpIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/30">
+                  <ArrowUpIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Outgoing Flow</p>
+                  <p className="text-sm font-medium text-muted-foreground">Outgoing Flow</p>
                   <p className="text-xl font-bold">
                     <Currency>{flow.monthlyOutgoingFlowRate || 0}</Currency>/month
                   </p>
@@ -203,4 +209,18 @@ export const BudgetDialog = (props: Props) => {
       </DialogContent>
     </Dialog>
   )
+}
+
+function formatValue(value: number) {
+  if (value >= 1000000) {
+    const millions = value / 1000000
+    const roundedMillions = Math.round(millions * 10) / 10
+    return `${millions.toFixed(roundedMillions % 1 === 0 ? 0 : 1)}M`
+  }
+  if (value >= 1000) {
+    const thousands = value / 1000
+    const roundedThousands = Math.round(thousands * 10) / 10
+    return `${thousands.toFixed(roundedThousands % 1 === 0 ? 0 : 1)}k`
+  }
+  return value.toFixed(0)
 }
