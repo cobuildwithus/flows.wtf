@@ -21,6 +21,7 @@ interface Props {
 
 export const BudgetDialog = (props: Props) => {
   const { flow, nounsTokenSupply } = props
+  const tokenVoteWeight = 1000
 
   const managerFlowRatePercent = Number(flow.managerRewardPoolFlowRatePercent)
   const remainingFlowRatePercent = 1e6 - managerFlowRatePercent
@@ -37,7 +38,6 @@ export const BudgetDialog = (props: Props) => {
   const bonusPercent = (Number(flow.monthlyBonusPoolFlowRate ?? 0) / totalFlowRate) * 100
   const managerPercent = (Number(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
 
-  const tokenVoteWeight = 1000
   const currentVotes = Number(flow.totalVoteWeightCastOnFlow) / 1e18
   const requiredVotes = (nounsTokenSupply * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6
 
