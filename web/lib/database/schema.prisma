@@ -53,6 +53,7 @@ model DerivedData {
   beneficiaries       Json?
   deliverables        String[]
   grades              Json?
+  /// [ImpactMetricDefinition[]]
   impactMetrics       Json?
   lastBuilderUpdate   DateTime?
   minimumSalary       Int?
@@ -69,6 +70,8 @@ model DerivedData {
   builder             Json?
   /// [GrantGradients]
   gradients           Json?
+  /// [ImpactSummary]
+  impactSummary       Json?
 
   @@index([grantId])
   @@map("DerivedData")
@@ -285,7 +288,7 @@ view Evidence {
 }
 
 model Impact {
-  id             String   @id
+  id             String    @id
   name           String
   date           DateTime
   location       String?
@@ -293,14 +296,14 @@ model Impact {
   /// [Proof[]]
   proofs         Json
   /// [BestImage]
-  bestImage      Json     @map("best_image")
-  /// [ImpactUnit[]]
-  impactMetrics  Json     @map("impact_metrics")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  bestImage      Json      @map("best_image")
+  /// [ImpactMetric[]]
+  impactMetrics  Json      @map("impact_metrics")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
   /// [InvolvedPerson[]]
-  peopleInvolved Json     @map("people_involved")
-  grantId        String   @map("grant_id")
+  peopleInvolved Json      @map("people_involved")
+  grantId        String    @map("grant_id")
   complete       Boolean
   /// [ImpactResult[]]
   results        Json
