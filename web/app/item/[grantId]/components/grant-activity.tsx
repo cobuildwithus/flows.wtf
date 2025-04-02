@@ -16,14 +16,14 @@ const MAX_LEVEL = 3
 export async function GrantActivity(props: Props) {
   const { grant } = props
 
-  const nineMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 9))
+  const eightMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 8))
   const [activities, updates] = await Promise.all([
     unstable_cache(
-      () => getActivity(grant.recipient, [grant], nineMonthsAgo),
+      () => getActivity(grant.recipient, [grant], eightMonthsAgo),
       [`activity-graph-grant-page-v3-${grant.id}`],
       { revalidate: 180 },
     )(),
-    getGrantUpdates([grant], nineMonthsAgo),
+    getGrantUpdates([grant], eightMonthsAgo),
   ])
 
   const startDate = new Date(grant.createdAt * 1000)

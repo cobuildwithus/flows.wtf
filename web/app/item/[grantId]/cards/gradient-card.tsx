@@ -25,7 +25,7 @@ export function GradientCard(props: Props) {
   return (
     <div
       style={getGradientVariables(gradient)}
-      className={`rounded-xl bg-gradient-to-br from-[var(--gradient-start-light)] to-[var(--gradient-end-light)] dark:from-[var(--gradient-start-dark)] dark:to-[var(--gradient-end-dark)] ${className}`}
+      className={`w-full rounded-xl bg-gradient-to-br from-[var(--gradient-start-light)] to-[var(--gradient-end-light)] dark:from-[var(--gradient-start-dark)] dark:to-[var(--gradient-end-dark)] ${className}`}
     >
       <div className="flex h-full flex-col text-[var(--text-light)] dark:text-[var(--text-dark)]">
         {children}
