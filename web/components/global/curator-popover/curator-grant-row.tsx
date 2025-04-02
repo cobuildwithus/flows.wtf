@@ -45,7 +45,7 @@ export function ActiveCuratorGrantRow({
         />
         <Link
           onClick={closePopover}
-          href={`/application/${id}`}
+          href={grant.isActive ? `/item/${id}` : `/application/${id}`}
           className="truncate text-sm hover:underline"
         >
           {title}

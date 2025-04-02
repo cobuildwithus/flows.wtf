@@ -8,7 +8,7 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getUserUpdatesChannel } from "@/lib/farcaster/get-user-updates-channel"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
-import { getEthAddress, getIpfsUrl, getShortEthAddress } from "@/lib/utils"
+import { getEthAddress, getIpfsUrl } from "@/lib/utils"
 import { PlusIcon } from "@radix-ui/react-icons"
 import Image from "next/image"
 import Link from "next/link"
@@ -48,7 +48,7 @@ export const RecipientPopover = (props: Props) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Badge className="h-[26px] rounded-full text-xs">
+        <Badge className="h-[26px] rounded-full text-xs md:h-[30px] md:px-2.5 md:text-sm">
           <AnimatedSalary
             value={earnings.claimable ? Number(earnings.claimable) / 1e18 : 0}
             monthlyRate={earnings.monthly}

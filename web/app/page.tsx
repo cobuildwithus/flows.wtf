@@ -35,7 +35,7 @@ export default async function Home() {
         <div className="container mt-12 flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-4">
-              <h3 className="font-semibold leading-none tracking-tight md:text-lg">
+              <h3 className="text-lg font-semibold leading-none tracking-tight md:text-xl">
                 <Link href={`/flow/${pool.id}`} className="hover:text-primary">
                   Explore Flows
                 </Link>

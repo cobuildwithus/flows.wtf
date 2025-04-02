@@ -78,7 +78,7 @@ export function MenuDesktop() {
             key={name}
             href={href}
             className={cn(
-              "underline-primary group flex items-center gap-1.5 px-1 font-medium tracking-tight underline-offset-8",
+              "underline-primary group flex items-center gap-1.5 px-1 font-medium tracking-tight underline-offset-8 md:text-lg",
               {
                 "text-primary underline": isCurrent,
                 "text-muted-foreground hover:text-foreground": !isCurrent,
