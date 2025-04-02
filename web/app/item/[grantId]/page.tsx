@@ -36,6 +36,8 @@ import { ImpactChain } from "./impact/impact-chain"
 import { Badge } from "@/components/ui/badge"
 import { FlowRemovedCard } from "./components/flow-removed-card"
 import { EmptyState } from "@/components/ui/empty-state"
+import { ImpactSummaryChart } from "./components/impact-summary-chart"
+import { Card } from "@/components/ui/card"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -66,8 +68,18 @@ export default async function GrantPage(props: Props) {
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
   if (!grant.derivedData) notFound()
 
-  const { mission, builder, title, beneficiaries, tagline, coverImage, gradients, deliverables } =
-    grant.derivedData
+  const {
+    mission,
+    builder,
+    title,
+    beneficiaries,
+    tagline,
+    coverImage,
+    gradients,
+    deliverables,
+    impactSummary,
+    impactMetrics,
+  } = grant.derivedData
 
   const canEdit = canEditGrant(grant, user?.address)
 
@@ -75,6 +87,9 @@ export default async function GrantPage(props: Props) {
     where: { grantId, deletedAt: null },
     orderBy: [{ date: "asc" }, { updatedAt: "asc" }],
   })
+
+  const hasImpactSummary =
+    impactSummary && impactMetrics && impacts.some((i) => i.impactMetrics.length > 0)
 
   return (
     <>
@@ -127,15 +142,50 @@ export default async function GrantPage(props: Props) {
                 <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
               )}
             </div>
-            <div className="col-span-full cursor-pointer xl:col-span-3">
+
+            <div className="col-span-full cursor-pointer xl:col-span-3 xl:col-start-1">
               <ImpactDialog grants={[{ ...grant, flow: { title: flow.title } }]} />
             </div>
-            <div className="col-span-full rounded-xl border xl:col-span-9 xl:flex xl:items-center xl:justify-end">
+
+            {hasImpactSummary && (
+              <div className="xl:col-span-9">
+                <ImpactSummaryChart
+                  data={impacts.flatMap((i) =>
+                    i.impactMetrics.map((metric) => ({
+                      ...metric,
+                      date: i.date.toISOString().split("T")[0],
+                      weight: impactMetrics.find((m) => m.units === metric.units)?.weight || 1,
+                    })),
+                  )}
+                  summary={impactSummary}
+                  backgroundImage={
+                    impacts[impacts.length - 1].bestImage.illustration?.url || grant.image
+                  }
+                  gradients={Object.values(gradients || {})}
+                />
+              </div>
+            )}
+
+            <div
+              className={cn(
+                "col-span-full rounded-xl border xl:flex xl:items-center xl:justify-end",
+                {
+                  "xl:col-span-8": hasImpactSummary,
+                  "xl:col-span-9": !hasImpactSummary,
+                },
+              )}
+            >
               <Suspense fallback={<div className="h-[252px]" />}>
                 <GrantActivity grant={grant} />
               </Suspense>
             </div>
-            <Stat label="Budget">
+            {/* <div className="xl:col-span-4">
+              <Card className="flex h-full w-full flex-col items-center justify-center">
+                Feedback / Testimonials
+              </Card>
+            </div> */}
+
+            <Stat label="Budget" className="xl:col-start-1">
               <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
             </Stat>
 
@@ -259,6 +309,8 @@ async function getGrant(grantId: string) {
           beneficiaries: true,
           overallGrade: true,
           requirementsMetrics: true,
+          impactMetrics: true,
+          impactSummary: true,
         },
       },
     },
