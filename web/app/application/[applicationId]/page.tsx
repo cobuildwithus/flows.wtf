@@ -70,7 +70,7 @@ export default async function ApplicationPage(props: Props) {
             <BreadcrumbSeparator />
 
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/flow/${flow.id}/applications`}>
+              <BreadcrumbLink href={`/flow/${flow.id}/curate`}>
                 {flow.title} Applications
               </BreadcrumbLink>
             </BreadcrumbItem>

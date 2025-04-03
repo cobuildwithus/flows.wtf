@@ -58,7 +58,6 @@ model DerivedData {
   minimumSalary       Int?
   ongoingRequirements Json?
   overallGrade        Float?
-  pageData            String?
   requirementsMetrics Json?
   shortDescription    String?
   template            String?

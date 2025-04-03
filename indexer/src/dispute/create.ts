@@ -1,7 +1,7 @@
 import { and, eq } from "ponder"
 import { ponder, type Context, type Event } from "ponder:registry"
 import { arbitratorToGrantId, disputes, grants } from "ponder:schema"
-import { Party } from "../enums"
+import { Party, Status } from "../enums"
 
 ponder.on("Arbitrator:DisputeCreated", handleDisputeCreated)
 ponder.on("ArbitratorChildren:DisputeCreated", handleDisputeCreated)
@@ -68,9 +68,10 @@ async function handleDispute(params: {
 
   await context.db.update(grants, { id: parent.grantId }).set((row) => ({
     challengedRecipientCount: row.challengedRecipientCount + 1,
-    awaitingRecipientCount: !grant.isActive
-      ? row.awaitingRecipientCount - 1
-      : row.awaitingRecipientCount,
+    awaitingRecipientCount:
+      grant.status === Status.ClearingRequested
+        ? row.awaitingRecipientCount
+        : row.awaitingRecipientCount - 1,
   }))
 
   await context.db.update(disputes, { id: getDisputePrimaryKey(_disputeID, arbitrator) }).set({
