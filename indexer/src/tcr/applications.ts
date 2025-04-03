@@ -93,9 +93,7 @@ async function handleItemSubmitted(params: {
     updatedAt: Number(event.block.timestamp),
   })
 
-  const grant = await context.db
-    .update(grants, { id: flow.id })
-    .set({ awaitingRecipientCount: flow.awaitingRecipientCount + 1 })
+  const grant = await context.db.find(grants, { id: flow.id })
 
   if (!grant) throw new Error("Grant not found")
 

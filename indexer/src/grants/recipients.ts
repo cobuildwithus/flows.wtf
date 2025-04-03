@@ -77,10 +77,6 @@ async function handleRecipientCreated(params: {
   ])
 
   await Promise.all([
-    context.db.update(grants, { id: parentFlow.id }).set({
-      awaitingRecipientCount: parentFlow.awaitingRecipientCount - 1,
-      activeRecipientCount: parentFlow.activeRecipientCount + 1,
-    }),
     handleRecipientMappings(context.db, recipient, flowAddress, grant.id),
     isRecent ? addGrantEmbedding(grant, recipientType, parentFlow.id) : Promise.resolve(),
   ])

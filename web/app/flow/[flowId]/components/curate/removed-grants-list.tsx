@@ -1,6 +1,5 @@
 import "server-only"
 
-import { EmptyState } from "@/components/ui/empty-state"
 import {
   Table,
   TableBody,
@@ -53,7 +52,6 @@ export default async function RemovedGrantsList(props: Props) {
     include: {
       evidences: true,
       disputes: { include: { evidences: true } },
-      derivedData: true,
     },
     ...getCacheStrategy(120),
   })

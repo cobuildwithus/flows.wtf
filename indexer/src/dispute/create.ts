@@ -68,10 +68,6 @@ async function handleDispute(params: {
 
   await context.db.update(grants, { id: parent.grantId }).set((row) => ({
     challengedRecipientCount: row.challengedRecipientCount + 1,
-    awaitingRecipientCount:
-      grant.status === Status.ClearingRequested
-        ? row.awaitingRecipientCount
-        : row.awaitingRecipientCount - 1,
   }))
 
   await context.db.update(disputes, { id: getDisputePrimaryKey(_disputeID, arbitrator) }).set({
