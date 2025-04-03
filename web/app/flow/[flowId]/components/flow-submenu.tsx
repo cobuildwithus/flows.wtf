@@ -10,7 +10,7 @@ import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 
 interface Props {
   flowId: string
-  segment: "approved" | "applications" | "drafts"
+  segment: "approved" | "curate" | "drafts"
 }
 
 export const FlowSubmenu = async (props: Props) => {
@@ -25,7 +25,7 @@ export const FlowSubmenu = async (props: Props) => {
   ])
 
   const isApproved = segment === "approved"
-  const isApplications = segment === "applications"
+  const isCurate = segment === "curate"
   const isDrafts = segment === "drafts"
 
   const approvedCount = flow.subgrants.filter(isGrantApproved).length
@@ -53,7 +53,7 @@ export const FlowSubmenu = async (props: Props) => {
         >
           <span
             className={cn("flex items-start", {
-              "opacity-50 duration-100 ease-in-out group-hover:opacity-100": !isApplications,
+              "opacity-50 duration-100 ease-in-out group-hover:opacity-100": !isCurate,
             })}
           >
             Curate
@@ -92,12 +92,11 @@ export const FlowSubmenu = async (props: Props) => {
             defaultTokenAmount={BigInt(1e18)}
           />
           {isApproved && approvedCount > 0 && <VotingToggle />}
-          {(isDrafts || isApplications || (isApproved && approvedCount === 0)) &&
-            !isFlowRemoved && (
-              <Link href={`/apply/${flowId}`}>
-                <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for a grant"}</Button>
-              </Link>
-            )}
+          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
+            <Link href={`/apply/${flowId}`}>
+              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for a grant"}</Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

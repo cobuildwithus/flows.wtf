@@ -68,7 +68,7 @@ export default async function FlowApplicationsPage(props: Props) {
   if (grants.length === 0 && removedGrantsCount === 0) {
     return (
       <>
-        <FlowSubmenu flowId={flowId} segment="applications" />
+        <FlowSubmenu flowId={flowId} segment="curate" />
         <EmptyState
           title="No applications found"
           description="There are no awaiting grant applications"
@@ -79,205 +79,193 @@ export default async function FlowApplicationsPage(props: Props) {
 
   return (
     <>
-      <FlowSubmenu flowId={flowId} segment="applications" />
+      <FlowSubmenu flowId={flowId} segment="curate" />
       {grants.length > 0 && (
-        <>
-          <div className="mb-4 mt-12 flex flex-col space-y-2 border-t pt-4">
-            <h2 className="font-semibold md:text-xl">Applications</h2>
-            <p className="text-xs text-muted-foreground md:text-sm">Projects awaiting approval.</p>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead colSpan={4}>Name</TableHead>
-                <TableHead colSpan={2} className="text-right">
-                  Status
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {grants.map((grant) => {
-                const dispute = grant.disputes[0]
-                const isDisputeUnresolved = isDisputeResolvedForNoneParty(dispute)
-                const isGrantRejected = isRequestRejected(grant, dispute)
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead colSpan={4}>
+                <div className="my-2 flex flex-col space-y-2">
+                  <h2 className="font-semibold md:text-xl">Applications</h2>
+                </div>
+              </TableHead>
+              <TableHead colSpan={2} className="text-right">
+                Status
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {grants.map((grant) => {
+              const dispute = grant.disputes[0]
+              const isDisputeUnresolved = isDisputeResolvedForNoneParty(dispute)
+              const isGrantRejected = isRequestRejected(grant, dispute)
 
-                return (
-                  <TableRow key={grant.id}>
-                    <TableCell colSpan={4}>
-                      <div className="flex items-center space-x-4 py-4">
-                        <div className="size-12 flex-shrink-0 md:size-20">
-                          <Image
-                            src={getIpfsUrl(grant.image)}
-                            alt={grant.title}
-                            width={80}
-                            height={80}
-                            className="size-full rounded-md object-cover"
-                          />
-                        </div>
-                        <div className="flex max-w-96 flex-col space-y-2">
-                          <Link
-                            href={`/application/${grant.id}`}
-                            className="line-clamp-1 truncate text-lg font-medium duration-150 ease-in-out hover:text-primary md:whitespace-normal"
-                            tabIndex={-1}
+              return (
+                <TableRow key={grant.id}>
+                  <TableCell colSpan={4}>
+                    <div className="flex items-center space-x-4 py-4">
+                      <div className="size-12 flex-shrink-0 md:size-20">
+                        <Image
+                          src={getIpfsUrl(grant.image)}
+                          alt={grant.title}
+                          width={80}
+                          height={80}
+                          className="size-full rounded-md object-cover"
+                        />
+                      </div>
+                      <div className="flex max-w-96 flex-col space-y-2">
+                        <Link
+                          href={`/application/${grant.id}`}
+                          className="line-clamp-1 truncate text-lg font-medium duration-150 ease-in-out hover:text-primary md:whitespace-normal"
+                          tabIndex={-1}
+                        >
+                          {grant.title}
+                        </Link>
+                        <div className="flex items-center space-x-1.5">
+                          <UserProfile
+                            address={getEthAddress(
+                              grant.isFlow ? grant.submitter : grant.recipient,
+                            )}
                           >
-                            {grant.title}
+                            {(profile) => (
+                              <div className="flex items-center space-x-1.5">
+                                <Avatar className="size-6 bg-accent text-xs">
+                                  <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+                                  <AvatarFallback>
+                                    {profile.display_name[0].toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm tracking-tight text-muted-foreground">
+                                  {profile.display_name}
+                                </span>
+                              </div>
+                            )}
+                          </UserProfile>
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell colSpan={2}>
+                    <div className="flex flex-row items-center justify-end space-x-4 max-sm:text-xs">
+                      {!grant.isDisputed && canRequestBeExecuted(grant) && (
+                        <div className="flex flex-col">
+                          <strong className="font-medium text-green-600 dark:text-green-500">
+                            Approved
+                          </strong>
+                          <span className="text-xs text-muted-foreground">Can be executed</span>
+                        </div>
+                      )}
+
+                      {!grant.isDisputed && canBeChallenged(grant) && (
+                        <HoverCard>
+                          <HoverCardTrigger asChild>
+                            <div className="flex flex-col text-right">
+                              <strong className="font-medium">Awaiting</strong>
+
+                              <span className="text-xs text-muted-foreground">
+                                Approved{" "}
+                                <DateTime
+                                  date={new Date(grant.challengePeriodEndsAt * 1000)}
+                                  relative
+                                />
+                              </span>
+                            </div>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80">
+                            <p>
+                              During this time, anyone can challenge the application. If no one
+                              challenges it by the end, the application is approved.
+                            </p>
+                          </HoverCardContent>
+                        </HoverCard>
+                      )}
+
+                      {dispute && (
+                        <>
+                          {(canDisputeBeVotedOn(dispute) || isDisputeWaitingForVoting(dispute)) && (
+                            <div className="flex flex-col">
+                              <strong className="font-medium text-yellow-600 dark:text-yellow-500">
+                                Challenged
+                              </strong>
+                              <span className="text-xs text-muted-foreground">
+                                {isDisputeWaitingForVoting(dispute)
+                                  ? "Vote starts soon"
+                                  : "Vote in progress"}
+                              </span>
+                            </div>
+                          )}
+                          {isDisputeUnresolved && (
+                            <div className="flex flex-col">
+                              <strong className="font-medium text-gray-600 dark:text-gray-400">
+                                Unresolved
+                              </strong>
+                              <span className="text-xs text-muted-foreground">
+                                Failed to reach decision.
+                              </span>
+                            </div>
+                          )}
+                          {isGrantRejected && (
+                            <div className="flex flex-col">
+                              <strong className="font-medium text-gray-600 dark:text-gray-400">
+                                Not approved
+                              </strong>
+                              <span className="text-xs text-muted-foreground">
+                                Application not approved
+                              </span>
+                            </div>
+                          )}
+                          {isDisputeRevealingVotes(dispute) && (
+                            <div className="flex flex-col">
+                              <strong className="font-medium text-gray-600 dark:text-gray-400">
+                                Revealing
+                              </strong>
+                              <span className="text-xs text-muted-foreground">
+                                Votes are being revealed.
+                              </span>
+                            </div>
+                          )}
+                          {canDisputeBeExecuted(dispute) && (
+                            <div className="flex flex-col">
+                              <strong className="font-medium text-green-600 dark:text-green-500">
+                                Solved
+                              </strong>
+                              <span className="text-xs text-muted-foreground">Can be executed</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      <div className="flex min-w-40 justify-end">
+                        {canRequestBeExecuted(grant) && (
+                          <RequestExecuteButton grant={grant} flow={flow} size="sm" />
+                        )}
+                        {canBeChallenged(grant) && (
+                          <Link href={`/application/${grant.id}`}>
+                            <Button type="button" size="md">
+                              Review
+                            </Button>
                           </Link>
-                          <div className="flex items-center space-x-1.5">
-                            <UserProfile
-                              address={getEthAddress(
-                                grant.isFlow ? grant.submitter : grant.recipient,
-                              )}
-                            >
-                              {(profile) => (
-                                <div className="flex items-center space-x-1.5">
-                                  <Avatar className="size-6 bg-accent text-xs">
-                                    <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
-                                    <AvatarFallback>
-                                      {profile.display_name[0].toUpperCase()}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span className="text-sm tracking-tight text-muted-foreground">
-                                    {profile.display_name}
-                                  </span>
-                                </div>
-                              )}
-                            </UserProfile>
-                          </div>
-                        </div>
+                        )}
+                        {dispute && canDisputeBeExecuted(dispute) && (
+                          <DisputeExecuteButton flow={flow} dispute={dispute} size="sm" />
+                        )}
+                        {dispute && !canDisputeBeExecuted(dispute) && (
+                          <DisputeVoteCta dispute={dispute} grant={grant} size="sm" />
+                        )}
                       </div>
-                    </TableCell>
-
-                    <TableCell colSpan={2}>
-                      <div className="flex flex-row items-center justify-end space-x-4 max-sm:text-xs">
-                        {!grant.isDisputed && canRequestBeExecuted(grant) && (
-                          <div className="flex flex-col">
-                            <strong className="font-medium text-green-600 dark:text-green-500">
-                              Approved
-                            </strong>
-                            <span className="text-xs text-muted-foreground">Can be executed</span>
-                          </div>
-                        )}
-
-                        {!grant.isDisputed && canBeChallenged(grant) && (
-                          <HoverCard>
-                            <HoverCardTrigger asChild>
-                              <div className="flex flex-col text-right">
-                                <strong className="font-medium">Awaiting</strong>
-
-                                <span className="text-xs text-muted-foreground">
-                                  Approved{" "}
-                                  <DateTime
-                                    date={new Date(grant.challengePeriodEndsAt * 1000)}
-                                    relative
-                                  />
-                                </span>
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80">
-                              <p>
-                                During this time, anyone can challenge the application. If no one
-                                challenges it by the end, the application is approved.
-                              </p>
-                            </HoverCardContent>
-                          </HoverCard>
-                        )}
-
-                        {dispute && (
-                          <>
-                            {(canDisputeBeVotedOn(dispute) ||
-                              isDisputeWaitingForVoting(dispute)) && (
-                              <div className="flex flex-col">
-                                <strong className="font-medium text-yellow-600 dark:text-yellow-500">
-                                  Challenged
-                                </strong>
-                                <span className="text-xs text-muted-foreground">
-                                  {isDisputeWaitingForVoting(dispute)
-                                    ? "Vote starts soon"
-                                    : "Vote in progress"}
-                                </span>
-                              </div>
-                            )}
-                            {isDisputeUnresolved && (
-                              <div className="flex flex-col">
-                                <strong className="font-medium text-gray-600 dark:text-gray-400">
-                                  Unresolved
-                                </strong>
-                                <span className="text-xs text-muted-foreground">
-                                  Failed to reach decision.
-                                </span>
-                              </div>
-                            )}
-                            {isGrantRejected && (
-                              <div className="flex flex-col">
-                                <strong className="font-medium text-gray-600 dark:text-gray-400">
-                                  Not approved
-                                </strong>
-                                <span className="text-xs text-muted-foreground">
-                                  Application not approved
-                                </span>
-                              </div>
-                            )}
-                            {isDisputeRevealingVotes(dispute) && (
-                              <div className="flex flex-col">
-                                <strong className="font-medium text-gray-600 dark:text-gray-400">
-                                  Revealing
-                                </strong>
-                                <span className="text-xs text-muted-foreground">
-                                  Votes are being revealed.
-                                </span>
-                              </div>
-                            )}
-                            {canDisputeBeExecuted(dispute) && (
-                              <div className="flex flex-col">
-                                <strong className="font-medium text-green-600 dark:text-green-500">
-                                  Solved
-                                </strong>
-                                <span className="text-xs text-muted-foreground">
-                                  Can be executed
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        )}
-                        <div className="flex min-w-40 justify-end">
-                          {canRequestBeExecuted(grant) && (
-                            <RequestExecuteButton grant={grant} flow={flow} size="sm" />
-                          )}
-                          {canBeChallenged(grant) && (
-                            <Link href={`/application/${grant.id}`}>
-                              <Button type="button" size="md">
-                                Review
-                              </Button>
-                            </Link>
-                          )}
-                          {dispute && canDisputeBeExecuted(dispute) && (
-                            <DisputeExecuteButton flow={flow} dispute={dispute} size="sm" />
-                          )}
-                          {dispute && !canDisputeBeExecuted(dispute) && (
-                            <DisputeVoteCta dispute={dispute} grant={grant} size="sm" />
-                          )}
-                        </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
       )}
 
       {removedGrantsCount > 0 && (
-        <>
-          <div className="mb-4 mt-12 flex flex-col space-y-2 border-t pt-4">
-            <h2 className="font-semibold md:text-xl">Removed</h2>
-            <p className="text-xs text-muted-foreground md:text-sm">
-              Projects removed from the flow.
-            </p>
-          </div>
-
-          <RemovedGrantsList flowId={flowId} />
-        </>
+        <div className="mt-12">
+          <RemovedGrantsList flowId={flowId} defaultOpen={grants.length === 0} />
+        </div>
       )}
     </>
   )
