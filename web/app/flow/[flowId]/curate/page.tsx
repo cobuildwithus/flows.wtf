@@ -42,7 +42,9 @@ export default async function FlowApplicationsPage(props: Props) {
   return (
     <>
       <FlowSubmenu flowId={flowId} segment="curate" />
-      <ApplicationsGrantsList flowId={flowId} />
+      <Suspense>
+        <ApplicationsGrantsList flowId={flowId} />
+      </Suspense>
 
       {removedGrantsCount > 0 && (
         <div className="mt-12">
