@@ -95,7 +95,7 @@ export default async function GrantPage(props: Props) {
     <>
       <div className="mt-2.5 pb-24 md:mt-6">
         <div className="container">
-          <div className="flex items-center justify-between">
+          <div className="md:flex md:items-center md:justify-between">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -148,7 +148,7 @@ export default async function GrantPage(props: Props) {
             </div>
 
             {hasImpactSummary && (
-              <div className="xl:col-span-9">
+              <div className="col-span-full xl:col-span-9">
                 <ImpactSummaryChart
                   data={impacts.flatMap((i) =>
                     i.impactMetrics.map((metric) => ({
