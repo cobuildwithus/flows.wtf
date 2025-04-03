@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dialog"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Button } from "@/components/ui/button"
 
 interface Props {
   flowId: string
@@ -230,7 +231,11 @@ export default async function RemovedGrantsList(props: Props) {
                         {formatEvidence(grant.disputeReason)}
                       </DialogDescription>
                       <DialogFooter>
-                        <DialogClose>Close</DialogClose>
+                        <DialogClose>
+                          <Button variant="ghost" size="sm" className="mt-6">
+                            Close
+                          </Button>
+                        </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>

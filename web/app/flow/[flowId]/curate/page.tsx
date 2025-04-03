@@ -41,6 +41,7 @@ import Image from "next/image"
 import { Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@radix-ui/react-dropdown-menu"
+import { Suspense } from "react"
 
 interface Props {
   params: Promise<{
@@ -264,7 +265,9 @@ export default async function FlowApplicationsPage(props: Props) {
 
       {removedGrantsCount > 0 && (
         <div className="mt-12">
-          <RemovedGrantsList flowId={flowId} defaultOpen={grants.length === 0} />
+          <Suspense>
+            <RemovedGrantsList flowId={flowId} defaultOpen={grants.length === 0} />
+          </Suspense>
         </div>
       )}
     </>
