@@ -6,7 +6,12 @@ import { cache } from "react"
 export const getFlowWithGrants = cache(async (flowId: string) => {
   return await database.grant.findFirstOrThrow({
     where: { id: flowId },
-    include: { subgrants: true, derivedData: true },
+    include: {
+      subgrants: {
+        omit: { description: true },
+      },
+      derivedData: true,
+    },
     ...getCacheStrategy(120),
   })
 })

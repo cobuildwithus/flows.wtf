@@ -7,6 +7,10 @@ export function isGrantApproved(grant: Pick<Grant, "status">) {
   return status === Status.Registered || status === Status.ClearingRequested
 }
 
+export function isGrantRemoved(grant: Pick<Grant, "status" | "isRemoved">) {
+  return grant.status === Status.Absent && grant.isRemoved
+}
+
 export function isGrantChallenged(grant: Pick<Grant, "status" | "isDisputed" | "isResolved">) {
   const { status, isDisputed, isResolved } = grant
 

@@ -16,7 +16,6 @@ import { RequestExecuteButton } from "@/app/components/dispute/request-execute"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DateTime } from "@/components/ui/date-time"
-import { EmptyState } from "@/components/ui/empty-state"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import {
   Table,
@@ -32,18 +31,14 @@ import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
 import Link from "next/link"
-import { FlowSubmenu } from "../components/flow-submenu"
-import { GrantLogoCell } from "../components/grant-logo-cell"
-import { GrantTitleCell } from "../components/grant-title-cell"
+import Image from "next/image"
 
 interface Props {
-  params: Promise<{
-    flowId: string
-  }>
+  flowId: string
 }
 
-export default async function FlowApplicationsPage(props: Props) {
-  const { flowId } = await props.params
+export default async function ApplicationsGrantsList(props: Props) {
+  const { flowId } = props
 
   const [flow, grants] = await Promise.all([
     getFlow(flowId),
@@ -54,66 +49,75 @@ export default async function FlowApplicationsPage(props: Props) {
     }),
   ])
 
-  const { isTopLevel } = flow
-
   if (grants.length === 0) {
-    return (
-      <>
-        <FlowSubmenu flowId={flowId} segment="applications" />
-        <EmptyState
-          title="No applications found"
-          description="There are no awaiting grant applications"
-        />
-      </>
-    )
+    return null
   }
-
   return (
-    <>
-      <FlowSubmenu flowId={flowId} segment="applications" />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead colSpan={2}>Name</TableHead>
-            <TableHead className="max-sm:hidden">{isTopLevel ? "Proposer" : "Builders"}</TableHead>
-            <TableHead className="max-sm:hidden">Type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {grants.map((grant) => {
-            const dispute = grant.disputes[0]
-            const isDisputeUnresolved = isDisputeResolvedForNoneParty(dispute)
-            const isGrantRejected = isRequestRejected(grant, dispute)
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead colSpan={4}>
+            <div className="my-2 flex flex-col space-y-2">
+              <h2 className="font-semibold md:text-xl">Applications</h2>
+            </div>
+          </TableHead>
+          <TableHead colSpan={2} className="text-right">
+            Status
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {grants.map((grant) => {
+          const dispute = grant.disputes[0]
+          const isDisputeUnresolved = isDisputeResolvedForNoneParty(dispute)
+          const isGrantRejected = isRequestRejected(grant, dispute)
 
-            return (
-              <TableRow key={grant.id}>
-                <GrantLogoCell image={getIpfsUrl(grant.image)} title={grant.title} />
-                <GrantTitleCell title={grant.title} href={`/application/${grant.id}`} />
-                <TableCell className="max-sm:hidden">
-                  <div className="flex space-x-0.5">
-                    <UserProfile
-                      address={getEthAddress(grant.isFlow ? grant.submitter : grant.recipient)}
-                    >
-                      {(profile) => (
-                        <div className="flex items-center space-x-1.5">
-                          <Avatar className="size-7 bg-accent text-xs">
-                            <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
-                            <AvatarFallback>{profile.display_name[0].toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          <span className="tracking-tight max-sm:hidden">
-                            {profile.display_name}
-                          </span>
-                        </div>
-                      )}
-                    </UserProfile>
+          return (
+            <TableRow key={grant.id}>
+              <TableCell colSpan={4}>
+                <div className="flex items-center space-x-4 py-4">
+                  <div className="size-12 flex-shrink-0 md:size-20">
+                    <Image
+                      src={getIpfsUrl(grant.image)}
+                      alt={grant.title}
+                      width={80}
+                      height={80}
+                      className="size-full rounded-md object-cover"
+                    />
                   </div>
-                </TableCell>
+                  <div className="flex max-w-96 flex-col space-y-2">
+                    <Link
+                      href={`/application/${grant.id}`}
+                      className="line-clamp-1 truncate text-lg font-medium duration-150 ease-in-out hover:text-primary md:whitespace-normal"
+                      tabIndex={-1}
+                    >
+                      {grant.title}
+                    </Link>
+                    <div className="flex items-center space-x-1.5">
+                      <UserProfile
+                        address={getEthAddress(grant.isFlow ? grant.submitter : grant.recipient)}
+                      >
+                        {(profile) => (
+                          <div className="flex items-center space-x-1.5">
+                            <Avatar className="size-6 bg-accent text-xs">
+                              <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+                              <AvatarFallback>
+                                {profile.display_name[0].toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm tracking-tight text-muted-foreground">
+                              {profile.display_name}
+                            </span>
+                          </div>
+                        )}
+                      </UserProfile>
+                    </div>
+                  </div>
+                </div>
+              </TableCell>
 
-                <TableCell className="max-sm:hidden">{grant.isFlow ? "Flow" : "Grant"}</TableCell>
-
-                <TableCell className="max-sm:text-xs">
+              <TableCell colSpan={2}>
+                <div className="flex flex-row items-center justify-end space-x-4 max-sm:text-xs">
                   {!grant.isDisputed && canRequestBeExecuted(grant) && (
                     <div className="flex flex-col">
                       <strong className="font-medium text-green-600 dark:text-green-500">
@@ -126,7 +130,7 @@ export default async function FlowApplicationsPage(props: Props) {
                   {!grant.isDisputed && canBeChallenged(grant) && (
                     <HoverCard>
                       <HoverCardTrigger asChild>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col text-right">
                           <strong className="font-medium">Awaiting</strong>
 
                           <span className="text-xs text-muted-foreground">
@@ -201,16 +205,13 @@ export default async function FlowApplicationsPage(props: Props) {
                       )}
                     </>
                   )}
-                </TableCell>
-
-                <TableCell className="w-[100px] max-w-[100px]">
-                  <div className="flex justify-end">
+                  <div className="flex min-w-40 justify-end">
                     {canRequestBeExecuted(grant) && (
                       <RequestExecuteButton grant={grant} flow={flow} size="sm" />
                     )}
                     {canBeChallenged(grant) && (
                       <Link href={`/application/${grant.id}`}>
-                        <Button type="button" size="sm">
+                        <Button type="button" size="md">
                           Review
                         </Button>
                       </Link>
@@ -222,12 +223,12 @@ export default async function FlowApplicationsPage(props: Props) {
                       <DisputeVoteCta dispute={dispute} grant={grant} size="sm" />
                     )}
                   </div>
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </>
+                </div>
+              </TableCell>
+            </TableRow>
+          )
+        })}
+      </TableBody>
+    </Table>
   )
 }
