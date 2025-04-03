@@ -73,12 +73,16 @@ export default async function RemovedGrantsList(props: Props) {
 
       const disputeReason = relevantEvidence?.evidence || "No reason provided"
       const challenger = relevantEvidence?.party
+
+      const cancelledByBuilder = g.recipient === challenger
+
       return {
         ...g,
         profile,
         disputeReason,
         reinstatedGrant,
         challenger,
+        cancelledByBuilder,
       }
     }),
   )
@@ -189,20 +193,29 @@ export default async function RemovedGrantsList(props: Props) {
                       <div className="cursor-pointer">
                         <Badge
                           variant={(() => {
-                            switch (getRemovalType(grant.disputeReason).toLowerCase()) {
+                            switch (
+                              getRemovalType(
+                                grant.disputeReason,
+                                grant.cancelledByBuilder,
+                              ).toLowerCase()
+                            ) {
                               case "inactive":
                               case "low quality":
                                 return "warning"
                               case "other":
                                 return "secondary"
+                              case "cancelled":
+                                return "default"
                               default:
                                 return "default"
                             }
                           })()}
                           className="gap-1.5 rounded-full px-3 py-1.5 capitalize"
                         >
-                          {getRemovalTypeIcon(getRemovalType(grant.disputeReason))}
-                          {getRemovalType(grant.disputeReason)}
+                          {getRemovalTypeIcon(
+                            getRemovalType(grant.disputeReason, grant.cancelledByBuilder),
+                          )}
+                          {getRemovalType(grant.disputeReason, grant.cancelledByBuilder)}
                         </Badge>
                       </div>
                     </DialogTrigger>
@@ -232,7 +245,7 @@ export default async function RemovedGrantsList(props: Props) {
                       </DialogDescription>
                       <DialogFooter>
                         <DialogClose>
-                          <Button variant="ghost" size="sm" className="mt-6">
+                          <Button variant="ghost" size="sm" className="mt-6" tabIndex={-1}>
                             Close
                           </Button>
                         </DialogClose>
@@ -265,7 +278,11 @@ export function formatEvidence(evidence: string) {
   )
 }
 
-function getRemovalType(evidence: string): string {
+function getRemovalType(evidence: string, cancelledByBuilder: boolean): string {
+  if (cancelledByBuilder) {
+    return "Cancelled"
+  }
+
   if (!evidence.includes(" || ")) {
     return "Other"
   }
@@ -285,6 +302,7 @@ function getRemovalTypeIcon(type: string) {
     case "low quality":
       return <AlertTriangle className="h-3 w-3" />
     case "other":
+    case "cancelled":
       return <InfoIcon className="h-3 w-3" />
     default:
       return <XCircle className="h-3 w-3" />
