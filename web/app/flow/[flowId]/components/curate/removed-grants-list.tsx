@@ -43,53 +43,11 @@ interface Props {
 export default async function RemovedGrantsList(props: Props) {
   const { flowId, defaultOpen = false, className, type } = props
 
-  const removedGrants = await database.grant.findMany({
-    where:
-      type === "removed"
-        ? { flowId, isRemoved: true }
-        : { flowId, status: Status.Absent, isRemoved: false },
-    omit: { description: true },
-    include: {
-      evidences: true,
-      disputes: { include: { evidences: true } },
-    },
-    ...getCacheStrategy(120),
-  })
+  const isRejected = type === "rejected"
 
-  const grants = await Promise.all(
-    removedGrants.map(async (g) => {
-      const [profile, reinstatedGrant] = await Promise.all([
-        getUserProfile(getEthAddress(g.recipient)),
-        database.grant.findFirst({
-          where: {
-            flowId,
-            recipient: g.recipient,
-            isActive: true,
-            monthlyIncomingBaselineFlowRate: { not: "0" },
-          },
-          omit: { description: true },
-        }),
-      ])
-      const numEvidences = g.evidences.length
-      const latestDispute = g.disputes[g.disputes.length - 1]
+  const removedGrants = await getRemovedGrants(flowId, type)
 
-      const relevantEvidence = latestDispute?.evidences[0] || g.evidences[numEvidences - 1]
-
-      const disputeReason = relevantEvidence?.evidence || "No reason provided"
-      const challenger = relevantEvidence?.party
-
-      const cancelledByBuilder = g.recipient === challenger
-
-      return {
-        ...g,
-        profile,
-        disputeReason,
-        reinstatedGrant,
-        challenger,
-        cancelledByBuilder,
-      }
-    }),
-  )
+  const grants = await Promise.all(removedGrants.map((g) => getGrantDetails(g, flowId)))
 
   if (removedGrants.length === 0) {
     return null
@@ -111,7 +69,7 @@ export default async function RemovedGrantsList(props: Props) {
           </div>
           <span className="text-sm text-muted-foreground">
             {type === "removed"
-              ? "Active projects removed by curators"
+              ? "Projects removed by curators"
               : "Applications rejected by curators"}
           </span>
         </div>
@@ -123,8 +81,8 @@ export default async function RemovedGrantsList(props: Props) {
           <TableHeader>
             <TableRow>
               <TableHead colSpan={4}>Project</TableHead>
-              <TableHead className="text-right">Total Earned</TableHead>
-              <TableHead className="text-right">Removal reason</TableHead>
+              {!isRejected && <TableHead className="text-right">Total Earned</TableHead>}
+              <TableHead className="text-right">Reason</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -183,13 +141,15 @@ export default async function RemovedGrantsList(props: Props) {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="flex flex-col justify-end space-y-1">
-                    <Currency className="text-right text-xl font-medium">
-                      {grant.totalEarned}
-                    </Currency>
-                  </div>
-                </TableCell>
+                {!isRejected && (
+                  <TableCell>
+                    <div className="flex flex-col justify-end space-y-1">
+                      <Currency className="text-right text-xl font-medium">
+                        {grant.totalEarned}
+                      </Currency>
+                    </div>
+                  </TableCell>
+                )}
                 <TableCell className="text-right">
                   <Dialog>
                     <DialogTrigger asChild>
@@ -309,5 +269,56 @@ function getRemovalTypeIcon(type: string) {
       return <InfoIcon className="h-3 w-3" />
     default:
       return <XCircle className="h-3 w-3" />
+  }
+}
+
+async function getRemovedGrants(flowId: string, type: "removed" | "rejected") {
+  return await database.grant.findMany({
+    where:
+      type === "removed"
+        ? { flowId, isRemoved: true }
+        : { flowId, status: Status.Absent, isRemoved: false },
+    omit: { description: true },
+    include: {
+      evidences: true,
+      disputes: { include: { evidences: true } },
+    },
+    ...getCacheStrategy(120),
+  })
+}
+
+type Grant = Awaited<ReturnType<typeof getRemovedGrants>>[number]
+
+async function getGrantDetails(grant: Grant, flowId: string) {
+  const [profile, reinstatedGrant] = await Promise.all([
+    getUserProfile(getEthAddress(grant.recipient)),
+    database.grant.findFirst({
+      where: {
+        flowId,
+        recipient: grant.recipient,
+        isActive: true,
+        monthlyIncomingBaselineFlowRate: { not: "0" },
+      },
+      omit: { description: true },
+    }),
+  ])
+
+  const numEvidences = grant.evidences.length
+  const latestDispute = grant.disputes[grant.disputes.length - 1]
+
+  const relevantEvidence = latestDispute?.evidences[0] || grant.evidences[numEvidences - 1]
+
+  const disputeReason = relevantEvidence?.evidence || "No reason provided"
+  const challenger = relevantEvidence?.party
+
+  const cancelledByBuilder = grant.recipient === challenger
+
+  return {
+    profile,
+    disputeReason,
+    reinstatedGrant,
+    challenger,
+    cancelledByBuilder,
+    ...grant,
   }
 }
