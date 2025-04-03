@@ -32,17 +32,23 @@ import {
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
+import { Status } from "@/lib/enums"
 
 interface Props {
   flowId: string
   defaultOpen?: boolean
+  className?: string
+  type: "removed" | "rejected"
 }
 
 export default async function RemovedGrantsList(props: Props) {
-  const { flowId, defaultOpen = false } = props
+  const { flowId, defaultOpen = false, className, type } = props
 
   const removedGrants = await database.grant.findMany({
-    where: { flowId, isRemoved: true },
+    where:
+      type === "removed"
+        ? { flowId, isRemoved: true }
+        : { flowId, status: Status.Absent, isRemoved: false },
     omit: { description: true },
     include: {
       evidences: true,
@@ -88,29 +94,28 @@ export default async function RemovedGrantsList(props: Props) {
   )
 
   if (removedGrants.length === 0) {
-    return (
-      <>
-        <EmptyState
-          title="No removed grants found"
-          description="No grants have been removed yet."
-        />
-      </>
-    )
+    return null
   }
 
   return (
-    <Collapsible defaultOpen={defaultOpen}>
+    <Collapsible defaultOpen={defaultOpen} className={className}>
       <CollapsibleTrigger className="mb-4 flex w-full items-center justify-between hover:opacity-70">
         <div className="flex flex-col space-y-2">
           <div className="flex items-center space-x-2 font-semibold md:text-xl">
-            <span className="text-muted-foreground">Removed</span>
+            <span className="text-muted-foreground">
+              {type === "removed" ? "Removed" : "Rejected"}
+            </span>
             {removedGrants.length > 0 && (
               <span className="ml-1 inline-flex size-[18px] items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground">
                 {removedGrants.length}
               </span>
             )}
           </div>
-          <span className="text-sm text-muted-foreground">Projects removed from the flow</span>
+          <span className="text-sm text-muted-foreground">
+            {type === "removed"
+              ? "Active projects removed by curators"
+              : "Applications rejected by curators"}
+          </span>
         </div>
         <ChevronDown className="h-4 w-4" />
       </CollapsibleTrigger>

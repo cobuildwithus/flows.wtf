@@ -46,13 +46,23 @@ export default async function FlowApplicationsPage(props: Props) {
         <ApplicationsGrantsList flowId={flowId} />
       </Suspense>
 
-      {removedGrantsCount > 0 && (
-        <div className="mt-12">
-          <Suspense>
-            <RemovedGrantsList flowId={flowId} defaultOpen={grantsCount === 0} />
-          </Suspense>
-        </div>
-      )}
+      <Suspense>
+        <RemovedGrantsList
+          type="removed"
+          className="mt-12"
+          flowId={flowId}
+          defaultOpen={grantsCount === 0}
+        />
+      </Suspense>
+
+      <Suspense>
+        <RemovedGrantsList
+          type="rejected"
+          className="mt-12"
+          flowId={flowId}
+          defaultOpen={removedGrantsCount === 0 && grantsCount === 0}
+        />
+      </Suspense>
     </>
   )
 }
