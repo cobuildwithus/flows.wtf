@@ -9,7 +9,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { CalendarRangeIcon } from "lucide-react"
 import Image from "next/image"
+import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 interface Props {
@@ -26,64 +28,93 @@ interface Serie {
 }
 
 export function ImpactSummaryChart(props: Props) {
-  const { data, summary, backgroundImage, gradients } = props
+  const { summary, backgroundImage, gradients } = props
+  const [timeUnit, setTimeUnit] = useState<"weeks" | "months">(summary.timeUnit)
 
-  const series = data
-    .filter((item) => Number(item.value) > 0)
-    .reduce((acc, item) => {
-      if (!acc.some((u) => u.units === item.units)) {
-        acc.push({ units: item.units, weight: item.weight, name: item.name })
-      }
-      return acc
-    }, [] as Serie[])
+  const data = useMemo(() => props.data.filter((item) => Number(item.value) > 0), [props.data])
 
-  const { weightedData, originalData } = processChartData(data, series, summary.timeUnit)
+  useEffect(() => {
+    const style = document.createElement("style")
+    style.textContent = generateChartColorVariables(gradients)
+    document.head.appendChild(style)
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [gradients])
 
-  const chartConfig = series.reduce(
-    (config, unitInfo, index) => ({
-      ...config,
-      [unitInfo.units]: {
-        label: unitInfo.name || unitInfo.units,
-        color: gradients[index]?.light.gradientStart || `hsl(var(--chart-${index}))`,
-      },
-    }),
-    {} satisfies ChartConfig,
+  const series = useMemo(
+    () =>
+      data.reduce((acc, item) => {
+        if (!acc.some((u) => u.units === item.units)) {
+          acc.push({ units: item.units, weight: item.weight, name: item.name })
+        }
+        return acc
+      }, [] as Serie[]),
+    [data],
+  )
+
+  const { weightedData, originalData } = useMemo(
+    () => processChartData(data, series, timeUnit),
+    [data, series, timeUnit],
+  )
+
+  const chartConfig = useMemo(
+    () =>
+      series.reduce(
+        (config, unitInfo, index) => ({
+          ...config,
+          [unitInfo.units]: {
+            label: unitInfo.name || unitInfo.units,
+            color: `var(--chart-color-${index}, hsl(var(--chart-${index})))`,
+          },
+        }),
+        {} satisfies ChartConfig,
+      ),
+    [series],
   )
 
   return (
     <Card className="flex h-full flex-col items-center justify-center">
-      <CardContent className="relative flex h-full w-full !p-0">
-        <div className="order-last flex w-[256px] shrink-0 flex-col gap-4 divide-y">
+      <CardContent className="relative flex h-full w-full flex-col !p-0 md:flex-row">
+        <div className="flex w-full shrink-0 flex-col gap-4 divide-y border-l md:order-last md:w-[256px]">
           {summary.metricSummaries
             .filter((m) => m.value > 0)
             .map((metric) => (
-              <button
+              <div
                 key={metric.metricId}
                 className="flex grow flex-col justify-center gap-1 px-6 py-4 text-left"
-                // onClick={() => setActiveChart(chart)}
               >
                 <span className="text-xs text-muted-foreground">
                   {metric.aggregationType === "total" ? "in total" : "on average"}
                 </span>
-                <span className="mt-0.5 text-lg font-bold leading-none">{metric.value}</span>
+                <span className="mt-1 text-lg font-bold leading-none">
+                  {metric.value} {metric.units}
+                </span>
                 <span className="mt-1.5 text-xs text-muted-foreground">{metric.explanation}</span>
-              </button>
+              </div>
             ))}
         </div>
 
-        <div className="relative grow">
+        <div className="relative overflow-hidden max-sm:w-full lg:grow">
           <Image
             src={backgroundImage}
             alt=" "
             width="764"
             height="330"
-            className="absolute inset-0 h-full w-full object-cover mix-blend-overlay"
+            className="absolute inset-0 h-full w-full object-fill mix-blend-overlay"
           />
+          <button
+            className="absolute left-4 top-4 z-10 flex items-center text-muted-foreground transition-opacity hover:opacity-75 dark:text-white"
+            onClick={() => setTimeUnit(timeUnit === "weeks" ? "months" : "weeks")}
+          >
+            <CalendarRangeIcon className="size-4" />
+            <span className="ml-1.5 text-xs">{timeUnit}</span>
+          </button>
           <ChartContainer config={chartConfig} className="max-h-[330px] min-h-[270px] w-full p-4">
             <BarChart
               accessibilityLayer
               data={weightedData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 6, right: 6, left: 6, bottom: 6 }}
             >
               <CartesianGrid vertical={false} horizontal={false} />
               <XAxis
@@ -93,11 +124,9 @@ export function ImpactSummaryChart(props: Props) {
                 axisLine={false}
                 minTickGap={32}
                 tickFormatter={(value) => {
-                  const date = new Date(value)
-                  return date.toLocaleDateString("en-US", {
+                  return new Date(value).toLocaleDateString("en-US", {
                     month: "short",
-                    day: "numeric",
-                    ...(summary.timeUnit === "months" && { day: undefined }),
+                    day: timeUnit === "weeks" ? "numeric" : undefined,
                   })
                 }}
               />
@@ -115,7 +144,7 @@ export function ImpactSummaryChart(props: Props) {
                 <Bar
                   key={serie.units}
                   dataKey={serie.units}
-                  fill={`var(--color-${serie.units})`}
+                  fill={`var(--chart-color-${i}, hsl(var(--chart-${i})))`}
                   radius={
                     series.length > 1
                       ? i === 0
@@ -147,7 +176,7 @@ function CustomTooltipContent({
   series,
 }: {
   active?: boolean
-  payload?: any[]
+  payload?: { dataKey: string; value: string | number; name: string }[]
   label?: string
   indicator?: "line" | "dot" | "dashed"
   originalData: Map<string, { [key: string]: number | string }>
@@ -157,13 +186,17 @@ function CustomTooltipContent({
 
   return (
     <ChartTooltipContent
+      className="max-sm:hidden"
       indicator={indicator}
       active={active}
-      payload={payload.map((entry) => ({
-        ...entry,
-        value: originalData.get(label)?.[entry.dataKey] ?? entry.value,
-        name: series.find((s) => s.units === entry.dataKey)?.name || entry.name,
-      }))}
+      payload={payload.map((entry) => {
+        const serie = series.find((s) => s.units === entry.dataKey)
+        return {
+          ...entry,
+          value: `${originalData.get(label)?.[entry.dataKey] ?? entry.value} ${serie?.units || ""}`,
+          name: serie?.name || entry.name,
+        }
+      })}
       label={label}
     />
   )
@@ -244,4 +277,43 @@ function processChartData(
     weightedData: periods.map((period) => weightedDataMap.get(period)!),
     originalData: originalDataMap,
   }
+}
+
+function getBrighterColor(color1: string, color2: string): string {
+  const getLuminance = (hex: string): number => {
+    const r = parseInt(hex.slice(1, 3), 16) / 255
+    const g = parseInt(hex.slice(3, 5), 16) / 255
+    const b = parseInt(hex.slice(5, 7), 16) / 255
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  }
+
+  const luminance1 = getLuminance(color1)
+  const luminance2 = getLuminance(color2)
+
+  return luminance1 > luminance2 ? color1 : color2
+}
+
+function getDarkerColor(color1: string, color2: string): string {
+  const brighterColor = getBrighterColor(color1, color2)
+  return brighterColor === color1 ? color2 : color1
+}
+
+function generateChartColorVariables(gradients: PrismaJson.Gradient[]): string {
+  return gradients
+    .map((gradient, index) => {
+      if (!gradient) return ""
+
+      const lightColor = getDarkerColor(gradient.light.gradientStart, gradient.light.gradientEnd)
+      const darkColor = getBrighterColor(gradient.dark.gradientStart, gradient.dark.gradientEnd)
+
+      return `
+      :root {
+        --chart-color-${index}: ${lightColor};
+      }
+      .dark {
+        --chart-color-${index}: ${darkColor};
+      }
+    `
+    })
+    .join("\n")
 }
