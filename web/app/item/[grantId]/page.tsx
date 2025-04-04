@@ -36,8 +36,7 @@ import { ImpactChain } from "./impact/impact-chain"
 import { Badge } from "@/components/ui/badge"
 import { FlowRemovedCard } from "./components/flow-removed-card"
 import { EmptyState } from "@/components/ui/empty-state"
-import { ImpactSummaryChart } from "./components/impact-summary-chart"
-import { Card } from "@/components/ui/card"
+import { getImpactSummaryType, ImpactSummary } from "./impact/impact-summary"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -68,18 +67,8 @@ export default async function GrantPage(props: Props) {
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
   if (!grant.derivedData) notFound()
 
-  const {
-    mission,
-    builder,
-    title,
-    beneficiaries,
-    tagline,
-    coverImage,
-    gradients,
-    deliverables,
-    impactSummary,
-    impactMetrics,
-  } = grant.derivedData
+  const { mission, builder, title, beneficiaries, tagline, coverImage, gradients, deliverables } =
+    grant.derivedData
 
   const canEdit = canEditGrant(grant, user?.address)
 
@@ -88,8 +77,8 @@ export default async function GrantPage(props: Props) {
     orderBy: [{ date: "asc" }, { updatedAt: "asc" }],
   })
 
-  const hasImpactSummary =
-    impactSummary && impactMetrics && impacts.some((i) => i.impactMetrics.length > 0)
+  const impactSummaryType = getImpactSummaryType({ grant, impacts, flow })
+  const hasImpactSummary = impactSummaryType !== "none"
 
   return (
     <>
@@ -149,20 +138,7 @@ export default async function GrantPage(props: Props) {
 
             {hasImpactSummary && (
               <div className="col-span-full xl:col-span-9">
-                <ImpactSummaryChart
-                  data={impacts.flatMap((i) =>
-                    i.impactMetrics.map((metric) => ({
-                      ...metric,
-                      date: i.date.toISOString().split("T")[0],
-                      weight: impactMetrics.find((m) => m.units === metric.units)?.weight || 1,
-                    })),
-                  )}
-                  summary={impactSummary}
-                  backgroundImage={
-                    impacts[impacts.length - 1].bestImage.illustration?.url || grant.image
-                  }
-                  gradients={Object.values(gradients || {})}
-                />
+                <ImpactSummary grant={grant} impacts={impacts} flow={flow} />
               </div>
             )}
 
