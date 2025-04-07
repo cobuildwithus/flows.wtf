@@ -22,6 +22,7 @@ import { redirect } from "next/navigation"
 import { StatusDisputed } from "./components/status-disputed"
 import { StatusNotDisputed } from "./components/status-not-disputed"
 import { ChallengeMessage } from "@/components/ui/challenge-message"
+import { getUser } from "@/lib/auth/user"
 
 interface Props {
   params: Promise<{
@@ -47,10 +48,13 @@ export default async function ApplicationPage(props: Props) {
   const params = await props.params
   const { applicationId } = params
 
-  const grant = await database.grant.findUniqueOrThrow({
-    where: { id: applicationId },
-    include: { flow: true, disputes: { include: { evidences: true } } },
-  })
+  const [grant, user] = await Promise.all([
+    database.grant.findUniqueOrThrow({
+      where: { id: applicationId },
+      include: { flow: true, disputes: { include: { evidences: true } } },
+    }),
+    getUser(),
+  ])
 
   if (grant.isActive && isProduction()) return redirect(`/item/${grant.id}`)
 
@@ -190,7 +194,7 @@ export default async function ApplicationPage(props: Props) {
                 <CardTitle>Your vote</CardTitle>
               </CardHeader>
               <CardContent>
-                <DisputeUserVote grant={grant} flow={flow} dispute={dispute} />
+                <DisputeUserVote user={user} grant={grant} flow={flow} dispute={dispute} />
               </CardContent>
             </Card>
           )}

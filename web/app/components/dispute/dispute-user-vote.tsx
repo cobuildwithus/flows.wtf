@@ -13,19 +13,20 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { formatEther } from "viem"
 import { base } from "viem/chains"
-import { useAccount } from "wagmi"
 import { useSecretVoteHash } from "./useSecretVoteHash"
+import type { User } from "@/lib/auth/user"
 
 interface Props {
   grant: Grant
   flow: Grant
   dispute: Dispute
+  user?: User
 }
 
 export function DisputeUserVote(props: Props) {
-  const { grant, flow, dispute } = props
+  const { grant, flow, dispute, user } = props
   const router = useRouter()
-  const { address } = useAccount()
+  const address = user?.address
   const [canVote, setCanVote] = useState(false)
 
   const mirrored = grant.isActive
@@ -40,6 +41,7 @@ export function DisputeUserVote(props: Props) {
   const { canVote: canVoteOnchain, votingPower } = useArbitratorData(
     flow.arbitrator as `0x${string}`,
     dispute.disputeId,
+    address!,
   )
 
   const {
