@@ -15,6 +15,7 @@ import { formatEther } from "viem"
 import { base } from "viem/chains"
 import { useSecretVoteHash } from "./useSecretVoteHash"
 import type { User } from "@/lib/auth/user"
+import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   grant: Grant
@@ -89,8 +90,8 @@ export function DisputeUserVote(props: Props) {
   return (
     <div>
       <div className="flex space-x-4">
-        <Button
-          disabled={isLoading || !canVote}
+        <AuthButton
+          disabled={(isLoading || !canVote) && !!user}
           loading={isLoading}
           className="grow"
           type="button"
@@ -116,10 +117,10 @@ export function DisputeUserVote(props: Props) {
         >
           <ThickArrowUpIcon className="mr-2 size-4" />
           {mirrored ? "Keep" : "Approve"} {grant.isFlow ? "flow" : "grant"}
-        </Button>
+        </AuthButton>
 
-        <Button
-          disabled={isLoading || !canVote}
+        <AuthButton
+          disabled={(isLoading || !canVote) && !!user}
           loading={isLoading}
           type="button"
           className="grow"
@@ -145,7 +146,7 @@ export function DisputeUserVote(props: Props) {
         >
           {mirrored ? "Remove" : "Reject"} {grant.isFlow ? "flow" : "grant"}
           <ThickArrowDownIcon className="ml-2 size-4" />
-        </Button>
+        </AuthButton>
       </div>
       {!isVotingOpen && (
         <div className="mt-3 text-center text-xs text-muted-foreground">
