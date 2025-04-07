@@ -10,26 +10,27 @@ import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 
 interface Props {
   flowId: string
-  segment: "approved" | "applications" | "drafts"
+  segment: "approved" | "curate" | "drafts"
 }
 
 export const FlowSubmenu = async (props: Props) => {
   const { flowId, segment } = props
 
-  const flow = await getFlowWithGrants(flowId)
-
-  const draftsCount = await database.draft.count({
-    where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
-    ...getCacheStrategy(120),
-  })
+  const [flow, draftsCount] = await Promise.all([
+    getFlowWithGrants(flowId),
+    database.draft.count({
+      where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
+      ...getCacheStrategy(120),
+    }),
+  ])
 
   const isApproved = segment === "approved"
-  const isApplications = segment === "applications"
+  const isCurate = segment === "curate"
   const isDrafts = segment === "drafts"
 
   const approvedCount = flow.subgrants.filter(isGrantApproved).length
   const awaitingCount = flow.subgrants.filter(isGrantAwaiting).length
-  const isRemoved = flow.isRemoved
+  const isFlowRemoved = flow.isRemoved
 
   return (
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
@@ -43,19 +44,19 @@ export const FlowSubmenu = async (props: Props) => {
               "opacity-50 duration-100 ease-in-out group-hover:opacity-100": !isApproved,
             })}
           >
-            Approved
+            Projects
           </span>
         </Link>
         <Link
           className="group flex items-start space-x-1 text-base font-medium md:text-xl"
-          href={`/flow/${flowId}/applications`}
+          href={`/flow/${flowId}/curate`}
         >
           <span
             className={cn("flex items-start", {
-              "opacity-50 duration-100 ease-in-out group-hover:opacity-100": !isApplications,
+              "opacity-50 duration-100 ease-in-out group-hover:opacity-100": !isCurate,
             })}
           >
-            Applications
+            Curate
           </span>
           {awaitingCount > 0 && (
             <span className="ml-1 inline-flex size-[18px] items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground">
@@ -91,7 +92,7 @@ export const FlowSubmenu = async (props: Props) => {
             defaultTokenAmount={BigInt(1e18)}
           />
           {isApproved && approvedCount > 0 && <VotingToggle />}
-          {(isDrafts || isApplications || (isApproved && approvedCount === 0)) && !isRemoved && (
+          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
             <Link href={`/apply/${flowId}`}>
               <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for a grant"}</Button>
             </Link>

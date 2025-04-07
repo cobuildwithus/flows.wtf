@@ -13,8 +13,8 @@ export const dimensions = {
 // Layout settings
 export const diagramLayout = {
   center: { x: 0, y: 0 },
-  flowRadius: 1200, // Increased radius for flows
-  subgrantRadius: 125, // Increased radius for subgrants
+  flowRadius: 1400, // Further increased radius for flows to create more spacing
+  subgrantRadius: 130, // Further increased radius for subgrants to create more spacing
 }
 
 export function createPoolNode(pool: Grant, flowCount: number): IPoolNode {

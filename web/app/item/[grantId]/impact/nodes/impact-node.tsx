@@ -13,13 +13,14 @@ export type IImpactNode = Node<
     incomingPosition: Position | null
     outcomingPosition: Position | null
     onClick: () => void
+    disableMetricsWarning?: boolean
   },
   "impact"
 >
 
 export function ImpactNode(props: NodeProps<IImpactNode>) {
   const { width = 320, height = 320, data } = props
-  const { incomingPosition, outcomingPosition, impact, onClick } = data
+  const { incomingPosition, outcomingPosition, impact, onClick, disableMetricsWarning } = data
   const { name, bestImage } = impact
 
   const imageUrl = bestImage.urlFromBuilder ?? bestImage.url
@@ -49,9 +50,9 @@ export function ImpactNode(props: NodeProps<IImpactNode>) {
         </div>
       </div>
 
-      {!hasMetrics && (
+      {!hasMetrics && !disableMetricsWarning && (
         <Badge
-          variant="destructive"
+          variant="warning"
           className="absolute right-1.5 top-1.5 text-xs hover:bg-destructive"
         >
           Missing metrics

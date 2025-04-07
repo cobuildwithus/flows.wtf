@@ -58,7 +58,12 @@ export const StatusNotDisputed = async (props: Props) => {
           <span className="font-medium text-red-500">removal</span>.
         </li>
         <li>No one decided to challenge the removal request.</li>
-        {evidence?.evidence && <li>{formatEvidence(evidence.evidence)}</li>}
+        {evidence && (
+          <>
+            {evidence.party && <Challenger address={getEthAddress(evidence.party)} />}
+            {evidence.evidence && <>{formatEvidence(evidence.evidence)}</>}
+          </>
+        )}
         <li>
           Execute the request to finalize the process and remove the{" "}
           {grant.isFlow ? "flow" : "grant"}.

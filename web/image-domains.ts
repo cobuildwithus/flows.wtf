@@ -12,5 +12,6 @@ export const imageDomains = [
   "ipfs.skatehive.app",
   "lighthouse.cx",
   "flows-media-v0.s3.us-east-1.amazonaws.com",
+  "*.cloudflarestream.com",
   "flows-media.s3.us-west-2.amazonaws.com",
 ]

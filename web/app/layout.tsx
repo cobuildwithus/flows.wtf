@@ -55,7 +55,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
         >
           <TooltipProvider delayDuration={350}>
             <Wagmi>
-              <nav className="container flex items-center py-4 max-lg:justify-between md:py-5">
+              <nav className="container flex items-center py-5 max-lg:justify-between md:py-6">
                 <div className="lg:w-1/5">
                   <h2>
                     <Link
@@ -67,7 +67,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
                   </h2>
                 </div>
                 <MenuDesktop />
-                <div className="flex items-center justify-end space-x-2.5 lg:w-1/5">
+                <div className="flex items-center justify-end space-x-2.5 md:space-x-3 lg:w-1/5">
                   {user && <RecipientPopover user={user} />}
                   {user && <CuratorPopover flow={pool} address={user.address} />}
                   <MenuAvatar user={user} hasSession={sessionPresent} />

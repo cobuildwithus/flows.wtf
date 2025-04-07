@@ -56,7 +56,7 @@ export const CuratorPopover = (props: Props) => {
       <PopoverTrigger>
         <div className="relative flex items-center">
           <Badge
-            className="flex h-[26px] flex-row items-center space-x-1 rounded-full text-xs"
+            className="flex h-[26px] flex-row items-center space-x-1 rounded-full text-xs md:h-[30px] md:px-2.5 md:text-sm"
             variant="success"
           >
             <AnimatedSalary

@@ -49,6 +49,7 @@ function positionNodes(nodes: MinimalNode[], layout: DiagramLayout): Node[] {
         ...node.data,
         incomingPosition: getIncomingPosition(col, isReverseRow, columns),
         outcomingPosition: getOutComingPosition(col, isReverseRow),
+        disableMetricsWarning: node.data.disableMetricsWarning,
       },
     }
   })

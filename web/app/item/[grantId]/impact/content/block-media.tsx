@@ -11,13 +11,17 @@ interface Props {
 export function BlockMedia(props: Props) {
   const { proofs, name } = props
 
-  const images = proofs.flatMap((proof) => {
-    return proof.images.map((image) => ({ ...image, proofUrl: proof.url }))
-  })
+  const images = cleanAndDedupe(
+    proofs.flatMap((proof) => {
+      return proof.images.map((image) => ({ ...image, proofUrl: proof.url }))
+    }),
+  )
 
-  const videos = proofs.flatMap((proof) => {
-    return proof.videos.map((video) => ({ ...video, proofUrl: proof.url }))
-  })
+  const videos = cleanAndDedupe(
+    proofs.flatMap((proof) => {
+      return proof.videos.map((video) => ({ ...video, proofUrl: proof.url }))
+    }),
+  )
 
   return (
     <div className="space-y-1.5">
@@ -65,4 +69,21 @@ export function BlockMedia(props: Props) {
       </div>
     </div>
   )
+}
+
+// helper function to clean urls, remove duplicates, and strip query parameters
+function cleanAndDedupe<T extends { url: string }>(items: T[]): T[] {
+  const cleanedItems = items.map((item) => {
+    const urlObj = new URL(item.url.trim())
+    return { ...item, url: urlObj.origin + urlObj.pathname }
+  })
+
+  const uniqueItemsMap = new Map<string, T>()
+  for (const item of cleanedItems) {
+    if (!uniqueItemsMap.has(item.url)) {
+      uniqueItemsMap.set(item.url, item)
+    }
+  }
+
+  return Array.from(uniqueItemsMap.values())
 }

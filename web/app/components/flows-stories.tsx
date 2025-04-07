@@ -60,7 +60,12 @@ function getStoriesAndGrants(recipient?: `0x${string}`) {
               },
             },
           },
-          where: { isActive: true, isTopLevel: false, recipient },
+          where: {
+            isActive: true,
+            isTopLevel: false,
+            recipient,
+            monthlyIncomingBaselineFlowRate: { not: "0" },
+          },
         })
       : Promise.resolve([]),
   ])

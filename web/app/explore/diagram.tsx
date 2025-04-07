@@ -2,9 +2,9 @@ import FlowNode from "@/components/diagram/flow-node"
 import grantNode from "@/components/diagram/grant-node"
 import PoolNode from "@/components/diagram/pool-node"
 import type { Grant } from "@prisma/flows"
-import { Background, Edge, MarkerType, Node, ReactFlow } from "@xyflow/react"
+import { Background, type Edge, MarkerType, type Node, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
-import { diagramLayout, createPoolNode, placeFlowAndSubgrants, dimensions } from "./diagram-utils"
+import { diagramLayout, createPoolNode, placeFlowAndSubgrants } from "./diagram-utils"
 
 export type DiagramGrant = Pick<Grant, "id" | "title" | "image">
 
@@ -42,7 +42,7 @@ export const FullDiagram = (props: Props) => {
   function placeRing(
     ringFlows: (DiagramGrant & { subgrants: DiagramGrant[] })[],
     radius: number,
-    offset: number = 0,
+    offset = 0,
   ) {
     const count = ringFlows.length
     if (!count) return

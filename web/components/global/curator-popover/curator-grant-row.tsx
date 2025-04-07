@@ -27,9 +27,11 @@ export function ActiveCuratorGrantRow({
 }) {
   const { isResolved, title, image, id, challengePeriodEndsAt, disputes } = grant
 
+  const mostRecentDispute = disputes.sort((a, b) => b.votingStartTime - a.votingStartTime)[0]
+
   const { withdrawRewards, voterRewardsBalance } = useWithdrawVoterRewards(
     getEthAddress(grant.parentArbitrator),
-    disputes[0]?.disputeId ? BigInt(disputes[0]?.disputeId) : BigInt(0),
+    mostRecentDispute?.disputeId ? BigInt(mostRecentDispute?.disputeId) : BigInt(0),
     BigInt(0), // only 1 round for now
   )
 
@@ -45,7 +47,7 @@ export function ActiveCuratorGrantRow({
         />
         <Link
           onClick={closePopover}
-          href={`/application/${id}`}
+          href={grant.isActive ? `/item/${id}` : `/application/${id}`}
           className="truncate text-sm hover:underline"
         >
           {title}
@@ -67,14 +69,14 @@ export function ActiveCuratorGrantRow({
         )}
         {Boolean(grant.isDisputed) && disputes?.[0] && (
           <>
-            {canDisputeBeVotedOn(grant.disputes[0]) && (
+            {canDisputeBeVotedOn(mostRecentDispute) && (
               <Link onClick={closePopover} href={`/application/${id}`}>
-                <Button variant={grant.disputes[0].votes?.length ? "outline" : "default"} size="xs">
-                  {grant.disputes[0].votes?.length ? "Voted" : "Vote"}
+                <Button variant={mostRecentDispute.votes?.length ? "outline" : "default"} size="xs">
+                  {mostRecentDispute.votes?.length ? "Voted" : "Vote"}
                 </Button>
               </Link>
             )}
-            {isDisputeRevealingVotes(grant.disputes[0]) && (
+            {isDisputeRevealingVotes(mostRecentDispute) && (
               <Link
                 className="text-xs text-muted-foreground"
                 onClick={closePopover}
@@ -83,7 +85,7 @@ export function ActiveCuratorGrantRow({
                 Revealing
               </Link>
             )}
-            {isDisputeWaitingForVoting(grant.disputes[0]) && (
+            {isDisputeWaitingForVoting(mostRecentDispute) && (
               <Link
                 className="text-xs text-muted-foreground"
                 onClick={closePopover}
@@ -92,21 +94,22 @@ export function ActiveCuratorGrantRow({
                 Voting opens soon
               </Link>
             )}
-            {canDisputeBeExecuted(grant.disputes[0]) && (
+            {canDisputeBeExecuted(mostRecentDispute) && (
               <Link onClick={closePopover} href={`/application/${id}`}>
                 <Button size="xs">Execute</Button>
               </Link>
             )}
           </>
         )}
-        {Boolean(isResolved) && disputes?.[0] && (
+        {Boolean(isResolved) && mostRecentDispute && (
           <div
             className={cn("text-xs text-muted-foreground", {
-              "text-green-500": disputes[0].votes?.length > 0 && Number(voterRewardsBalance) > 0,
-              "text-yellow-500": !disputes[0].votes?.length,
+              "text-green-500":
+                mostRecentDispute.votes?.length > 0 && Number(voterRewardsBalance) > 0,
+              "text-yellow-500": !mostRecentDispute.votes?.length,
             })}
           >
-            {disputes?.[0]?.votes?.length ? (
+            {mostRecentDispute.votes?.length ? (
               <Tooltip>
                 <TooltipTrigger className="flex items-center">
                   <Button

@@ -19,6 +19,8 @@ export default async function ExplorePage() {
         id: true,
         title: true,
         image: true,
+        monthlyIncomingFlowRate: true,
+        monthlyOutgoingFlowRate: true,
         subgrants: {
           where: { isActive: true },
           select: {

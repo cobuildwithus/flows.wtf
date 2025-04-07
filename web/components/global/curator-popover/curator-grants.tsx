@@ -1,7 +1,7 @@
 "use client"
 
 import { ActiveCuratorGrantRow } from "./curator-grant-row"
-import { ActiveCuratorGrant } from "./hooks/get-user-tcr-tokens"
+import type { ActiveCuratorGrant } from "./hooks/get-user-tcr-tokens"
 
 interface ActiveCuratorGrantsProps {
   grants: ActiveCuratorGrant[]

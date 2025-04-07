@@ -2,7 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { Status } from "../enums"
 import { getAddress } from "viem"
 import { removeApplicationEmbedding } from "./embeddings/embed-applications"
-import { grants } from "ponder:schema"
+import { grants, tcrToGrantId } from "ponder:schema"
 import { isBlockRecent } from "../utils"
 
 ponder.on("FlowTcr:ItemStatusChange", handleItemStatusChange)
@@ -15,6 +15,9 @@ async function handleItemStatusChange(params: {
   const { event, context } = params
   const { _itemID, _itemStatus, _disputed, _resolved } = event.args
   const isRecent = isBlockRecent(Number(event.block.timestamp))
+
+  const parent = await context.db.find(tcrToGrantId, { tcr: event.log.address.toLowerCase() })
+  if (!parent) throw new Error(`Parent grant not found: ${event.log.address.toLowerCase()}`)
 
   const grant = await context.db.find(grants, { id: _itemID })
   if (!grant) throw new Error(`Grant not found: ${_itemID}`)
@@ -35,8 +38,24 @@ async function handleItemStatusChange(params: {
     challengePeriodEndsAt = Number(event.block.timestamp + challengePeriodDuration)
   }
 
-  if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Absent && isRecent) {
-    await removeApplicationEmbedding(grant)
+  if (!grant.isActive && _itemStatus === Status.RegistrationRequested) {
+    await context.db.update(grants, { id: parent.grantId }).set((row) => ({
+      awaitingRecipientCount: row.awaitingRecipientCount + 1,
+    }))
+  }
+
+  if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Absent) {
+    if (isRecent) await removeApplicationEmbedding(grant)
+    await context.db.update(grants, { id: parent.grantId }).set((row) => ({
+      awaitingRecipientCount: row.awaitingRecipientCount - 1,
+    }))
+  }
+
+  if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Registered) {
+    await context.db.update(grants, { id: parent.grantId }).set((row) => ({
+      awaitingRecipientCount: row.awaitingRecipientCount - 1,
+      activeRecipientCount: row.activeRecipientCount + 1,
+    }))
   }
 
   await context.db.update(grants, { id: _itemID }).set({

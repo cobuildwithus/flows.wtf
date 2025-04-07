@@ -240,6 +240,7 @@ export default async function GrantPage(props: Props) {
                   activatedAt={new Date((grant.activatedAt || 0) * 1000)}
                   canEdit={canEdit}
                   impactId={impactId}
+                  disableMetricsWarning={grant.flowId === NOUNS_ART}
                 />
               </Suspense>
             </AgentChatProvider>
@@ -293,3 +294,5 @@ async function getGrant(grantId: string) {
     ...getCacheStrategy(300),
   })
 }
+
+const NOUNS_ART = "0x0015ce9c043a4dd4b1e25532a85ec71207b69e105b4ed03e3d6e038a0b331cf4"

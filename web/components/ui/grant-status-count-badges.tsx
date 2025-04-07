@@ -44,7 +44,7 @@ export const GrantStatusCountBadges = (props: Props) => {
       {(awaiting > 0 || alwaysShowAll) && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link tabIndex={-1} href={`/flow/${id}/applications`}>
+            <Link tabIndex={-1} href={`/flow/${id}/curate`}>
               <Badge variant="secondary">{awaiting}</Badge>
             </Link>
           </TooltipTrigger>
