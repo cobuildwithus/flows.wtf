@@ -28,10 +28,11 @@ interface Props {
   activatedAt: Date
   canEdit: boolean
   impactId?: string
+  disableMetricsWarning?: boolean
 }
 
 export function ImpactChain(props: Props) {
-  const { impacts, activatedAt, canEdit, impactId } = props
+  const { impacts, activatedAt, canEdit, impactId, disableMetricsWarning } = props
   const { width } = useWindowSize()
   const [api, setApi] = React.useState<CarouselApi>()
   const { updateQueryParam } = useQueryParams()
@@ -92,6 +93,7 @@ export function ImpactChain(props: Props) {
           height: impact.name.length > 22 ? 300 : 240,
           data: {
             impact,
+            disableMetricsWarning: disableMetricsWarning,
             onClick: () => {
               setSelectedIndex(index)
               updateQueryParam("impactId", impact.id)
