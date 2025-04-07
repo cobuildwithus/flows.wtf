@@ -17,7 +17,7 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 interface Props {
   data: (PrismaJson.ImpactMetric & { date: string; weight: number })[]
   summary: PrismaJson.ImpactSummary
-  backgroundImage: string
+  backgroundImage?: string
   gradients: PrismaJson.Gradient[]
 }
 
@@ -88,7 +88,8 @@ export function ImpactSummaryChart(props: Props) {
                   {metric.aggregationType === "total" ? "in total" : "on average"}
                 </span>
                 <span className="mt-1 text-lg font-bold leading-none">
-                  {metric.value} {metric.units}
+                  {metric.value}{" "}
+                  {metric.units === "people" && metric.value === 1 ? "person" : metric.units}
                 </span>
                 <span className="mt-1.5 text-xs text-muted-foreground">{metric.explanation}</span>
               </div>
@@ -96,13 +97,15 @@ export function ImpactSummaryChart(props: Props) {
         </div>
 
         <div className="relative overflow-hidden max-sm:w-full lg:grow">
-          <Image
-            src={backgroundImage}
-            alt=" "
-            width="764"
-            height="330"
-            className="absolute inset-0 h-full w-full object-fill mix-blend-overlay"
-          />
+          {backgroundImage && (
+            <Image
+              src={backgroundImage}
+              alt=" "
+              width="764"
+              height="330"
+              className="absolute inset-0 h-full w-full object-fill mix-blend-overlay"
+            />
+          )}
           <button
             className="absolute left-4 top-4 z-10 flex items-center text-muted-foreground transition-opacity hover:opacity-75 dark:text-white"
             onClick={() => setTimeUnit(timeUnit === "weeks" ? "months" : "weeks")}

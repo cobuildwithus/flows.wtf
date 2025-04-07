@@ -34,7 +34,7 @@ export const ImpactSummary = (props: Props) => {
         })),
       )}
       summary={impactSummary!}
-      backgroundImage={impacts[impacts.length - 1].bestImage.illustration?.url || grant.image}
+      backgroundImage={getBestIllustration(impacts)}
       gradients={Object.values(gradients || {})}
     />
   )
@@ -53,4 +53,15 @@ export function getImpactSummaryType(props: Props): ImpactSummaryType {
   }
 
   return "none"
+}
+
+function getBestIllustration(impacts: Impact[]): string | undefined {
+  // Sort impacts by proof array length in descending order and get illustrations
+  const sortedIllustrations = impacts
+    .sort((a, b) => (b.proofs?.length || 0) - (a.proofs?.length || 0))
+    .map((impact) => impact.bestImage.illustration?.url)
+    .filter((url): url is string => !!url)
+
+  // Return first valid illustration or undefined if none found
+  return sortedIllustrations[0]
 }
