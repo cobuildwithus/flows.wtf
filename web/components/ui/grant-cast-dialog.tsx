@@ -1,7 +1,5 @@
 "use client"
 
-import type { CastCard } from "@/components/ui/cast-card"
-import { type ComponentProps, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -10,14 +8,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { MinimalCast } from "@/lib/types/cast"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 import { CastColumns } from "./cast-columns"
 
 interface GrantCastDialogProps {
   trigger: React.ReactNode
   title?: string
   description?: string
-  casts: ComponentProps<typeof CastCard>["cast"][]
+  casts: MinimalCast[]
+  showVerification?: boolean
 }
 
 export function GrantCastDialog({
@@ -25,6 +26,7 @@ export function GrantCastDialog({
   title = "Activity",
   description,
   casts,
+  showVerification,
 }: GrantCastDialogProps) {
   const [open, setOpen] = useState(false)
 
@@ -44,7 +46,7 @@ export function GrantCastDialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <CastColumns casts={casts} />
+        <CastColumns casts={casts} showVerification={showVerification} />
       </DialogContent>
     </Dialog>
   )

@@ -2,12 +2,32 @@ export {}
 
 declare global {
   namespace PrismaJson {
-    type ImpactUnit = {
+    type ImpactMetric = {
       name: string
       units: string
       value: string
       description: string
       reasoning: string
+    }
+
+    type ImpactMetricDefinition = {
+      id: string
+      name: string
+      units: string
+      description: string
+      weight: number
+      showOnChart: boolean
+    }
+
+    type ImpactSummary = {
+      timeUnit: "weeks" | "months"
+      metricSummaries: {
+        value: number
+        units: string
+        metricId: string
+        aggregationType: "total" | "average"
+        explanation: string
+      }[]
     }
 
     type ImpactVerification = {

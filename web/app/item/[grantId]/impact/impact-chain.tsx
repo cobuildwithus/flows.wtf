@@ -19,7 +19,7 @@ import "@xyflow/react/dist/style.css"
 import React, { useEffect, useMemo } from "react"
 import { ImpactContent } from "./impact-content"
 import { CustomBezierEdge } from "./nodes/custom-edge"
-import { generateDiagram } from "./nodes/diagram-utils"
+import { generateDiagram } from "./nodes/impact-chain-utils"
 import { ImpactNode } from "./nodes/impact-node"
 import { LaunchNode } from "./nodes/launch-node"
 
@@ -28,10 +28,11 @@ interface Props {
   activatedAt: Date
   canEdit: boolean
   impactId?: string
+  disableMetricsWarning?: boolean
 }
 
 export function ImpactChain(props: Props) {
-  const { impacts, activatedAt, canEdit, impactId } = props
+  const { impacts, activatedAt, canEdit, impactId, disableMetricsWarning } = props
   const { width } = useWindowSize()
   const [api, setApi] = React.useState<CarouselApi>()
   const { updateQueryParam } = useQueryParams()
@@ -85,19 +86,20 @@ export function ImpactChain(props: Props) {
 
     return generateDiagram(
       [
-        { type: "launch", width: 250, height: 240, data: { activatedAt } },
         ...impacts.map((impact, index) => ({
           type: "impact",
           width: 280,
           height: impact.name.length > 22 ? 300 : 240,
           data: {
             impact,
+            disableMetricsWarning: disableMetricsWarning,
             onClick: () => {
               setSelectedIndex(index)
               updateQueryParam("impactId", impact.id)
             },
           },
         })),
+        { type: "launch", width: 250, height: 240, data: { activatedAt } },
       ],
       width,
     )

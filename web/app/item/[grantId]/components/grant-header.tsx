@@ -15,7 +15,9 @@ export function GrantHeader({ grant }: { grant: { id: string; image: string; tit
             className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
-        <h3 className="text-2xl font-semibold tracking-tight">{grant.title}</h3>
+        <h3 className="max-w-[312px] truncate text-2xl font-semibold tracking-tight">
+          {grant.title}
+        </h3>
       </Link>
     </div>
   )

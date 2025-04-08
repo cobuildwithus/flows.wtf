@@ -6,10 +6,10 @@ import Image from "next/image"
 import { memo } from "react"
 import LaunchImage from "./launch.png"
 
-export type ILaunchNode = Node<{ activatedAt: Date }, "launch">
+export type ILaunchNode = Node<{ activatedAt: Date; incomingPosition: Position }, "launch">
 
 export function LaunchNode(props: NodeProps<ILaunchNode>) {
-  const { activatedAt } = props.data
+  const { activatedAt, incomingPosition } = props.data
 
   return (
     <div className="group pointer-events-auto relative flex flex-col items-center overflow-hidden">
@@ -30,10 +30,10 @@ export function LaunchNode(props: NodeProps<ILaunchNode>) {
       </div>
 
       <Handle
-        type="source"
-        position={Position.Right}
+        type="target"
+        position={incomingPosition}
         isConnectable={false}
-        className="!right-1/4 !border-0 !bg-transparent"
+        className="!left-1/2 !right-1/2 !border-0 !bg-transparent"
       />
     </div>
   )

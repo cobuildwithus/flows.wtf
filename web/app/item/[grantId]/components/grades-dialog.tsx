@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import type { User } from "@/lib/auth/user"
 import type { DerivedData, Grant } from "@prisma/flows"
 import { ZoomInIcon } from "lucide-react"
+import { ReactNode } from "react"
 import { CircularProgress } from "./circular-progress"
 import { Grade } from "./grade"
 import { GrantHeader } from "./grant-header"
@@ -17,21 +18,26 @@ interface Props {
   grants: Array<
     Pick<Grant, "id" | "title" | "image" | "activatedAt"> & {
       derivedData: Pick<DerivedData, "overallGrade" | "requirementsMetrics"> | null
-      flow: Pick<Grant, "title">
     }
   >
   dialogTitle?: string
   user?: User
+  children?: ReactNode
 }
 
 interface GrantWithScore {
-  grant: Props["grants"][0]
+  grant: Props["grants"][number]
   overallScore: number
   requirementsMetrics?: RequirementMetric[]
 }
 
 export function ImpactDialog(props: Props) {
-  const { grants, dialogTitle, user } = props
+  const {
+    grants,
+    dialogTitle,
+    user,
+    children = <ImpactDialogSummary grants={grants} dialogTitle={dialogTitle} />,
+  } = props
 
   // Return pending if any grant has no grades
   if (grants.some((grant) => !grant.derivedData?.overallGrade)) {
@@ -40,31 +46,10 @@ export function ImpactDialog(props: Props) {
 
   const grantsWithScores: GrantWithScore[] = getGrantsWithScoresAndMetrics(grants)
   const lowestScoringGrant = getLowestScoringGrant(grants)
-  const isNew = isGrantNew(lowestScoringGrant.grant)
-  const text = isNew ? "New builder" : "Impact Score"
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <div className="group relative h-full cursor-pointer rounded-xl border bg-card p-5 transition-all duration-200 hover:scale-[1.02]">
-          <ZoomInIcon className="fixed right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
-
-          <div className="flex items-center space-x-4">
-            {!isNew && <CircularProgress value={lowestScoringGrant.overallScore} />}
-            {isNew && <NewProgress disableTooltip />}
-            <span className="font-medium">{dialogTitle || text}</span>
-          </div>
-
-          <div className="mt-6 space-y-5">
-            {lowestScoringGrant.requirementsMetrics
-              ?.slice(0, 4)
-              .sort((a, b) => b.met - a.met)
-              .map(({ name, met }) => (
-                <Grade key={name} label={name} value={met} isNew={isNew} percentage={met} />
-              ))}
-          </div>
-        </div>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-5xl">
         <DialogTitle className="text-center text-2xl font-bold" />
         <div className="mt-2 flex flex-col space-y-16">
@@ -83,6 +68,34 @@ export function ImpactDialog(props: Props) {
         </div>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function ImpactDialogSummary({ grants, dialogTitle }: Pick<Props, "grants" | "dialogTitle">) {
+  const lowestScoringGrant = getLowestScoringGrant(grants)
+  const isNew = isGrantNew(lowestScoringGrant.grant)
+
+  const text = isNew ? "New builder" : "Impact Score"
+
+  return (
+    <div className="group relative h-full cursor-pointer rounded-xl border bg-card p-5 transition-all duration-200 hover:scale-[1.02]">
+      <ZoomInIcon className="fixed right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
+
+      <div className="flex items-center space-x-4">
+        {!isNew && <CircularProgress value={lowestScoringGrant.overallScore} />}
+        {isNew && <NewProgress disableTooltip />}
+        <span className="font-medium">{dialogTitle || text}</span>
+      </div>
+
+      <div className="mt-6 space-y-5">
+        {lowestScoringGrant.requirementsMetrics
+          ?.slice(0, 4)
+          .sort((a, b) => b.met - a.met)
+          .map(({ name, met }) => (
+            <Grade key={name} label={name} value={met} isNew={isNew} percentage={met} />
+          ))}
+      </div>
+    </div>
   )
 }
 

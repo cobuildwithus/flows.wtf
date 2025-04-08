@@ -30,6 +30,8 @@ interface AgentChatContext extends Omit<UseChatHelpers, "data" | "setData"> {
   hasStartedStreaming: boolean
   appendData: (data: ChatData) => void
   data: ChatData | undefined
+  isOpen: boolean
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
@@ -42,6 +44,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
   const [hasStartedStreaming, setHasStartedStreaming] = useState(false)
   const router = useRouter()
   const [data, setData] = useState<ChatData | undefined>(props.data)
+  const [isOpen, setIsOpen] = useState(false)
 
   const chat = useChat({
     id,
@@ -108,6 +111,8 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
           })
         },
         data,
+        isOpen,
+        setIsOpen,
       }}
     >
       {children}

@@ -1,17 +1,15 @@
-import type { ComponentProps } from "react"
+import { MinimalCast } from "@/lib/types/cast"
 import { cn } from "@/lib/utils"
 import { CastCard } from "./cast-card"
 
 interface CastColumnsProps {
-  casts: ComponentProps<typeof CastCard>["cast"][]
+  casts: MinimalCast[]
+  showVerification?: boolean
 }
 
-export function CastColumns({ casts }: CastColumnsProps) {
+export function CastColumns({ casts, showVerification }: CastColumnsProps) {
   const numColumns = casts.length >= 3 ? 3 : casts.length > 1 ? 2 : 1
-  const columns = Array.from(
-    { length: numColumns },
-    () => [] as ComponentProps<typeof CastCard>["cast"][],
-  )
+  const columns = Array.from({ length: numColumns }, () => [] as MinimalCast[])
 
   const sortedCasts = [
     ...casts.filter((cast) => cast.impact_verifications?.some((v) => v.is_grant_update)),
@@ -36,14 +34,14 @@ export function CastColumns({ casts }: CastColumnsProps) {
         >
           {column.map((cast) => (
             <div key={cast.hash.toString()} className="break-inside-avoid">
-              <CastCard cast={cast} />
+              <CastCard cast={cast} showVerification={showVerification} />
             </div>
           ))}
         </div>
       ))}
 
       {casts.length === 0 && (
-        <p className="col-span-full text-center text-sm text-muted-foreground">No activity found</p>
+        <p className="col-span-full text-center text-sm text-muted-foreground">No casts found</p>
       )}
     </div>
   )

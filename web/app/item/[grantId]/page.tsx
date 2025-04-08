@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Currency } from "@/components/ui/currency"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { EmptyState } from "@/components/ui/empty-state"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
-import { Status } from "@/lib/enums"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { ZoomInIcon } from "lucide-react"
 import type { Metadata } from "next"
@@ -23,19 +23,19 @@ import { Suspense } from "react"
 import { BeneficiariesCard } from "./cards/beneficiaries"
 import { Builder } from "./cards/builder"
 import { CoverImage } from "./cards/cover-image"
-import { Stat } from "./cards/stats"
-import { MissionCard } from "./cards/mission"
 import { DeliverablesCard } from "./cards/deliverables"
+import { MissionCard } from "./cards/mission"
+import { Stat } from "./cards/stats"
 import { Voters } from "./cards/voters"
 import { BgGradient } from "./components/bg-gradient"
-import { CurationStatus, CurationVote } from "./components/curation-card"
 import { GrantActivity } from "./components/grant-activity"
 import { GrantChat } from "./components/grant-chat"
-import { ImpactDialog } from "./components/grades-dialog"
+import { GrantFeedback } from "./components/grant-feedback"
+import { GrantGrade } from "./components/grant-grade"
+import { GrantStatus } from "./components/grant-status"
 import { ImpactChain } from "./impact/impact-chain"
-import { Badge } from "@/components/ui/badge"
-import { FlowRemovedCard } from "./components/flow-removed-card"
-import { EmptyState } from "@/components/ui/empty-state"
+import { getImpactSummaryType, ImpactSummary } from "./impact/impact-summary"
+import { getGrantFeedbackCasts } from "@/lib/database/queries/grant-feedback"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -73,14 +73,17 @@ export default async function GrantPage(props: Props) {
 
   const impacts = await database.impact.findMany({
     where: { grantId, deletedAt: null },
-    orderBy: [{ date: "asc" }, { updatedAt: "asc" }],
+    orderBy: [{ date: "desc" }, { updatedAt: "desc" }],
   })
+
+  const impactSummaryType = getImpactSummaryType({ grant, impacts, flow })
+  const hasImpactSummary = impactSummaryType !== "none"
 
   return (
     <>
       <div className="mt-2.5 pb-24 md:mt-6">
         <div className="container">
-          <div className="flex items-center justify-between">
+          <div className="md:flex md:items-center md:justify-between">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -108,7 +111,13 @@ export default async function GrantPage(props: Props) {
 
           <div className="mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
             {title && coverImage && tagline && (
-              <CoverImage coverImage={coverImage} title={title} tagline={tagline} />
+              <div className="relative col-span-full lg:col-span-7">
+                <GrantStatus grant={grant} flow={flow} />
+                <div className="absolute right-4 top-4 z-30">
+                  <GrantGrade grant={grant} />
+                </div>
+                <CoverImage coverImage={coverImage} title={title} tagline={tagline} />
+              </div>
             )}
             <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
               <div className="flex flex-col gap-4">
@@ -127,78 +136,73 @@ export default async function GrantPage(props: Props) {
                 <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
               )}
             </div>
-            <div className="col-span-full cursor-pointer xl:col-span-3">
-              <ImpactDialog grants={[{ ...grant, flow: { title: flow.title } }]} />
-            </div>
-            <div className="col-span-full rounded-xl border xl:col-span-9 xl:flex xl:items-center xl:justify-end">
-              <Suspense fallback={<div className="h-[252px]" />}>
-                <GrantActivity grant={grant} />
-              </Suspense>
-            </div>
-            <Stat label="Budget">
-              <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
-            </Stat>
 
-            <Stat label="Total Earned">
-              <AnimatedSalary
-                value={grant.totalEarned}
-                monthlyRate={grant.monthlyIncomingFlowRate}
-              />
-            </Stat>
-            <Dialog>
-              <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
-                <Stat label="Votes">{grant.votesCount}</Stat>
-                <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Voters</DialogTitle>
-                <div className="mt-4">
-                  <Suspense>
-                    <Voters
-                      contract={grant.parentContract as `0x${string}`}
-                      grantId={grant.id}
-                      flowVotesCount={flow.votesCount}
-                    />
-                  </Suspense>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger className="group relative col-span-6 text-left duration-200 hover:scale-[1.02] xl:col-span-3">
-                <Stat label="Status">
-                  <span className="lg:text-2xl">
-                    {grant.status === Status.ClearingRequested ||
-                    grant.status === Status.Absent ||
-                    flow.isRemoved ? (
-                      <Badge variant="warning" className="text-lg">
-                        {grant.status === Status.ClearingRequested ? "Challenged" : "Removed"}
-                      </Badge>
-                    ) : (
-                      "Active"
-                    )}
-                  </span>
-                </Stat>
-                <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Grant Curation</DialogTitle>
-                <Suspense>
-                  {flow.isActive ? (
-                    <div className={cn({ "divide-y divide-border [&>*]:py-5": grant.isDisputed })}>
-                      <CurationStatus grant={grant} flow={flow} />
-                      {grant.isDisputed && <CurationVote grant={grant} flow={flow} />}
-                    </div>
-                  ) : (
-                    <FlowRemovedCard flow={flow} />
-                  )}
+            {hasImpactSummary && (
+              <div className="col-span-full xl:col-span-7">
+                <ImpactSummary grant={grant} impacts={impacts} flow={flow} />
+              </div>
+            )}
+
+            <AgentChatProvider
+              id={`grant-${grant.id}-${user?.address}`}
+              type="flo"
+              user={user}
+              data={{ grantId: grant.id }}
+              identityToken={await getPrivyIdToken()}
+            >
+              <GrantChat grant={grant} user={user} canEdit={canEdit} />
+
+              <div
+                className={cn(
+                  "col-span-full rounded-xl border xl:flex xl:items-center xl:justify-end",
+                  {
+                    "xl:col-span-5": hasImpactSummary,
+                    "xl:col-span-6 xl:row-span-2": !hasImpactSummary,
+                  },
+                )}
+              >
+                <Suspense fallback={<div className="h-[252px]" />}>
+                  <GrantActivity grant={grant} />
                 </Suspense>
-              </DialogContent>
-            </Dialog>
+              </div>
+
+              <Stat label="Budget" className="">
+                <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
+              </Stat>
+
+              <Stat label="Total Earned">
+                <AnimatedSalary
+                  value={grant.totalEarned}
+                  monthlyRate={grant.monthlyIncomingFlowRate}
+                />
+              </Stat>
+              <Dialog>
+                <DialogTrigger className="group relative col-span-6 h-full text-left duration-200 hover:scale-[1.02] xl:col-span-3">
+                  <Stat label="Votes">{grant.votesCount}</Stat>
+                  <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Voters</DialogTitle>
+                  <div className="mt-4">
+                    <Suspense>
+                      <Voters
+                        contract={grant.parentContract as `0x${string}`}
+                        grantId={grant.id}
+                        flowVotesCount={flow.votesCount}
+                      />
+                    </Suspense>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <div className="col-span-full xl:col-span-3">
+                <GrantFeedback user={user} castsPromise={getGrantFeedbackCasts(grantId)} />
+              </div>
+            </AgentChatProvider>
           </div>
         </div>
 
         {impacts.length > 0 ? (
-          <div className="relative mt-8">
+          <div className="relative mt-12">
             <BgGradient />
             <AgentChatProvider
               id={`grant-edit-${grant.id}-${user?.address}`}
@@ -214,6 +218,7 @@ export default async function GrantPage(props: Props) {
                   activatedAt={new Date((grant.activatedAt || 0) * 1000)}
                   canEdit={canEdit}
                   impactId={impactId}
+                  disableMetricsWarning={grant.flowId === NOUNS_ART}
                 />
               </Suspense>
             </AgentChatProvider>
@@ -228,15 +233,6 @@ export default async function GrantPage(props: Props) {
           </div>
         )}
       </div>
-      <AgentChatProvider
-        id={`grant-${grant.id}-${user?.address}`}
-        type="flo"
-        user={user}
-        data={{ grantId: grant.id }}
-        identityToken={await getPrivyIdToken()}
-      >
-        <GrantChat grant={grant} user={user} canEdit={canEdit} />
-      </AgentChatProvider>
     </>
   )
 }
@@ -259,9 +255,13 @@ async function getGrant(grantId: string) {
           beneficiaries: true,
           overallGrade: true,
           requirementsMetrics: true,
+          impactMetrics: true,
+          impactSummary: true,
         },
       },
     },
     ...getCacheStrategy(300),
   })
 }
+
+const NOUNS_ART = "0x0015ce9c043a4dd4b1e25532a85ec71207b69e105b4ed03e3d6e038a0b331cf4"
