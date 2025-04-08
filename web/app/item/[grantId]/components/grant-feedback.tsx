@@ -56,23 +56,19 @@ export function GrantFeedback(props: Props) {
             >
               Leave feedback
             </Button>
-            <Suspense>
-              <CastDialogWrapper castsPromise={castsPromise} />
-            </Suspense>
           </div>
         </div>
 
-        <div className="flex size-9 items-center justify-center rounded-full bg-primary p-2.5">
-          <MessageSquare className="size-full text-primary-foreground" />
-        </div>
+        <Suspense>
+          <CastDialogWrapper castsPromise={castsPromise} />
+        </Suspense>
       </div>
     </>
   )
 }
+
 function CastDialogWrapper({ castsPromise }: { castsPromise: Promise<MinimalCast[]> }) {
   const casts = use(castsPromise)
-
-  if (casts.length === 0) return null
 
   return (
     <GrantCastDialog
@@ -81,9 +77,14 @@ function CastDialogWrapper({ castsPromise }: { castsPromise: Promise<MinimalCast
       description="Questions and feedback posted by users on Farcaster"
       showVerification={false}
       trigger={
-        <Button variant="ghost" size="xs">
-          View
-        </Button>
+        <div className="relative flex size-9 items-center justify-center rounded-full bg-primary p-2.5">
+          <MessageSquare className="size-full text-primary-foreground" />
+          {casts.length > 0 && (
+            <div className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-yellow-500 p-0.5 text-xs text-white">
+              {casts.length}
+            </div>
+          )}
+        </div>
       }
     />
   )
