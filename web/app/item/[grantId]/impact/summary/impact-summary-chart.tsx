@@ -13,11 +13,12 @@ import { CalendarRangeIcon } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import LightChartBg from "@/public/light-chart-bg.png"
+import DarkChartBg from "@/public/dark-chart-bg.png"
 
 interface Props {
   data: (PrismaJson.ImpactMetric & { date: string; weight: number })[]
   summary: PrismaJson.ImpactSummary
-  backgroundImage?: string
   gradients: PrismaJson.Gradient[]
 }
 
@@ -28,7 +29,7 @@ interface Serie {
 }
 
 export function ImpactSummaryChart(props: Props) {
-  const { summary, backgroundImage, gradients } = props
+  const { summary, gradients } = props
   const [timeUnit, setTimeUnit] = useState<"weeks" | "months">(summary.timeUnit)
 
   const data = useMemo(() => props.data.filter((item) => Number(item.value) > 0), [props.data])
@@ -97,15 +98,14 @@ export function ImpactSummaryChart(props: Props) {
         </div>
 
         <div className="relative overflow-hidden max-sm:w-full lg:grow">
-          {backgroundImage && (
-            <Image
-              src={backgroundImage}
-              alt=" "
-              width="764"
-              height="330"
-              className="absolute inset-0 h-full w-full object-fill mix-blend-overlay"
-            />
-          )}
+          <Image
+            src={LightChartBg}
+            alt=" "
+            width="764"
+            height="330"
+            className="absolute inset-0 h-full w-full overflow-hidden rounded-l-lg object-fill mix-blend-overlay"
+          />
+
           <button
             className="absolute left-4 top-4 z-10 flex items-center text-muted-foreground transition-opacity hover:opacity-75 dark:text-white"
             onClick={() => setTimeUnit(timeUnit === "weeks" ? "months" : "weeks")}

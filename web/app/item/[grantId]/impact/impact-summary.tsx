@@ -1,6 +1,6 @@
 import "server-only"
 
-import { DerivedData, Grant, Impact } from "@prisma/flows"
+import type { DerivedData, Grant, Impact } from "@prisma/flows"
 import { ImpactSummaryChart } from "./summary/impact-summary-chart"
 
 interface Props {
@@ -34,7 +34,6 @@ export const ImpactSummary = (props: Props) => {
         })),
       )}
       summary={impactSummary!}
-      backgroundImage={getBestIllustration(impacts)}
       gradients={Object.values(gradients || {})}
     />
   )
@@ -53,15 +52,4 @@ export function getImpactSummaryType(props: Props): ImpactSummaryType {
   }
 
   return "none"
-}
-
-function getBestIllustration(impacts: Impact[]): string | undefined {
-  // Sort impacts by proof array length in descending order and get illustrations
-  const sortedIllustrations = impacts
-    .sort((a, b) => (b.proofs?.length || 0) - (a.proofs?.length || 0))
-    .map((impact) => impact.bestImage.illustration?.url)
-    .filter((url): url is string => !!url)
-
-  // Return first valid illustration or undefined if none found
-  return sortedIllustrations[0]
 }
