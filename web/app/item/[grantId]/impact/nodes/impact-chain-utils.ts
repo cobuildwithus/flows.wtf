@@ -42,7 +42,7 @@ function positionNodes(nodes: MinimalNode[], layout: DiagramLayout): Node[] {
       ...node,
       id: `i${index + 1}`,
       position: {
-        x: getX(),
+        x: getX() + (node.type === "launch" ? layout.marginX : 0),
         y: getY(),
       },
       data: {

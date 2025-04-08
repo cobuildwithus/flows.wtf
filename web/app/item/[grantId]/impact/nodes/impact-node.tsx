@@ -29,7 +29,7 @@ export function ImpactNode(props: NodeProps<IImpactNode>) {
 
   return (
     <div
-      className="group pointer-events-auto relative isolate flex cursor-pointer flex-col items-center"
+      className="group pointer-events-auto relative isolate my-8 flex cursor-pointer flex-col items-center"
       style={{ width, height, maxHeight: height }}
       onClick={onClick}
     >
