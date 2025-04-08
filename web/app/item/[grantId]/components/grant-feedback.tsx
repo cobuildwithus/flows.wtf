@@ -4,18 +4,20 @@ import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { Button } from "@/components/ui/button"
 import { GrantCastDialog } from "@/components/ui/grant-cast-dialog"
 import { useLogin } from "@/lib/auth/use-login"
-import { User } from "@/lib/auth/user"
-import { MinimalCast } from "@/lib/types/cast"
+import type { User } from "@/lib/auth/user"
+import type { MinimalCast } from "@/lib/types/cast"
 import { MessageSquare } from "lucide-react"
 import { Suspense, use } from "react"
 
 interface Props {
   user?: User
   castsPromise: Promise<MinimalCast[]>
+  grantId: string
+  builderUsername: string
 }
 
 export function GrantFeedback(props: Props) {
-  const { user, castsPromise } = props
+  const { user, castsPromise, grantId, builderUsername } = props
   const { setIsOpen, setMessages, reload, setContext } = useAgentChat()
   const { login } = useLogin()
 
@@ -35,12 +37,16 @@ export function GrantFeedback(props: Props) {
               onClick={() => {
                 if (!user) return login()
                 setContext(
-                  'User just clicked "Leave Feedback" button on the grant page. Start collecting the feedback process.',
+                  `User just clicked "Leave Feedback" button on the grant page. 
+                  Start collecting their feedback and put it in the cast preview tool.
+                  Do not use other tools, just help them submit their feedback quickly via the cast preview tool.
+                  For the cast preview tool, use the text of the feedback and the parent_url should be https://flows.wtf/item/${grantId}
+                  In the post you create, the first thing in the message should be @${builderUsername}`,
                 )
                 setMessages([
                   {
                     role: "user",
-                    content: "I want to leave feedback or ask builder a question on Farcaster",
+                    content: "I want to leave feedback or ask the builder a question please",
                     id: "1",
                   },
                 ])

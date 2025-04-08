@@ -36,6 +36,7 @@ import { GrantStatus } from "./components/grant-status"
 import { ImpactChain } from "./impact/impact-chain"
 import { getImpactSummaryType, ImpactSummary } from "./impact/impact-summary"
 import { getGrantFeedbackCasts } from "@/lib/database/queries/grant-feedback"
+import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -71,10 +72,13 @@ export default async function GrantPage(props: Props) {
 
   const canEdit = canEditGrant(grant, user?.address)
 
-  const impacts = await database.impact.findMany({
-    where: { grantId, deletedAt: null },
-    orderBy: [{ date: "desc" }, { updatedAt: "desc" }],
-  })
+  const [impacts, grantBuilder] = await Promise.all([
+    database.impact.findMany({
+      where: { grantId, deletedAt: null },
+      orderBy: [{ date: "desc" }, { updatedAt: "desc" }],
+    }),
+    getFarcasterUserByEthAddress(grant.recipient as `0x${string}`),
+  ])
 
   const impactSummaryType = getImpactSummaryType({ grant, impacts, flow })
   const hasImpactSummary = impactSummaryType !== "none"
@@ -195,7 +199,12 @@ export default async function GrantPage(props: Props) {
                 </DialogContent>
               </Dialog>
               <div className="col-span-full xl:col-span-3">
-                <GrantFeedback user={user} castsPromise={getGrantFeedbackCasts(grantId)} />
+                <GrantFeedback
+                  user={user}
+                  castsPromise={getGrantFeedbackCasts(grantId)}
+                  grantId={grant.id}
+                  builderUsername={grantBuilder?.fname || ""}
+                />
               </div>
             </AgentChatProvider>
           </div>
