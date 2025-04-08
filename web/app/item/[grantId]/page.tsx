@@ -74,7 +74,7 @@ export default async function GrantPage(props: Props) {
 
   const impacts = await database.impact.findMany({
     where: { grantId, deletedAt: null },
-    orderBy: [{ date: "asc" }, { updatedAt: "asc" }],
+    orderBy: [{ date: "desc" }, { updatedAt: "desc" }],
   })
 
   const impactSummaryType = getImpactSummaryType({ grant, impacts, flow })
@@ -224,7 +224,7 @@ export default async function GrantPage(props: Props) {
         </div>
 
         {impacts.length > 0 ? (
-          <div className="relative mt-8">
+          <div className="relative mt-12">
             <BgGradient />
             <AgentChatProvider
               id={`grant-edit-${grant.id}-${user?.address}`}

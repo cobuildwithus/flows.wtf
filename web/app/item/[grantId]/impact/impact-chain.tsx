@@ -19,7 +19,7 @@ import "@xyflow/react/dist/style.css"
 import React, { useEffect, useMemo } from "react"
 import { ImpactContent } from "./impact-content"
 import { CustomBezierEdge } from "./nodes/custom-edge"
-import { generateDiagram } from "./nodes/diagram-utils"
+import { generateDiagram } from "./nodes/impact-chain-utils"
 import { ImpactNode } from "./nodes/impact-node"
 import { LaunchNode } from "./nodes/launch-node"
 
@@ -86,7 +86,6 @@ export function ImpactChain(props: Props) {
 
     return generateDiagram(
       [
-        { type: "launch", width: 250, height: 240, data: { activatedAt } },
         ...impacts.map((impact, index) => ({
           type: "impact",
           width: 280,
@@ -100,6 +99,7 @@ export function ImpactChain(props: Props) {
             },
           },
         })),
+        { type: "launch", width: 250, height: 240, data: { activatedAt } },
       ],
       width,
     )

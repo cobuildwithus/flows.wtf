@@ -31,9 +31,9 @@ export function LaunchNode(props: NodeProps<ILaunchNode>) {
 
       <Handle
         type="source"
-        position={Position.Right}
+        position={Position.Left}
         isConnectable={false}
-        className="!right-1/4 !border-0 !bg-transparent"
+        className="!left-1/4 !border-0 !bg-transparent"
       />
     </div>
   )
