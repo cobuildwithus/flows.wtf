@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["views", "multiSchema"]
+  previewFeatures = ["views", "multiSchema", "relationJoins"]
   output          = "../../node_modules/@prisma/flows"
 }
 

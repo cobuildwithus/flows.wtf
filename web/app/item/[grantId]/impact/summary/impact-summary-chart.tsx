@@ -77,18 +77,18 @@ export function ImpactSummaryChart(props: Props) {
   return (
     <Card className="flex h-full flex-col items-center justify-center">
       <CardContent className="relative flex h-full w-full flex-col !p-0 md:flex-row">
-        <div className="flex w-full shrink-0 flex-col gap-4 divide-y border-l md:order-last md:w-[256px]">
+        <div className="flex w-full shrink-0 flex-col divide-y border-l md:order-last md:w-[232px]">
           {summary.metricSummaries
             .filter((m) => m.value > 0)
             .map((metric) => (
               <div
                 key={metric.metricId}
-                className="flex grow flex-col justify-center gap-1 px-6 py-4 text-left"
+                className="flex grow flex-col justify-center gap-1 px-4 py-4 text-left"
               >
                 <span className="text-xs text-muted-foreground">
                   {metric.aggregationType === "total" ? "in total" : "on average"}
                 </span>
-                <span className="mt-1 text-lg font-bold leading-none">
+                <span className="mt-1 text-base font-medium leading-none">
                   {metric.value}{" "}
                   {metric.units === "people" && metric.value === 1 ? "person" : metric.units}
                 </span>
@@ -111,13 +111,15 @@ export function ImpactSummaryChart(props: Props) {
             onClick={() => setTimeUnit(timeUnit === "weeks" ? "months" : "weeks")}
           >
             <CalendarRangeIcon className="size-4" />
-            <span className="ml-1.5 text-xs">{timeUnit}</span>
+            <span className="ml-1.5 text-xs">
+              {timeUnit === "weeks" ? "Weekly" : "Monthly"} summary
+            </span>
           </button>
           <ChartContainer config={chartConfig} className="max-h-[330px] min-h-[270px] w-full p-4">
             <BarChart
               accessibilityLayer
               data={weightedData}
-              margin={{ top: 6, right: 6, left: 6, bottom: 6 }}
+              margin={{ top: 32, right: 6, left: 6, bottom: 6 }}
             >
               <CartesianGrid vertical={false} horizontal={false} />
               <XAxis

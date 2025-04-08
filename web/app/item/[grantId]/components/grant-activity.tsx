@@ -16,14 +16,14 @@ const MAX_LEVEL = 3
 export async function GrantActivity(props: Props) {
   const { grant } = props
 
-  const eightMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 8))
+  const sixMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 6))
   const [activities, updates] = await Promise.all([
     unstable_cache(
-      () => getActivity(grant.recipient, [grant], eightMonthsAgo),
+      () => getActivity(grant.recipient, [grant], sixMonthsAgo),
       [`activity-graph-grant-page-v3-${grant.id}`],
       { revalidate: 180 },
     )(),
-    getGrantUpdates([grant], eightMonthsAgo),
+    getGrantUpdates([grant], sixMonthsAgo),
   ])
 
   const startDate = new Date(grant.createdAt * 1000)
@@ -41,8 +41,8 @@ export async function GrantActivity(props: Props) {
           updates={updates.byDate}
           maxLevel={MAX_LEVEL}
           weekStart={1}
-          blockSize={20}
-          blockMargin={4}
+          blockSize={16}
+          blockMargin={3}
           labels={{ legend: { less: "Less", more: "More" } }}
           hideTotalCount
           theme={{

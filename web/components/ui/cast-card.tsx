@@ -6,26 +6,14 @@ import { DateTime } from "@/components/ui/date-time"
 import { useCastsText } from "@/lib/casts/use-casts-text"
 import { getCastImages } from "@/lib/farcaster/get-cast-images"
 import { getCastVideos } from "@/lib/farcaster/get-cast-videos"
-import type { Cast, Profile } from "@prisma/farcaster"
-import { VideoPlayer } from "./video-player"
-import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "./carousel"
-import { ImpactVerification } from "./impact-verification/impact-verification"
+import { MinimalCast } from "@/lib/types/cast"
 import { cn } from "@/lib/utils"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./carousel"
+import { ImpactVerification } from "./impact-verification/impact-verification"
+import { VideoPlayer } from "./video-player"
 
 interface Props {
-  cast: Pick<
-    Cast,
-    | "embeds"
-    | "text"
-    | "created_at"
-    | "hash"
-    | "mentions_positions_array"
-    | "mentioned_fids"
-    | "impact_verifications"
-    | "id"
-  > & {
-    profile: Pick<Profile, "fname" | "avatar_url" | "display_name">
-  }
+  cast: MinimalCast
   showVerification?: boolean
 }
 

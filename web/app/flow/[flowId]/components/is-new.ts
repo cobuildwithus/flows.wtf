@@ -1,6 +1,7 @@
 import type { Grant } from "@prisma/flows"
 
 const DAYS_TO_BE_NEW = 10
+
 export function isGrantNew(grant: Pick<Grant, "activatedAt">) {
   if (!grant.activatedAt) return false
 

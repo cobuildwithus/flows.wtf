@@ -26,7 +26,7 @@ export const ImpactSummary = (props: Props) => {
 
   return (
     <ImpactSummaryChart
-      data={props.impacts.flatMap((i) =>
+      data={impacts.flatMap((i) =>
         i.impactMetrics.map((metric) => ({
           ...metric,
           date: i.date.toISOString().split("T")[0],
