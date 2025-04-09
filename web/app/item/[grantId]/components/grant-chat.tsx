@@ -42,8 +42,11 @@ export function GrantChat(props: Props) {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-screen-md pb-0 max-sm:px-0">
           <DialogHeader className="max-sm:px-4">
-            <DialogTitle className="flex items-center">
-              Ask about&nbsp;<span className="max-w-[400px] truncate py-1">{grant.title}</span>
+            <DialogTitle className="flex items-center justify-between">
+              <span className="truncate py-1">
+                <span className="hidden sm:inline">Ask about {grant.title}</span>
+                <span className="inline sm:hidden">Chat</span>
+              </span>
               <Button
                 variant="ghost"
                 size="icon"
