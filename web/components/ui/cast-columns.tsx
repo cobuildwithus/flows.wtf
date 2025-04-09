@@ -1,13 +1,18 @@
-import { MinimalCast } from "@/lib/types/cast"
+import type { MinimalCast } from "@/lib/types/cast"
 import { cn } from "@/lib/utils"
 import { CastCard } from "./cast-card"
 
 interface CastColumnsProps {
   casts: MinimalCast[]
   showVerification?: boolean
+  emptyMessage?: string
 }
 
-export function CastColumns({ casts, showVerification }: CastColumnsProps) {
+export function CastColumns({
+  casts,
+  showVerification,
+  emptyMessage = "No casts found",
+}: CastColumnsProps) {
   const numColumns = casts.length >= 3 ? 3 : casts.length > 1 ? 2 : 1
   const columns = Array.from({ length: numColumns }, () => [] as MinimalCast[])
 
@@ -41,7 +46,7 @@ export function CastColumns({ casts, showVerification }: CastColumnsProps) {
       ))}
 
       {casts.length === 0 && (
-        <p className="col-span-full text-center text-sm text-muted-foreground">No casts found</p>
+        <p className="col-span-full text-center text-xs text-muted-foreground">{emptyMessage}</p>
       )}
     </div>
   )

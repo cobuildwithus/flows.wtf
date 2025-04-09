@@ -1,13 +1,11 @@
 "use client"
 
-import { useAgentChat } from "@/app/chat/components/agent-chat"
-import { AuthButton } from "@/components/ui/auth-button"
 import { GrantCastDialog } from "@/components/ui/grant-cast-dialog"
 import type { User } from "@/lib/auth/user"
 import type { MinimalCast } from "@/lib/types/cast"
 import { MessageSquare } from "lucide-react"
 import { Suspense, use } from "react"
-import { flushSync } from "react-dom"
+import { LeaveFeedbackButton } from "./leave-feedback-button"
 
 interface Props {
   user?: User
@@ -18,7 +16,6 @@ interface Props {
 
 export function GrantFeedback(props: Props) {
   const { castsPromise, grantId, builderUsername } = props
-  const { setIsOpen, setContext, setMessages, reload } = useAgentChat()
 
   return (
     <>
@@ -30,65 +27,41 @@ export function GrantFeedback(props: Props) {
           </div>
 
           <div className="mt-3 flex space-x-2.5">
-            <AuthButton
-              variant="secondary"
-              size="xs"
-              onClick={() => {
-                flushSync(() => {
-                  setContext(
-                    `User clicked the "Leave Feedback" button on the grant page.
-                  
-                  Begin collecting their feedback and prepare it for submission via the cast preview tool.
-                  
-                  Critical instructions:
-                  - Do NOT provide ANY examples, suggestions, or ideas for feedback.
-                  - Do NOT mention general categories or types of feedback.
-                  - Simply ask: "What feedback would you like to leave for the builder?" and wait for their response.
-                  - Any examples or suggestions, even general ones, violate this instruction.
-                  - Do NOT use other tools; only assist the user in quickly submitting their feedback through the cast preview tool.
-                  
-                  When using the cast preview tool:
-                  - Use the user's feedback text directly.
-                  - Set the parent_url to: https://flows.wtf/item/${grantId}
-                  - Begin the message with @${builderUsername}.`,
-                  )
-                })
-
-                setMessages([
-                  {
-                    role: "user",
-                    content: "I want to leave feedback or ask the builder a question please",
-                    id: "1",
-                  },
-                ])
-
-                reload()
-
-                setIsOpen(true)
-              }}
-            >
-              Leave feedback
-            </AuthButton>
+            <LeaveFeedbackButton grantId={grantId} builderUsername={builderUsername} />
           </div>
         </div>
 
         <Suspense>
-          <CastDialogWrapper castsPromise={castsPromise} />
+          <CastDialogWrapper
+            castsPromise={castsPromise}
+            grantId={grantId}
+            builderUsername={builderUsername}
+          />
         </Suspense>
       </div>
     </>
   )
 }
 
-function CastDialogWrapper({ castsPromise }: { castsPromise: Promise<MinimalCast[]> }) {
+function CastDialogWrapper({
+  castsPromise,
+  grantId,
+  builderUsername,
+}: {
+  castsPromise: Promise<MinimalCast[]>
+  grantId: string
+  builderUsername: string
+}) {
   const casts = use(castsPromise)
 
   return (
     <GrantCastDialog
       casts={casts}
-      title="Grant Feedback"
-      description="Questions and feedback posted by users on Farcaster"
+      title="Feedback"
+      description="Questions for the builder"
       showVerification={false}
+      grantId={grantId}
+      builderUsername={builderUsername}
       trigger={
         <div className="relative flex size-9 items-center justify-center rounded-full bg-primary p-2.5">
           <MessageSquare className="size-full text-primary-foreground" />
