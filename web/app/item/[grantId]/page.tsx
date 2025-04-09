@@ -85,7 +85,7 @@ export default async function GrantPage(props: Props) {
 
   return (
     <>
-      <div className="mt-2.5 pb-24 md:mt-6">
+      <div className="mt-2.5 md:mt-6">
         <div className="container">
           <div className="md:flex md:items-center md:justify-between">
             <Breadcrumb>
@@ -221,7 +221,7 @@ export default async function GrantPage(props: Props) {
               initialMessages={[]}
             >
               <Suspense fallback={<div className="h-[300px]" />}>
-                <div className="mt-12">
+                <div className="mb-24 mt-12">
                   <ImpactChain
                     impacts={impacts}
                     activatedAt={new Date((grant.activatedAt || 0) * 1000)}
