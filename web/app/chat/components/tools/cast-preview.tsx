@@ -19,8 +19,16 @@ export const CastPreview = (props: NewCastData) => {
   const [status, setStatus] = useState<"idle" | "publishing" | "published">("idle")
   const [editableText, setEditableText] = useState(text)
   const rows = useMemo(() => {
+    // Count newlines and estimate rows needed for text length
     const lineCount = editableText.split("\n").length
-    return Math.min(Math.max(lineCount, 2), 10)
+    const charsPerLine = 50 // Approximate characters that fit per line
+    const linesFromLength = Math.ceil(editableText.length / charsPerLine)
+
+    // Use the larger of actual newlines vs estimated lines needed
+    const estimatedRows = Math.max(lineCount, linesFromLength)
+
+    // Clamp between 2-10 rows
+    return Math.min(Math.max(estimatedRows, 1), 10)
   }, [editableText])
 
   if (typeof text !== "string" || text.length === 0) return null
@@ -35,7 +43,7 @@ export const CastPreview = (props: NewCastData) => {
             className="w-full resize-none rounded-md border-b-0 bg-transparent p-5 py-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             value={editableText}
             onChange={(e) => setEditableText(e.target.value)}
-            rows={rows + 1}
+            rows={rows}
             style={{ height: "auto" }}
           />
           <div className="flex gap-2.5 overflow-x-auto">
