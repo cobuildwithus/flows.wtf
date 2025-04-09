@@ -23,7 +23,7 @@ export function GrantFeedback(props: Props) {
         <div className="flex h-full flex-col justify-around">
           <div className="flex flex-col">
             <h5 className="text-sm font-medium">Feedback</h5>
-            <h6 className="mt-px text-xs text-muted-foreground">Help improve this grant</h6>
+            <h6 className="mt-px text-xs text-muted-foreground">Help the builder improve</h6>
           </div>
 
           <div className="mt-3 flex space-x-2.5">
