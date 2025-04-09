@@ -37,3 +37,7 @@ export interface IsGrantUpdateJobBody {
 export interface BuilderProfileJobBody {
   fid: string
 }
+
+export interface ImpactSummaryJobBody {
+  grantId: string
+}

@@ -3,6 +3,7 @@
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
+import { postImpactSummaryRequest } from "@/lib/embedding/queue"
 
 export async function deleteImpact(impactId: string) {
   try {
@@ -25,6 +26,8 @@ export async function deleteImpact(impactId: string) {
       where: { id: impactId },
       data: { deletedAt: new Date() },
     })
+
+    await postImpactSummaryRequest([{ grantId: impact.grantId }])
 
     return { error: false, grantId: impact.grantId }
   } catch (error) {

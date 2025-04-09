@@ -80,7 +80,7 @@ function CastDialogWrapper({ castsPromise }: { castsPromise: Promise<MinimalCast
         <div className="relative flex size-9 items-center justify-center rounded-full bg-primary p-2.5">
           <MessageSquare className="size-full text-primary-foreground" />
           {casts.length > 0 && (
-            <div className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-yellow-500 p-0.5 text-xs text-white">
+            <div className="absolute -right-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-yellow-500 p-0.5 text-xs text-white dark:bg-yellow-600">
               {casts.length}
             </div>
           )}
