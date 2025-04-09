@@ -210,7 +210,7 @@ export default async function GrantPage(props: Props) {
         </div>
 
         {impacts.length > 0 ? (
-          <div className="relative mt-12">
+          <div className="relative overflow-hidden">
             <BgGradient />
             <AgentChatProvider
               id={`grant-edit-${grant.id}-${user?.address}`}
@@ -221,13 +221,15 @@ export default async function GrantPage(props: Props) {
               initialMessages={[]}
             >
               <Suspense fallback={<div className="h-[300px]" />}>
-                <ImpactChain
-                  impacts={impacts}
-                  activatedAt={new Date((grant.activatedAt || 0) * 1000)}
-                  canEdit={canEdit}
-                  impactId={impactId}
-                  disableMetricsWarning={grant.flowId === NOUNS_ART}
-                />
+                <div className="mt-12">
+                  <ImpactChain
+                    impacts={impacts}
+                    activatedAt={new Date((grant.activatedAt || 0) * 1000)}
+                    canEdit={canEdit}
+                    impactId={impactId}
+                    disableMetricsWarning={grant.flowId === NOUNS_ART}
+                  />
+                </div>
               </Suspense>
             </AgentChatProvider>
           </div>

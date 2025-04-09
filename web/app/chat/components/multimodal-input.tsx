@@ -182,7 +182,7 @@ export function MultimodalInput(props: Props) {
             }
           }}
         />
-        <div className="absolute bottom-3 right-4 flex items-center gap-2">
+        <div className="absolute bottom-2 right-4 flex items-center gap-2">
           <Button
             className="h-fit rounded-full p-2"
             onClick={(event) => {
