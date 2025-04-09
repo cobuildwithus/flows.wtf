@@ -3,11 +3,12 @@
 import SignInWithNeynar from "@/components/global/signin-with-neynar"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { getSignerUUID } from "@/lib/auth/farcaster-signer-uuid"
 import { type NewCastData, publishCast } from "@/lib/farcaster/publish-cast"
 import FarcasterLogo from "@/public/farcaster.svg"
 import Image from "next/image"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useAgentChat } from "../agent-chat"
 import { VideoPlayer } from "@/components/ui/video-player"
@@ -16,16 +17,27 @@ export const CastPreview = (props: NewCastData) => {
   const { text, embeds } = props
   const { user, append } = useAgentChat()
   const [status, setStatus] = useState<"idle" | "publishing" | "published">("idle")
+  const [editableText, setEditableText] = useState(text)
+  const rows = useMemo(() => {
+    const lineCount = editableText.split("\n").length
+    return Math.min(Math.max(lineCount, 2), 10)
+  }, [editableText])
 
   if (typeof text !== "string" || text.length === 0) return null
 
   if (!user) return null
 
   return (
-    <div className="py-3">
+    <div className="w-full py-3">
       <div className="flex flex-col gap-1.5">
-        <div className="flex flex-col gap-2 rounded-xl border-[3px] border-[#7C65C1] bg-background/50 p-5">
-          <p className="text-sm text-foreground dark:text-white">{text}</p>
+        <div className="flex flex-col gap-2 rounded-xl border-[3px] border-[#7C65C1] bg-background/50">
+          <textarea
+            className="w-full resize-none rounded-md border-b-0 bg-transparent p-5 py-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            value={editableText}
+            onChange={(e) => setEditableText(e.target.value)}
+            rows={rows + 1}
+            style={{ height: "auto" }}
+          />
           <div className="flex gap-2.5 overflow-x-auto">
             {embeds?.map((embed) =>
               embed.url.endsWith(".m3u8") ? (
@@ -72,7 +84,10 @@ export const CastPreview = (props: NewCastData) => {
                   if (!user.fid) throw new Error("No FID found")
                   const signerUUID = await getSignerUUID(user.fid)
                   if (!signerUUID) throw new Error("No signer UUID found")
-                  const publication = await publishCast(signerUUID, props)
+                  const publication = await publishCast(signerUUID, {
+                    ...props,
+                    text: editableText,
+                  })
                   toast.success("Cast published!", { id: toastId })
                   setStatus("published")
                   append({

@@ -200,7 +200,6 @@ export default async function GrantPage(props: Props) {
               </Dialog>
               <div className="col-span-full xl:col-span-3">
                 <GrantFeedback
-                  user={user}
                   castsPromise={getGrantFeedbackCasts(grantId)}
                   grantId={grant.id}
                   builderUsername={grantBuilder?.fname || ""}

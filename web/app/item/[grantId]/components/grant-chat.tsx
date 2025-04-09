@@ -43,7 +43,7 @@ export function GrantChat(props: Props) {
         <DialogContent className="max-w-screen-md pb-0 max-sm:px-0">
           <DialogHeader className="max-sm:px-4">
             <DialogTitle className="flex items-center">
-              Ask about&nbsp;<span className="max-w-[400px] truncate">{grant.title}</span>
+              Ask about&nbsp;<span className="max-w-[400px] truncate py-1">{grant.title}</span>
               <Button
                 variant="ghost"
                 size="icon"

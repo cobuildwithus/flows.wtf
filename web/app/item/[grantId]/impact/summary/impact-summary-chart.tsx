@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import LightChartBg from "@/public/light-chart-bg.png"
 import DarkChartBg from "@/public/dark-chart-bg.png"
+import pluralize from "pluralize"
 
 interface Props {
   data: (PrismaJson.ImpactMetric & { date: string; weight: number })[]
@@ -198,7 +199,7 @@ function CustomTooltipContent({
         const serie = series.find((s) => s.units === entry.dataKey)
         return {
           ...entry,
-          value: `${originalData.get(label)?.[entry.dataKey] ?? entry.value} ${serie?.units || ""}`,
+          value: `${originalData.get(label)?.[entry.dataKey] ?? entry.value} ${pluralize(serie?.units || "", Number(entry.value)) || ""}`,
           name: serie?.name || entry.name,
         }
       })}

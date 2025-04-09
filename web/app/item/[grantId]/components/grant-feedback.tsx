@@ -1,13 +1,13 @@
 "use client"
 
 import { useAgentChat } from "@/app/chat/components/agent-chat"
-import { Button } from "@/components/ui/button"
+import { AuthButton } from "@/components/ui/auth-button"
 import { GrantCastDialog } from "@/components/ui/grant-cast-dialog"
-import { useLogin } from "@/lib/auth/use-login"
 import type { User } from "@/lib/auth/user"
 import type { MinimalCast } from "@/lib/types/cast"
 import { MessageSquare } from "lucide-react"
 import { Suspense, use } from "react"
+import { flushSync } from "react-dom"
 
 interface Props {
   user?: User
@@ -17,9 +17,8 @@ interface Props {
 }
 
 export function GrantFeedback(props: Props) {
-  const { user, castsPromise, grantId, builderUsername } = props
-  const { setIsOpen, setMessages, reload, setContext } = useAgentChat()
-  const { login } = useLogin()
+  const { castsPromise, grantId, builderUsername } = props
+  const { setIsOpen, setContext, setMessages, reload } = useAgentChat()
 
   return (
     <>
@@ -31,18 +30,30 @@ export function GrantFeedback(props: Props) {
           </div>
 
           <div className="mt-3 flex space-x-2.5">
-            <Button
+            <AuthButton
               variant="secondary"
               size="xs"
               onClick={() => {
-                if (!user) return login()
-                setContext(
-                  `User just clicked "Leave Feedback" button on the grant page. 
-                  Start collecting their feedback and put it in the cast preview tool.
-                  Do not use other tools, just help them submit their feedback quickly via the cast preview tool.
-                  For the cast preview tool, use the text of the feedback and the parent_url should be https://flows.wtf/item/${grantId}
-                  In the post you create, the first thing in the message should be @${builderUsername}`,
-                )
+                flushSync(() => {
+                  setContext(
+                    `User clicked the "Leave Feedback" button on the grant page.
+                  
+                  Begin collecting their feedback and prepare it for submission via the cast preview tool.
+                  
+                  Critical instructions:
+                  - Do NOT provide ANY examples, suggestions, or ideas for feedback.
+                  - Do NOT mention general categories or types of feedback.
+                  - Simply ask: "What feedback would you like to leave for the builder?" and wait for their response.
+                  - Any examples or suggestions, even general ones, violate this instruction.
+                  - Do NOT use other tools; only assist the user in quickly submitting their feedback through the cast preview tool.
+                  
+                  When using the cast preview tool:
+                  - Use the user's feedback text directly.
+                  - Set the parent_url to: https://flows.wtf/item/${grantId}
+                  - Begin the message with @${builderUsername}.`,
+                  )
+                })
+
                 setMessages([
                   {
                     role: "user",
@@ -50,12 +61,14 @@ export function GrantFeedback(props: Props) {
                     id: "1",
                   },
                 ])
+
                 reload()
+
                 setIsOpen(true)
               }}
             >
               Leave feedback
-            </Button>
+            </AuthButton>
           </div>
         </div>
 
