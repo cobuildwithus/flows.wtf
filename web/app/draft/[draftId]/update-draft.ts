@@ -9,6 +9,7 @@ import { z } from "zod"
 const schema = z.object({
   title: z.string().trim().min(1, "Title is required"),
   description: z.string().trim().min(1, "Description (Markdown) is required"),
+  image: z.string().trim(),
 })
 
 export async function updateDraft(id: number, formData: FormData, user?: `0x${string}`) {

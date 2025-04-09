@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Draft } from "@prisma/flows"
+import type { Draft } from "@prisma/flows"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"

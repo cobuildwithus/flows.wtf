@@ -39,7 +39,8 @@ export function canEditStory(
 }
 
 export function isAdmin(user: string | undefined): boolean {
-  return user === rocketman || user === riderway
+  const lowerUser = user?.toLowerCase()
+  return lowerUser === rocketman.toLowerCase() || lowerUser === riderway.toLowerCase()
 }
 
 export function canEditGrant(grant: Pick<Grant, "recipient">, user: string | undefined): boolean {
