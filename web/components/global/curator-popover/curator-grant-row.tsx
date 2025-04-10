@@ -45,13 +45,23 @@ export function ActiveCuratorGrantRow({
           width={24}
           height={24}
         />
-        <Link
-          onClick={closePopover}
-          href={grant.isActive ? `/item/${id}` : `/application/${id}`}
-          className="truncate text-sm hover:underline"
-        >
-          {title}
-        </Link>
+        {grant.isActive ? (
+          <Link
+            href={`/item/${id}`}
+            onClick={closePopover}
+            className="truncate text-sm hover:underline"
+          >
+            {title}
+          </Link>
+        ) : (
+          <Link
+            href={`/application/${id}`}
+            onClick={closePopover}
+            className="truncate text-sm hover:underline"
+          >
+            {title}
+          </Link>
+        )}
       </div>
       <div className="col-span-2 mr-2.5 flex items-center justify-end space-x-2 overflow-hidden text-ellipsis">
         {canBeChallenged(grant) && (
