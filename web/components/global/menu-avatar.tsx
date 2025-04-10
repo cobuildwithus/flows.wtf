@@ -16,6 +16,8 @@ import Link from "next/dist/client/link"
 import { AvatarLink } from "./avatar-link"
 import { NounsVoter } from "./nouns-voter-section"
 import { FarcasterSignIn } from "./farcaster-sign-in"
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
+import { useRouter } from "next/navigation"
 
 interface Props {
   user?: User
@@ -32,8 +34,14 @@ export const MenuAvatar = (props: Props) => {
 
   const isGuest = useIsGuest(user, hasSession)
 
+  const router = useRouter()
+
+  const handleSearch = () => {
+    router.push("?search")
+  }
+
   return (
-    <div className="inline-flex">
+    <div className="inline-flex flex-row items-center space-x-4">
       {user && (
         <Popover>
           <PopoverTrigger>
@@ -81,6 +89,12 @@ export const MenuAvatar = (props: Props) => {
           </PopoverContent>
         </Popover>
       )}
+      <div
+        onClick={handleSearch}
+        className="hidden cursor-pointer items-center gap-1.5 p-2 text-muted-foreground hover:text-foreground md:flex"
+      >
+        <MagnifyingGlassIcon className="size-5" />
+      </div>
       {isGuest && <LoginButton />}
     </div>
   )

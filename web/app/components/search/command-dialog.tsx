@@ -3,16 +3,11 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { Command, useCommandState } from "cmdk"
-import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useDeferredValue, useEffect, useState } from "react"
 import { useSearchEmbeddings } from "./use-search-embeddings"
 
-interface Props {
-  identityToken: string
-}
-
-export default function CommandPalette({ identityToken }: Props) {
+export default function CommandPalette() {
   const router = useRouter()
   const [query, setQuery] = useState("")
   const deferredQuery = useDeferredValue(query)
@@ -22,7 +17,6 @@ export default function CommandPalette({ identityToken }: Props) {
 
   const { results, isLoading } = useSearchEmbeddings(
     { query: deferredQuery, types: ["grant"], numResults: 7 },
-    identityToken,
     !open,
   )
 

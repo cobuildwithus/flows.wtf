@@ -32,6 +32,13 @@ export const RecipientPopover = (props: Props) => {
   const { data, isLoading } = useServerFunction(getUserUpdatesChannel, "updates-channel", [address])
 
   const hasGrants = grants.length > 0
+  const hasActiveGrants =
+    grants.some((grant) => Number(grant.monthlyIncomingFlowRate) > 0) ||
+    Number(earnings.claimable) > 0
+
+  if (!hasActiveGrants) {
+    return null
+  }
 
   const { isFlowsMember, updatesChannel, hasFarcasterAccount } = data || {}
 

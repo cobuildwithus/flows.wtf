@@ -36,7 +36,6 @@ interface SearchParams {
 
 export function useSearchEmbeddings(
   params: SearchParams,
-  identityToken?: string,
   skip?: boolean,
 ): {
   results: z.infer<typeof searchResultSchema> | undefined
@@ -61,7 +60,6 @@ export function useSearchEmbeddings(
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "privy-id-token": identityToken || "",
             },
           },
         )

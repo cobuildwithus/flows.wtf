@@ -11,7 +11,7 @@ export const LoginButton = ({
   const { login } = useLogin()
 
   return (
-    <Button variant={variant} size={size} onClick={login}>
+    <Button variant={variant} size={size} className="rounded-full" onClick={login}>
       Connect
     </Button>
   )
