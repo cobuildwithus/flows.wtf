@@ -28,14 +28,14 @@ export async function GrantActivity(props: Props) {
 
   const startDate = new Date(grant.createdAt * 1000)
   return (
-    <div className="flex w-full items-center justify-center p-5">
-      <div className="max-lg:w-full max-lg:max-w-full">
-        <h3 className="font-bold tracking-tight">Activity</h3>
-        <p className="mb-6 mt-0.5 text-sm tracking-tight text-muted-foreground">
-          {updates.count} {pluralize("update", updates.count)} since{" "}
-          <DateTime shortDate date={startDate} />
-        </p>
+    <div className="flex w-full flex-col p-4">
+      <h3 className="font-bold tracking-tight">Activity</h3>
+      <p className="mt-0.5 text-sm tracking-tight text-muted-foreground">
+        {updates.count} {pluralize("update", updates.count)} since{" "}
+        <DateTime shortDate date={startDate} />
+      </p>
 
+      <div className="mt-6 overflow-hidden">
         <ActivityCalendar
           data={activities}
           updates={updates.byDate}
