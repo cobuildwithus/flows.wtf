@@ -9,11 +9,13 @@ export function LeaveFeedbackButton({
   builderUsername,
   text = "Leave feedback",
   variant = "secondary",
+  initialMessage = "I want to leave feedback or ask the builder a question please",
 }: {
   grantId: string
   builderUsername: string
   text?: string
   variant?: "default" | "secondary"
+  initialMessage?: string
 }) {
   const { setIsOpen, setContext, setMessages, reload } = useAgentChat()
 
@@ -38,14 +40,15 @@ export function LeaveFeedbackButton({
           When using the cast preview tool:
           - Use the user's feedback text directly.
           - Set the parent_url to: https://flows.wtf/item/${grantId}
-          - Begin the message with @${builderUsername}.`,
+          - Begin the message with @${builderUsername || "the builder's farcaster username (try to extract it from their grant text)"}.
+          If the builder does not have a farcaster username available, inform the user that you cannot find it and don't include @[username] in the message.`,
           )
         })
 
         setMessages([
           {
             role: "user",
-            content: "I want to leave feedback or ask the builder a question please",
+            content: initialMessage,
             id: "1",
           },
         ])

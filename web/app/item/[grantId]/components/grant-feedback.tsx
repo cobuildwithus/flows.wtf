@@ -12,22 +12,36 @@ interface Props {
   castsPromise: Promise<MinimalCast[]>
   grantId: string
   builderUsername: string
+  title?: string
+  description?: string
+  initialMessage?: string
 }
 
 export function GrantFeedback(props: Props) {
-  const { castsPromise, grantId, builderUsername } = props
+  const {
+    castsPromise,
+    grantId,
+    builderUsername,
+    title = "Feedback",
+    description = "Help the builder improve",
+    initialMessage,
+  } = props
 
   return (
     <>
       <div className="flex h-full items-center justify-between space-x-4 rounded-xl border px-4 py-4 md:px-5">
         <div className="flex h-full flex-col justify-around">
           <div className="flex flex-col">
-            <h5 className="text-sm font-medium">Feedback</h5>
-            <h6 className="mt-px text-xs text-muted-foreground">Help the builder improve</h6>
+            <h5 className="text-sm font-medium">{title}</h5>
+            <h6 className="mt-px text-xs text-muted-foreground">{description}</h6>
           </div>
 
           <div className="mt-3 flex space-x-2.5">
-            <LeaveFeedbackButton grantId={grantId} builderUsername={builderUsername} />
+            <LeaveFeedbackButton
+              grantId={grantId}
+              builderUsername={builderUsername}
+              initialMessage={initialMessage}
+            />
           </div>
         </div>
 

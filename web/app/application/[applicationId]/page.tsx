@@ -23,6 +23,13 @@ import { StatusDisputed } from "./components/status-disputed"
 import { StatusNotDisputed } from "./components/status-not-disputed"
 import { ChallengeMessage } from "@/components/ui/challenge-message"
 import { getUser } from "@/lib/auth/user"
+import { getGrantFeedbackCasts } from "@/lib/database/queries/grant-feedback"
+import { GrantFeedback } from "@/app/item/[grantId]/components/grant-feedback"
+import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
+import { GrantApplicationChat } from "./components/grant-application-chat"
+import { Suspense } from "react"
+import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 
 interface Props {
   params: Promise<{
@@ -48,12 +55,13 @@ export default async function ApplicationPage(props: Props) {
   const params = await props.params
   const { applicationId } = params
 
-  const [grant, user] = await Promise.all([
+  const [grant, user, identityToken] = await Promise.all([
     database.grant.findUniqueOrThrow({
       where: { id: applicationId },
       include: { flow: true, disputes: { include: { evidences: true } } },
     }),
     getUser(),
+    getPrivyIdToken(),
   ])
 
   if (grant.isActive && isProduction()) return redirect(`/item/${grant.id}`)
@@ -167,6 +175,29 @@ export default async function ApplicationPage(props: Props) {
               </div>
             </CardContent>
           </Card>
+          <Suspense>
+            <AgentChatProvider
+              id={`grant-${grant.id}-${user?.address}`}
+              type="flo"
+              user={user}
+              data={{ grantId: grant.id }}
+              identityToken={identityToken}
+            >
+              <div className="col-span-full xl:col-span-3">
+                <GrantFeedback
+                  castsPromise={getGrantFeedbackCasts(grant.id)}
+                  grantId={grant.id}
+                  builderUsername={
+                    (await getFarcasterUserByEthAddress(grant.recipient as `0x${string}`))?.fname ||
+                    ""
+                  }
+                  description="Ask the builder a question"
+                  initialMessage="I want to give feedback on this grant application"
+                />
+              </div>
+              <GrantApplicationChat user={user} grant={grant} />
+            </AgentChatProvider>
+          </Suspense>
           <Card>
             <CardHeader>
               <CardTitle className="flex w-full flex-row items-center justify-between">
