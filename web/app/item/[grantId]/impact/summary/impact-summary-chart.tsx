@@ -14,7 +14,6 @@ import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import LightChartBg from "@/public/light-chart-bg.png"
-import DarkChartBg from "@/public/dark-chart-bg.png"
 import pluralize from "pluralize"
 
 interface Props {
@@ -83,7 +82,7 @@ export function ImpactSummaryChart(props: Props) {
             .filter((m) => m.value > 0)
             .map((metric) => (
               <div
-                key={metric.metricId}
+                key={metric.metricId + metric.aggregationType}
                 className="flex grow flex-col justify-center gap-1 px-4 py-4 text-left"
               >
                 <span className="text-xs text-muted-foreground">

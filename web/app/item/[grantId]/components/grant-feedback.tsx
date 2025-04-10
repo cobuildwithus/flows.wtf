@@ -1,6 +1,6 @@
 "use client"
 
-import { GrantCastDialog } from "@/components/ui/grant-cast-dialog"
+import { GrantFeedbackDialog } from "@/components/ui/grant-feedback-dialog"
 import type { User } from "@/lib/auth/user"
 import type { MinimalCast } from "@/lib/types/cast"
 import { MessageSquare } from "lucide-react"
@@ -55,7 +55,7 @@ function CastDialogWrapper({
   const casts = use(castsPromise)
 
   return (
-    <GrantCastDialog
+    <GrantFeedbackDialog
       casts={casts}
       title="Feedback"
       description="Questions for the builder"

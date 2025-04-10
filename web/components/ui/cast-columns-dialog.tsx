@@ -17,25 +17,21 @@ import { CastColumns } from "./cast-columns"
 import { LeaveFeedbackButton } from "@/app/item/[grantId]/components/leave-feedback-button"
 import { Button } from "./button"
 
-interface GrantCastDialogProps {
+interface CastColumnsDialogProps {
   trigger: React.ReactNode
   title?: string
   description?: string
   casts: MinimalCast[]
-  grantId: string
-  builderUsername: string
   showVerification?: boolean
 }
 
-export function GrantCastDialog({
+export function CastColumnsDialog({
   trigger,
   title = "Activity",
   description,
   casts,
-  grantId,
-  builderUsername,
   showVerification,
-}: GrantCastDialogProps) {
+}: CastColumnsDialogProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -44,36 +40,21 @@ export function GrantCastDialog({
         {trigger}
       </DialogTrigger>
       <DialogContent
-        className={cn("overflow-y-auto [&>button]:hidden", {
+        className={cn("overflow-y-auto", {
           "sm:max-w-2xl": casts.length === 1,
           "sm:max-w-5xl": casts.length === 2,
           "sm:max-w-7xl": casts.length >= 3,
         })}
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between gap-4 text-xl">
-            {title}
-            <LeaveFeedbackButton
-              variant="default"
-              text="Post new"
-              grantId={grantId}
-              builderUsername={builderUsername}
-            />
-          </DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         <CastColumns
-          emptyMessage="No feedback yet"
+          emptyMessage="No casts yet"
           casts={casts}
           showVerification={showVerification}
         />
-        <DialogFooter>
-          <DialogClose>
-            <Button variant="ghost" size="sm" className="mt-6" tabIndex={-1}>
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

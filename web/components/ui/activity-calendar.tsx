@@ -6,8 +6,8 @@ import dynamic from "next/dynamic"
 import type { ComponentProps } from "react"
 import { useEffect, useRef } from "react"
 import React from "react"
-import { GrantCastDialog } from "./grant-cast-dialog"
 import pluralize from "pluralize"
+import { CastColumnsDialog } from "./cast-columns-dialog"
 
 const ReactActivityCalendar = dynamic(() =>
   import("react-activity-calendar").then((mod) => mod.ActivityCalendar),
@@ -42,7 +42,7 @@ export function ActivityCalendar({ updates, ...props }: Props) {
         if (!casts) return block
 
         return (
-          <GrantCastDialog
+          <CastColumnsDialog
             trigger={block}
             title={`${new Date(activity.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} ${pluralize("update", casts.length)}`}
             casts={casts}

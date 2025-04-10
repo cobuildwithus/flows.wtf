@@ -6,6 +6,7 @@ import { Command, useCommandState } from "cmdk"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useDeferredValue, useEffect, useState } from "react"
 import { useSearchEmbeddings } from "./use-search-embeddings"
+import Image from "next/image"
 
 export default function CommandPalette() {
   const router = useRouter()
