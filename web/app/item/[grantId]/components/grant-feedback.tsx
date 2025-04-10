@@ -6,6 +6,7 @@ import type { MinimalCast } from "@/lib/types/cast"
 import { MessageSquare } from "lucide-react"
 import { Suspense, use } from "react"
 import { LeaveFeedbackButton } from "./leave-feedback-button"
+import { cn } from "@/lib/utils"
 
 interface Props {
   user?: User
@@ -15,6 +16,7 @@ interface Props {
   title?: string
   description?: string
   initialMessage?: string
+  className?: string
 }
 
 export function GrantFeedback(props: Props) {
@@ -25,11 +27,17 @@ export function GrantFeedback(props: Props) {
     title = "Feedback",
     description = "Help the builder improve",
     initialMessage,
+    className,
   } = props
 
   return (
     <>
-      <div className="flex h-full items-center justify-between space-x-4 rounded-xl border px-4 py-4 md:px-5">
+      <div
+        className={cn(
+          "flex h-full items-center justify-between space-x-4 rounded-xl border px-4 py-4 md:px-5",
+          className,
+        )}
+      >
         <div className="flex h-full flex-col justify-around">
           <div className="flex flex-col">
             <h5 className="text-sm font-medium">{title}</h5>

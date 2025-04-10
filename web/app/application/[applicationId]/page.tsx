@@ -175,29 +175,7 @@ export default async function ApplicationPage(props: Props) {
               </div>
             </CardContent>
           </Card>
-          <Suspense>
-            <AgentChatProvider
-              id={`grant-${grant.id}-${user?.address}`}
-              type="flo"
-              user={user}
-              data={{ grantId: grant.id }}
-              identityToken={identityToken}
-            >
-              <div className="col-span-full xl:col-span-3">
-                <GrantFeedback
-                  castsPromise={getGrantFeedbackCasts(grant.id)}
-                  grantId={grant.id}
-                  builderUsername={
-                    (await getFarcasterUserByEthAddress(grant.recipient as `0x${string}`))?.fname ||
-                    ""
-                  }
-                  description="Ask the builder a question"
-                  initialMessage="I want to give feedback on this grant application"
-                />
-              </div>
-              <GrantApplicationChat user={user} grant={grant} />
-            </AgentChatProvider>
-          </Suspense>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex w-full flex-row items-center justify-between">
@@ -229,6 +207,31 @@ export default async function ApplicationPage(props: Props) {
               </CardContent>
             </Card>
           )}
+
+          <Suspense>
+            <AgentChatProvider
+              id={`grant-${grant.id}-${user?.address}`}
+              type="flo"
+              user={user}
+              data={{ grantId: grant.id }}
+              identityToken={identityToken}
+            >
+              <div className="col-span-full xl:col-span-3">
+                <GrantFeedback
+                  className="bg-card shadow"
+                  castsPromise={getGrantFeedbackCasts(grant.id)}
+                  grantId={grant.id}
+                  builderUsername={
+                    (await getFarcasterUserByEthAddress(grant.recipient as `0x${string}`))?.fname ||
+                    ""
+                  }
+                  description="Ask the builder a question"
+                  initialMessage="I want to give feedback on this grant application"
+                />
+              </div>
+              <GrantApplicationChat user={user} grant={grant} />
+            </AgentChatProvider>
+          </Suspense>
         </div>
       </div>
     </div>
