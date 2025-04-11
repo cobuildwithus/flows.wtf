@@ -5,7 +5,7 @@ import { base } from "viem/chains"
 import { useReadContracts } from "wagmi"
 import { flowTcrImplAbi } from "../abis"
 
-export function useTcrData(contract: Address, chainId = base.id) {
+export function useTcrData(contract: Address | undefined, chainId = base.id) {
   const tcr = { abi: flowTcrImplAbi, address: contract, chainId }
 
   const { data } = useReadContracts({
@@ -13,6 +13,7 @@ export function useTcrData(contract: Address, chainId = base.id) {
       { ...tcr, functionName: "getTotalCosts" },
       { ...tcr, functionName: "challengePeriodDuration" },
     ],
+    query: { enabled: !!contract },
   })
 
   const [totalCosts, challengePeriod] = data || []

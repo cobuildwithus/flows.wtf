@@ -8,10 +8,14 @@ import { erc20VotesMintableImplAbi } from "../abis"
 import { getTokenData } from "./get-token-data"
 import { useServerFunction } from "../hooks/use-server-function"
 
-export function useTcrToken(contract: Address, spender: Address, chainId = base.id) {
+export function useTcrToken(contract: Address, spender: Address, chainId = base.id, skip = false) {
   const { address: owner } = useAccount()
 
-  const { data, mutate } = useServerFunction(getTokenData, "token-data", [contract, owner, spender])
+  const { data, mutate } = useServerFunction(getTokenData, skip ? undefined : "token-data", [
+    contract,
+    owner,
+    spender,
+  ])
 
   const { prepareWallet, writeContract, isLoading, isConfirmed } = useContractTransaction({
     chainId,

@@ -13,8 +13,10 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import { EmptyState } from "@/components/ui/empty-state"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
+import { getGrantFeedbackCasts } from "@/lib/database/queries/grant-feedback"
+import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { ZoomInIcon } from "lucide-react"
 import type { Metadata } from "next"
@@ -33,10 +35,9 @@ import { GrantChat } from "./components/grant-chat"
 import { GrantFeedback } from "./components/grant-feedback"
 import { GrantGrade } from "./components/grant-grade"
 import { GrantStatus } from "./components/grant-status"
+import { getGrant } from "./get-grant"
 import { ImpactChain } from "./impact/impact-chain"
 import { getImpactSummaryType, ImpactSummary } from "./impact/impact-summary"
-import { getGrantFeedbackCasts } from "@/lib/database/queries/grant-feedback"
-import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -245,33 +246,6 @@ export default async function GrantPage(props: Props) {
       </div>
     </>
   )
-}
-
-async function getGrant(grantId: string) {
-  return database.grant.findUniqueOrThrow({
-    where: { id: grantId, isTopLevel: false },
-    include: {
-      flow: true,
-      derivedData: {
-        select: {
-          title: true,
-          tagline: true,
-          coverImage: true,
-          shortDescription: true,
-          mission: true,
-          builder: true,
-          gradients: true,
-          deliverables: true,
-          beneficiaries: true,
-          overallGrade: true,
-          requirementsMetrics: true,
-          impactMetrics: true,
-          impactSummary: true,
-        },
-      },
-    },
-    ...getCacheStrategy(300),
-  })
 }
 
 const NOUNS_ART = "0x0015ce9c043a4dd4b1e25532a85ec71207b69e105b4ed03e3d6e038a0b331cf4"
