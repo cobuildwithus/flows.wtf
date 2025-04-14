@@ -110,7 +110,9 @@ export const StatusNotDisputed = async (props: Props) => {
         {grant.isFlow ? "flow" : "grant"} if they think there is a valid reason to do so.
       </div>
 
-      {grant.status === Status.Registered && <GrantRemoveRequestButton />}
+      {grant.status === Status.Registered && (
+        <GrantRemoveRequestButton removalType={grant.isFlow ? "flow" : "grant"} />
+      )}
     </div>
   )
 }
