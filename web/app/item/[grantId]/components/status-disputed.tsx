@@ -112,7 +112,7 @@ export async function StatusDisputed(props: Props) {
     return (
       <>
         {evidence.map((e) => (
-          <li key={e.id}>
+          <li key={e.id} className="max-w-sm overflow-hidden">
             <UserProfile address={getEthAddress(e.party)}>
               {(profile) => <span className="font-medium">{profile.display_name}</span>}
             </UserProfile>{" "}
