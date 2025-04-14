@@ -1,21 +1,24 @@
-import { Cast } from "@prisma/farcaster"
+import type { Cast } from "@prisma/farcaster"
 
-interface EmbedUrl {
-  url: string
+function tryParseJson(str: string): unknown | null {
+  try {
+    return JSON.parse(str)
+  } catch {
+    return null
+  }
+}
+
+function normalizeJsonString(str: string): string {
+  let s = str.replace(/'/g, '"').replace(/}\s*{/g, "},{").replace(/\s+/g, "")
+  if (s.startsWith('"') && s.endsWith('"')) s = s.slice(1, -1)
+  return s
 }
 
 export function getCastImages(cast: Pick<Cast, "embeds">): string[] {
-  let parsed: unknown
+  const raw = cast.embeds || "[]"
+  let parsed: unknown = tryParseJson(normalizeJsonString(raw))
 
-  try {
-    parsed = JSON.parse(cast.embeds || "[]")
-    if (typeof parsed === "string") {
-      parsed = JSON.parse(parsed)
-    }
-  } catch {
-    return []
-  }
-
+  if (typeof parsed === "string") parsed = tryParseJson(parsed)
   if (!Array.isArray(parsed)) return []
 
   return parsed
@@ -24,7 +27,7 @@ export function getCastImages(cast: Pick<Cast, "embeds">): string[] {
         typeof embed === "object" &&
         embed !== null &&
         "url" in embed &&
-        typeof embed.url === "string",
+        typeof (embed as { url?: unknown }).url === "string",
     )
     .filter((embed) => embed.url.includes("imagedelivery"))
     .map((embed) => embed.url)

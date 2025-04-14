@@ -95,8 +95,6 @@ export const ImpactVerification = ({ cast }: Props) => {
     cast.impact_verifications.find((v) => v.is_grant_update && v.grant_id === grantId) ||
     cast.impact_verifications[numVerifications - 1]
 
-  console.log(cast.impact_verifications)
-
   return (
     <ImpactVerificationContent
       verification={verification}
