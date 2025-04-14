@@ -119,8 +119,8 @@ export function RequestGrantRemoval(props: Props) {
                         reason.toString() + (comment ? ` || ${comment}` : ""),
                       ],
                     })
-                  } catch (e: any) {
-                    toast.error(e.message, { id: toastId })
+                  } catch (e: unknown) {
+                    toast.error((e as Error)?.message, { id: toastId })
                   }
                 }}
               >

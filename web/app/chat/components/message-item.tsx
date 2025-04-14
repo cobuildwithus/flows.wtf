@@ -14,6 +14,7 @@ import { CastPreview } from "./tools/cast-preview"
 import { RequestGrantRemoval } from "./tools/request-grant-removal"
 import { SubmitApplicationResult } from "./tools/submit-application"
 import { SuccessMessageResult } from "./tools/success-message"
+import { ChallengeGrantApplication } from "./tools/challenge-grant-application"
 
 interface Props {
   role: string
@@ -88,6 +89,15 @@ export const MessageItem = (props: Props) => {
                   return <SuccessMessageResult key={toolCallId} message={tool.result} />
                 case "castPreview":
                   return <CastPreview key={toolCallId} {...tool.result} />
+                case "challengeGrantApplication":
+                  if (
+                    tool.result?.grantId &&
+                    tool.result?.reason &&
+                    !tool.result?.transactionHash
+                  ) {
+                    return <ChallengeGrantApplication key={toolCallId} {...tool.result} />
+                  }
+                  break
                 case "requestGrantRemoval":
                   if (
                     tool.result?.grantId &&
@@ -97,6 +107,7 @@ export const MessageItem = (props: Props) => {
                     // Important, as once tx is confirmed the data isn't there - check backend code for details
                     return <RequestGrantRemoval key={toolCallId} {...tool.result} />
                   }
+                  break
                 default:
                   return null
               }

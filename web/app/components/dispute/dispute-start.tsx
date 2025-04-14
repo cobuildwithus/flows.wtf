@@ -1,189 +1,72 @@
 "use client"
 
+import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { canBeChallenged } from "@/app/components/dispute/helpers"
-import { SwapTokenButton } from "@/app/token/swap-token-button"
 import { AuthButton } from "@/components/ui/auth-button"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Markdown } from "@/components/ui/markdown"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Textarea } from "@/components/ui/textarea"
-import { erc20VotesArbitratorImplAbi, flowTcrImplAbi } from "@/lib/abis"
-import { useTcrData } from "@/lib/tcr/use-tcr-data"
-import { useTcrToken } from "@/lib/tcr/use-tcr-token"
-import { getEthAddress } from "@/lib/utils"
-import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
+import { ButtonProps } from "@/components/ui/button"
 import { Grant } from "@prisma/flows"
-import { useRouter } from "next/navigation"
-import { PropsWithChildren, useRef, useState } from "react"
-import { toast } from "sonner"
-import { Address, formatEther } from "viem"
-import { base } from "viem/chains"
+import { flushSync } from "react-dom"
 
-interface Props {
+interface DisputeStartButtonProps {
   grant: Grant
   flow: Grant
+  text?: string
+  variant?: ButtonProps["variant"]
   className?: string
+  initialMessage?: string
 }
 
-export function DisputeStartButton(props: Props) {
-  const { grant, flow, className } = props
-  const router = useRouter()
-  const [reason, setReason] = useState("")
-  const ref = useRef<HTMLButtonElement>(null)
-
-  const { challengeSubmissionCost, addItemCost, arbitrationCost } = useTcrData(
-    getEthAddress(flow.tcr),
-  )
-  const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr))
-
-  const { writeContract, prepareWallet, isLoading, toastId } = useContractTransaction({
-    loading: "Challenging...",
-    success: "Challenged!",
-    onSuccess: async () => {
-      ref.current?.click() // close dialog
-      setTimeout(() => {
-        router.refresh()
-      }, 1000)
-    },
-  })
-
-  const hasEnoughBalance = token.balance >= challengeSubmissionCost
-  const hasEnoughAllowance = token.allowance >= challengeSubmissionCost
+export function DisputeStartButton({
+  grant,
+  flow,
+  text,
+  variant = "outline",
+  className,
+  initialMessage,
+}: DisputeStartButtonProps) {
+  const { setIsOpen, setContext, setMessages, reload } = useAgentChat()
 
   const type = grant.isActive ? "removal request" : "application"
+  const buttonText = text || `Challenge ${type}`
+  const defaultMessage =
+    initialMessage || `I want to challenge this ${type}. Please help me submit my challenge.`
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <AuthButton
-          type="button"
-          ref={ref}
-          disabled={!canBeChallenged(grant)}
-          className={className}
-        >
-          Challenge {type}
-        </AuthButton>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-screen-lg">
-        <DialogHeader>
-          <DialogTitle className="text-center text-lg font-medium capitalize">
-            Challenge {type}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="grid max-h-[100vh] divide-border md:grid-cols-2 md:divide-x">
-          <ScrollArea className="hidden md:block md:max-h-[calc(100vh-200px)]">
-            <div className="pb-6 sm:pr-6">
-              <h2 className="font-medium tracking-tight">{flow.title}</h2>
-              <h3 className="text-sm text-muted-foreground">Guidelines & requirements</h3>
-              <div className="mt-6 space-y-2.5 text-sm leading-normal">
-                <Markdown>{flow.description}</Markdown>
-              </div>
-            </div>
-          </ScrollArea>
-          <ul className="my-4 space-y-6 pt-6 text-sm sm:pl-6 sm:pt-0">
-            <Step i={1}>
-              <p>
-                Challenging this {type} ({grant.title}) costs {formatEther(challengeSubmissionCost)}{" "}
-                {token.symbol} and will kick off a voting period.
-              </p>
-            </Step>
-            <Step i={2}>
-              <p className="mb-2">
-                Why are you challenging this {type}? Please reference the requirements.
-              </p>
-              <Textarea
-                className="mt-4"
-                placeholder="Explain your reasoning..."
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                rows={4}
-              />
-            </Step>
-            <Step i={3}>
-              <p>
-                &quot;{token.name}&quot; ({token.symbol}) holders anonymously vote on whether the{" "}
-                {type} should be accepted or not.
-              </p>
-            </Step>
-            <Step i={4}>
-              <p className="text-sm">
-                You lose your payment if your challenge is rejected by {token.name} voters. If the
-                challenge is successful, you are paid the applicant&apos;s bond of{" "}
-                {formatEther(addItemCost - arbitrationCost)} {token.symbol} and are repaid your
-                challenge fee.
-              </p>
-              {token.balance > 0 && (
-                <p className="mt-4 text-sm">
-                  Your {token.symbol} balance: {formatEther(token.balance)} (
-                  {formatEther(token.allowance)} approved)
-                </p>
-              )}
-            </Step>
-          </ul>
-        </div>
-        <div className="flex justify-end space-x-2">
-          {!hasEnoughBalance && (
-            <SwapTokenButton
-              text={`Buy ${token.symbol} to challenge`}
-              extraInfo="challenge"
-              flow={flow}
-              defaultTokenAmount={challengeSubmissionCost}
-            />
-          )}
-          {hasEnoughBalance && (
-            <Button
-              disabled={token.isApproving || isLoading}
-              loading={token.isApproving || isLoading}
-              type="button"
-              className="w-full sm:w-auto"
-              onClick={async () => {
-                if (!reason) {
-                  toast.error("Please provide a reason", { id: toastId })
-                  return
-                }
+    <AuthButton
+      variant={variant}
+      className={className}
+      disabled={!canBeChallenged(grant)}
+      onClick={() => {
+        flushSync(() => {
+          setContext(
+            `User clicked the "Challenge ${type}" button on the grant page.
+            
+            Begin collecting information for their challenge and prepare it for submission.
 
-                if (!hasEnoughAllowance) {
-                  return token.approve(challengeSubmissionCost)
-                }
-
-                try {
-                  await prepareWallet()
-
-                  writeContract({
-                    address: getEthAddress(flow.tcr),
-                    abi: [...flowTcrImplAbi, ...erc20VotesArbitratorImplAbi],
-                    functionName: "challengeRequest",
-                    args: [grant.id as Address, reason],
-                    chainId: base.id,
-                  })
-                } catch (e: any) {
-                  toast.error(e.message, { id: toastId })
-                }
-              }}
-            >
-              {!hasEnoughAllowance && "Approve and "} Challenge
-            </Button>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function Step({ i, children }: PropsWithChildren<{ i: number }>) {
-  return (
-    <li className="flex items-start space-x-4">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-white">
-        {i}
-      </span>
-      <div>{children}</div>
-    </li>
+            This is for grant "${grant.title}" in flow "${flow.title}".
+            
+            Follow these steps:
+            1. Explain that challenging costs tokens and will kick off a voting period
+            2. Ask for their reasoning for the challenge, referencing the flow requirements
+            3. Explain that token holders will vote on the challenge
+            4. Explain the consequences of the challenge (losing tokens if rejected, gaining if successful)
+            5. Check if they have enough tokens and guide them through the process
+            
+            Make sure to collect a clear reason for the challenge before proceeding.`,
+          )
+        })
+        setMessages([
+          {
+            role: "user",
+            content: defaultMessage,
+            id: "1",
+          },
+        ])
+        reload()
+        setIsOpen(true)
+      }}
+    >
+      {buttonText}
+    </AuthButton>
   )
 }

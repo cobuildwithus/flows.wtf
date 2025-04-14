@@ -72,150 +72,150 @@ export default async function ApplicationPage(props: Props) {
 
   return (
     <div className="container mt-2.5 pb-24 md:mt-6">
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Flows</BreadcrumbLink>
-          </BreadcrumbItem>
+      <AgentChatProvider
+        id={`grant-${grant.id}-${user?.address}`}
+        type="flo"
+        user={user}
+        data={{ grantId: grant.id }}
+        identityToken={identityToken}
+      >
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Flows</BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <>
+            <>
+              <BreadcrumbSeparator />
+
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/flow/${flow.id}/curate`}>
+                  {flow.title} Applications
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+
             <BreadcrumbSeparator />
 
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/flow/${flow.id}/curate`}>
-                {flow.title} Applications
-              </BreadcrumbLink>
+              <BreadcrumbPage>{title}</BreadcrumbPage>
             </BreadcrumbItem>
-          </>
+          </BreadcrumbList>
+        </Breadcrumb>
 
-          <BreadcrumbSeparator />
-
-          <BreadcrumbItem>
-            <BreadcrumbPage>{title}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-5 md:gap-20">
-        <div className="md:col-span-3">
-          <div className="flex items-center space-x-4">
-            <Image
-              src={getIpfsUrl(image)}
-              alt={title}
-              width={64}
-              height={64}
-              className="size-16 shrink-0 rounded-md"
-            />
-            <div>
-              <h1 className="text-xl font-bold md:text-3xl">{title}</h1>
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-5 md:gap-20">
+          <div className="md:col-span-3">
+            <div className="flex items-center space-x-4">
+              <Image
+                src={getIpfsUrl(image)}
+                alt={title}
+                width={64}
+                height={64}
+                className="size-16 shrink-0 rounded-md"
+              />
+              <div>
+                <h1 className="text-xl font-bold md:text-3xl">{title}</h1>
+              </div>
+            </div>
+            <div className="mt-6 space-y-5 text-pretty text-sm md:text-base">
+              <Markdown>{description}</Markdown>
             </div>
           </div>
-          <div className="mt-6 space-y-5 text-pretty text-sm md:text-base">
-            <Markdown>{description}</Markdown>
-          </div>
-        </div>
 
-        <div className="space-y-4 md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>About</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">
-                    {isTopLevel ? "Proposer" : "Builder"}
-                  </h4>
-                  <div className="mt-1 flex space-x-0.5">
-                    <UserProfile
-                      address={getEthAddress(grant.isFlow ? grant.submitter : grant.recipient)}
-                    >
-                      {(profile) => (
-                        <Avatar className="size-7 bg-accent text-xs">
-                          <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
-                          <AvatarFallback>{profile.display_name[0].toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                      )}
-                    </UserProfile>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">Sponsor</h4>
-                  <div className="mt-1 flex space-x-0.5">
-                    <UserProfile address={getEthAddress(grant.submitter)}>
-                      {(profile) => (
-                        <Avatar className="size-7 bg-accent text-xs">
-                          <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
-                          <AvatarFallback>{profile.display_name[0].toUpperCase()}</AvatarFallback>
-                        </Avatar>
-                      )}
-                    </UserProfile>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-[13px] text-muted-foreground">Created At</h4>
-                  <DateTime
-                    className="text-sm"
-                    date={new Date(createdAt * 1000)}
-                    options={{
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <h4 className="mb-1 text-[13px] text-muted-foreground">Type</h4>
-                  <p className="text-sm">{isFlow ? "Flow" : "Grant"}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex w-full flex-row items-center justify-between">
-                <span>Application status</span>
-                {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
-                  <Badge variant="warning">Challenged</Badge>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {!grant.isDisputed && !grant.isResolved && (
-                <StatusNotDisputed grant={grant} flow={flow} />
-              )}
-              {(grant.isDisputed || grant.isResolved) && dispute && (
-                <StatusDisputed grant={grant} dispute={dispute} flow={flow} />
-              )}
-              {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
-                <ChallengeMessage className="mt-4" />
-              )}
-            </CardContent>
-          </Card>
-          {dispute && (
+          <div className="space-y-4 md:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Your vote</CardTitle>
+                <CardTitle>About</CardTitle>
               </CardHeader>
               <CardContent>
-                <DisputeUserVote user={user} grant={grant} flow={flow} dispute={dispute} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">
+                      {isTopLevel ? "Proposer" : "Builder"}
+                    </h4>
+                    <div className="mt-1 flex space-x-0.5">
+                      <UserProfile
+                        address={getEthAddress(grant.isFlow ? grant.submitter : grant.recipient)}
+                      >
+                        {(profile) => (
+                          <Avatar className="size-7 bg-accent text-xs">
+                            <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+                            <AvatarFallback>{profile.display_name[0].toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                        )}
+                      </UserProfile>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">Sponsor</h4>
+                    <div className="mt-1 flex space-x-0.5">
+                      <UserProfile address={getEthAddress(grant.submitter)}>
+                        {(profile) => (
+                          <Avatar className="size-7 bg-accent text-xs">
+                            <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+                            <AvatarFallback>{profile.display_name[0].toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                        )}
+                      </UserProfile>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[13px] text-muted-foreground">Created At</h4>
+                    <DateTime
+                      className="text-sm"
+                      date={new Date(createdAt * 1000)}
+                      options={{
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <h4 className="mb-1 text-[13px] text-muted-foreground">Type</h4>
+                    <p className="text-sm">{isFlow ? "Flow" : "Grant"}</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          )}
 
-          <Suspense>
-            <AgentChatProvider
-              id={`grant-${grant.id}-${user?.address}`}
-              type="flo"
-              user={user}
-              data={{ grantId: grant.id }}
-              identityToken={identityToken}
-            >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex w-full flex-row items-center justify-between">
+                  <span>Application status</span>
+                  {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
+                    <Badge variant="warning">Challenged</Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!grant.isDisputed && !grant.isResolved && (
+                  <StatusNotDisputed grant={grant} flow={flow} />
+                )}
+                {(grant.isDisputed || grant.isResolved) && dispute && (
+                  <StatusDisputed grant={grant} dispute={dispute} flow={flow} />
+                )}
+                {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
+                  <ChallengeMessage className="mt-4" />
+                )}
+              </CardContent>
+            </Card>
+            {dispute && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your vote</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DisputeUserVote user={user} grant={grant} flow={flow} dispute={dispute} />
+                </CardContent>
+              </Card>
+            )}
+
+            <Suspense>
               <div className="col-span-full xl:col-span-3">
                 <GrantFeedback
                   className="bg-card shadow"
@@ -229,11 +229,11 @@ export default async function ApplicationPage(props: Props) {
                   initialMessage="I want to give feedback on this grant application"
                 />
               </div>
-              <GrantApplicationChat user={user} grant={grant} />
-            </AgentChatProvider>
-          </Suspense>
+            </Suspense>
+          </div>
         </div>
-      </div>
+        <GrantApplicationChat user={user} grant={grant} />
+      </AgentChatProvider>
     </div>
   )
 }
