@@ -101,11 +101,6 @@ export function RequestGrantRemoval(props: Props) {
                 variant="destructive"
                 type="button"
                 onClick={async () => {
-                  append({
-                    role: "user",
-                    content: `I've just requested removal of this ${type}. Here is the transaction: ${explorerUrl("0x1234", chainId, "tx")}`,
-                  })
-
                   if (!hasEnoughAllowance) {
                     return token.approve(removeItemCost)
                   }
