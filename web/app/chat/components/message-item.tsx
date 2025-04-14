@@ -2,6 +2,7 @@
 
 import { Markdown } from "@/components/ui/markdown"
 import type { AgentType } from "@/lib/enums"
+import { getThumbnailUrlFromCloudflareStream } from "@/lib/file-upload/get-thumbnail-url-from-cloudflare-stream"
 import { cn } from "@/lib/utils"
 import Flo from "@/public/flo.png"
 import Gonzo from "@/public/gonzo.svg"
@@ -10,9 +11,9 @@ import Image from "next/image"
 import type { ReactNode } from "react"
 import { PreviewAttachment } from "./preview-attachment"
 import { CastPreview } from "./tools/cast-preview"
+import { RequestGrantRemoval } from "./tools/request-grant-removal"
 import { SubmitApplicationResult } from "./tools/submit-application"
 import { SuccessMessageResult } from "./tools/success-message"
-import { getThumbnailUrlFromCloudflareStream } from "@/lib/file-upload/get-thumbnail-url-from-cloudflare-stream"
 
 interface Props {
   role: string
@@ -87,6 +88,15 @@ export const MessageItem = (props: Props) => {
                   return <SuccessMessageResult key={toolCallId} message={tool.result} />
                 case "castPreview":
                   return <CastPreview key={toolCallId} {...tool.result} />
+                case "requestGrantRemoval":
+                  if (
+                    tool.result?.grantId &&
+                    tool.result?.reason &&
+                    !tool.result?.transactionHash
+                  ) {
+                    // Important, as once tx is confirmed the data isn't there - check backend code for details
+                    return <RequestGrantRemoval key={toolCallId} {...tool.result} />
+                  }
                 default:
                   return null
               }

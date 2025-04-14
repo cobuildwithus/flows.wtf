@@ -92,6 +92,23 @@ export function canBeChallenged(
   return challengePeriodEndsAt > Date.now() / 1000
 }
 
+export function canRemovalBeRequested(
+  grant: Pick<Grant, "isRemoved" | "status" | "isDisputed" | "challengePeriodEndsAt">,
+): [boolean, string] {
+  if (grant.isRemoved) return [false, "It has been already removed"]
+
+  if (grant.status === Status.ClearingRequested) {
+    return [false, "Removal request has been already made"]
+  }
+
+  if (grant.isDisputed) return [false, "It is currently disputed"]
+
+  if (canRequestBeExecuted(grant)) {
+    return [false, "It has been marked for removal, transaction just needs to be executed"]
+  }
+  return [true, "It's active and can be removed"]
+}
+
 function isPendingRequest(status: number) {
   return status === Status.ClearingRequested || status === Status.RegistrationRequested
 }
