@@ -5,8 +5,27 @@ interface EmbedUrl {
 }
 
 export function getCastImages(cast: Pick<Cast, "embeds">): string[] {
-  return JSON.parse(cast.embeds || "[]")
-    .filter((embed: EmbedUrl): embed is EmbedUrl => "url" in embed)
-    .map((embed: EmbedUrl) => embed.url)
-    .filter((url: string) => url.includes("imagedelivery"))
+  let parsed: unknown
+
+  try {
+    parsed = JSON.parse(cast.embeds || "[]")
+    if (typeof parsed === "string") {
+      parsed = JSON.parse(parsed)
+    }
+  } catch {
+    return []
+  }
+
+  if (!Array.isArray(parsed)) return []
+
+  return parsed
+    .filter(
+      (embed): embed is { url: string } =>
+        typeof embed === "object" &&
+        embed !== null &&
+        "url" in embed &&
+        typeof embed.url === "string",
+    )
+    .filter((embed) => embed.url.includes("imagedelivery"))
+    .map((embed) => embed.url)
 }
