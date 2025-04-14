@@ -104,14 +104,14 @@ export function ChallengeGrantApplication(props: Props) {
           </Step>
           <Step i={3}>
             <p>
-              "{token.name}" ({token.symbol}) holders anonymously vote on whether the{" "}
+              &quot;{token.name}&quot; ({token.symbol}) holders anonymously vote on whether the{" "}
               {applicationStatus} should be accepted or not.
             </p>
           </Step>
           <Step i={4}>
             <p>
               You lose your payment if your challenge is rejected by {token.name} voters. If the
-              challenge is successful, you are paid the applicant's bond of{" "}
+              challenge is successful, you are paid the applicant&apos;s bond of{" "}
               {formatEther(addItemCost - arbitrationCost)} {token.symbol} and are repaid your
               challenge fee.
             </p>
