@@ -5,11 +5,13 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useImportType": "off"
+        "useImportType": "off",
+        "noUnusedTemplateLiteral": "off"
       },
       "a11y": {
         "noSvgWithoutTitle": "off",
-        "useButtonType": "off"
+        "useButtonType": "off",
+        "useKeyWithClickEvents": "off"
       }
     }
   }

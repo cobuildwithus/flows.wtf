@@ -1,4 +1,4 @@
-import "server-only"
+"use server"
 
 import { MinimalCast } from "@/lib/types/cast"
 import { getCacheStrategy } from "../edge"

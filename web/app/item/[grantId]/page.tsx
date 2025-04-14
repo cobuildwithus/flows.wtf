@@ -15,7 +15,7 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
-import { getGrantFeedbackCasts } from "@/lib/database/queries/grant-feedback"
+import { getGrantFeedbackCasts } from "@/lib/database/queries/get-grant-feedback"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { ZoomInIcon } from "lucide-react"
@@ -115,39 +115,6 @@ export default async function GrantPage(props: Props) {
           </div>
 
           <div className="mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
-            {title && coverImage && tagline && (
-              <div className="relative col-span-full lg:col-span-7">
-                <GrantStatus grant={grant} flow={flow} />
-                <div className="absolute right-4 top-4 z-30">
-                  <GrantGrade grant={grant} />
-                </div>
-                <CoverImage coverImage={coverImage} title={title} tagline={tagline} />
-              </div>
-            )}
-            <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
-              <div className="flex flex-col gap-4">
-                {gradients && mission && (
-                  <MissionCard gradient={gradients.mission} text={mission} />
-                )}
-                {gradients && beneficiaries && (
-                  <BeneficiariesCard
-                    gradient={gradients.beneficiaries}
-                    beneficiaries={beneficiaries}
-                  />
-                )}
-              </div>
-
-              {deliverables && gradients && (
-                <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
-              )}
-            </div>
-
-            {hasImpactSummary && (
-              <div className="col-span-full xl:col-span-7">
-                <ImpactSummary grant={grant} impacts={impacts} flow={flow} />
-              </div>
-            )}
-
             <AgentChatProvider
               id={`grant-${grant.id}-${user?.address}`}
               type="flo"
@@ -156,6 +123,41 @@ export default async function GrantPage(props: Props) {
               identityToken={await getPrivyIdToken()}
             >
               <GrantChat grant={grant} user={user} canEdit={canEdit} />
+              {title && coverImage && tagline && (
+                <div className="relative col-span-full lg:col-span-7">
+                  <GrantStatus grant={grant} flow={flow} />
+                  <div className="absolute right-4 top-4 z-30">
+                    <GrantGrade grant={grant} />
+                  </div>
+                  <CoverImage coverImage={coverImage} title={title} tagline={tagline} />
+                </div>
+              )}
+              <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
+                <div className="flex flex-col gap-4">
+                  {gradients && mission && (
+                    <MissionCard gradient={gradients.mission} text={mission} />
+                  )}
+                  {gradients && beneficiaries && (
+                    <BeneficiariesCard
+                      gradient={gradients.beneficiaries}
+                      beneficiaries={beneficiaries}
+                    />
+                  )}
+                </div>
+
+                {deliverables && gradients && (
+                  <DeliverablesCard
+                    gradient={gradients?.deliverables}
+                    deliverables={deliverables}
+                  />
+                )}
+              </div>
+
+              {hasImpactSummary && (
+                <div className="col-span-full xl:col-span-7">
+                  <ImpactSummary grant={grant} impacts={impacts} flow={flow} />
+                </div>
+              )}
 
               <div
                 className={cn(
