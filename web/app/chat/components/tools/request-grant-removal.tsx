@@ -11,7 +11,7 @@ import { useTcrData } from "@/lib/tcr/use-tcr-data"
 import { useTcrToken } from "@/lib/tcr/use-tcr-token"
 import { explorerUrl, getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { PropsWithChildren } from "react"
+import type { PropsWithChildren } from "react"
 import { toast } from "sonner"
 import { formatEther } from "viem"
 import { base } from "viem/chains"
@@ -65,7 +65,7 @@ export function RequestGrantRemoval(props: Props) {
       <div className="flex flex-col rounded-xl border-[3px] border-red-500 bg-background/50 p-5">
         <h5 className="text-left text-xs uppercase tracking-widest opacity-75">Grant removal</h5>
         <p className="mt-6 font-medium">{reasons.find((r) => r.value === reason)?.label}</p>
-        {comment && <p className="mt-2.5 text-sm leading-relaxed opacity-75">"{comment}"</p>}
+        {comment && <p className="mt-2.5 text-sm leading-relaxed opacity-75">{comment}</p>}
         <ul className="mb-4 mt-6 space-y-5 border-t pt-6 text-xs">
           <Step i={1}>
             It costs {formatEther(removeItemCost)} {token.symbol} and will kick off a challenge

@@ -28,7 +28,7 @@ export async function GrantActivity(props: Props) {
 
   const startDate = new Date(grant.createdAt * 1000)
   return (
-    <div className="flex w-full flex-col p-4">
+    <div className="flex w-full flex-col p-4 md:px-5">
       <h3 className="font-bold tracking-tight">Activity</h3>
       <p className="mt-0.5 text-sm tracking-tight text-muted-foreground">
         {updates.count} {pluralize("update", updates.count)} since{" "}
