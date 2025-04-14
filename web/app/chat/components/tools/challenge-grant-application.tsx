@@ -85,8 +85,8 @@ export function ChallengeGrantApplication(props: Props) {
             {token.balance > 0 && (
               <>
                 <br />
-                You have {formatEther(token.balance)} {token.symbol} ({formatEther(token.allowance)}{" "}
-                approved)
+                You have {Number(formatEther(token.balance)).toFixed(2)} {token.symbol} (
+                {Number(formatEther(token.allowance)).toFixed(2)} approved)
               </>
             )}
           </Step>
@@ -176,10 +176,10 @@ export function ChallengeGrantApplication(props: Props) {
 function Step({ i, children }: PropsWithChildren<{ i: number }>) {
   return (
     <li className="flex items-start space-x-4">
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-white">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-white">
         {i}
       </span>
-      <div className="leading-normal opacity-75">{children}</div>
+      <div className="leading-normal">{children}</div>
     </li>
   )
 }
