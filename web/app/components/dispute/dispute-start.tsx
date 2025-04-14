@@ -51,6 +51,10 @@ export function DisputeStartButton({
             3. Explain that token holders will vote on the challenge
             4. Explain the consequences of the challenge (losing tokens if rejected, gaining if successful)
             5. Check if they have enough tokens and guide them through the process
+
+            If the user is challenging a removal request, that means they are challenging someone else's request to remove the grant.
+            Make sure to inform the user the reasoning for the initial removal request that they are now challenging to make sure they address it.
+            The same rules apply, they're just challenging a removal request instead of an application. 
             
             Make sure to collect a clear reason for the challenge before proceeding.`,
           )

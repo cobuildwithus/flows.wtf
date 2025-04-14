@@ -99,7 +99,7 @@ export function ChallengeGrantApplication(props: Props) {
               placeholder="Explain your reasoning..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              rows={3}
+              rows={5}
             />
           </Step>
           <Step i={3}>

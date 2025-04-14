@@ -80,7 +80,7 @@ export const StatusNotDisputed = async (props: Props) => {
           <li>
             This {grant.isFlow ? "flow" : "grant"} will be{" "}
             <span className="font-medium text-red-500">removed</span> - unless someone challenges
-            the removal request to send it to a vote.
+            the removal request.
           </li>
           {evidence?.party && <Challenger address={getEthAddress(evidence.party)} />}
           {evidence?.evidence && (
@@ -98,7 +98,12 @@ export const StatusNotDisputed = async (props: Props) => {
           </li>
         </div>
 
-        <DisputeStartButton grant={grant} flow={flow} className="!mt-6 w-full" />
+        <DisputeStartButton
+          initialMessage="I want to challenge this removal request"
+          grant={grant}
+          flow={flow}
+          className="!mt-6 w-full"
+        />
       </div>
     )
   }
