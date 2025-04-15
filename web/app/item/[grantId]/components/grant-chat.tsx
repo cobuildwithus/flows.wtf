@@ -44,7 +44,7 @@ export function GrantChat(props: Props) {
           <DialogHeader className="max-sm:px-4">
             <DialogTitle className="flex items-center justify-between">
               <span className="truncate py-1">
-                <span className="hidden sm:inline">Ask about {grant.title}</span>
+                <span className="hidden sm:inline">Chat with Flo</span>
                 <span className="inline sm:hidden">Chat</span>
               </span>
               <Button

@@ -44,7 +44,7 @@ export function ImpactContent(props: Props) {
         height={360}
         className="aspect-video w-full rounded-b-lg object-cover md:hidden"
       />
-      <div className="relative grid min-h-[70vh] grid-cols-1 items-start gap-10 max-md:gap-y-8 max-md:p-5 md:grid-cols-12">
+      <div className="relative grid min-h-screen grid-cols-1 items-start gap-10 max-md:gap-y-8 max-md:p-5 md:grid-cols-12">
         <div
           className={cn("relative max-md:order-last md:col-span-7", {
             "min-h-[75vh] max-md:-m-5 max-md:min-h-[85dvh]": isEditing,
