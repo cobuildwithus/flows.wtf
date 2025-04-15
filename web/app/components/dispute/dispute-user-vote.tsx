@@ -181,7 +181,6 @@ const RevealedVote = ({ disputeVote, grant }: { disputeVote: DisputeVote; grant:
 
   return (
     <div className="space-y-4 text-sm text-muted-foreground">
-      <p>Your vote has been revealed and counted.</p>
       <p>
         You voted{" "}
         <b
