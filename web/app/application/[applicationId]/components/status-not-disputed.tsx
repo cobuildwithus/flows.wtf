@@ -30,27 +30,10 @@ export const StatusNotDisputed = (props: Props) => {
 
   return (
     <div className="space-y-4 text-sm">
-      <li>
-        Anyone can pay a fee to challenge this{" "}
-        {isClearingRequest ? "removal request" : "application"}.
-      </li>
-
-      <li>
-        If successful, the challenger will win the {isClearingRequest ? "removal" : "application"}{" "}
-        fee.
-      </li>
-
-      <li>
-        If no challenges are submitted{" "}
-        <DateTime
-          date={new Date(grant.challengePeriodEndsAt * 1000)}
-          className="font-medium"
-          relative
-        />
-        {", "}
-        the {isClearingRequest ? "removal request" : "application"} is automatically approved.
-      </li>
-
+      You can challenge this {isClearingRequest ? "removal request" : "application"} by paying a
+      fee. The winner gets the other party&apos;s deposit. If no one challenges by{" "}
+      <DateTime date={new Date(grant.challengePeriodEndsAt * 1000)} className="font-medium" />, the{" "}
+      {isClearingRequest ? "removal request" : "application"} is automatically approved.
       <DisputeStartButton grant={grant} flow={flow} className="!mt-6 w-full" />
     </div>
   )
