@@ -7,16 +7,15 @@ import {
   isDisputeWaitingForVoting,
 } from "@/app/components/dispute/helpers"
 import { DateTime } from "@/components/ui/date-time"
-import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
 import { ChallengeMessage } from "@/components/ui/challenge-message"
 import {
   getGrantFeedbackCasts,
   getGrantFeedbackCastsForFlow,
 } from "@/lib/database/queries/get-grant-feedback"
-import { MinimalCast } from "@/lib/types/cast"
 import type { Dispute, Evidence, Grant } from "@prisma/flows"
 import { DisputedEvidence } from "./disputed-evidence"
+import { DisputeDiscussionLink } from "./dispute-discussion"
 
 const DisputeExecuteButton = dynamic(() =>
   import("@/app/components/dispute/dispute-execute").then((mod) => mod.DisputeExecuteButton),
@@ -46,7 +45,7 @@ export async function StatusDisputed(props: Props) {
       <div className="space-y-4 text-sm">
         <VotingStartDate />
         <DisputedEvidence grant={grant} dispute={dispute} />
-        {discussionPosts && <ViewDiscussionLink discussionPosts={discussionPosts} />}
+        {discussionPosts && <DisputeDiscussionLink grant={grant} />}
         {!grant.isFlow && <ChallengeMessage />}
       </div>
     )
@@ -56,7 +55,7 @@ export async function StatusDisputed(props: Props) {
     return (
       <div className="space-y-4 text-sm">
         <DisputedEvidence grant={grant} dispute={dispute} />
-        {discussionPosts && <ViewDiscussionLink discussionPosts={discussionPosts} />}
+        {discussionPosts && <DisputeDiscussionLink grant={grant} />}
         <VotingStartDate />
         <VotingEndDate />
         <RevealDate />
@@ -166,26 +165,4 @@ export async function StatusDisputed(props: Props) {
   }
 
   return null
-}
-
-function ViewDiscussionLink({ discussionPosts }: { discussionPosts: MinimalCast[] }) {
-  const latestDiscussionPost = discussionPosts
-    ?.filter((post) => post.profile.fname === "flowit")
-    .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0]
-
-  if (!latestDiscussionPost) {
-    return null
-  }
-
-  return (
-    <Button variant="secondary" size="md" className="flex items-center gap-1" asChild>
-      <a
-        href={`https://warpcast.com/${latestDiscussionPost.profile.fname}/0x${Buffer.from(new Uint8Array(latestDiscussionPost.hash)).toString("hex")}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        View discussion
-      </a>
-    </Button>
-  )
 }

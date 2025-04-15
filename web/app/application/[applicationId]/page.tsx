@@ -19,8 +19,8 @@ import { getEthAddress, getIpfsUrl, isProduction } from "@/lib/utils"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { redirect } from "next/navigation"
-import { StatusDisputed } from "./components/status-disputed"
-import { StatusNotDisputed } from "./components/status-not-disputed"
+import { ApplicationDisputed } from "./components/application-disputed"
+import { StatusNotDisputed } from "./components/application-not-disputed"
 import { ChallengeMessage } from "@/components/ui/challenge-message"
 import { getUser } from "@/lib/auth/user"
 import { getGrantFeedbackCasts } from "@/lib/database/queries/get-grant-feedback"
@@ -197,7 +197,7 @@ export default async function ApplicationPage(props: Props) {
                   <StatusNotDisputed grant={grant} flow={flow} />
                 )}
                 {(grant.isDisputed || grant.isResolved) && dispute && (
-                  <StatusDisputed grant={grant} dispute={dispute} flow={flow} />
+                  <ApplicationDisputed grant={grant} dispute={dispute} flow={flow} />
                 )}
                 {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
                   <ChallengeMessage className="mt-4" />
