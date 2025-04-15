@@ -22,7 +22,7 @@ export function PendingEvaluation({ user }: { user?: User }) {
               />
             </svg>
           </div>
-          <span className="font-medium">Pending </span>
+          <span className="font-medium text-white">Pending </span>
         </div>
         <div className="space-y-4">
           <div className="space-y-2 text-sm text-muted-foreground">

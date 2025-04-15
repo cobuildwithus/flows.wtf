@@ -10,8 +10,7 @@ export function ChallengeMessage({ className }: { className?: string }) {
     >
       <p className="text-sm text-yellow-800 dark:text-yellow-200">
         Remember: Anyone can challenge a grant, even if misinformed, so please don&apos;t take
-        challenges personally. We value you as a builder, and are constantly working to improve the
-        process.
+        challenges personally. We value you as a builder.
       </p>
     </div>
   )

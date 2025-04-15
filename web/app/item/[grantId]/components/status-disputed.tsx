@@ -3,18 +3,20 @@ import "server-only"
 import {
   canDisputeBeExecuted,
   canDisputeBeVotedOn,
-  formatEvidence,
   isDisputeRevealingVotes,
   isDisputeWaitingForVoting,
 } from "@/app/components/dispute/helpers"
 import { DateTime } from "@/components/ui/date-time"
-import { UserProfile } from "@/components/user-profile/user-profile"
-import database from "@/lib/database/edge"
-import { getEthAddress } from "@/lib/utils"
-import type { Dispute, Evidence, Grant } from "@prisma/flows"
+import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
-import { Status } from "@/lib/enums"
 import { ChallengeMessage } from "@/components/ui/challenge-message"
+import {
+  getGrantFeedbackCasts,
+  getGrantFeedbackCastsForFlow,
+} from "@/lib/database/queries/get-grant-feedback"
+import { MinimalCast } from "@/lib/types/cast"
+import type { Dispute, Evidence, Grant } from "@prisma/flows"
+import { DisputedEvidence } from "./disputed-evidence"
 
 const DisputeExecuteButton = dynamic(() =>
   import("@/app/components/dispute/dispute-execute").then((mod) => mod.DisputeExecuteButton),
@@ -35,14 +37,17 @@ export async function StatusDisputed(props: Props) {
 
   const currentTime = Date.now() / 1000
 
+  const discussionPosts = grant.isFlow
+    ? await getGrantFeedbackCastsForFlow(grant.id)
+    : await getGrantFeedbackCasts(grant.id)
+
   if (isDisputeWaitingForVoting(dispute)) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
-        <Evidence />
         <VotingStartDate />
-        <li>Token holders vote to keep or remove this {grant.isFlow ? "flow" : "grant"}.</li>
-        <ChallengeMessage />
+        <DisputedEvidence grant={grant} dispute={dispute} />
+        {discussionPosts && <ViewDiscussionLink discussionPosts={discussionPosts} />}
+        {!grant.isFlow && <ChallengeMessage />}
       </div>
     )
   }
@@ -50,8 +55,8 @@ export async function StatusDisputed(props: Props) {
   if (canDisputeBeVotedOn(dispute) || isDisputeRevealingVotes(dispute)) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
-        <Evidence />
+        <DisputedEvidence grant={grant} dispute={dispute} />
+        {discussionPosts && <ViewDiscussionLink discussionPosts={discussionPosts} />}
         <VotingStartDate />
         <VotingEndDate />
         <RevealDate />
@@ -62,8 +67,7 @@ export async function StatusDisputed(props: Props) {
   if (canDisputeBeExecuted(dispute)) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
-        <Evidence />
+        <DisputedEvidence grant={grant} dispute={dispute} />
         <VotingEndDate />
         <Results />
         <DisputeExecuteButton flow={flow} dispute={dispute} className="!mt-6 w-full" />
@@ -74,65 +78,23 @@ export async function StatusDisputed(props: Props) {
   if (dispute.isExecuted) {
     return (
       <div className="space-y-4 text-sm">
-        <Challenger />
-        <Evidence />
+        <DisputedEvidence grant={grant} dispute={dispute} />
         <VotingEndDate />
         <Results />
       </div>
     )
   }
 
-  async function Challenger() {
-    return (
-      <li>
-        {grant.status === Status.ClearingRequested && grant.isDisputed && (
-          <>
-            <UserProfile address={getEthAddress(dispute.evidences[0].party)}>
-              {(profile) => <span className="font-medium">{profile.display_name}</span>}
-            </UserProfile>{" "}
-            <span> requested removal. </span>
-            <UserProfile address={getEthAddress(dispute.challenger)}>
-              {(profile) => <span className="font-medium">{profile.display_name}</span>}
-            </UserProfile>
-            <span> challenged the request.</span>
-          </>
-        )}
-      </li>
-    )
-  }
-
-  async function Evidence() {
-    const evidence = await database.evidence.findMany({
-      where: { evidenceGroupID: grant.evidenceGroupID },
-      orderBy: { blockNumber: "asc" },
-    })
-
-    if (!evidence) return null
-
-    return (
-      <>
-        {evidence.map((e) => (
-          <li key={e.id} className="max-w-sm overflow-hidden">
-            <UserProfile address={getEthAddress(e.party)}>
-              {(profile) => <span className="font-medium">{profile.display_name}</span>}
-            </UserProfile>{" "}
-            {formatEvidence(e.evidence)}
-          </li>
-        ))}
-      </>
-    )
-  }
-
   function VotingStartDate() {
     return (
-      <li>
+      <div>
         Voting {currentTime < dispute.votingStartTime ? "starts" : "started"}{" "}
         <DateTime
           date={new Date(dispute.votingStartTime * 1000)}
           relative
           className="font-medium"
         />
-      </li>
+      </div>
     )
   }
 
@@ -204,4 +166,26 @@ export async function StatusDisputed(props: Props) {
   }
 
   return null
+}
+
+function ViewDiscussionLink({ discussionPosts }: { discussionPosts: MinimalCast[] }) {
+  const latestDiscussionPost = discussionPosts
+    ?.filter((post) => post.profile.fname === "flowit")
+    .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0]
+
+  if (!latestDiscussionPost) {
+    return null
+  }
+
+  return (
+    <Button variant="secondary" size="md" className="flex items-center gap-1" asChild>
+      <a
+        href={`https://warpcast.com/${latestDiscussionPost.profile.fname}/0x${Buffer.from(new Uint8Array(latestDiscussionPost.hash)).toString("hex")}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        View discussion
+      </a>
+    </Button>
+  )
 }

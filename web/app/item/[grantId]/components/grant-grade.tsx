@@ -29,7 +29,7 @@ export function GrantGrade({ grant }: Props) {
             />
           </svg>
         </div>
-        <span className="font-medium">Pending</span>
+        <span className="font-medium text-white">Pending</span>
       </div>
     )
 

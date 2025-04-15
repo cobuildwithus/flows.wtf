@@ -42,7 +42,7 @@ export function GrantStatus(props: Props) {
         <DialogTitle>Grant Curation</DialogTitle>
         <Suspense>
           {flow.isActive ? (
-            <div className={cn({ "divide-y divide-border [&>*]:py-5": grant.isDisputed })}>
+            <div className={cn({ "divide-y divide-border [&>*]:py-2": grant.isDisputed })}>
               <CurationStatus grant={grant} flow={flow} />
               {grant.isDisputed && <CurationVote grant={grant} flow={flow} />}
             </div>

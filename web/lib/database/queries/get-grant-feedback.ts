@@ -4,10 +4,8 @@ import { MinimalCast } from "@/lib/types/cast"
 import { getCacheStrategy } from "../edge"
 import { farcasterDb } from "../farcaster-edge"
 
-export async function getGrantFeedbackCasts(grantId: string): Promise<MinimalCast[]> {
+async function fetchFeedbackCasts(url: string): Promise<MinimalCast[]> {
   try {
-    const root_parent_url = `https://flows.wtf/item/${grantId}`
-
     return await farcasterDb.cast.findMany({
       select: {
         created_at: true,
@@ -20,13 +18,21 @@ export async function getGrantFeedbackCasts(grantId: string): Promise<MinimalCas
         text: true,
         profile: { select: { fname: true, avatar_url: true, display_name: true } },
       },
-      where: { deleted_at: null, parent_hash: null, root_parent_url },
+      where: { deleted_at: null, parent_hash: null, root_parent_url: url },
       orderBy: { created_at: "desc" },
       take: 32,
       ...getCacheStrategy(180),
     })
   } catch (error) {
-    console.error("Error fetching grant feedback casts:", error)
+    console.error("Error fetching feedback casts:", error)
     return []
   }
+}
+
+export async function getGrantFeedbackCasts(grantId: string): Promise<MinimalCast[]> {
+  return fetchFeedbackCasts(`https://flows.wtf/item/${grantId}`)
+}
+
+export async function getGrantFeedbackCastsForFlow(grantId: string): Promise<MinimalCast[]> {
+  return fetchFeedbackCasts(`https://flows.wtf/flow/${grantId}/about`)
 }
