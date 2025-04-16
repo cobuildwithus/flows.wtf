@@ -47,6 +47,7 @@ export const grants = onchainTable(
     managerRewardSuperfluidPool: t.text().notNull(),
     superToken: t.text().notNull(),
     updatedAt: t.integer().notNull(),
+    removedAt: t.integer(),
     activatedAt: t.integer(),
     managerRewardPoolFlowRatePercent: t.integer().notNull(),
     baselinePoolFlowRatePercent: t.integer().notNull(),

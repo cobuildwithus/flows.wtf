@@ -162,6 +162,7 @@ model Grant {
   status                           Int
   challengePeriodEndsAt            Int     @map("challenge_period_ends_at")
   activatedAt                      Int?    @map("activated_at")
+  removedAt                        Int?    @map("removed_at")
   isDisputed                       Boolean @map("is_disputed")
   isResolved                       Boolean @map("is_resolved")
   evidenceGroupID                  String  @unique @map("evidence_group_id")

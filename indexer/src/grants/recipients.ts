@@ -96,6 +96,7 @@ async function handleRecipientRemoved(params: {
     getParentFlow(context.db, flowAddress),
     context.db.update(grants, { id: recipientId.toString() }).set({
       isRemoved: true,
+      removedAt: Number(event.block.timestamp),
       isActive: false,
       monthlyIncomingFlowRate: "0",
     }),
