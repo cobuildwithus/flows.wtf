@@ -21,6 +21,7 @@ import "./globals.css"
 import CommandPalette from "./components/search/command-dialog"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { PromptFarcasterSignup } from "@/components/global/prompt-farcaster-signup"
+import { FundingBanner } from "@/components/funding-banner"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -55,6 +56,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
         >
           <TooltipProvider delayDuration={350}>
             <Wagmi>
+              <FundingBanner />
               <nav className="container flex items-center py-5 max-lg:justify-between md:py-6">
                 <div className="lg:w-1/5">
                   <h2>

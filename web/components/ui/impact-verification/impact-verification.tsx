@@ -111,7 +111,8 @@ const getModelLogo = (modelId: string) => {
     model.includes("openai") ||
     model.includes("o1") ||
     model.includes("o3") ||
-    model.includes("o4")
+    model.includes("o4") ||
+    model.includes("o5")
   )
     return OpenAI
   if (model.includes("claude")) return ClaudeColor
