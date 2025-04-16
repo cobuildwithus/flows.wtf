@@ -5,9 +5,10 @@ import database from "@/lib/database/edge"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { FlowSubmenu } from "../components/flow-submenu"
-import RemovedGrantsList from "../components/curate/removed-grants-list"
 import { Suspense } from "react"
-import ApplicationsGrantsList from "../components/curate/applications-grants-list"
+import ApplicationsGrantsList from "./components/applications-grants-list"
+import RejectedGrantsSection from "./components/rejected-grants-section"
+import RemovedGrantsSection from "./components/removed-grants-section"
 
 interface Props {
   params: Promise<{
@@ -18,13 +19,14 @@ interface Props {
 export default async function FlowApplicationsPage(props: Props) {
   const { flowId } = await props.params
 
-  const [grantsCount, removedGrantsCount] = await Promise.all([
+  const [grantsCount, removedGrantsCount, flow] = await Promise.all([
     database.grant.count({
       where: { flowId, status: { in: [Status.RegistrationRequested] } },
     }),
     database.grant.count({
       where: { flowId, isRemoved: true },
     }),
+    getFlow(flowId),
   ])
 
   if (grantsCount === 0 && removedGrantsCount === 0) {
@@ -47,19 +49,14 @@ export default async function FlowApplicationsPage(props: Props) {
       </Suspense>
 
       <Suspense>
-        <RemovedGrantsList
-          type="removed"
-          className="mt-12"
-          flowId={flowId}
-          defaultOpen={grantsCount === 0}
-        />
+        <RemovedGrantsSection flow={flow} className="mt-12" defaultOpen={grantsCount === 0} />
       </Suspense>
 
       <Suspense>
-        <RemovedGrantsList
-          type="rejected"
+        <RejectedGrantsSection
           className="mt-12"
-          flowId={flowId}
+          flow={flow}
+          removedGrantsCount={removedGrantsCount}
           defaultOpen={removedGrantsCount === 0 && grantsCount === 0}
         />
       </Suspense>
