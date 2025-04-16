@@ -28,7 +28,6 @@ export async function getRemovedGrants(flowId: string, type: "removed" | "reject
             flowId,
             recipient: grant.recipient,
             isActive: true,
-            monthlyIncomingBaselineFlowRate: { not: "0" },
           },
           omit: { description: true },
         }),

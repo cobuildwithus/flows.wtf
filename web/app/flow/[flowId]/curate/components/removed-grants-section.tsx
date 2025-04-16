@@ -1,4 +1,4 @@
-import "server-only"
+"use server"
 
 import {
   Table,
@@ -8,33 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { cn, getEthAddress, getIpfsUrl } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Link from "next/link"
-import { UserProfilePopover } from "@/components/user-profile/user-popover"
-import { Badge } from "@/components/ui/badge"
-import Image from "next/image"
+import { cn } from "@/lib/utils"
 import { Currency } from "@/components/ui/currency"
-import { CheckCircle2, ChevronDown } from "lucide-react"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { UserProfile } from "@/components/user-profile/user-profile"
+import { ChevronDown } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { Button } from "@/components/ui/button"
-import { Stat } from "@/app/item/[grantId]/cards/stats"
 import type { Grant } from "@prisma/flows"
-import { getRemovalType, getRemovalTypeIcon, formatEvidence } from "./utils"
 import { getRemovedGrants } from "./get-removed-grants"
 import { GrantCell } from "./grant-cell"
 import RemovalReasonDialog from "./removal-reason-dialog"
+import { Stat } from "@/app/item/[grantId]/cards/stats"
 
 interface Props {
   flow: Pick<Grant, "id" | "totalEarned">
