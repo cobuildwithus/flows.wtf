@@ -10,6 +10,7 @@ import { FlowSubmenu } from "./components/flow-submenu"
 import GrantsList from "./components/grants-list"
 import { GrantsStories } from "./components/grants-stories"
 import { VotingBar } from "./components/voting-bar"
+import { FlowImpactSummary } from "./components/flow-impact-summary"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -44,7 +45,7 @@ export default async function FlowPage(props: Props) {
 
   return (
     <>
-      <GrantsStories flowId={flowId} />
+      {/* <GrantsStories flowId={flowId} /> */}
 
       <FlowSubmenu flowId={flowId} segment="approved" />
       {!subgrants || subgrants.length === 0 ? (
