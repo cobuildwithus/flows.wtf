@@ -9,7 +9,8 @@ import { useVoting } from "@/lib/voting/voting-context"
 interface Props {}
 
 export const VotingBar = (props: Props) => {
-  const { isActive, cancel, saveVotes, allocatedBps, isLoading } = useVoting()
+  const { isActive, cancel, saveVotes, allocatedBps, isLoading, batchIndex, batchTotal } =
+    useVoting()
 
   if (!isActive) return null
 
@@ -36,8 +37,11 @@ export const VotingBar = (props: Props) => {
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={saveVotes} disabled={allocatedBps !== 10000 || isLoading}>
-                Save votes
+              <Button
+                onClick={saveVotes}
+                disabled={allocatedBps !== 10000 || isLoading || batchIndex >= batchTotal}
+              >
+                {batchTotal > 1 ? `Save votes (${batchIndex + 1} of ${batchTotal})` : "Save votes"}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
