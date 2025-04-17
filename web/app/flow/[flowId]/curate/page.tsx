@@ -1,6 +1,5 @@
 import "server-only"
 
-import { EmptyState } from "@/components/ui/empty-state"
 import database from "@/lib/database/edge"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
@@ -28,18 +27,6 @@ export default async function FlowApplicationsPage(props: Props) {
     }),
     getFlow(flowId),
   ])
-
-  if (grantsCount === 0 && removedGrantsCount === 0) {
-    return (
-      <>
-        <FlowSubmenu flowId={flowId} segment="curate" />
-        <EmptyState
-          title="No applications found"
-          description="There are no awaiting grant applications"
-        />
-      </>
-    )
-  }
 
   return (
     <>

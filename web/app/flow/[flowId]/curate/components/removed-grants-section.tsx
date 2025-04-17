@@ -30,9 +30,7 @@ export default async function RemovedGrantsSection(props: Props) {
 
   const removedGrants = await getRemovedGrants(flow.id, "removed")
 
-  if (removedGrants.length === 0) {
-    return null
-  }
+  const hasRemovedGrants = removedGrants.length > 0
 
   return (
     <div className={cn(className)}>
@@ -52,34 +50,36 @@ export default async function RemovedGrantsSection(props: Props) {
               </div>
               <RugRateExplainerDialog removedGrants={removedGrants} flow={flow} />
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead colSpan={4}>Removed project</TableHead>
-                  <TableHead className="text-right">Total Earned</TableHead>
-                  <TableHead className="text-right">Reason</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {removedGrants.map((grant) => (
-                  <TableRow key={grant.id}>
-                    <TableCell colSpan={4}>
-                      <GrantCell grant={grant} />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col justify-end space-y-1">
-                        <Currency className="text-right text-xl font-medium">
-                          {grant.totalEarned}
-                        </Currency>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <RemovalReasonDialog grant={grant} />
-                    </TableCell>
+            {hasRemovedGrants && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead colSpan={4}>Removed project</TableHead>
+                    <TableHead className="text-right">Total Earned</TableHead>
+                    <TableHead className="text-right">Reason</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {removedGrants.map((grant) => (
+                    <TableRow key={grant.id}>
+                      <TableCell colSpan={4}>
+                        <GrantCell grant={grant} />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col justify-end space-y-1">
+                          <Currency className="text-right text-xl font-medium">
+                            {grant.totalEarned}
+                          </Currency>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <RemovalReasonDialog grant={grant} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </CollapsibleContent>
       </Collapsible>
