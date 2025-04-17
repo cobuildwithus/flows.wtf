@@ -72,6 +72,8 @@ model DerivedData {
   gradients           Json?
   /// [ImpactSummary]
   impactSummary       Json?
+  /// [DeliverablesCompletionRate]
+  deliverablesCompletionRate Json? @map("deliverables_completion_rate")
 
   @@index([grantId])
   @@map("DerivedData")

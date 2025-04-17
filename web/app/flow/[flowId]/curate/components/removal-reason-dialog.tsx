@@ -17,6 +17,7 @@ import { UserProfile } from "@/components/user-profile/user-profile"
 import { Button } from "@/components/ui/button"
 import { getRemovalType, getRemovalTypeIcon, formatEvidence } from "./utils"
 import { RemovedGrant } from "./get-removed-grants"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 interface Props {
   grant: RemovedGrant
@@ -25,29 +26,44 @@ interface Props {
 export default function RemovalReasonDialog(props: Props) {
   const { grant } = props
 
+  const completionRate = grant.derivedData?.deliverablesCompletionRate?.completionRate || 0
+  const didFullyRug = completionRate < 20
+  const didLikelyRug = completionRate < 40 && !didFullyRug
+  const didRug = (didFullyRug || didLikelyRug) && grant.isRemoved
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer">
-          <Badge
-            variant={(() => {
-              switch (getRemovalType(grant.disputeReason, grant.cancelledByBuilder).toLowerCase()) {
-                case "inactive":
-                case "low quality":
-                  return "warning"
-                case "other":
-                  return "secondary"
-                case "cancelled":
-                  return "default"
-                default:
-                  return "default"
-              }
-            })()}
-            className="gap-1.5 rounded-full px-3 py-1.5 capitalize"
-          >
-            {getRemovalTypeIcon(getRemovalType(grant.disputeReason, grant.cancelledByBuilder))}
-            {getRemovalType(grant.disputeReason, grant.cancelledByBuilder)}
-          </Badge>
+          {didRug ? (
+            <Badge variant="warning" className="gap-1.5 rounded-full px-3 py-1.5 capitalize">
+              {getRemovalTypeIcon(getRemovalType(grant.disputeReason, grant.cancelledByBuilder))}
+              <span className="text-xs font-medium tracking-wide">
+                {didLikelyRug ? "Low impact" : "Possible rug"}
+              </span>
+            </Badge>
+          ) : (
+            <Badge
+              variant={(() => {
+                switch (
+                  getRemovalType(grant.disputeReason, grant.cancelledByBuilder).toLowerCase()
+                ) {
+                  case "inactive":
+                  case "low quality":
+                  case "other":
+                    return "default"
+                  case "cancelled":
+                    return "secondary"
+                  default:
+                    return "secondary"
+                }
+              })()}
+              className="gap-1.5 rounded-full px-3 py-1.5 capitalize"
+            >
+              {getRemovalTypeIcon(getRemovalType(grant.disputeReason, grant.cancelledByBuilder))}
+              {getRemovalType(grant.disputeReason, grant.cancelledByBuilder)}
+            </Badge>
+          )}
         </div>
       </DialogTrigger>
       <DialogContent>
@@ -70,6 +86,22 @@ export default function RemovalReasonDialog(props: Props) {
         <DialogDescription className="space-y-2">
           {formatEvidence(grant.disputeReason)}
         </DialogDescription>
+        {grant.isRemoved && grant.derivedData?.deliverablesCompletionRate && (
+          <Collapsible
+            defaultOpen={false}
+            className="mt-4 rounded-xl border border-secondary-foreground/10 bg-secondary/20 shadow-sm"
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-2.5 hover:opacity-80">
+              <span className="text-sm font-medium tracking-wide">Impact success</span>
+              <span className="text-lg font-semibold text-primary">
+                {grant.derivedData.deliverablesCompletionRate.completionRate}%
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground/80">
+              {grant.derivedData.deliverablesCompletionRate.reason}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
         <DialogFooter>
           <DialogClose>
             <Button variant="ghost" size="sm" className="mt-6" tabIndex={-1}>

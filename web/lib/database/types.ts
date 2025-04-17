@@ -19,6 +19,11 @@ declare global {
       showOnChart: boolean
     }
 
+    type DeliverablesCompletionRate = {
+      completionRate: number
+      reason: string
+    }
+
     type ImpactSummary = {
       timeUnit: "weeks" | "months"
       metricSummaries: {

@@ -15,6 +15,7 @@ export async function getRemovedGrants(flowId: string, type: "removed" | "reject
     include: {
       evidences: true,
       disputes: { include: { evidences: true } },
+      derivedData: { select: { deliverablesCompletionRate: true } },
     },
     ...getCacheStrategy(120),
   })

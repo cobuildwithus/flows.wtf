@@ -17,6 +17,7 @@ import { getRemovedGrants } from "./get-removed-grants"
 import { GrantCell } from "./grant-cell"
 import RemovalReasonDialog from "./removal-reason-dialog"
 import { Stat } from "@/app/item/[grantId]/cards/stats"
+import { RugRateExplainerDialog } from "./rug-rate-explainer"
 
 interface Props {
   flow: Pick<Grant, "id" | "totalEarned">
@@ -43,12 +44,13 @@ export default async function RemovedGrantsSection(props: Props) {
 
         <CollapsibleContent>
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
+            <div className="grid grid-cols-12 gap-x-2 gap-y-4 py-1 lg:gap-x-4">
               <div className="col-span-full xl:col-span-3">
-                <Stat label="Total flows earnings">
+                <Stat label="Total paid out">
                   <Currency>{flow.totalEarned}</Currency>
                 </Stat>
               </div>
+              <RugRateExplainerDialog removedGrants={removedGrants} flow={flow} />
             </div>
             <Table>
               <TableHeader>

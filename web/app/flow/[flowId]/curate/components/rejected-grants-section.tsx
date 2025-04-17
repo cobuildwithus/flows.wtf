@@ -47,7 +47,7 @@ export default async function RejectedGrantsSection(props: Props) {
 
         <CollapsibleContent className="flex flex-col gap-4">
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
+            <div className="grid grid-cols-12 gap-x-2 gap-y-4 py-1 lg:gap-x-4">
               <div className="col-span-full xl:col-span-3">
                 <Stat label="Declined projects">{grants.length}</Stat>
               </div>
