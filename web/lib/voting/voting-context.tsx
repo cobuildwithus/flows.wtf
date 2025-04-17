@@ -34,6 +34,9 @@ interface VotingContextType {
 
   allocatedBps: number
   votedCount: number
+
+  batchIndex: number
+  batchTotal: number
 }
 
 const VotingContext = createContext<VotingContextType | null>(null)
@@ -52,17 +55,37 @@ export const VotingProvider = (
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess: async () => {
+      // If there are more batches to process, simply advance the index and let the
+      // user click the button again. Otherwise finish up as before.
       setTimeout(() => {
         mutate()
+      }, 3000)
+
+      setBatchIndex((prev) => {
+        const next = prev + 1
+        if (next < batchTotal) {
+          return next
+        }
+
+        // All batches submitted – close the voting bar and reset.
+        setIsActive(false)
         router.refresh()
-      }, 3000) // refresh votes data when ingestion should be finished
-      setIsActive(false)
+        return 0
+      })
     },
   })
 
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
+
+  const TOKENS_PER_BATCH = 15
+
+  const [batchIndex, setBatchIndex] = useState(0)
+
+  // Compute total batches whenever the delegated token list changes. We always have at
+  // least one batch so that the UI label logic is simplified.
+  const batchTotal = Math.max(1, Math.ceil(tokens.length / TOKENS_PER_BATCH))
 
   useEffect(() => {
     if (typeof votes !== "undefined") return
@@ -89,6 +112,7 @@ export const VotingProvider = (
         cancel: () => {
           setIsActive(false)
           setVotes(userVotes)
+          setBatchIndex(0)
         },
         votes: votes || [],
         saveVotes: async () => {
@@ -98,17 +122,28 @@ export const VotingProvider = (
               return toast.error("Please connect your wallet again. (Try logging out and back in)")
             if (!tokens.length) return toast.error("No delegated tokens found")
 
-            const toastId = toast.loading("Preparing vote...")
+            // Slice the delegated tokens for the current batch so that we never
+            // exceed the gas limit. Each batch handles at most TOKENS_PER_BATCH
+            // tokens (default 15).
+            const start = batchIndex * TOKENS_PER_BATCH
+            const end = start + TOKENS_PER_BATCH
+            const tokenBatch = tokens.slice(start, end)
 
-            // Get unique owners (or delegators) in order of first appearance
-            const owners = tokens.reduce((acc: `0x${string}`[], token) => {
+            const toastId = toast.loading(
+              batchTotal > 1
+                ? `Preparing vote batch ${batchIndex + 1} of ${batchTotal}...`
+                : "Preparing vote...",
+            )
+
+            // Get unique owners (or delegators) in order of first appearance **for the batch only**
+            const owners = tokenBatch.reduce((acc: `0x${string}`[], token) => {
               if (!acc.includes(token.owner)) acc.push(token.owner)
               return acc
             }, [])
 
-            // Group tokenIds by owner
+            // Group tokenIds by owner (batch‑scoped)
             const tokenIds: bigint[][] = owners.map((owner) =>
-              tokens.filter((token) => token.owner === owner).map((token) => token.id),
+              tokenBatch.filter((token) => token.owner === owner).map((token) => token.id),
             )
 
             const proofs = await fetch("/api/proofs", {
@@ -116,7 +151,7 @@ export const VotingProvider = (
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ tokens: serialize(tokens) }),
+              body: JSON.stringify({ tokens: serialize(tokenBatch) }),
             })
               .then((res) => {
                 console.log(res)
@@ -175,6 +210,8 @@ export const VotingProvider = (
         isLoading,
         allocatedBps: votes?.reduce((acc, v) => acc + v.bps, 0) || 0,
         votedCount: votes?.filter((v) => v.bps > 0).length || 0,
+        batchIndex,
+        batchTotal,
       }}
     >
       {children}
