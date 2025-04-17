@@ -2,39 +2,25 @@ import "server-only"
 
 import { EmptyState } from "@/components/ui/empty-state"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
-import database from "@/lib/database/edge"
+import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
 import type { Grant } from "@prisma/flows"
+import { FlowImpactSummary } from "./components/flow-impact-summary"
 import { FlowSubmenu } from "./components/flow-submenu"
 import GrantsList from "./components/grants-list"
-import { GrantsStories } from "./components/grants-stories"
 import { VotingBar } from "./components/voting-bar"
-import { FlowImpactSummary } from "./components/flow-impact-summary"
 
 interface Props {
   params: Promise<{ flowId: string }>
+  searchParams: Promise<{ date?: string }>
 }
 
 export default async function FlowPage(props: Props) {
   const { flowId } = await props.params
+  const { date } = await props.searchParams
 
-  const [flow, subgrants] = await Promise.all([
-    database.grant.findFirstOrThrow({
-      where: { id: flowId },
-
-    }),
-    database.grant.findMany({
-      where: { flowId, isActive: true },
-      include: {
-        derivedData: {
-          select: { lastBuilderUpdate: true, overallGrade: true, title: true, coverImage: true },
-        },
-      },
-      omit: { description: true },
-
-    }),
-  ])
+  const { subgrants, ...flow } = await getFlowWithGrants(flowId)
 
   const grants = await Promise.all(
     subgrants.map(async (g) => ({
@@ -45,14 +31,17 @@ export default async function FlowPage(props: Props) {
 
   return (
     <>
-      {/* <GrantsStories flowId={flowId} /> */}
-
-      <FlowSubmenu flowId={flowId} segment="approved" />
-      {!subgrants || subgrants.length === 0 ? (
-        <EmptyState title="No grants found" description="There are no approved grants yet" />
-      ) : (
-        <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
-      )}
+      <div className="container max-w-6xl pb-24">
+        <FlowSubmenu flowId={flowId} segment="approved" />
+        {!subgrants || subgrants.length === 0 ? (
+          <EmptyState title="No grants found" description="There are no approved grants yet" />
+        ) : (
+          <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
+        )}
+      </div>
+      <div className="pt-6" id="impact">
+        <FlowImpactSummary flowId={flowId} subgrantsIds={subgrants.map((g) => g.id)} date={date} />
+      </div>
       <VotingBar />
     </>
   )

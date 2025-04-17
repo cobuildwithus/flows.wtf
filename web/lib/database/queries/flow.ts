@@ -9,6 +9,11 @@ export const getFlowWithGrants = cache(async (flowId: string) => {
     include: {
       subgrants: {
         omit: { description: true },
+        include: {
+          derivedData: {
+            select: { lastBuilderUpdate: true, overallGrade: true, title: true, coverImage: true },
+          },
+        },
       },
       derivedData: true,
     },
