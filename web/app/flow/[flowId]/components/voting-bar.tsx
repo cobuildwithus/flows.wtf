@@ -6,9 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils"
 import { useVoting } from "@/lib/voting/voting-context"
 
-interface Props {}
-
-export const VotingBar = (props: Props) => {
+export const VotingBar = () => {
   const { isActive, cancel, saveVotes, allocatedBps, isLoading, batchIndex, batchTotal } =
     useVoting()
 

@@ -59,7 +59,6 @@ export const VotingProvider = (
       // user click the button again. Otherwise finish up as before.
       setTimeout(() => {
         mutate()
-        router.refresh()
       }, 3000)
 
       setBatchIndex((prev) => {
@@ -70,6 +69,7 @@ export const VotingProvider = (
 
         // All batches submitted – close the voting bar and reset.
         setIsActive(false)
+        router.refresh()
         return 0
       })
     },
