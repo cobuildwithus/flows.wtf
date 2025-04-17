@@ -33,7 +33,7 @@ export default async function FlowPage(props: Props) {
   const { description, parentContract, isTopLevel } = flow
 
   return (
-    <div className="container mt-2.5 pb-24 md:mt-6">
+    <div className="container mt-2.5 max-w-6xl pb-24 md:mt-6">
       <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-5">
         <AgentChatProvider
           id={`flow-${flowId}-${user?.address}`}
@@ -98,14 +98,14 @@ export default async function FlowPage(props: Props) {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    <h3 className="flex items-center justify-between font-medium">
+                    <span className="flex items-center justify-between font-medium">
                       Status
                       {flow.status === Status.ClearingRequested && (
                         <Badge variant="warning" className="font-medium">
                           Challenged
                         </Badge>
                       )}
-                    </h3>
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

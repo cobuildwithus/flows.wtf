@@ -29,7 +29,7 @@ export default async function FlowApplicationsPage(props: Props) {
   ])
 
   return (
-    <>
+    <div className="container max-w-6xl pb-24">
       <FlowSubmenu flowId={flowId} segment="curate" />
       <Suspense>
         <ApplicationsGrantsList flowId={flowId} />
@@ -47,6 +47,6 @@ export default async function FlowApplicationsPage(props: Props) {
           defaultOpen={removedGrantsCount === 0 && grantsCount === 0}
         />
       </Suspense>
-    </>
+    </div>
   )
 }
