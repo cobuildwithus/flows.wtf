@@ -50,30 +50,32 @@ model DerivedData {
 
   // derived data here (generated from ai etc.)
   /// [Beneficiary[]]
-  beneficiaries       Json?
-  deliverables        String[]
-  grades              Json?
+  beneficiaries              Json?
+  deliverables               String[]
+  grades                     Json?
   /// [ImpactMetricDefinition[]]
-  impactMetrics       Json?
-  lastBuilderUpdate   DateTime?
-  minimumSalary       Int?
-  ongoingRequirements Json?
-  overallGrade        Float?
-  requirementsMetrics Json?
-  shortDescription    String?
-  template            String?
-  title               String?
-  tagline             String?
-  coverImage          String?
-  mission             String?
+  impactMetrics              Json?
+  lastBuilderUpdate          DateTime?
+  minimumSalary              Int?
+  ongoingRequirements        Json?
+  overallGrade               Float?
+  requirementsMetrics        Json?
+  shortDescription           String?
+  template                   String?
+  title                      String?
+  tagline                    String?
+  coverImage                 String?
+  mission                    String?
   /// [GrantBuilder]
-  builder             Json?
+  builder                    Json?
   /// [GrantGradients]
-  gradients           Json?
+  gradients                  Json?
   /// [ImpactSummary]
-  impactSummary       Json?
+  impactSummary              Json?
+  /// [ImpactMonthly[]]
+  impactMonthly              Json?
   /// [DeliverablesCompletionRate]
-  deliverablesCompletionRate Json? @map("deliverables_completion_rate")
+  deliverablesCompletionRate Json?     @map("deliverables_completion_rate")
 
   @@index([grantId])
   @@map("DerivedData")
