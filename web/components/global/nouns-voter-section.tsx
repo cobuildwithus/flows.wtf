@@ -1,6 +1,6 @@
 "use client"
 
-import { MAX_VOTING_POWER, NOUNS_TOKEN } from "@/lib/config"
+import { NOUNS_TOKEN } from "@/lib/config"
 import { openseaNftUrl } from "@/lib/utils"
 import Image from "next/image"
 import { mainnet } from "viem/chains"
@@ -40,16 +40,6 @@ export function NounsVoter(props: { votingPower: bigint; tokenIds: bigint[] }) {
             </a>
           ))}
         </div>
-        {votingPower > MAX_VOTING_POWER && (
-          <Alert variant="destructive" className="mt-2.5">
-            <AlertDescription className="text-xs">
-              Voting power is calculated on mainnet, but we use Base. Due to current limitations,
-              voting transactions fail when representing more than{" "}
-              {Number(MAX_VOTING_POWER / BigInt(1000)).toString()} nouns. Therefore, you will be
-              voting with a maximum of {MAX_VOTING_POWER.toString()} votes.
-            </AlertDescription>
-          </Alert>
-        )}
       </div>
     </>
   )
