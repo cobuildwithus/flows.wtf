@@ -1,9 +1,11 @@
 import { Submenu } from "@/components/global/submenu"
 import database, { getCacheStrategy } from "@/lib/database/edge"
 import { FlowImpactSummaryItem } from "./flow-impact-summary-item"
+import { FlowImpactSummaryMonth } from "./flow-impact-summary-month"
 
 interface Props {
   flowId: string
+  impactMonthly: PrismaJson.ImpactMonthly[]
   subgrantsIds: string[]
   date: string | undefined
 }
@@ -14,7 +16,7 @@ const itemSize = 200
 const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" })
 
 export async function FlowImpactSummary(props: Props) {
-  const { flowId, subgrantsIds } = props
+  const { flowId, subgrantsIds, impactMonthly } = props
 
   const impacts = await database.impact.findMany({
     where: { complete: true, grantId: { in: subgrantsIds } },
@@ -32,8 +34,10 @@ export async function FlowImpactSummary(props: Props) {
     const [yearStr, monthStr] = ym.split("-")
     return {
       label: monthFormatter.format(new Date(Number(yearStr), Number(monthStr) - 1)),
-      href: `/flow/${flowId}/?date=${ym}#impact`,
+      href: `/flow/${flowId}/?date=${ym}`,
       isActive: date === ym,
+      replace: true,
+      scroll: false,
     }
   })
 
@@ -41,13 +45,15 @@ export async function FlowImpactSummary(props: Props) {
     <>
       <div className="container mb-6 max-w-6xl">
         <h2 className="text-2xl font-medium tracking-tighter">What we're working on?</h2>
-        <p className="mt-1.5 max-w-screen-md text-pretty text-base font-light leading-loose">
-          Here will be some summary of the impact of the flow. This will be few sentences. Here will
-          be some summary of the impact of the flow. This will be few sentences.
-        </p>
+        <FlowImpactSummaryMonth
+          date={date}
+          summary={impactMonthly?.find((i) => i.date === date)?.summary || ""}
+        />
+
         <Submenu links={monthLinks} className="mt-4" />
       </div>
       <div
+        id="impact-container"
         className="relative w-full overflow-x-auto pt-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700"
         style={
           {
