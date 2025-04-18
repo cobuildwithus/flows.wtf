@@ -22,7 +22,13 @@ export function FlowImpactSummaryItem(props: Props) {
 
   useEffect(() => {
     if (isActive && isFirstOfMonth && buttonRef.current) {
-      buttonRef.current.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" })
+      const container = document.getElementById("impact-container")
+      if (container) {
+        const containerRect = container.getBoundingClientRect()
+        const buttonRect = buttonRef.current.getBoundingClientRect()
+        const offset = buttonRect.left - containerRect.left
+        container.scrollBy({ left: offset, behavior: "smooth" })
+      }
     }
   }, [isActive, isFirstOfMonth])
 

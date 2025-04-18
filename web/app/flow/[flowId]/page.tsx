@@ -40,7 +40,12 @@ export default async function FlowPage(props: Props) {
         )}
       </div>
       <div className="pt-6" id="impact">
-        <FlowImpactSummary flowId={flowId} subgrantsIds={subgrants.map((g) => g.id)} date={date} />
+        <FlowImpactSummary
+          flowId={flowId}
+          impactMonthly={flow.derivedData?.impactMonthly ?? []}
+          subgrantsIds={subgrants.map((g) => g.id)}
+          date={date}
+        />
       </div>
       <VotingBar />
     </>

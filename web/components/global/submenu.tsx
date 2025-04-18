@@ -7,6 +7,8 @@ interface LinkItem {
   onClick?: () => void
   isActive?: boolean
   badge?: number
+  replace?: boolean
+  scroll?: boolean
 }
 
 interface Props {
@@ -22,6 +24,8 @@ export function Submenu(props: Props) {
       {links.map((link) => {
         const common = {
           className: "group flex items-center space-x-1 text-base font-medium md:text-xl",
+          replace: link.replace,
+          scroll: link.scroll,
         }
 
         const inner = (
