@@ -56,7 +56,7 @@ export default function AboutSections() {
 
               <Video
                 url="https://stream.warpcast.com/v1/video/cbfcb5759cfc97f540aa148f82f5ddcd.m3u8"
-                title="How to claim your salary"
+                title="How to claim your grant"
               />
             </div>
           </CollapsibleContent>

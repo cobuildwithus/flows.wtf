@@ -166,7 +166,7 @@ const reasons: RemovalReason[] = [
   },
   {
     value: "salary-threshold",
-    label: "Too Many Grants - > 2 grants w/ salary > $50/month.",
+    label: "Too Many Grants - > 2 grants w/ funding > $50/month.",
     isGrantOnly: true,
   },
   {

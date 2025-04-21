@@ -44,7 +44,7 @@ export default async function ApplyPage() {
         />
       </div>
       <div className="mx-auto max-w-4xl text-center">
-        <h2 className="text-base font-semibold text-primary">Earn a salary with Nouns</h2>
+        <h2 className="text-base font-semibold text-primary">Get paid to build with Nouns</h2>
         <p className="mt-2.5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
           Apply for a grant
         </p>

@@ -63,10 +63,10 @@ export const BudgetDialog = (props: Props) => {
       <DialogContent className="p-12 md:min-w-[600px]">
         <Card>
           <CardContent className="space-y-8">
-            {/* Minimum Salary Section */}
+            {/* Minimum Funding Section */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h3 className="text-sm font-medium text-muted-foreground">Minimum Salary</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Min. Funding</h3>
                 <p className="text-2xl font-bold">
                   <Currency>{flow.derivedData?.minimumSalary || 0}</Currency>/month
                 </p>

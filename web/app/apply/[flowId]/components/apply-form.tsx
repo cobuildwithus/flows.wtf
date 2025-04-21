@@ -126,7 +126,7 @@ export function ApplyForm(props: Props) {
           <AlertTitle className="text-base">This is not a grant application!</AlertTitle>
           <AlertDescription>
             You&apos;re about to suggest new flow (budget category) to add to the platform.
-            You&apos;re not applying for a grant and you won&apos;t earn any salary upon succesful
+            You&apos;re not applying for a grant and you won&apos;t earn any funding upon succesful
             application. Return to the apply page to create a grant that fits within a specific
             flow.
           </AlertDescription>
