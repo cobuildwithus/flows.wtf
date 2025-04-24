@@ -1,6 +1,5 @@
 "use server"
 
-import { getCacheStrategy } from "../edge"
 import { farcasterDb } from "../farcaster-edge"
 
 export const getCastsByIds = async (castIds: number[]) => {
@@ -19,6 +18,6 @@ export const getCastsByIds = async (castIds: number[]) => {
     orderBy: {
       timestamp: "desc",
     },
-    ...getCacheStrategy(3600), // 1 hour in seconds
+
   })
 }

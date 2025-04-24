@@ -1,7 +1,6 @@
 "use server"
 
 import { MinimalCast } from "@/lib/types/cast"
-import { getCacheStrategy } from "../edge"
 import { farcasterDb } from "../farcaster-edge"
 
 async function fetchFeedbackCasts(url: string): Promise<MinimalCast[]> {
@@ -21,7 +20,6 @@ async function fetchFeedbackCasts(url: string): Promise<MinimalCast[]> {
       where: { deleted_at: null, parent_hash: null, root_parent_url: url },
       orderBy: { created_at: "desc" },
       take: 32,
-      ...getCacheStrategy(180),
     })
   } catch (error) {
     console.error("Error fetching feedback casts:", error)

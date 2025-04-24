@@ -1,6 +1,5 @@
 import { farcasterDb } from "@/lib/database/farcaster-edge"
 import { Profile as FarcasterProfile } from "@prisma/farcaster"
-import { getCacheStrategy } from "../database/edge"
 
 export const getFarcasterUserByEthAddress = async (
   rawAddress: `0x${string}`,
@@ -11,7 +10,6 @@ export const getFarcasterUserByEthAddress = async (
     const users = await farcasterDb.profile.findMany({
       where: { verified_addresses: { has: address } },
       orderBy: { updated_at: "desc" },
-      ...getCacheStrategy(86400),
     })
 
     if (!users || users.length === 0) return null
@@ -29,7 +27,6 @@ export const getFarcasterUsersByFids = async (fids: bigint[]) => {
     const users = await farcasterDb.profile.findMany({
       where: { fid: { in: fids } },
       orderBy: { updated_at: "desc" },
-      ...getCacheStrategy(3600),
     })
 
     return convertFarcasterUsers(users)

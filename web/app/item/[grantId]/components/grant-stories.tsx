@@ -2,7 +2,7 @@ import "server-only"
 
 import { StoryCard } from "@/app/components/story-card"
 import { FeaturedStoryCard } from "@/app/components/story-card-featured"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 
 interface Props {
   grantId: string
@@ -17,7 +17,7 @@ export async function GrantStories(props: Props) {
     where: { grant_ids: { has: grantId } },
     orderBy: { updated_at: "desc" },
     take: 11,
-    ...getCacheStrategy(180),
+
   })
 
   if (stories.length === 0) return null

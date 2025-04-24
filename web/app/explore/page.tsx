@@ -1,4 +1,4 @@
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { getPool } from "@/lib/database/queries/pool"
 import { FullDiagram } from "./diagram"
 import type { Metadata } from "next"
@@ -30,7 +30,7 @@ export default async function ExplorePage() {
           },
         },
       },
-      ...getCacheStrategy(3600),
+
     }),
     getPool(),
   ])

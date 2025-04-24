@@ -2,8 +2,6 @@
 
 import database from "@/lib/database/edge"
 
-import { getCacheStrategy } from "@/lib/database/edge"
-
 export async function getGrantById(grantId: string) {
   if (!grantId) return null
 
@@ -15,6 +13,6 @@ export async function getGrantById(grantId: string) {
       description: true,
       image: true,
     },
-    ...getCacheStrategy(360),
+
   })
 }
