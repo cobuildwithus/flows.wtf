@@ -34,6 +34,10 @@ declare global {
         explanation: string
       }[]
     }
+    type ImpactMonthly = {
+      date: string
+      summary: string
+    }
 
     type ImpactVerification = {
       model: string

@@ -47,15 +47,15 @@ export default async function FlowDraftsPage(props: Props) {
 
   if (drafts.length === 0) {
     return (
-      <>
+      <div className="container max-w-6xl pb-24">
         <FlowSubmenu flowId={flowId} segment="drafts" />
         <EmptyState title="No drafts found" description="Maybe go and create one?" />
-      </>
+      </div>
     )
   }
 
   return (
-    <>
+    <div className="container max-w-6xl pb-24">
       <FlowSubmenu flowId={flowId} segment="drafts" />
       <Table>
         <TableHeader>
@@ -110,7 +110,7 @@ export default async function FlowDraftsPage(props: Props) {
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
   )
 }
 

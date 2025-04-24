@@ -13,15 +13,16 @@ import { BlockPeople } from "./content/block-people"
 import { BlockProofs } from "./content/block-proofs"
 import { BlockResults } from "./content/block-results"
 import BlockSources from "./content/block-sources"
+import Link from "next/link"
 
 interface Props {
-  impact: Impact
+  impact: Impact & { grant?: { title: string } }
   canEdit: boolean
 }
 
 export function ImpactContent(props: Props) {
   const { impact, canEdit } = props
-  const { name, results, date, bestImage, peopleInvolved, proofs, impactMetrics } = impact
+  const { name, results, date, bestImage, peopleInvolved, proofs, impactMetrics, grant } = impact
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -74,6 +75,17 @@ export function ImpactContent(props: Props) {
           <header className="md:hidden">
             <DateTime date={date} relative className="mt-1 text-sm text-muted-foreground" />
           </header>
+
+          {grant?.title && (
+            <section className="mb-8 max-md:mt-4">
+              <h3 className="text-xs font-medium uppercase tracking-wide opacity-85">Grant</h3>
+              <h2 className="mt-2.5 text-sm font-medium leading-normal">
+                <Link href={`/item/${impact.grantId}`} className="hover:text-primary">
+                  {grant.title}
+                </Link>
+              </h2>
+            </section>
+          )}
 
           <BlockResults results={results} />
 
