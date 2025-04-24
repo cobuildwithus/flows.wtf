@@ -42,14 +42,6 @@ export default async function FlowPage(props: Props) {
       data={{ flowId: flow.id }}
       identityToken={await getPrivyIdToken()}
     >
-      <div className="container max-w-6xl pb-24">
-        <FlowSubmenu flowId={flowId} segment="approved" />
-        {!subgrants || subgrants.length === 0 ? (
-          <EmptyState title="No grants found" description="There are no approved grants yet" />
-        ) : (
-          <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
-        )}
-      </div>
       <div className="pt-6" id="impact">
         <FlowImpactSummary
           flowId={flowId}
@@ -59,6 +51,15 @@ export default async function FlowPage(props: Props) {
           impactId={impactId}
         />
       </div>
+      <div className="container max-w-6xl pb-24">
+        <FlowSubmenu flowId={flowId} segment="approved" />
+        {!subgrants || subgrants.length === 0 ? (
+          <EmptyState title="No grants found" description="There are no approved grants yet" />
+        ) : (
+          <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
+        )}
+      </div>
+
       <VotingBar />
     </AgentChatProvider>
   )

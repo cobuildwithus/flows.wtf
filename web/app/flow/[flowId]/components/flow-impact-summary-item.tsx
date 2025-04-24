@@ -34,6 +34,8 @@ export function FlowImpactSummaryItem(props: Props) {
     }
   }, [isActive, isFirstOfMonth])
 
+  const bestImage = impact.bestImage.horizontal?.raw || impact.bestImage.url
+
   return (
     <motion.div
       className="relative"
@@ -65,9 +67,9 @@ export function FlowImpactSummaryItem(props: Props) {
           e.currentTarget.style.transform = "var(--transform)"
         }}
       >
-        {impact.bestImage.url && (
+        {bestImage && (
           <Image
-            src={impact.bestImage.url}
+            src={bestImage}
             alt={impact.name}
             className="absolute inset-0 size-full object-cover"
             width={itemSize}

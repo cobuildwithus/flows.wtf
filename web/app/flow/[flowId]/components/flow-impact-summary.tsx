@@ -51,7 +51,6 @@ export async function FlowImpactSummary(props: Props) {
   return (
     <>
       <div className="container mb-6 max-w-6xl">
-        <h2 className="text-2xl font-medium tracking-tighter">What we're working on?</h2>
         <FlowImpactSummaryMonth
           date={date}
           summary={impactMonthly?.find((i) => i.date === date)?.summary || ""}

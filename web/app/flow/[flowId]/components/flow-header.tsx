@@ -30,7 +30,7 @@ export const FlowHeader = async (props: Props) => {
 
   return (
     <div className="flex flex-col items-start justify-between space-y-6 md:flex-row md:items-center md:space-x-4 md:space-y-0">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-5">
         <Image
           src={getIpfsUrl(flow.image)}
           alt={flow.title}
@@ -40,12 +40,17 @@ export const FlowHeader = async (props: Props) => {
         />
         <div>
           <div className="flex items-center space-x-2">
-            <Link
-              href={`/flow/${flow.id}/about`}
-              className="text-lg font-semibold hover:text-primary md:text-xl"
-            >
-              {flow.title}
-            </Link>
+            <div className="flex flex-col items-start space-y-2">
+              <Link
+                href={`/flow/${flow.id}/about`}
+                className="text-2xl font-semibold hover:text-primary md:text-3xl"
+              >
+                {flow.title}
+              </Link>
+              <div className="text-sm max-sm:text-xs md:text-center">
+                <BudgetDialog nounsTokenSupply={Number(nounsTokenSupply)} flow={flow} />
+              </div>
+            </div>
             {flow.status === Status.ClearingRequested && (
               <Link href={`/flow/${flow.id}/about`}>
                 <Badge variant="warning">Challenged</Badge>
@@ -57,41 +62,7 @@ export const FlowHeader = async (props: Props) => {
               </Link>
             )}
           </div>
-          <div className="text-balance text-xs text-muted-foreground md:mt-1 md:text-sm">
-            {flow.tagline}
-          </div>
         </div>
-      </div>
-      <div
-        className={cn("grid w-full gap-x-4 gap-y-8 text-sm max-sm:text-xs md:w-auto md:shrink-0", {
-          "grid-cols-2 md:grid-cols-2": isTopLevel,
-          "grid-cols-2 md:grid-cols-4": !isTopLevel && votingPower > 0,
-          "grid-cols-2 md:grid-cols-3": !isTopLevel && votingPower === 0,
-        })}
-      >
-        <div className="max-sm:flex max-sm:flex-col max-sm:items-start md:text-center">
-          <p className="mb-1.5 text-muted-foreground">{isTopLevel ? "Flows" : "Grants"}</p>
-          <GrantStatusCountBadges id={flow.id} flow={flow} alwaysShowAll />
-        </div>
-        <div className="md:text-center">
-          <p className="mb-1.5 text-muted-foreground">Budget</p>
-          <BudgetDialog nounsTokenSupply={Number(nounsTokenSupply)} flow={flow} />
-        </div>
-        {!flow.isTopLevel && (
-          <>
-            <div className="md:text-center">
-              <p className="mb-1.5 text-muted-foreground">Votes</p>
-              <p className="text-sm font-medium">{flow.votesCount} </p>
-            </div>
-
-            {votingPower > 0 && (
-              <FlowHeaderUserVotes
-                parent={getEthAddress(flow.parentContract)}
-                recipientId={flow.id}
-              />
-            )}
-          </>
-        )}
       </div>
     </div>
   )
