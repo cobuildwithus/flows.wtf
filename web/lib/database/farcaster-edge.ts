@@ -1,4 +1,4 @@
-import { PrismaClient as FarcasterClient } from "@prisma/farcaster/edge"
+import { PrismaClient as FarcasterClient } from "@prisma/farcaster"
 
 const isDevelopment = process.env.NODE_ENV !== "production"
 
