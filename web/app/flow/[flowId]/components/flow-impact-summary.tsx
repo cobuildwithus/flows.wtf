@@ -26,7 +26,7 @@ export async function FlowImpactSummary(props: Props) {
   const { flowId, subgrantsIds, impactMonthly, impactId } = props
 
   const impacts = await database.impact.findMany({
-    where: { complete: true, grantId: { in: subgrantsIds } },
+    where: { complete: true, grantId: { in: subgrantsIds }, deletedAt: null },
     orderBy: { date: "desc" },
     include: { grant: { select: { title: true } } },
   })
