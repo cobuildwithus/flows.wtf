@@ -1,6 +1,6 @@
 import { SwapTokenButton } from "@/app/token/swap-token-button"
 import { Button } from "@/components/ui/button"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { cn } from "@/lib/utils"
@@ -20,7 +20,6 @@ export const FlowSubmenu = async (props: Props) => {
     getFlowWithGrants(flowId),
     database.draft.count({
       where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
-      ...getCacheStrategy(120),
     }),
   ])
 

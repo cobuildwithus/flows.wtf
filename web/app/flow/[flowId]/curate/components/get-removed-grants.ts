@@ -1,6 +1,6 @@
 "use server"
 
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { getEthAddress } from "@/lib/utils"
 import { Status } from "@/lib/enums"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
@@ -17,7 +17,7 @@ export async function getRemovedGrants(flowId: string, type: "removed" | "reject
       disputes: { include: { evidences: true } },
       derivedData: { select: { deliverablesCompletionRate: true } },
     },
-    ...getCacheStrategy(120),
+
   })
 
   return await Promise.all(

@@ -23,7 +23,7 @@ import { VideoPlayer } from "@/components/ui/video-player"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { canEditStory } from "@/lib/database/helpers"
 import { getIpfsUrl } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
@@ -51,12 +51,12 @@ const getStory = cache(async (id: string) => {
     database.grant.findMany({
       where: { id: { in: story.grant_ids } },
       omit: { description: true },
-      ...getCacheStrategy(24 * 60 * 60),
+
     }),
     database.grant.findMany({
       where: { id: { in: story.parent_flow_ids } },
       omit: { description: true },
-      ...getCacheStrategy(24 * 60 * 60),
+
     }),
   ])
 

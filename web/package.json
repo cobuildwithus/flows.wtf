@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "node prisma-prebuild.js && prisma generate --no-engine --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints --no-engine",
+    "prebuild": "node prisma-prebuild.js && prisma generate --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints",
     "build": "NODE_OPTIONS=--max-old-space-size=6144 next build",
     "start": "next start",
     "db:generate": "prisma generate --no-hints && prisma generate --no-hints --schema=./lib/database/farcaster.prisma",
@@ -16,7 +16,6 @@
     "@lodestar/types": "^1.22.0",
     "@number-flow/react": "^0.4.4",
     "@prisma/client": "^6.4.1",
-    "@prisma/extension-accelerate": "^1.2.1",
     "@prisma/extension-optimize": "^1.1.4",
     "@privy-io/react-auth": "^2.8.3",
     "@privy-io/server-auth": "1.20.0",

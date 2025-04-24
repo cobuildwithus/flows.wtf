@@ -1,6 +1,6 @@
 "use server"
 
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 
 export async function getGrant(grantId: string) {
   return database.grant.findUniqueOrThrow({
@@ -25,6 +25,6 @@ export async function getGrant(grantId: string) {
         },
       },
     },
-    ...getCacheStrategy(300),
+
   })
 }

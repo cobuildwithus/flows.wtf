@@ -2,7 +2,6 @@ import "server-only"
 
 import { cache } from "react"
 import { farcasterDb } from "../database/farcaster-edge"
-import { getCacheStrategy } from "../database/edge"
 
 export const getFarcasterUserChannels = cache(async (fid: number) => {
   try {
@@ -15,7 +14,6 @@ export const getFarcasterUserChannels = cache(async (fid: number) => {
         timestamp: "desc",
       },
       take: 100,
-      ...getCacheStrategy(86400),
     })
 
     return channelMembers.map((member) => ({

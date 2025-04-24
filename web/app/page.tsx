@@ -1,5 +1,5 @@
 import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
 import { VotingProvider } from "@/lib/voting/voting-context"
@@ -18,7 +18,7 @@ export default async function Home() {
     database.grant.findMany({
       where: { isFlow: true, isActive: true, isTopLevel: false },
       omit: { description: true },
-      ...getCacheStrategy(120),
+
     }),
     getUser(),
   ])

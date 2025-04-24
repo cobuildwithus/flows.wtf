@@ -1,7 +1,7 @@
 import "server-only"
 
 import { DisputeUserVote } from "@/app/components/dispute/dispute-user-vote"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import type { Grant } from "@prisma/flows"
 import { StatusDisputed } from "./status-disputed"
 import { StatusNotDisputed } from "./status-not-disputed"
@@ -38,6 +38,6 @@ async function getDispute(grantId: string) {
     where: { grantId },
     orderBy: { creationBlock: "desc" },
     include: { evidences: true },
-    ...getCacheStrategy(60),
+
   })
 }

@@ -2,7 +2,7 @@ import "server-only"
 
 import { EmptyState } from "@/components/ui/empty-state"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
 import type { Grant } from "@prisma/flows"
@@ -21,7 +21,7 @@ export default async function FlowPage(props: Props) {
   const [flow, subgrants] = await Promise.all([
     database.grant.findFirstOrThrow({
       where: { id: flowId },
-      ...getCacheStrategy(1200),
+
     }),
     database.grant.findMany({
       where: { flowId, isActive: true },
@@ -31,7 +31,7 @@ export default async function FlowPage(props: Props) {
         },
       },
       omit: { description: true },
-      ...getCacheStrategy(1200),
+
     }),
   ])
 

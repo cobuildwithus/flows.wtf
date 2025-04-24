@@ -1,10 +1,14 @@
 "use server"
 
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import { unstable_cache } from "next/cache"
+import database from "@/lib/database/edge"
 
-export const getPool = async () => {
-  return await database.grant.findFirstOrThrow({
-    where: { isTopLevel: true, isFlow: true },
-    ...getCacheStrategy(604800), // 7 days in seconds
-  })
-}
+export const getPool = unstable_cache(
+  async () => {
+    return await database.grant.findFirstOrThrow({
+      where: { isTopLevel: true, isFlow: true },
+    })
+  },
+  ["getPool"],
+  { revalidate: 604800 }, // 7 days in seconds
+)

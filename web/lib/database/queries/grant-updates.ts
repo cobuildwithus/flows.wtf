@@ -3,7 +3,6 @@
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import type { Grant } from "@prisma/flows"
 import { farcasterDb } from "../farcaster-edge"
-import { getCacheStrategy } from "../edge"
 import type { Profile } from "@prisma/farcaster"
 
 const MAX_LEVEL = 3
@@ -117,7 +116,6 @@ export async function getGrantUpdates(grants: Pick<Grant, "id" | "recipient">[],
       impact_verifications: true,
       mentions_positions_array: true,
     },
-    ...getCacheStrategy(180),
   })
 
   const profilesByFid = new Map(profiles.map((profile) => [profile?.fid, profile]))
