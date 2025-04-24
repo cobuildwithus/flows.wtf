@@ -28,10 +28,12 @@ export default async function FlowPage(props: Props) {
   const user = await getUser()
 
   const grants = await Promise.all(
-    subgrants.map(async (g) => ({
-      ...g,
-      profile: await getUserProfile(getEthAddress(g.recipient)),
-    })),
+    subgrants
+      .filter((g) => g.isActive)
+      .map(async (g) => ({
+        ...g,
+        profile: await getUserProfile(getEthAddress(g.recipient)),
+      })),
   )
 
   return (
