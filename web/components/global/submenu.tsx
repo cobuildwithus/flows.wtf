@@ -20,7 +20,12 @@ export function Submenu(props: Props) {
   const { links, className } = props
 
   return (
-    <div className={cn("flex min-h-9 items-center space-x-5 md:space-x-7", className)}>
+    <div
+      className={cn(
+        "flex min-h-9 items-center space-x-5 overflow-x-auto pb-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary md:space-x-7",
+        className,
+      )}
+    >
       {links.map((link) => {
         const common = {
           className: "group flex items-center space-x-1 text-base font-medium md:text-xl",

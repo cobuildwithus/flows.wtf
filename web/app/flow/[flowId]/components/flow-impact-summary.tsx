@@ -1,27 +1,34 @@
+import { ImpactDialog } from "@/app/item/[grantId]/impact/impact-dialog"
 import { Submenu } from "@/components/global/submenu"
-import database, { getCacheStrategy } from "@/lib/database/edge"
+import database from "@/lib/database/edge"
 import { FlowImpactSummaryItem } from "./flow-impact-summary-item"
 import { FlowImpactSummaryMonth } from "./flow-impact-summary-month"
+import "./flow-impact-summary.css"
 
 interface Props {
   flowId: string
   impactMonthly: PrismaJson.ImpactMonthly[]
   subgrantsIds: string[]
   date: string | undefined
+  impactId: string | undefined
 }
 
 const numRows = 4
-const itemSize = 200
+
+const itemSize = {
+  mobile: 120,
+  desktop: 200,
+}
 
 const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" })
 
 export async function FlowImpactSummary(props: Props) {
-  const { flowId, subgrantsIds, impactMonthly } = props
+  const { flowId, subgrantsIds, impactMonthly, impactId } = props
 
   const impacts = await database.impact.findMany({
     where: { complete: true, grantId: { in: subgrantsIds } },
     orderBy: { date: "desc" },
-    ...getCacheStrategy(1200),
+    include: { grant: { select: { title: true } } },
   })
 
   const months = [...new Set(impacts.map((i) => i.date.toISOString().slice(0, 7)))].sort((a, b) =>
@@ -57,9 +64,12 @@ export async function FlowImpactSummary(props: Props) {
         className="relative w-full overflow-x-auto pt-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700"
         style={
           {
+            "--num-rows": numRows,
             "--hex-spacing-x": "0.92",
             "--hex-spacing-y": "0.77",
-            height: itemSize + itemSize * 0.9 * (numRows - 1),
+            "--item-size-mobile": `${itemSize.mobile}px`,
+            "--item-size-desktop": `${itemSize.desktop}px`,
+            height: "calc(var(--item-size) + var(--item-size) * 0.9 * (var(--num-rows) - 1))",
           } as React.CSSProperties
         }
       >
@@ -82,13 +92,14 @@ export async function FlowImpactSummary(props: Props) {
               x={x}
               y={y}
               delay={delay}
-              itemSize={itemSize}
+              itemSize={itemSize.desktop}
               isActive={date === monthKey}
               isFirstOfMonth={isFirstOfMonth}
             />
           )
         })}
       </div>
+      <ImpactDialog impacts={impacts} impactId={impactId} canEdit={false} />
     </>
   )
 }

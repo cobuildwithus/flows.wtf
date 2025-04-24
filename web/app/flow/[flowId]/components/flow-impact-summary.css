@@ -1,0 +1,9 @@
+#impact-container {
+  --item-size: var(--item-size-desktop);
+}
+
+@media (max-width: 768px) {
+  #impact-container {
+    --item-size: var(--item-size-mobile);
+  }
+}
