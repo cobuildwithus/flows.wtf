@@ -1,6 +1,8 @@
+import { FundingBanner } from "@/components/funding-banner"
 import { CuratorPopover } from "@/components/global/curator-popover/curator-popover"
 import { MenuDesktop, MenuMobile } from "@/components/global/menu"
 import { MenuAvatar } from "@/components/global/menu-avatar"
+import { PromptFarcasterSignup } from "@/components/global/prompt-farcaster-signup"
 import { RecipientPopover } from "@/components/global/recipient-popover/recipient-popover"
 import { RefreshOnFocus } from "@/components/global/refresh-on-focus"
 import { ThemeProvider } from "@/components/global/theme-provider"
@@ -17,11 +19,8 @@ import type { Metadata } from "next"
 import { Roboto_Mono } from "next/font/google"
 import Image from "next/image"
 import Link from "next/link"
-import "./globals.css"
 import CommandPalette from "./components/search/command-dialog"
-import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
-import { PromptFarcasterSignup } from "@/components/global/prompt-farcaster-signup"
-import { FundingBanner } from "@/components/funding-banner"
+import "./globals.css"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -37,12 +36,7 @@ export const viewport = {
 export default async function RootLayout(props: Readonly<{ children: React.ReactNode }>) {
   const { children } = props
 
-  const [pool, user, sessionPresent, identityToken] = await Promise.all([
-    getPool(),
-    getUser(),
-    hasSession(),
-    getPrivyIdToken(),
-  ])
+  const [pool, user, sessionPresent] = await Promise.all([getPool(), getUser(), hasSession()])
 
   return (
     <html lang="en" suppressHydrationWarning className="h-full">
@@ -56,7 +50,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
         >
           <TooltipProvider delayDuration={350}>
             <Wagmi>
-              <FundingBanner />
+              {/* <FundingBanner /> */}
               <nav className="container flex items-center py-5 max-lg:justify-between md:py-6">
                 <div className="lg:w-1/5">
                   <h2>

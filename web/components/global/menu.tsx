@@ -11,6 +11,7 @@ import { useState } from "react"
 const publicOptions = [
   { name: "Flows", href: "/" },
   { name: "Explore", href: "/explore" },
+  { name: "Impact", href: "/impact" },
   { name: "Apply", href: "/apply" },
   { name: "About", href: "/about" },
   { name: "Curate", href: "/curate" },
