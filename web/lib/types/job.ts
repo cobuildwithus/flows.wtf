@@ -18,7 +18,6 @@ export const validTypes = [
   "dispute",
   "draft-application",
   "builder-profile",
-  "story",
 ] as const
 
 export enum EmbeddingTag {
