@@ -10,6 +10,9 @@ interface Props {
   user: User | undefined
 }
 
+const VRBS_GRANTS_PAYOUTS = 35555.41
+const REWARD_POOL_PAYOUT = 7547.3
+
 export async function HomepageIntro(props: Props) {
   const { user } = props
 
@@ -20,7 +23,10 @@ export async function HomepageIntro(props: Props) {
     database.grant.findMany({ where: { isFlow: true }, select: { totalEarned: true } }),
   ])
 
-  const totalEarned = grants.reduce((acc, grant) => acc + Number(grant.totalEarned), 0)
+  const totalEarned =
+    grants.reduce((acc, grant) => acc + Number(grant.totalEarned), 0) +
+    VRBS_GRANTS_PAYOUTS +
+    REWARD_POOL_PAYOUT
 
   return (
     <div className="relative flex gap-8 rounded-2xl bg-primary/25 p-6 max-sm:flex-col sm:items-center md:mx-auto md:justify-between md:px-16 md:py-12">
@@ -33,11 +39,11 @@ export async function HomepageIntro(props: Props) {
       />
       <div>
         <h1 className="text-balance text-xl font-medium tracking-tight dark:text-white md:text-3xl">
-          Welcome to Flows
+          Flows
         </h1>
         <p className="mb-6 mt-4 max-w-screen-md text-balance text-sm/relaxed md:text-base/relaxed">
-          It's a platform for creating and participating in decentralized social experiments. Our
-          grant program provides continuous funding to builders through streaming payments.
+          Continuous funding for the best grassroots projects in the world. An infinite impact
+          machine.
         </p>
         {user && (
           <AgentChatProvider
@@ -60,7 +66,7 @@ export async function HomepageIntro(props: Props) {
       <div className="flex max-sm:justify-between max-sm:space-x-6 sm:flex-col sm:space-y-8 lg:pr-8">
         <dl>
           <dd className="text-2xl font-medium md:text-[28px]">{grantsCount}</dd>
-          <dt className="mt-1 tracking-tight opacity-75 max-md:text-sm">Active Grants</dt>
+          <dt className="mt-1 tracking-tight opacity-75 max-md:text-sm">Active grants</dt>
         </dl>
         <dl>
           <dd className="text-2xl font-medium md:text-[28px]">
@@ -70,7 +76,7 @@ export async function HomepageIntro(props: Props) {
               maximumFractionDigits: 0,
             }).format(totalEarned)}
           </dd>
-          <dt className="mt-1 tracking-tight opacity-75 max-md:text-sm">Distributed</dt>
+          <dt className="mt-1 tracking-tight opacity-75 max-md:text-sm">Paid out</dt>
         </dl>
       </div>
     </div>
