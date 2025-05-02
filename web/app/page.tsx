@@ -11,6 +11,7 @@ import type { LimitedFlow } from "./components/flows-table"
 import { HomepageIntro } from "./components/homepage-intro"
 import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
 import { VotingBar } from "./flow/[flowId]/components/voting-bar"
+import Footer from "@/components/global/footer"
 
 export default async function Home() {
   const [pool, activeFlows, user] = await Promise.all([
@@ -59,6 +60,9 @@ export default async function Home() {
 
         <div className="container my-6">
           <FlowsList flows={activeFlows} />
+        </div>
+        <div className="pt-12">
+          <Footer />
         </div>
       </main>
       <VotingBar />

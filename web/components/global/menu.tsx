@@ -13,7 +13,6 @@ const publicOptions = [
   { name: "Explore", href: "/explore" },
   { name: "Impact", href: "/impact" },
   { name: "Apply", href: "/apply" },
-  { name: "About", href: "/about" },
   { name: "Curate", href: "/curate" },
   {
     name: "Search",

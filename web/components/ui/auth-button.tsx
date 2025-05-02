@@ -1,9 +1,8 @@
 "use client"
 
 import { Button, ButtonProps } from "@/components/ui/button"
-import { useLogin } from "@/lib/auth/use-login"
 import React, { ForwardedRef, forwardRef } from "react"
-import { useAccount } from "wagmi"
+import { useAuthClick } from "@/components/ui/hooks/auth-click"
 
 interface Props extends ButtonProps {
   onConnect?: () => void
@@ -13,20 +12,10 @@ export const AuthButton = forwardRef(function AuthButton(
   { onConnect, onClick, ...props }: Props,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const { address } = useAccount()
-  const { login, connectWallet, authenticated } = useLogin()
+  const { handleClick: authHandleClick } = useAuthClick(onConnect)
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
-    if (!address) {
-      e.preventDefault()
-      if (!authenticated) {
-        login()
-      } else {
-        connectWallet()
-      }
-      onConnect?.()
-    }
-
+    authHandleClick(e)
     onClick?.(e)
   }
 
