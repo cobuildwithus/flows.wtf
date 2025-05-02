@@ -24,8 +24,8 @@ export function GuidanceChat(props: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <AuthButton
-        variant="ai-secondary"
-        size="md"
+        variant="ai-primary"
+        size="lg"
         type="button"
         onClick={() => {
           setIsOpen(true)

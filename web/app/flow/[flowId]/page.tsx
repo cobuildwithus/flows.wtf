@@ -44,15 +44,17 @@ export default async function FlowPage(props: Props) {
       data={{ flowId: flow.id }}
       identityToken={await getPrivyIdToken()}
     >
-      <div className="pt-6" id="impact">
-        <FlowImpactSummary
-          flowId={flowId}
-          impactMonthly={flow.derivedData?.impactMonthly ?? []}
-          subgrantsIds={subgrants.map((g) => g.id)}
-          date={date}
-          impactId={impactId}
-        />
-      </div>
+      {!flow.isTopLevel && (
+        <div className="pt-6" id="impact">
+          <FlowImpactSummary
+            flowId={flowId}
+            impactMonthly={flow.derivedData?.impactMonthly ?? []}
+            subgrantsIds={subgrants.map((g) => g.id)}
+            date={date}
+            impactId={impactId}
+          />
+        </div>
+      )}
       <div className="container max-w-6xl pb-24">
         <FlowSubmenu flowId={flowId} segment="approved" />
         {!subgrants || subgrants.length === 0 ? (

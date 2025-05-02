@@ -8,6 +8,7 @@ import Link from "next/link"
 import { base } from "viem/chains"
 import FlowsList from "./components/flows-list"
 import type { LimitedFlow } from "./components/flows-table"
+import { HomepageIntro } from "./components/homepage-intro"
 import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
 import { VotingBar } from "./flow/[flowId]/components/voting-bar"
 
@@ -29,7 +30,10 @@ export default async function Home() {
   return (
     <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
       <main>
-        <div className="container mt-12 flex items-center justify-between">
+        <div className="container mt-6">
+          <HomepageIntro user={user} />
+        </div>
+        <div className="container mt-6 flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-4">
               <h3 className="text-lg font-semibold leading-none tracking-tight md:text-xl">
@@ -48,7 +52,6 @@ export default async function Home() {
                 showLabel
               />
             </div>
-            <p className="mt-1 text-sm text-muted-foreground max-sm:hidden">{pool.tagline}</p>
           </div>
 
           <CTAButtons />

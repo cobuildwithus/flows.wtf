@@ -1,9 +1,9 @@
 "use client"
 
-import React, { ForwardedRef, forwardRef } from "react"
 import { Button, ButtonProps } from "@/components/ui/button"
-import { useAccount } from "wagmi"
 import { useLogin } from "@/lib/auth/use-login"
+import React, { ForwardedRef, forwardRef } from "react"
+import { useAccount } from "wagmi"
 
 interface Props extends ButtonProps {
   onConnect?: () => void
