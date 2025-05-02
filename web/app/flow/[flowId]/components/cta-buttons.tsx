@@ -17,10 +17,8 @@ export function CTAButtons() {
   return (
     <div className="flex items-center space-x-4">
       {!isActive && (
-        <Button variant={showVotingToggle ? "outline" : "default"}>
-          <Link href={`/apply`}>
-            Apply <span className="max-sm:hidden">for grant</span>
-          </Link>
+        <Button className="rounded-xl" variant={showVotingToggle ? "outline" : "default"}>
+          <Link href={`/apply`}>Apply</Link>
         </Button>
       )}
       {showVotingToggle && <VotingToggle />}

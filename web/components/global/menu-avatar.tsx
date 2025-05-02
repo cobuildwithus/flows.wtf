@@ -77,7 +77,7 @@ export const MenuAvatar = (props: Props) => {
                 </p>
                 <div className="flex space-x-2.5">
                   <Button asChild size="sm" className="w-full">
-                    <Link href="/apply">Apply for a grant</Link>
+                    <Link href="/apply">Apply for funding</Link>
                   </Button>
                   <Button asChild size="sm" className="w-full">
                     <Link href="/curate">Become a curator</Link>

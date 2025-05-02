@@ -66,7 +66,7 @@ export const FlowSubmenu = async (props: Props) => {
           {isApproved && approvedCount > 0 && <VotingToggle />}
           {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
             <Link href={`/apply/${flowId}`}>
-              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for a grant"}</Button>
+              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
             </Link>
           )}
         </div>

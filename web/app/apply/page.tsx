@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const pool = await getPool()
 
   return {
-    title: `Apply for a grant - ${pool.title}`,
+    title: `Apply for funding - ${pool.title}`,
     description: `Start grant application in ${pool.title} by selecting a flow.`,
   }
 }
@@ -46,7 +46,7 @@ export default async function ApplyPage() {
       <div className="mx-auto max-w-4xl text-center">
         <h2 className="text-base font-semibold text-primary">Get paid to build with Nouns</h2>
         <p className="mt-2.5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Apply for a grant
+          Apply for funding
         </p>
       </div>
       <p className="mx-auto mt-4 max-w-2xl text-pretty text-center text-sm text-muted-foreground md:mt-6 lg:text-lg">
