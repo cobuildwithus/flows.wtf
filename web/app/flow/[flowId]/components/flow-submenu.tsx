@@ -31,6 +31,8 @@ export const FlowSubmenu = async (props: Props) => {
   const awaitingCount = flow.subgrants.filter(isGrantAwaiting).length
   const isFlowRemoved = flow.isRemoved
 
+  const canSuggestFlow = !!flow.tcr && flow.isTopLevel
+
   const links = [
     {
       label: "Projects",
@@ -66,11 +68,13 @@ export const FlowSubmenu = async (props: Props) => {
             />
           )}
           {isApproved && approvedCount > 0 && <VotingToggle />}
-          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
-            <Link href={`/apply/${flowId}`}>
-              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
-            </Link>
-          )}
+          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) &&
+            !isFlowRemoved &&
+            canSuggestFlow && (
+              <Link href={`/apply/${flowId}`}>
+                <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
+              </Link>
+            )}
         </div>
       </div>
     </div>
