@@ -68,7 +68,7 @@ async function handleFlowInitialized(params: {
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,
     bonusPoolQuorum: 0,
-    tcr: "",
+    tcr: null,
     erc20: "",
     arbitrator: "",
     tokenEmitter: "",

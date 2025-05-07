@@ -1,16 +1,17 @@
 import "server-only"
 
-import { Grant } from "@prisma/flows"
 import { unstable_cache } from "next/cache"
 import { erc20Abi, getContract } from "viem"
 import { flowTcrImplAbi } from "../abis"
-import { getEthAddress } from "../utils"
 import { l2Client } from "../viem/client"
+import { getEthAddress } from "../utils"
 
-export async function getTcrCosts(flow: Grant) {
+export async function getTcrCosts(tcrAddress: string | null, erc20Address: string) {
+  if (!tcrAddress) return null
+
   return unstable_cache(
-    async () => readTcrCosts(getEthAddress(flow.tcr), getEthAddress(flow.erc20)),
-    [`tcr-costs-${flow.tcr}-${flow.erc20}`],
+    async () => readTcrCosts(getEthAddress(tcrAddress), getEthAddress(erc20Address)),
+    [`tcr-costs-${tcrAddress}-${erc20Address}`],
     { revalidate: 300 },
   )()
 }

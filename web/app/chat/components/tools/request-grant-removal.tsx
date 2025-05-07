@@ -108,6 +108,13 @@ export function RequestGrantRemoval(props: Props) {
                   try {
                     await prepareWallet()
 
+                    if (!grant.flow.tcr) {
+                      toast.error("You cannot request removal of this grant. No TCR found.", {
+                        id: toastId,
+                      })
+                      return
+                    }
+
                     writeContract({
                       account: address,
                       abi: flowTcrImplAbi,

@@ -64,7 +64,7 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     activeRecipientCount: 0,
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,
-    tcr: "",
+    tcr: null,
     erc20: "",
     arbitrator: "",
     tokenEmitter: "",

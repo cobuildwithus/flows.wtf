@@ -7,6 +7,7 @@ import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import type { Grant } from "@prisma/flows"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import type { Address } from "viem"
 import { base } from "viem/chains"
 
@@ -21,7 +22,7 @@ export function RequestExecuteButton(props: Props) {
   const { grant, flow, className, size = "default" } = props
   const router = useRouter()
 
-  const { writeContract, prepareWallet } = useContractTransaction({
+  const { writeContract, prepareWallet, toastId } = useContractTransaction({
     onSuccess: async () => {
       // wait 1 second
       await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -37,6 +38,11 @@ export function RequestExecuteButton(props: Props) {
       size={size}
       onClick={async () => {
         await prepareWallet()
+
+        if (!flow.tcr) {
+          toast.error("You cannot execute a grant in this flow. No TCR found.", { id: toastId })
+          return
+        }
 
         writeContract({
           address: getEthAddress(flow.tcr),

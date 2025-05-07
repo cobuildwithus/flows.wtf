@@ -44,19 +44,20 @@ interface Props {
   flow: Grant & { derivedData: DerivedData | null }
   size?: "default" | "sm"
   grantsCount: number
+  tcrAddress: `0x${string}`
   user?: User
 }
 
 const chainId = base.id
 
-export function DraftPublishButton(props: Props) {
-  const { draft, flow, size = "default", grantsCount, user } = props
+export function TCRDraftPublishButton(props: Props) {
+  const { draft, flow, size = "default", grantsCount, tcrAddress, user } = props
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
 
-  const { addItemCost, challengePeriodFormatted } = useTcrData(getEthAddress(flow.tcr))
-  const token = useTcrToken(getEthAddress(flow.erc20), getEthAddress(flow.tcr))
+  const { addItemCost, challengePeriodFormatted } = useTcrData(tcrAddress)
+  const token = useTcrToken(getEthAddress(flow.erc20), tcrAddress)
 
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({
     chainId,
@@ -221,7 +222,7 @@ export function DraftPublishButton(props: Props) {
                     account: address,
                     abi: flowTcrImplAbi,
                     functionName: "addItem",
-                    address: getEthAddress(flow.tcr),
+                    address: tcrAddress,
                     chainId,
                     args: [
                       encodeAbiParameters(

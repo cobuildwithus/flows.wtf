@@ -150,6 +150,13 @@ export function ChallengeGrantApplication(props: Props) {
                   try {
                     await prepareWallet()
 
+                    if (!grant.flow.tcr) {
+                      toast.error("You cannot challenge a grant in this flow. No TCR found.", {
+                        id: toastId,
+                      })
+                      return
+                    }
+
                     writeContract({
                       account: address,
                       address: getEthAddress(grant.flow.tcr),

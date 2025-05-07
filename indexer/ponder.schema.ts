@@ -28,7 +28,7 @@ export const grants = onchainTable(
     bonusMemberUnits: t.text().notNull(),
     baselineMemberUnits: t.text().notNull(),
     totalEarned: t.text().notNull(),
-    tcr: t.text().notNull(),
+    tcr: t.text(),
     erc20: t.text().notNull(),
     arbitrator: t.text().notNull(),
     tokenEmitter: t.text().notNull(),

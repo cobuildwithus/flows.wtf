@@ -15,7 +15,7 @@ interface Props {
 
 export const ManageFlow = ({ flow }: Props) => {
   const flowAddress = getEthAddress(flow.recipient)
-  const tcrAddress = getEthAddress(flow.tcr)
+  const tcrAddress = flow.tcr ? getEthAddress(flow.tcr) : null
   const tokenEmitterAddress = getEthAddress(flow.tokenEmitter)
   const isFlowOwner = useIsFlowOwner(flowAddress)
   const arbitratorAddress = useArbitrator(tcrAddress)
@@ -27,8 +27,8 @@ export const ManageFlow = ({ flow }: Props) => {
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         <TokenEmitterManagement tokenEmitterAddress={tokenEmitterAddress} />
         <FlowManagement flowAddress={flowAddress} />
-        <TCRManagement tcrAddress={tcrAddress} />
-        <ArbitratorManagement arbitratorAddress={arbitratorAddress} />
+        {tcrAddress && <TCRManagement tcrAddress={tcrAddress} />}
+        {arbitratorAddress && <ArbitratorManagement arbitratorAddress={arbitratorAddress} />}
       </div>
     </div>
   )

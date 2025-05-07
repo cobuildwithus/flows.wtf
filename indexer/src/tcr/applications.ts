@@ -74,7 +74,7 @@ async function handleItemSubmitted(params: {
     activeRecipientCount: 0,
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,
-    tcr: "",
+    tcr: null,
     erc20: "",
     arbitrator: "",
     tokenEmitter: "",
