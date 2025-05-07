@@ -19,6 +19,7 @@ async function handleFlowRecipientCreated(params: {
     baselinePoolFlowRatePercent,
   } = event.args
 
+  const parentContract = event.log.address.toLowerCase()
   const flowContract = recipient.toLowerCase()
   const grantId = recipientId.toString()
 
@@ -29,6 +30,7 @@ async function handleFlowRecipientCreated(params: {
     baselinePoolFlowRatePercent,
     recipient: flowContract,
     updatedAt: Number(event.block.timestamp),
+    parentContract: parentContract,
     isActive: true,
   })
 
