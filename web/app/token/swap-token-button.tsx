@@ -12,7 +12,6 @@ import type { Grant } from "@prisma/flows"
 import Link from "next/link"
 import { useRef } from "react"
 import { SwapTokenBox } from "./swap-token-box"
-import { getEthAddress } from "@/lib/utils"
 import { useAccount } from "wagmi"
 import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
 import { useRouter } from "next/navigation"
@@ -31,6 +30,7 @@ interface Props {
 
 export function SwapTokenButton(props: Props) {
   const router = useRouter()
+  const { address } = useAccount()
   const {
     flow,
     erc20Address,
@@ -38,17 +38,18 @@ export function SwapTokenButton(props: Props) {
     size = "default",
     variant = "default",
     extraInfo,
-    onSuccess = () => {
-      // close dialog
-      router.refresh()
-      ref.current?.click()
-    },
   } = props
   const ref = useRef<HTMLButtonElement>(null)
-
-  const { address } = useAccount()
-  const { balances } = useERC20Balances([erc20Address], address)
   const isRemoved = flow.isRemoved
+
+  const { balances, refetch } = useERC20Balances([erc20Address], address)
+  const {
+    onSuccess = () => {
+      // close dialog
+      refetch()
+      router.refresh()
+    },
+  } = props
 
   const text =
     props.text || (balances?.[0] ? (!flow.isTopLevel ? "Buy TCR" : "Buy FLOWS") : "Become curator")
@@ -63,7 +64,7 @@ export function SwapTokenButton(props: Props) {
       <DialogContent className="sm:max-w-screen-xs px-3 py-8 md:p-6">
         <DialogHeader>
           <DialogTitle className="text-center text-lg font-medium">
-            Buy and sell {flow.title} tokens
+            Buy & sell {flow.title} tokens
           </DialogTitle>
         </DialogHeader>
         {isRemoved ? (

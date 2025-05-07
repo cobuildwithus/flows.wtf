@@ -50,7 +50,7 @@ export function SellTokenBox(props: Props) {
   const { balances, refetch } = useERC20Balances([getEthAddress(token)], address)
   const tokenBalance = balances?.[0]
 
-  const { tokens } = useERC20Tokens([token], chainId)
+  const { tokens, refetch: refetchTokens } = useERC20Tokens([token], chainId)
   const tokenSymbol = tokens?.[0]?.symbol
 
   const {
@@ -136,6 +136,7 @@ export function SellTokenBox(props: Props) {
         payment={BigInt(payment)}
         onSuccess={(hash) => {
           refetch()
+          refetchTokens()
           onSuccess(hash)
         }}
       />
