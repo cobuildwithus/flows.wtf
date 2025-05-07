@@ -20,4 +20,8 @@ export const base = {
   TokenEmitter: "0x14de2e56ebe65d2cc81b5186f8cb299cfbb37ee1",
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
+  // Vrbs Accelerator
+  AllocatorFlowImpl: "0xf8ad08b4ce94bf21f896ba670d76e88683548876",
+  VrbsFlowImpl: "0x8bd310902ce76fd6b6e25e7547c81b66b9397596",
+  VrbsFlow: "0x59a6088c0178accef66cc64d06a2b7f8f73ccba5",
 } as const
