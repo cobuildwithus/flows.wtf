@@ -5,6 +5,7 @@ import { isBlockRecent } from "../../../utils"
 import { getParentFlow } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { insertGrant } from "./insert-vrbs-grant"
+import { grants } from "ponder:schema"
 
 ponder.on("VrbsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("VrbsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
@@ -30,23 +31,45 @@ async function handleRecipientCreated(params: {
 
   const parentFlow = await getParentFlow(context.db, flowAddress)
 
-  const grant = await insertGrant(context.db, {
-    id: grantId,
-    metadata,
-    recipient,
-    flowId: grantId,
-    submitter: approvedBy.toLowerCase(),
-    parentContract: flowAddress,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  })
+  let existingGrant = await context.db.find(grants, { id: grantId })
+
+  if (existingGrant) {
+    // this is recipient is a flow, so only update the metadata
+    await context.db.update(grants, { id: grantId }).set({
+      ...metadata,
+      updatedAt: timestamp,
+    })
+  } else {
+    existingGrant = await insertGrant(context.db, {
+      id: grantId,
+      title: metadata.title,
+      description: metadata.description,
+      image: metadata.image,
+      tagline: metadata.tagline,
+      url: metadata.url,
+      recipient,
+      flowId: parentFlow.id,
+      isFlow: false,
+      submitter: approvedBy.toLowerCase(),
+      parentContract: flowAddress,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      isOnchainStartup: isOnchainStartup(flowAddress),
+    })
+  }
 
   await Promise.all([
-    handleRecipientMappings(context.db, recipient, flowAddress, grant.id),
+    handleRecipientMappings(context.db, recipient, flowAddress, existingGrant.id),
     isBlockRecent(timestamp)
-      ? addGrantEmbedding(grant, recipientType, parentFlow.id)
+      ? addGrantEmbedding(existingGrant, recipientType, parentFlow.id)
       : Promise.resolve(),
   ])
+}
+
+function isOnchainStartup(flowContract: string) {
+  const acceleratorFlows = ["0x3c6d95bc94dca34ba46365ee99d3469dc5cdbe61"]
+
+  return acceleratorFlows.includes(flowContract)
 }
 
 async function handleFlowRecipientCreated(params: {
@@ -54,6 +77,7 @@ async function handleFlowRecipientCreated(params: {
   context: Context<"VrbsFlow:FlowRecipientCreated">
 }) {
   const { event, context } = params
+  const timestamp = Number(event.block.timestamp)
   const {
     recipient,
     recipientId,
@@ -65,22 +89,22 @@ async function handleFlowRecipientCreated(params: {
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const submitter = event.transaction.from.toLowerCase() as `0x${string}`
-  const flowContract = recipient.toLowerCase() as `0x${string}`
+  const flowRecipient = recipient.toLowerCase() as `0x${string}`
   const grantId = recipientId.toString()
-  const timestamp = Number(event.block.timestamp)
 
-  const { metadata } = await context.client.readContract({
-    address: contract,
-    abi: context.contracts.VrbsFlow.abi,
-    functionName: "getRecipientById",
-    args: [recipientId],
-  })
+  const parentFlow = await getParentFlow(context.db, contract)
 
   await insertGrant(context.db, {
+    // temporarily set since metadata is emitted above and set
+    title: "",
+    description: "",
+    image: "",
+    tagline: "",
+    url: "",
     id: grantId,
-    metadata,
-    recipient: flowContract,
-    flowId: grantId,
+    isFlow: true,
+    recipient: flowRecipient,
+    flowId: parentFlow.id,
     submitter,
     parentContract: contract,
     baselinePool: baselinePool.toLowerCase(),
@@ -91,5 +115,5 @@ async function handleFlowRecipientCreated(params: {
     updatedAt: timestamp,
   })
 
-  await createFlowMappings(context.db, flowContract, grantId, bonusPool, baselinePool)
+  await createFlowMappings(context.db, flowRecipient, grantId, bonusPool, baselinePool)
 }

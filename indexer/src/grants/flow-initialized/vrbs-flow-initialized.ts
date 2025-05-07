@@ -70,6 +70,7 @@ async function handleFlowInitialized(params: {
     bonusPoolQuorum: 0,
     tcr: null,
     erc20: null,
+    isOnchainStartup: false,
     arbitrator: null,
     tokenEmitter: null,
     managerRewardPoolFlowRatePercent,

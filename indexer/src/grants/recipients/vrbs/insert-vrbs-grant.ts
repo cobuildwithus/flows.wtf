@@ -4,7 +4,11 @@ import { Status } from "../../../enums"
 
 type GrantInsertParams = {
   id: string
-  metadata: { title: string; description: string; image: string; tagline: string; url: string }
+  title: string
+  description: string
+  image: string
+  tagline: string
+  url: string
   recipient: string
   flowId: string
   submitter: string
@@ -15,12 +19,18 @@ type GrantInsertParams = {
   baselinePoolFlowRatePercent?: number
   createdAt: number
   updatedAt: number
+  isFlow: boolean
+  isOnchainStartup?: boolean
 }
 
 export async function insertGrant(db: Context["db"], params: GrantInsertParams) {
   const {
     id,
-    metadata,
+    title,
+    description,
+    image,
+    tagline,
+    url,
     recipient,
     flowId,
     submitter,
@@ -31,11 +41,17 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     baselinePoolFlowRatePercent = 0,
     createdAt,
     updatedAt,
+    isFlow,
+    isOnchainStartup = false,
   } = params
 
   return db.insert(grants).values({
     id,
-    ...metadata,
+    title,
+    description,
+    image,
+    tagline,
+    url,
     recipient,
     flowId,
     submitter,
@@ -45,9 +61,10 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     managerRewardPoolFlowRatePercent,
     baselinePoolFlowRatePercent,
     isTopLevel: false,
-    isFlow: true,
+    isFlow,
     isRemoved: false,
     votesCount: "0",
+    isOnchainStartup,
     bonusPoolQuorum: 0,
     totalVoteWeightCastOnFlow: "0",
     monthlyIncomingFlowRate: "0",

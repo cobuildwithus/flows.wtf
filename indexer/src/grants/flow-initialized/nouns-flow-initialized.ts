@@ -66,6 +66,7 @@ async function handleFlowInitialized(params: {
     monthlyOutgoingFlowRate: "0",
     monthlyRewardPoolFlowRate: "0",
     monthlyBaselinePoolFlowRate: "0",
+    isOnchainStartup: false,
     monthlyBonusPoolFlowRate: "0",
     bonusMemberUnits: "0",
     baselineMemberUnits: "0",

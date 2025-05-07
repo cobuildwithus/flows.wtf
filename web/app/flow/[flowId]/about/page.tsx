@@ -94,7 +94,7 @@ export default async function FlowPage(props: Props) {
               </Card>
             )}
 
-            {!isTopLevel && (
+            {!isTopLevel && flow.tcr && (
               <Card>
                 <CardHeader>
                   <CardTitle>
