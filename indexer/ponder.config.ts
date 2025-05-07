@@ -134,41 +134,14 @@ export default createConfig({
       network: "base",
       startBlock: START_BLOCK,
     },
-    BaselinePool: {
+    SuperfluidPool: {
       abi: superfluidPoolAbi,
-      address: baseContracts.BaselinePool,
-      network: "base",
-      startBlock: START_BLOCK,
-    },
-    BonusPool: {
-      abi: superfluidPoolAbi,
-      address: baseContracts.BonusPool,
-      network: "base",
-      startBlock: START_BLOCK,
-    },
-    BaselinePoolChildren: {
-      abi: superfluidPoolAbi,
-      address: factory({
-        address: baseContracts.TCRFactory,
-        event: getAbiItem({
-          abi: tcrFactoryImplAbi,
-          name: "FlowTCRDeployed",
-        }),
-        parameter: "flowBaselinePool",
-      }),
-      network: "base",
-      startBlock: START_BLOCK,
-    },
-    BonusPoolChildren: {
-      abi: superfluidPoolAbi,
-      address: factory({
-        address: baseContracts.TCRFactory,
-        event: getAbiItem({
-          abi: tcrFactoryImplAbi,
-          name: "FlowTCRDeployed",
-        }),
-        parameter: "flowBonusPool",
-      }),
+      filter: {
+        event: "MemberUnitsUpdated",
+        args: {
+          token: "0xd04383398dd2426297da660f9cca3d439af9ce1b",
+        },
+      },
       network: "base",
       startBlock: START_BLOCK,
     },
