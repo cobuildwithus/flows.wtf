@@ -42,7 +42,7 @@ export const FlowSubmenu = async (props: Props) => {
     },
   ]
 
-  if (!flow.isTopLevel) {
+  if (!flow.isTopLevel && !!flow.tcr) {
     links.push({
       label: "Curate",
       href: `/flow/${flowId}/curate`,

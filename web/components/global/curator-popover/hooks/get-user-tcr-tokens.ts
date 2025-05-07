@@ -9,7 +9,7 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
 
   const [tokens, votes] = await Promise.all([
     database.tokenHolder.findMany({
-      where: { holder: address, amount: { not: "0" } },
+      where: { holder: address },
       orderBy: { amount: "desc" },
       include: {
         flow: {
