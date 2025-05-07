@@ -183,34 +183,41 @@ export default async function ApplicationPage(props: Props) {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex w-full flex-row items-center justify-between">
-                  <span>Application status</span>
-                  {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
-                    <Badge variant="warning">Challenged</Badge>
+            {flow.tcr && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex w-full flex-row items-center justify-between">
+                    <span>Application status</span>
+                    {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
+                      <Badge variant="warning">Challenged</Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {!grant.isDisputed && !grant.isResolved && (
+                    <StatusNotDisputed grant={grant} flow={flow} />
                   )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!grant.isDisputed && !grant.isResolved && (
-                  <StatusNotDisputed grant={grant} flow={flow} />
-                )}
-                {(grant.isDisputed || grant.isResolved) && dispute && (
-                  <ApplicationDisputed grant={grant} dispute={dispute} flow={flow} />
-                )}
-                {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
-                  <ChallengeMessage className="mt-4" />
-                )}
-              </CardContent>
-            </Card>
+                  {(grant.isDisputed || grant.isResolved) && dispute && (
+                    <ApplicationDisputed
+                      grant={grant}
+                      dispute={dispute}
+                      flow={flow as FlowWithTcr}
+                    />
+                  )}
+                  {(grant.status === Status.ClearingRequested || grant.isDisputed) && (
+                    <ChallengeMessage className="mt-4" />
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {dispute && (
               <Card>
                 <CardHeader>
                   <CardTitle>Your vote</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <DisputeUserVote user={user} grant={grant} flow={flow} dispute={dispute} />
+                  <DisputeUserVote user={user} grant={grant} dispute={dispute} />
                 </CardContent>
               </Card>
             )}

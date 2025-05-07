@@ -160,9 +160,9 @@ model Grant {
   awaitingRecipientCount           Int     @map("awaiting_recipient_count")
   challengedRecipientCount         Int     @map("challenged_recipient_count")
   tcr                              String?  @unique
-  erc20                            String  @unique
-  arbitrator                       String  @unique
-  tokenEmitter                     String  @unique @map("token_emitter")
+  erc20                            String?  @unique
+  arbitrator                       String?  @unique
+  tokenEmitter                     String?  @unique @map("token_emitter")
   status                           Int
   challengePeriodEndsAt            Int     @map("challenge_period_ends_at")
   activatedAt                      Int?    @map("activated_at")

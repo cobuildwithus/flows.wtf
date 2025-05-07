@@ -61,7 +61,7 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
           status: subgrant.status,
           isActive: subgrant.isActive,
           disputes,
-          parentArbitrator: token.flow.arbitrator,
+          parentArbitrator: token.flow.arbitrator as `0x${string}`,
         }
       })
 

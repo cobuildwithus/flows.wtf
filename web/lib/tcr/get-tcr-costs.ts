@@ -6,8 +6,8 @@ import { flowTcrImplAbi } from "../abis"
 import { l2Client } from "../viem/client"
 import { getEthAddress } from "../utils"
 
-export async function getTcrCosts(tcrAddress: string | null, erc20Address: string) {
-  if (!tcrAddress) return null
+export async function getTcrCosts(tcrAddress: string | null, erc20Address: string | null) {
+  if (!tcrAddress || !erc20Address) return null
 
   return unstable_cache(
     async () => readTcrCosts(getEthAddress(tcrAddress), getEthAddress(erc20Address)),

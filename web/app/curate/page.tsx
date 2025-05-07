@@ -16,6 +16,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { SwapTokenButton } from "../token/swap-token-button"
 import Illustration from "./curate.svg"
+import { getEthAddress } from "@/lib/utils"
 
 export async function generateMetadata(): Promise<Metadata> {
   const pool = await getPool()
@@ -269,6 +270,7 @@ export default async function CurateAndEarnPage() {
                   size="lg"
                   defaultTokenAmount={BigInt(1e18)}
                   flow={pool}
+                  erc20Address={getEthAddress(pool.erc20 as `0x${string}`)}
                 />
               </div>
             </div>

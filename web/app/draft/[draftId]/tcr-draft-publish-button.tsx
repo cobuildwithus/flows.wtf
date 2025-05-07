@@ -45,19 +45,30 @@ interface Props {
   size?: "default" | "sm"
   grantsCount: number
   tcrAddress: `0x${string}`
+  erc20Address: `0x${string}`
+  tokenEmitterAddress: `0x${string}`
   user?: User
 }
 
 const chainId = base.id
 
 export function TCRDraftPublishButton(props: Props) {
-  const { draft, flow, size = "default", grantsCount, tcrAddress, user } = props
+  const {
+    draft,
+    flow,
+    size = "default",
+    grantsCount,
+    tcrAddress,
+    erc20Address,
+    tokenEmitterAddress,
+    user,
+  } = props
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
 
   const { addItemCost, challengePeriodFormatted } = useTcrData(tcrAddress)
-  const token = useTcrToken(getEthAddress(flow.erc20), tcrAddress)
+  const token = useTcrToken(erc20Address, tcrAddress)
 
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({
     chainId,
@@ -173,8 +184,7 @@ export function TCRDraftPublishButton(props: Props) {
               1
             </span>
             <p className="text-muted-foreground">
-              Deposit{" "}
-              <TcrInUsd tokenEmitter={getEthAddress(flow.tokenEmitter)} amount={addItemCost} />.
+              Deposit <TcrInUsd tokenEmitter={tokenEmitterAddress} amount={addItemCost} />.
             </p>
           </li>
           <li className="flex items-start space-x-4">
@@ -196,9 +206,9 @@ export function TCRDraftPublishButton(props: Props) {
           </li>
         </ul>
         <div className="flex justify-end space-x-2">
-          {!hasEnoughBalance && (
+          {!hasEnoughBalance && !!flow.tcr && (
             <BuyApplicationFee
-              flow={flow}
+              flow={flow as FlowWithTcr}
               amount={addItemCost - token.balance}
               onSuccess={() => {
                 token.refetch()

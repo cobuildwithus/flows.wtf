@@ -7,6 +7,7 @@ import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import Link from "next/link"
 import { VotingToggle } from "./voting-toggle"
+import { getEthAddress } from "@/lib/utils"
 
 interface Props {
   flowId: string
@@ -59,12 +60,13 @@ export const FlowSubmenu = async (props: Props) => {
 
       <div className="max-sm:hidden">
         <div className="flex items-center space-x-2">
-          {flow.tokenEmitter && (
+          {flow.tokenEmitter && flow.erc20 && (
             <SwapTokenButton
               flow={flow}
               extraInfo="curator"
               variant="secondary"
               defaultTokenAmount={BigInt(1e18)}
+              erc20Address={getEthAddress(flow.erc20)}
             />
           )}
           {isApproved && approvedCount > 0 && <VotingToggle />}

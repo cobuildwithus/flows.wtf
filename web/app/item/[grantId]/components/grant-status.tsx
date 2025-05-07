@@ -44,7 +44,7 @@ export function GrantStatus(props: Props) {
           {flow.isActive ? (
             <div className={cn({ "divide-y divide-border [&>*]:py-2": grant.isDisputed })}>
               <CurationStatus grant={grant} flow={flow} />
-              {grant.isDisputed && <CurationVote grant={grant} flow={flow} />}
+              {grant.isDisputed && <CurationVote grant={grant} />}
             </div>
           ) : (
             <FlowRemovedCard flow={flow} />

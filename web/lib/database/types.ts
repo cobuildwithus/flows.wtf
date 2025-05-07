@@ -1,6 +1,15 @@
-export {}
+import { Grant } from "@prisma/flows"
+
+export type { Grant }
 
 declare global {
+  type FlowWithTcr = Grant & {
+    tcr: `0x${string}`
+    erc20: `0x${string}`
+    tokenEmitter: `0x${string}`
+    arbitrator: `0x${string}`
+  }
+
   namespace PrismaJson {
     type ImpactMetric = {
       name: string

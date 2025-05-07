@@ -11,7 +11,6 @@ import type { FlowWithGrants } from "@/lib/database/queries/flow"
 import { explorerUrl } from "@/lib/utils"
 import Link from "next/link"
 import { base } from "viem/chains"
-import { ManageFlow } from "./management/management-dashboard"
 import { Separator } from "@radix-ui/react-select"
 
 interface Props {
@@ -205,7 +204,6 @@ export const BudgetDialog = (props: Props) => {
         >
           View on Explorer
         </Link>
-        <ManageFlow flow={flow} />
       </DialogContent>
     </Dialog>
   )

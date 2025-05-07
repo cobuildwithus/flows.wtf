@@ -20,6 +20,7 @@ import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   flow: Grant
+  erc20Address: `0x${string}`
   defaultTokenAmount?: bigint
   extraInfo?: "curator" | "challenge"
   onSuccess?: (hash: string) => void
@@ -32,6 +33,7 @@ export function SwapTokenButton(props: Props) {
   const router = useRouter()
   const {
     flow,
+    erc20Address,
     defaultTokenAmount = BigInt(1e18),
     size = "default",
     variant = "default",
@@ -45,7 +47,7 @@ export function SwapTokenButton(props: Props) {
   const ref = useRef<HTMLButtonElement>(null)
 
   const { address } = useAccount()
-  const { balances } = useERC20Balances([getEthAddress(flow.erc20)], address)
+  const { balances } = useERC20Balances([erc20Address], address)
   const isRemoved = flow.isRemoved
 
   const text =

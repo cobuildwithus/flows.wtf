@@ -97,13 +97,15 @@ export default async function FlowDraftsPage(props: Props) {
               </TableCell>
 
               <TableCell className="w-[100px] max-w-[100px]">
-                {flow.tcr && (
+                {flow.tcr && flow.erc20 && flow.tokenEmitter && (
                   <div className="flex justify-end">
                     <TCRDraftPublishButton
                       grantsCount={existingGrants[draft.users[0]] || 0}
                       draft={draft}
                       flow={flow}
                       tcrAddress={getEthAddress(flow.tcr)}
+                      erc20Address={getEthAddress(flow.erc20)}
+                      tokenEmitterAddress={getEthAddress(flow.tokenEmitter)}
                       user={user}
                     />
                   </div>

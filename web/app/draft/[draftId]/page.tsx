@@ -90,13 +90,15 @@ export default async function DraftPage(props: Props) {
         </Breadcrumb>
         <div className="flex items-center space-x-1.5">
           <DraftEditButton draft={draft} edit={edit} />
-          {!isOnchain && !edit && flow.tcr && (
+          {!isOnchain && !edit && flow.tcr && flow.erc20 && flow.tokenEmitter && (
             <TCRDraftPublishButton
               grantsCount={existingGrants}
               draft={draft}
               flow={flow}
               user={user}
               tcrAddress={getEthAddress(flow.tcr)}
+              erc20Address={getEthAddress(flow.erc20)}
+              tokenEmitterAddress={getEthAddress(flow.tokenEmitter)}
             />
           )}
         </div>

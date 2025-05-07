@@ -1,4 +1,3 @@
-import { FundingBanner } from "@/components/funding-banner"
 import { CuratorPopover } from "@/components/global/curator-popover/curator-popover"
 import { MenuDesktop, MenuMobile } from "@/components/global/menu"
 import { MenuAvatar } from "@/components/global/menu-avatar"

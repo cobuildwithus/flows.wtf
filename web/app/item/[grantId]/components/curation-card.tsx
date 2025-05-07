@@ -23,14 +23,14 @@ export async function CurationStatus(props: Props) {
   return <StatusDisputed grant={grant} flow={flow} dispute={dispute} />
 }
 
-export async function CurationVote(props: Props) {
-  const { grant, flow } = props
+export async function CurationVote(props: { grant: Grant }) {
+  const { grant } = props
   if (!grant.isDisputed) return null
 
   const [dispute, user] = await Promise.all([getDispute(grant.id), getUser()])
   if (!dispute) return null
 
-  return <DisputeUserVote user={user} grant={grant} flow={flow} dispute={dispute} />
+  return <DisputeUserVote user={user} grant={grant} dispute={dispute} />
 }
 
 async function getDispute(grantId: string) {
@@ -38,6 +38,5 @@ async function getDispute(grantId: string) {
     where: { grantId },
     orderBy: { creationBlock: "desc" },
     include: { evidences: true },
-
   })
 }

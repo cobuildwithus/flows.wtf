@@ -16,6 +16,7 @@ import {
 import type { Dispute, Evidence, Grant } from "@prisma/flows"
 import { DisputedEvidence } from "./disputed-evidence"
 import { DisputeDiscussionLink } from "./dispute-discussion"
+import { getAddress } from "viem"
 
 const DisputeExecuteButton = dynamic(() =>
   import("@/app/components/dispute/dispute-execute").then((mod) => mod.DisputeExecuteButton),
@@ -63,13 +64,18 @@ export async function StatusDisputed(props: Props) {
     )
   }
 
-  if (canDisputeBeExecuted(dispute)) {
+  if (canDisputeBeExecuted(dispute) && !!flow.arbitrator) {
     return (
       <div className="space-y-4 text-sm">
         <DisputedEvidence grant={grant} dispute={dispute} />
         <VotingEndDate />
         <Results />
-        <DisputeExecuteButton flow={flow} dispute={dispute} className="!mt-6 w-full" />
+        <DisputeExecuteButton
+          flowId={flow.id}
+          arbitrator={getAddress(flow.arbitrator)}
+          dispute={dispute}
+          className="!mt-6 w-full"
+        />
       </div>
     )
   }

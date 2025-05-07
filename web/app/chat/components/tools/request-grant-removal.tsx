@@ -92,6 +92,7 @@ export function RequestGrantRemoval(props: Props) {
                 }}
                 flow={grant.flow}
                 defaultTokenAmount={removeItemCost - token.balance}
+                erc20Address={getEthAddress(grant.flow.erc20 as `0x${string}`)}
               />
             )}
             {user.hasSignerUUID && hasEnoughBalance && (

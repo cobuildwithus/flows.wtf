@@ -9,7 +9,6 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Status } from "@/lib/enums"
-import type { Grant } from "@prisma/flows"
 import Link from "next/link"
 import { useRef } from "react"
 import { AnimatedSalary } from "../animated-salary"
@@ -17,9 +16,10 @@ import { CuratorGrants } from "./curator-grants"
 import { useUserTcrTokens } from "./hooks/use-user-tcr-tokens"
 import { TokenRow } from "./token-row"
 import { useETHPrice } from "@/app/token/hooks/useETHPrice"
+import { getEthAddress } from "@/lib/utils"
 
 interface Props {
-  flow: Grant
+  flow: FlowWithTcr
   address: `0x${string}`
 }
 
@@ -86,7 +86,14 @@ export const CuratorPopover = (props: Props) => {
               {tokens.length || "no"} {`flow${tokens.length !== 1 ? "s" : ""}`}.
             </p>
 
-            {tokens.length > 0 && <SwapTokenButton text="Swap" size="xs" flow={flow} />}
+            {tokens.length > 0 && (
+              <SwapTokenButton
+                text="Swap"
+                size="xs"
+                flow={flow}
+                erc20Address={getEthAddress(flow.erc20)}
+              />
+            )}
           </div>
 
           {tokens.length > 0 && (
