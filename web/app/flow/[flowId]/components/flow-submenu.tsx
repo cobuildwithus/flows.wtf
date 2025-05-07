@@ -34,25 +34,29 @@ export const FlowSubmenu = async (props: Props) => {
 
   const canSuggestFlow = !!flow.tcr && flow.isTopLevel
 
-  const links = [
+  const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
-      label: "Projects",
+      label: flow.isTopLevel ? "Flows" : "Projects",
       href: `/flow/${flowId}`,
       isActive: isApproved,
     },
-    {
+  ]
+
+  if (!flow.isTopLevel) {
+    links.push({
       label: "Curate",
       href: `/flow/${flowId}/curate`,
       isActive: isCurate,
       badge: awaitingCount,
-    },
-    {
-      label: "Drafts",
-      href: `/flow/${flowId}/drafts`,
-      isActive: isDrafts,
-      badge: draftsCount,
-    },
-  ]
+    })
+  }
+
+  links.push({
+    label: "Drafts",
+    href: `/flow/${flowId}/drafts`,
+    isActive: isDrafts,
+    badge: draftsCount,
+  })
 
   return (
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
