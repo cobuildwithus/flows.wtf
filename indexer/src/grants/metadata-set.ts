@@ -3,6 +3,8 @@ import { flowContractToGrantId, grants } from "ponder:schema"
 
 ponder.on("NounsFlow:MetadataSet", handleMetadataSet)
 ponder.on("NounsFlowChildren:MetadataSet", handleMetadataSet)
+ponder.on("VrbsFlow:MetadataSet", handleMetadataSet)
+ponder.on("VrbsFlowChildren:MetadataSet", handleMetadataSet)
 
 async function handleMetadataSet(params: {
   event: Event<"NounsFlow:MetadataSet">

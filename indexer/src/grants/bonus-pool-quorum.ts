@@ -3,6 +3,8 @@ import { flowContractToGrantId, grants } from "ponder:schema"
 
 ponder.on("NounsFlowChildren:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
 ponder.on("NounsFlow:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
+ponder.on("VrbsFlowChildren:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
+ponder.on("VrbsFlow:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
 
 async function handleBonusPoolQuorumUpdated(params: {
   event: Event<"NounsFlow:BonusPoolQuorumUpdated">

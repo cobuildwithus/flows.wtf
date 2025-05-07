@@ -10,12 +10,12 @@ import {
   grants,
   parentFlowToChildren,
 } from "ponder:schema"
-
+import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"NounsFlow:FlowInitialized">
-  context: Context<"NounsFlow:FlowInitialized">
+  event: Event<"VrbsFlow:FlowInitialized">
+  context: Context<"VrbsFlow:FlowInitialized">
 }) {
   const { context, event } = params
 
@@ -31,20 +31,11 @@ async function handleFlowInitialized(params: {
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
 
-  const [metadata, managerRewardSuperfluidPool] = await Promise.all([
-    context.client.readContract({
-      address: contract,
-      abi: context.contracts.NounsFlow.abi,
-      functionName: "flowMetadata",
-    }),
-    managerRewardPool !== zeroAddress
-      ? context.client.readContract({
-          address: managerRewardPool,
-          abi: rewardPoolImplAbi,
-          functionName: "rewardPool",
-        })
-      : Promise.resolve(zeroAddress),
-  ])
+  const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
+    context,
+    contract,
+    managerRewardPool
+  )
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
