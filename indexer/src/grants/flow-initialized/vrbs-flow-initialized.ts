@@ -1,8 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
-import { rewardPoolImplAbi } from "../../../abis"
 import { Status } from "../../enums"
-import { base as baseContracts } from "../../../addresses"
 import {
   baselinePoolToGrantId,
   bonusPoolToGrantId,
@@ -70,10 +68,10 @@ async function handleFlowInitialized(params: {
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,
     bonusPoolQuorum: 0,
-    tcr: baseContracts.FlowTCR,
-    erc20: baseContracts.ERC20VotesMintable,
-    arbitrator: baseContracts.ERC20VotesArbitrator,
-    tokenEmitter: baseContracts.TokenEmitter,
+    tcr: "",
+    erc20: "",
+    arbitrator: "",
+    tokenEmitter: "",
     managerRewardPoolFlowRatePercent,
     baselinePoolFlowRatePercent,
     challengePeriodEndsAt: 0,

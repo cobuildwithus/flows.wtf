@@ -1,18 +1,17 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import {
-  flowContractToGrantId,
-  grants,
-  recipientAndParentToGrantId,
-  parentFlowToChildren,
-} from "ponder:schema"
+import { grants } from "ponder:schema"
 import { addGrantEmbedding, removeGrantEmbedding } from "../embeddings/embed-grants"
 import { isBlockRecent } from "../../utils"
+import { handleRecipientMappings } from "./mappings/eoa-mappings"
+import { getParentFlow } from "./helpers"
 
 ponder.on("NounsFlowChildren:RecipientCreated", handleRecipientCreated)
 ponder.on("NounsFlow:RecipientCreated", handleRecipientCreated)
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
+ponder.on("VrbsFlow:RecipientRemoved", handleRecipientRemoved)
+ponder.on("VrbsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 
 async function handleRecipientCreated(params: {
   event: Event<"NounsFlow:RecipientCreated">
@@ -70,33 +69,5 @@ async function handleRecipientRemoved(params: {
       activeRecipientCount: parentFlow.activeRecipientCount - 1,
     }),
     isRecent ? removeGrantEmbedding(removedGrant) : Promise.resolve(),
-  ])
-}
-
-async function getParentFlow(db: Context["db"], parentFlow: string) {
-  const flowGrantId = await db.find(flowContractToGrantId, { contract: parentFlow })
-  if (!flowGrantId) throw new Error("Flow not found for recipient")
-
-  const flow = await db.find(grants, { id: flowGrantId.grantId })
-  if (!flow) throw new Error("Flow not found for recipient")
-
-  return flow
-}
-
-async function handleRecipientMappings(
-  db: Context["db"],
-  recipient: string,
-  flowContract: string,
-  grantId: string
-) {
-  await Promise.all([
-    db.insert(recipientAndParentToGrantId).values({
-      recipientAndParent: `${recipient.toLowerCase()}-${flowContract}`,
-      grantId,
-    }),
-
-    db.update(parentFlowToChildren, { parentFlowContract: flowContract }).set((row) => ({
-      childGrantIds: [...row.childGrantIds, grantId],
-    })),
   ])
 }
