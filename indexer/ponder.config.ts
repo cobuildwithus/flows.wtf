@@ -11,6 +11,7 @@ import {
   gdav1Address,
   gdav1ImplAbi,
   tokenEmitterImplAbi,
+  vrbsFlowImplAbi,
 } from "./abis"
 import { base as baseContracts } from "./addresses"
 
@@ -183,6 +184,25 @@ export default createConfig({
           token: "0xd04383398dd2426297da660f9cca3d439af9ce1b",
         },
       },
+    },
+    VrbsFlow: {
+      abi: vrbsFlowImplAbi,
+      address: baseContracts.VrbsFlow,
+      network: "base",
+      startBlock: START_BLOCK,
+    },
+    VrbsFlowChildren: {
+      abi: vrbsFlowImplAbi,
+      address: factory({
+        address: baseContracts.VrbsFlow,
+        event: getAbiItem({
+          abi: vrbsFlowImplAbi,
+          name: "FlowRecipientCreated",
+        }),
+        parameter: "recipient",
+      }),
+      network: "base",
+      startBlock: START_BLOCK,
     },
   },
   blocks: {

@@ -1,21 +1,22 @@
-import { ponder, type Context } from "ponder:registry"
+import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
-import { rewardPoolImplAbi } from "../../abis"
-import { Status } from "../enums"
-import { base as baseContracts } from "../../addresses"
+import { rewardPoolImplAbi } from "../../../abis"
+import { Status } from "../../enums"
+import { base as baseContracts } from "../../../addresses"
 import {
-  arbitratorToGrantId,
   baselinePoolToGrantId,
   bonusPoolToGrantId,
   flowContractToGrantId,
   grants,
   parentFlowToChildren,
-  rewardPoolContractToGrantId,
-  tcrToGrantId,
-  tokenEmitterToErc20,
 } from "ponder:schema"
 
-ponder.on("NounsFlow:FlowInitialized", async (params) => {
+ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
+
+async function handleFlowInitialized(params: {
+  event: Event<"NounsFlow:FlowInitialized">
+  context: Context<"NounsFlow:FlowInitialized">
+}) {
   const { context, event } = params
 
   const {
@@ -28,7 +29,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     managerRewardPoolFlowRatePercent,
   } = event.args
 
-  const contract = context.contracts.NounsFlow.address.toLowerCase() as `0x${string}`
+  const contract = event.log.address.toLowerCase() as `0x${string}`
 
   const [metadata, managerRewardSuperfluidPool] = await Promise.all([
     context.client.readContract({
@@ -102,7 +103,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     bonusPool.toLowerCase(),
     baselinePool.toLowerCase()
   )
-})
+}
 
 async function createMappings(
   db: Context["db"],
@@ -112,24 +113,8 @@ async function createMappings(
   baselinePool: string
 ) {
   await Promise.all([
-    db.insert(tokenEmitterToErc20).values({
-      tokenEmitter: baseContracts.TokenEmitter,
-      erc20: baseContracts.ERC20VotesMintable,
-    }),
     db.insert(flowContractToGrantId).values({
       contract,
-      grantId,
-    }),
-    db.insert(tcrToGrantId).values({
-      tcr: baseContracts.FlowTCR,
-      grantId,
-    }),
-    db.insert(rewardPoolContractToGrantId).values({
-      contract: baseContracts.RewardPool,
-      grantId,
-    }),
-    db.insert(arbitratorToGrantId).values({
-      arbitrator: baseContracts.ERC20VotesArbitrator,
       grantId,
     }),
     db.insert(bonusPoolToGrantId).values({
