@@ -57,12 +57,14 @@ export const FlowSubmenu = async (props: Props) => {
 
       <div className="max-sm:hidden">
         <div className="flex items-center space-x-2">
-          <SwapTokenButton
-            flow={flow}
-            extraInfo="curator"
-            variant="secondary"
-            defaultTokenAmount={BigInt(1e18)}
-          />
+          {flow.tokenEmitter && (
+            <SwapTokenButton
+              flow={flow}
+              extraInfo="curator"
+              variant="secondary"
+              defaultTokenAmount={BigInt(1e18)}
+            />
+          )}
           {isApproved && approvedCount > 0 && <VotingToggle />}
           {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
             <Link href={`/apply/${flowId}`}>
