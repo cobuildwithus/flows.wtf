@@ -35,17 +35,14 @@ export function ChallengeGrantApplication(props: Props) {
 
   const { data: grant } = useServerFunction(getGrant, "getGrant", [grantId])
 
+  const tcrAddress = (grant?.flow.tcr ?? undefined) as `0x${string}` | undefined
+  const erc20Address = (grant?.flow.erc20 ?? undefined) as `0x${string}` | undefined
+
   const { address } = useAccount()
   const { user, append } = useAgentChat()
 
-  const { challengeSubmissionCost, addItemCost, arbitrationCost } = useTcrData(
-    grant?.flow.tcr as `0x${string}`,
-  )
-  const token = useTcrToken(
-    grant?.flow.erc20 as `0x${string}`,
-    grant?.flow.tcr as `0x${string}`,
-    chainId,
-  )
+  const { challengeSubmissionCost, addItemCost, arbitrationCost } = useTcrData(tcrAddress)
+  const token = useTcrToken(erc20Address as `0x${string}`, tcrAddress as `0x${string}`, chainId)
 
   const hasEnoughBalance = token.balance >= challengeSubmissionCost
   const hasEnoughAllowance = token.allowance >= challengeSubmissionCost
@@ -120,7 +117,7 @@ export function ChallengeGrantApplication(props: Props) {
 
         {grant && user && (
           <div className="mt-6 flex justify-end">
-            {!hasEnoughBalance && (
+            {!hasEnoughBalance && grant.flow.erc20 && (
               <SwapTokenButton
                 text={`Buy ${token.symbol} to challenge`}
                 extraInfo="challenge"
@@ -129,6 +126,7 @@ export function ChallengeGrantApplication(props: Props) {
                 onSuccess={() => {
                   token.refetch()
                 }}
+                erc20Address={getEthAddress(grant.flow.erc20 as `0x${string}`)}
               />
             )}
             {hasEnoughBalance && (
@@ -150,9 +148,16 @@ export function ChallengeGrantApplication(props: Props) {
                   try {
                     await prepareWallet()
 
+                    if (!tcrAddress) {
+                      toast.error("You cannot challenge a grant in this flow. No TCR found.", {
+                        id: toastId,
+                      })
+                      return
+                    }
+
                     writeContract({
                       account: address,
-                      address: getEthAddress(grant.flow.tcr),
+                      address: getEthAddress(tcrAddress),
                       abi: [...flowTcrImplAbi, ...erc20VotesArbitratorImplAbi],
                       functionName: "challengeRequest",
                       chainId,

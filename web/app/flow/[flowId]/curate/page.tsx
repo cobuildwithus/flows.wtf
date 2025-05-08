@@ -35,9 +35,11 @@ export default async function FlowApplicationsPage(props: Props) {
         <ApplicationsGrantsList flowId={flowId} />
       </Suspense>
 
-      <Suspense>
-        <RemovedGrantsSection flow={flow} className="mt-12" defaultOpen={grantsCount === 0} />
-      </Suspense>
+      {!flow.isTopLevel && (
+        <Suspense>
+          <RemovedGrantsSection flow={flow} className="mt-12" defaultOpen={grantsCount === 0} />
+        </Suspense>
+      )}
 
       <Suspense>
         <RejectedGrantsSection

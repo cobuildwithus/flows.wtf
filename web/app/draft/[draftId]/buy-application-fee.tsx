@@ -4,11 +4,10 @@ import { BuyTokenButton } from "@/app/token/buy-token-button"
 import { useEthBalances } from "@/app/token/hooks/use-eth-balances"
 import { useBuyTokenQuoteWithRewards } from "@/app/token/hooks/useBuyTokenQuote"
 import { getEthAddress } from "@/lib/utils"
-import type { Grant } from "@prisma/flows"
 import { base } from "viem/chains"
 
 interface Props {
-  flow: Pick<Grant, "tokenEmitter" | "erc20">
+  flow: Pick<FlowWithTcr, "tokenEmitter" | "erc20">
   amount: bigint
   onSuccess: (hash: string) => void
 }

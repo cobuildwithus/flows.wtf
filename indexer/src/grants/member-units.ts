@@ -3,27 +3,27 @@ import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import {
   baselinePoolToGrantId,
   bonusPoolToGrantId,
-  flowContractToGrantId,
   grants,
   parentFlowToChildren,
   recipientAndParentToGrantId,
 } from "ponder:schema"
-import { eq, and } from "ponder"
 
-ponder.on("BonusPool:MemberUnitsUpdated", handleMemberUnitsUpdated)
-ponder.on("BaselinePool:MemberUnitsUpdated", handleMemberUnitsUpdated)
-ponder.on("BaselinePoolChildren:MemberUnitsUpdated", handleMemberUnitsUpdated)
-ponder.on("BonusPoolChildren:MemberUnitsUpdated", handleMemberUnitsUpdated)
+ponder.on("SuperfluidPool:MemberUnitsUpdated", handleMemberUnitsUpdated)
 
 async function handleMemberUnitsUpdated(params: {
-  event: Event<"BonusPool:MemberUnitsUpdated">
-  context: Context<"BonusPool:MemberUnitsUpdated">
+  event: Event<"SuperfluidPool:MemberUnitsUpdated">
+  context: Context<"SuperfluidPool:MemberUnitsUpdated">
 }) {
   const { event, context } = params
   const { newUnits, member } = event.args
   const pool = event.log.address.toLowerCase()
 
   const parentGrant = await getParentGrant(context.db, pool)
+
+  if (!parentGrant) {
+    // this pool is not related to an existing grant, skipping...
+    return
+  }
 
   if (parentGrant.recipient === member.toLowerCase()) {
     // This is a flow updating it's member units on itself on initialization, skipping...
@@ -68,7 +68,7 @@ async function getParentGrant(db: Context["db"], pool: string) {
   ])
 
   if (!grantBonus && !grantBaseline) {
-    throw new Error(`Parent grant not found: ${pool}`)
+    return null
   }
 
   if (grantBonus && grantBaseline) {

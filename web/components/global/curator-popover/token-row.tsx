@@ -50,9 +50,9 @@ export function TokenRow(props: Props) {
         </Link>
       </div>
       <TcrTokenBalance
-        erc20={getAddress(flow.erc20)}
+        erc20={getAddress((flow as FlowWithTcr).erc20)}
         className="text-center text-sm font-medium"
-        tokenEmitter={getEthAddress(flow.tokenEmitter)}
+        tokenEmitter={getAddress((flow as FlowWithTcr).tokenEmitter)}
         monthlyRewardPoolRate={flow.monthlyRewardPoolFlowRate}
         ethPrice={ethPrice || 0}
         holderInfo={holderInfo}

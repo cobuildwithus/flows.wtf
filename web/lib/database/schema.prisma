@@ -159,10 +159,10 @@ model Grant {
   activeRecipientCount             Int     @map("active_recipient_count")
   awaitingRecipientCount           Int     @map("awaiting_recipient_count")
   challengedRecipientCount         Int     @map("challenged_recipient_count")
-  tcr                              String  @unique
-  erc20                            String  @unique
-  arbitrator                       String  @unique
-  tokenEmitter                     String  @unique @map("token_emitter")
+  tcr                              String?  @unique
+  erc20                            String?  @unique
+  arbitrator                       String?  @unique
+  tokenEmitter                     String?  @unique @map("token_emitter")
   status                           Int
   challengePeriodEndsAt            Int     @map("challenge_period_ends_at")
   activatedAt                      Int?    @map("activated_at")
@@ -181,6 +181,7 @@ model Grant {
   baselinePoolFlowRatePercent      Int     @map("baseline_pool_flow_rate_percent")
   bonusPoolQuorum                  Int     @map("bonus_pool_quorum")
   totalVoteWeightCastOnFlow        String  @map("total_vote_weight_cast_on_flow")
+  isOnchainStartup                 Boolean @map("is_onchain_startup")
 
   flow         Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants    Grant[]       @relation("Subgrants")

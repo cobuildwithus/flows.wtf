@@ -1,8 +1,7 @@
-import { ponder, type Context } from "ponder:registry"
+import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
-import { rewardPoolImplAbi } from "../../abis"
-import { Status } from "../enums"
-import { base as baseContracts } from "../../addresses"
+import { Status } from "../../enums"
+import { base as baseContracts } from "../../../addresses"
 import {
   arbitratorToGrantId,
   baselinePoolToGrantId,
@@ -14,8 +13,14 @@ import {
   tcrToGrantId,
   tokenEmitterToErc20,
 } from "ponder:schema"
+import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 
-ponder.on("NounsFlow:FlowInitialized", async (params) => {
+ponder.on("NounsFlow:FlowInitialized", handleFlowInitialized)
+
+async function handleFlowInitialized(params: {
+  event: Event<"NounsFlow:FlowInitialized">
+  context: Context<"NounsFlow:FlowInitialized">
+}) {
   const { context, event } = params
 
   const {
@@ -28,22 +33,13 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     managerRewardPoolFlowRatePercent,
   } = event.args
 
-  const contract = context.contracts.NounsFlow.address.toLowerCase() as `0x${string}`
+  const contract = event.log.address.toLowerCase() as `0x${string}`
 
-  const [metadata, managerRewardSuperfluidPool] = await Promise.all([
-    context.client.readContract({
-      address: contract,
-      abi: context.contracts.NounsFlow.abi,
-      functionName: "flowMetadata",
-    }),
-    managerRewardPool !== zeroAddress
-      ? context.client.readContract({
-          address: managerRewardPool,
-          abi: rewardPoolImplAbi,
-          functionName: "rewardPool",
-        })
-      : Promise.resolve(zeroAddress),
-  ])
+  const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
+    context,
+    contract,
+    managerRewardPool
+  )
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
@@ -70,6 +66,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     monthlyOutgoingFlowRate: "0",
     monthlyRewardPoolFlowRate: "0",
     monthlyBaselinePoolFlowRate: "0",
+    isOnchainStartup: false,
     monthlyBonusPoolFlowRate: "0",
     bonusMemberUnits: "0",
     baselineMemberUnits: "0",
@@ -102,7 +99,7 @@ ponder.on("NounsFlow:FlowInitialized", async (params) => {
     bonusPool.toLowerCase(),
     baselinePool.toLowerCase()
   )
-})
+}
 
 async function createMappings(
   db: Context["db"],

@@ -18,7 +18,7 @@ import { Suspense } from "react"
 import { CreatorCard } from "./creator-card"
 import DraftContent from "./draft-content"
 import { DraftEditButton } from "./draft-edit-button"
-import { DraftPublishButton } from "./draft-publish-button"
+import { TCRDraftPublishButton } from "./tcr-draft-publish-button"
 import { getUser } from "@/lib/auth/user"
 
 interface Props {
@@ -50,7 +50,7 @@ export default async function DraftPage(props: Props) {
     include: { flow: { include: { derivedData: true } } },
   })
 
-  const [existingGrants, user] = await Promise.all([
+  const [existingGrants, user, costs] = await Promise.all([
     database.grant.count({
       where: {
         recipient: draft.users[0],
@@ -59,11 +59,11 @@ export default async function DraftPage(props: Props) {
       },
     }),
     getUser(),
+    getTcrCosts(draft.flow.tcr, draft.flow.erc20),
   ])
 
   const { title, flow, isOnchain, createdAt, users, isFlow, description } = draft
 
-  const costs = getTcrCosts(flow)
   const edit = searchParams.edit === "true"
 
   return (
@@ -90,12 +90,15 @@ export default async function DraftPage(props: Props) {
         </Breadcrumb>
         <div className="flex items-center space-x-1.5">
           <DraftEditButton draft={draft} edit={edit} />
-          {!isOnchain && !edit && (
-            <DraftPublishButton
+          {!isOnchain && !edit && flow.tcr && flow.erc20 && flow.tokenEmitter && (
+            <TCRDraftPublishButton
               grantsCount={existingGrants}
               draft={draft}
               flow={flow}
               user={user}
+              tcrAddress={getEthAddress(flow.tcr)}
+              erc20Address={getEthAddress(flow.erc20)}
+              tokenEmitterAddress={getEthAddress(flow.tokenEmitter)}
             />
           )}
         </div>
@@ -153,13 +156,11 @@ export default async function DraftPage(props: Props) {
             </CardContent>
           </Card>
 
-          <Suspense>
-            <CreatorCard
-              draft={draft}
-              cost={(await costs).addItemCost}
-              symbol={(await costs).symbol}
-            />
-          </Suspense>
+          {costs && (
+            <Suspense>
+              <CreatorCard draft={draft} cost={costs.addItemCost} symbol={costs.symbol} />
+            </Suspense>
+          )}
         </div>
       </div>
     </div>

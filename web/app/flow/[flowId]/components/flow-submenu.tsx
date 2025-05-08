@@ -7,6 +7,7 @@ import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import Link from "next/link"
 import { VotingToggle } from "./voting-toggle"
+import { getEthAddress } from "@/lib/utils"
 
 interface Props {
   flowId: string
@@ -31,25 +32,31 @@ export const FlowSubmenu = async (props: Props) => {
   const awaitingCount = flow.subgrants.filter(isGrantAwaiting).length
   const isFlowRemoved = flow.isRemoved
 
-  const links = [
+  const canSuggestFlow = !!flow.tcr && flow.isTopLevel
+
+  const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
-      label: "Projects",
+      label: flow.isTopLevel ? "Flows" : "Projects",
       href: `/flow/${flowId}`,
       isActive: isApproved,
     },
-    {
+  ]
+
+  if (!flow.isTopLevel && !!flow.tcr) {
+    links.push({
       label: "Curate",
       href: `/flow/${flowId}/curate`,
       isActive: isCurate,
       badge: awaitingCount,
-    },
-    {
-      label: "Drafts",
-      href: `/flow/${flowId}/drafts`,
-      isActive: isDrafts,
-      badge: draftsCount,
-    },
-  ]
+    })
+  }
+
+  links.push({
+    label: "Drafts",
+    href: `/flow/${flowId}/drafts`,
+    isActive: isDrafts,
+    badge: draftsCount,
+  })
 
   return (
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
@@ -57,18 +64,23 @@ export const FlowSubmenu = async (props: Props) => {
 
       <div className="max-sm:hidden">
         <div className="flex items-center space-x-2">
-          <SwapTokenButton
-            flow={flow}
-            extraInfo="curator"
-            variant="secondary"
-            defaultTokenAmount={BigInt(1e18)}
-          />
-          {isApproved && approvedCount > 0 && <VotingToggle />}
-          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
-            <Link href={`/apply/${flowId}`}>
-              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
-            </Link>
+          {flow.tokenEmitter && flow.erc20 && (
+            <SwapTokenButton
+              flow={flow}
+              extraInfo="curator"
+              variant="secondary"
+              defaultTokenAmount={BigInt(1e18)}
+              erc20Address={getEthAddress(flow.erc20)}
+            />
           )}
+          {isApproved && approvedCount > 0 && <VotingToggle />}
+          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) &&
+            !isFlowRemoved &&
+            canSuggestFlow && (
+              <Link href={`/apply/${flowId}`}>
+                <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
+              </Link>
+            )}
         </div>
       </div>
     </div>

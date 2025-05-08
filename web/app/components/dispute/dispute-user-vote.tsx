@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { erc20VotesArbitratorImplAbi } from "@/lib/abis"
 import { useDisputeVote } from "@/lib/tcr/dispute/use-dispute-votes"
 import { useArbitratorData } from "@/lib/tcr/use-arbitrator-data"
@@ -19,13 +18,12 @@ import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   grant: Grant
-  flow: Grant
   dispute: Dispute
   user?: User
 }
 
 export function DisputeUserVote(props: Props) {
-  const { grant, flow, dispute, user } = props
+  const { grant, dispute, user } = props
   const router = useRouter()
   const address = user?.address
   const [canVote, setCanVote] = useState(false)
@@ -35,12 +33,12 @@ export function DisputeUserVote(props: Props) {
   const { disputeVote, mutate } = useDisputeVote(
     dispute.disputeId,
     address!,
-    flow.arbitrator,
+    dispute.arbitrator,
     !address,
   )
 
   const { canVote: canVoteOnchain, votingPower } = useArbitratorData(
-    flow.arbitrator as `0x${string}`,
+    dispute.arbitrator as `0x${string}`,
     dispute.disputeId,
     address!,
   )
@@ -50,7 +48,7 @@ export function DisputeUserVote(props: Props) {
     againstCommitHash,
     error,
     isLoading: isLoadingSecretVoteHash,
-  } = useSecretVoteHash(flow.arbitrator, dispute.disputeId, address)
+  } = useSecretVoteHash(dispute.arbitrator, dispute.disputeId, address)
 
   const { writeContract, prepareWallet, isLoading, toastId } = useContractTransaction({
     onSuccess: () => {
@@ -72,11 +70,12 @@ export function DisputeUserVote(props: Props) {
   if (hasVoted) {
     if (!disputeVote.choice && new Date() > new Date(dispute.revealPeriodEndTime * 1000)) {
       return <UnrevealedVote />
-    } else if (disputeVote.choice) {
-      return <RevealedVote disputeVote={disputeVote} grant={grant} />
-    } else {
-      return <CommittedVote />
     }
+    if (disputeVote.choice) {
+      return <RevealedVote disputeVote={disputeVote} grant={grant} />
+    }
+
+    return <CommittedVote />
   }
 
   if (isVotingClosed) {
@@ -104,7 +103,7 @@ export function DisputeUserVote(props: Props) {
               await prepareWallet()
 
               writeContract({
-                address: getEthAddress(flow.arbitrator),
+                address: getEthAddress(dispute.arbitrator),
                 abi: erc20VotesArbitratorImplAbi,
                 functionName: "commitVote",
                 args: [BigInt(dispute.disputeId), mirrored ? againstCommitHash : forCommitHash],
@@ -133,7 +132,7 @@ export function DisputeUserVote(props: Props) {
               await prepareWallet()
 
               writeContract({
-                address: getEthAddress(flow.arbitrator),
+                address: getEthAddress(dispute.arbitrator),
                 abi: erc20VotesArbitratorImplAbi,
                 functionName: "commitVote",
                 args: [BigInt(dispute.disputeId), mirrored ? forCommitHash : againstCommitHash],

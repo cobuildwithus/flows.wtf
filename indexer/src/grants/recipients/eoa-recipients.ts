@@ -1,0 +1,73 @@
+import { ponder, type Context, type Event } from "ponder:registry"
+import { grants } from "ponder:schema"
+import { addGrantEmbedding, removeGrantEmbedding } from "../embeddings/embed-grants"
+import { isBlockRecent } from "../../utils"
+import { handleRecipientMappings } from "./mappings/eoa-mappings"
+import { getParentFlow } from "./helpers"
+
+ponder.on("NounsFlowChildren:RecipientCreated", handleRecipientCreated)
+ponder.on("NounsFlow:RecipientCreated", handleRecipientCreated)
+
+ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
+ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
+ponder.on("VrbsFlow:RecipientRemoved", handleRecipientRemoved)
+ponder.on("VrbsFlowChildren:RecipientRemoved", handleRecipientRemoved)
+
+async function handleRecipientCreated(params: {
+  event: Event<"NounsFlow:RecipientCreated">
+  context: Context<"NounsFlow:RecipientCreated">
+}) {
+  const { event, context } = params
+  const {
+    recipient: { recipient: rawRecipient, metadata, recipientType },
+    recipientId,
+  } = event.args
+  const recipient = rawRecipient.toLowerCase()
+
+  const flowAddress = event.log.address.toLowerCase()
+  const isRecent = isBlockRecent(Number(event.block.timestamp))
+
+  const [parentFlow, grant] = await Promise.all([
+    getParentFlow(context.db, flowAddress),
+    context.db.update(grants, { id: recipientId.toString() }).set({
+      ...metadata,
+      recipient,
+      updatedAt: Number(event.block.timestamp),
+      activatedAt: Number(event.block.timestamp),
+      isActive: true,
+    }),
+  ])
+
+  await Promise.all([
+    handleRecipientMappings(context.db, recipient, flowAddress, grant.id),
+    isRecent ? addGrantEmbedding(grant, recipientType, parentFlow.id) : Promise.resolve(),
+  ])
+}
+
+async function handleRecipientRemoved(params: {
+  event: Event<"NounsFlow:RecipientRemoved">
+  context: Context<"NounsFlow:RecipientRemoved">
+}) {
+  const { event, context } = params
+  const { recipientId } = event.args
+
+  const flowAddress = event.log.address.toLowerCase()
+  const isRecent = isBlockRecent(Number(event.block.timestamp))
+
+  const [parentFlow, removedGrant] = await Promise.all([
+    getParentFlow(context.db, flowAddress),
+    context.db.update(grants, { id: recipientId.toString() }).set({
+      isRemoved: true,
+      removedAt: Number(event.block.timestamp),
+      isActive: false,
+      monthlyIncomingFlowRate: "0",
+    }),
+  ])
+
+  await Promise.all([
+    context.db.update(grants, { id: parentFlow.id }).set({
+      activeRecipientCount: parentFlow.activeRecipientCount - 1,
+    }),
+    isRecent ? removeGrantEmbedding(removedGrant) : Promise.resolve(),
+  ])
+}

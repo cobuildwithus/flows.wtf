@@ -36,6 +36,8 @@ export default async function FlowPage(props: Props) {
       })),
   )
 
+  const monthlyImpact = flow.derivedData?.impactMonthly
+
   return (
     <AgentChatProvider
       id={`flow-${flow.id}-${user?.address}`}
@@ -44,11 +46,11 @@ export default async function FlowPage(props: Props) {
       data={{ flowId: flow.id }}
       identityToken={await getPrivyIdToken()}
     >
-      {!flow.isTopLevel && (
+      {!flow.isTopLevel && monthlyImpact && (
         <div className="pt-6" id="impact">
           <FlowImpactSummary
             flowId={flowId}
-            impactMonthly={flow.derivedData?.impactMonthly ?? []}
+            impactMonthly={monthlyImpact ?? []}
             subgrantsIds={subgrants.map((g) => g.id)}
             date={date}
             impactId={impactId}

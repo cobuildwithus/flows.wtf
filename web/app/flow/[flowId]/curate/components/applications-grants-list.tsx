@@ -29,9 +29,10 @@ import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
-import { getEthAddress, getIpfsUrl } from "@/lib/utils"
+import { getIpfsUrl } from "@/lib/utils"
 import Link from "next/link"
 import Image from "next/image"
+import { getAddress } from "viem"
 
 interface Props {
   flowId: string
@@ -52,6 +53,7 @@ export default async function ApplicationsGrantsList(props: Props) {
   if (grants.length === 0) {
     return null
   }
+
   return (
     <Table>
       <TableHeader>
@@ -95,7 +97,7 @@ export default async function ApplicationsGrantsList(props: Props) {
                     </Link>
                     <div className="flex items-center space-x-1.5">
                       <UserProfile
-                        address={getEthAddress(grant.isFlow ? grant.submitter : grant.recipient)}
+                        address={getAddress(grant.isFlow ? grant.submitter : grant.recipient)}
                       >
                         {(profile) => (
                           <div className="flex items-center space-x-1.5">
@@ -216,8 +218,13 @@ export default async function ApplicationsGrantsList(props: Props) {
                         </Button>
                       </Link>
                     )}
-                    {dispute && canDisputeBeExecuted(dispute) && (
-                      <DisputeExecuteButton flow={flow} dispute={dispute} size="sm" />
+                    {!!flow.arbitrator && dispute && canDisputeBeExecuted(dispute) && (
+                      <DisputeExecuteButton
+                        flowId={flow.id}
+                        arbitrator={getAddress(flow.arbitrator)}
+                        dispute={dispute}
+                        size="sm"
+                      />
                     )}
                     {dispute && !canDisputeBeExecuted(dispute) && (
                       <DisputeVoteCta dispute={dispute} grant={grant} size="sm" />

@@ -4,6 +4,8 @@ import { votes, grants, votesByTokenIdAndContract, flowContractToGrantId } from 
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
+ponder.on("VrbsFlow:VoteCast", handleVoteCast)
+ponder.on("VrbsFlowChildren:VoteCast", handleVoteCast)
 
 async function handleVoteCast(params: {
   event: Event<"NounsFlow:VoteCast">

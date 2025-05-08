@@ -94,7 +94,7 @@ export default async function FlowPage(props: Props) {
               </Card>
             )}
 
-            {!isTopLevel && (
+            {!isTopLevel && flow.tcr && (
               <Card>
                 <CardHeader>
                   <CardTitle>
@@ -120,7 +120,7 @@ export default async function FlowPage(props: Props) {
                   <CardTitle>Your Vote</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CurationVote grant={flow} flow={pool} />
+                  <CurationVote grant={flow} />
                 </CardContent>
               </Card>
             )}

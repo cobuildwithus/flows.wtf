@@ -14,10 +14,12 @@ import { VotingBar } from "./flow/[flowId]/components/voting-bar"
 import Footer from "@/components/global/footer"
 
 export default async function Home() {
-  const [pool, activeFlows, user] = await Promise.all([
-    getPool(),
+  const pool = await getPool()
+
+  const [activeFlows, user] = await Promise.all([
     database.grant.findMany({
-      where: { isFlow: true, isActive: true, isTopLevel: false },
+      // just nouns flows for now
+      where: { isFlow: true, isActive: true, isTopLevel: false, flowId: pool.id },
       omit: { description: true },
       orderBy: [
         { activeRecipientCount: "desc" },

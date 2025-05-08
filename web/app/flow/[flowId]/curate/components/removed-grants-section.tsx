@@ -32,6 +32,8 @@ export default async function RemovedGrantsSection(props: Props) {
 
   const hasRemovedGrants = removedGrants.length > 0
 
+  if (!hasRemovedGrants) return null
+
   return (
     <div className={cn(className)}>
       <Collapsible defaultOpen={defaultOpen}>

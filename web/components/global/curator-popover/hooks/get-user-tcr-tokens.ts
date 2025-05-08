@@ -9,7 +9,7 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
 
   const [tokens, votes] = await Promise.all([
     database.tokenHolder.findMany({
-      where: { holder: address, amount: { not: "0" } },
+      where: { holder: address },
       orderBy: { amount: "desc" },
       include: {
         flow: {
@@ -61,7 +61,7 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
           status: subgrant.status,
           isActive: subgrant.isActive,
           disputes,
-          parentArbitrator: token.flow.arbitrator,
+          parentArbitrator: token.flow.arbitrator as `0x${string}`,
         }
       })
 

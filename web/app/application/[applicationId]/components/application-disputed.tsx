@@ -20,7 +20,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 interface Props {
   grant: Grant
   dispute: Dispute
-  flow: Grant
+  flow: FlowWithTcr
 }
 
 export async function ApplicationDisputed(props: Props) {
@@ -48,7 +48,12 @@ export async function ApplicationDisputed(props: Props) {
         <>
           <VotingEndDate dispute={dispute} currentTime={currentTime} />
           <Results dispute={dispute} grant={grant} />
-          <DisputeExecuteButton flow={flow} dispute={dispute} className="!mt-6 w-full" />
+          <DisputeExecuteButton
+            flowId={flow.id}
+            arbitrator={flow.arbitrator}
+            dispute={dispute}
+            className="!mt-6 w-full"
+          />
         </>
       )}
       {dispute.isExecuted && (

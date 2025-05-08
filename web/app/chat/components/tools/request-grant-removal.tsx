@@ -92,6 +92,7 @@ export function RequestGrantRemoval(props: Props) {
                 }}
                 flow={grant.flow}
                 defaultTokenAmount={removeItemCost - token.balance}
+                erc20Address={getEthAddress(grant.flow.erc20 as `0x${string}`)}
               />
             )}
             {user.hasSignerUUID && hasEnoughBalance && (
@@ -107,6 +108,13 @@ export function RequestGrantRemoval(props: Props) {
 
                   try {
                     await prepareWallet()
+
+                    if (!grant.flow.tcr) {
+                      toast.error("You cannot request removal of this grant. No TCR found.", {
+                        id: toastId,
+                      })
+                      return
+                    }
 
                     writeContract({
                       account: address,

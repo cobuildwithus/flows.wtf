@@ -1,6 +1,6 @@
 import "server-only"
 
-import { DraftPublishButton } from "@/app/draft/[draftId]/draft-publish-button"
+import { TCRDraftPublishButton } from "@/app/draft/[draftId]/tcr-draft-publish-button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DateTime } from "@/components/ui/date-time"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -19,6 +19,7 @@ import { GrantLogoCell } from "../components/grant-logo-cell"
 import { GrantTitleCell } from "../components/grant-title-cell"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 import { getUser } from "@/lib/auth/user"
+import { getEthAddress } from "@/lib/utils"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -96,15 +97,19 @@ export default async function FlowDraftsPage(props: Props) {
               </TableCell>
 
               <TableCell className="w-[100px] max-w-[100px]">
-                <div className="flex justify-end">
-                  <DraftPublishButton
-                    grantsCount={existingGrants[draft.users[0]] || 0}
-                    draft={draft}
-                    flow={flow}
-                    user={user}
-                    size="sm"
-                  />
-                </div>
+                {flow.tcr && flow.erc20 && flow.tokenEmitter && (
+                  <div className="flex justify-end">
+                    <TCRDraftPublishButton
+                      grantsCount={existingGrants[draft.users[0]] || 0}
+                      draft={draft}
+                      flow={flow}
+                      tcrAddress={getEthAddress(flow.tcr)}
+                      erc20Address={getEthAddress(flow.erc20)}
+                      tokenEmitterAddress={getEthAddress(flow.tokenEmitter)}
+                      user={user}
+                    />
+                  </div>
+                )}
               </TableCell>
             </TableRow>
           ))}

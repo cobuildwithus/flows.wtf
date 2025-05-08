@@ -20,14 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ApplyPage() {
-  const [flows, pool] = await Promise.all([
-    database.grant.findMany({
-      where: { isFlow: true, isActive: true, isTopLevel: false },
-      orderBy: [{ title: "asc" }],
-      omit: { description: true },
-    }),
-    getPool(),
-  ])
+  const pool = await getPool()
+
+  const flows = await database.grant.findMany({
+    where: { isFlow: true, isActive: true, isTopLevel: false, flowId: pool.id },
+    orderBy: [{ title: "asc" }],
+    omit: { description: true },
+  })
 
   return (
     <div className="container relative isolate mt-8 pb-12 pt-4 md:pt-12">

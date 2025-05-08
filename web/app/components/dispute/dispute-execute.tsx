@@ -8,28 +8,28 @@ import {
   nounsFlowImplAbi,
 } from "@/lib/abis"
 import { canDisputeBeExecuted } from "@/app/components/dispute/helpers"
-import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { Dispute, Grant } from "@prisma/flows"
+import { Dispute } from "@prisma/flows"
 import { useRouter } from "next/navigation"
 import { base } from "viem/chains"
 
 interface Props {
-  flow: Pick<Grant, "id" | "arbitrator">
+  arbitrator: `0x${string}`
+  flowId: string
   dispute: Dispute
   className?: string
   size?: "default" | "sm"
 }
 
 export function DisputeExecuteButton(props: Props) {
-  const { dispute, flow, className, size = "default" } = props
+  const { dispute, flowId, arbitrator, className, size = "default" } = props
   const router = useRouter()
 
   const { writeContract, prepareWallet } = useContractTransaction({
     onSuccess: async () => {
       // wait 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      router.push(`/flow/${flow.id}`)
+      router.push(`/flow/${flowId}`)
     },
   })
 
@@ -43,7 +43,7 @@ export function DisputeExecuteButton(props: Props) {
         await prepareWallet()
 
         writeContract({
-          address: getEthAddress(flow.arbitrator),
+          address: arbitrator,
           abi: [
             ...erc20VotesArbitratorImplAbi,
             ...erc20VotesMintableImplAbi,
