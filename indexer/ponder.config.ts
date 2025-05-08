@@ -12,6 +12,7 @@ import {
   gdav1ImplAbi,
   tokenEmitterImplAbi,
   vrbsFlowImplAbi,
+  allocatorFlowImplAbi,
 } from "./abis"
 import { base as baseContracts } from "./addresses"
 
@@ -174,6 +175,15 @@ export default createConfig({
         }),
         parameter: "recipient",
       }),
+      network: "base",
+      startBlock: START_BLOCK,
+    },
+    AllocatorFlow: {
+      abi: allocatorFlowImplAbi,
+      filter: {
+        event: "AllocatorChanged",
+        args: {},
+      },
       network: "base",
       startBlock: START_BLOCK,
     },
