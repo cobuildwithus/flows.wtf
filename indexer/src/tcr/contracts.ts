@@ -2,7 +2,6 @@ import { ponder, type Context } from "ponder:registry"
 import { rewardPoolImplAbi } from "../../abis"
 import {
   arbitratorToGrantId,
-  flowContractToGrantId,
   grants,
   rewardPoolContractToGrantId,
   tcrToGrantId,
@@ -20,6 +19,8 @@ ponder.on("NounsFlowTcrFactory:FlowTCRDeployed", async (params) => {
     tokenEmitterProxy,
     rewardPoolProxy,
   } = event.args
+
+  const grantId = flowProxy.toLowerCase()
 
   const [superToken, managerRewardSuperfluidPool, parentContract] = await Promise.all([
     context.client.readContract({
@@ -39,16 +40,7 @@ ponder.on("NounsFlowTcrFactory:FlowTCRDeployed", async (params) => {
     }),
   ])
 
-  const flowRecipient = await context.db.find(flowContractToGrantId, {
-    contract: flowProxy.toLowerCase(),
-  })
-
-  if (!flowRecipient) {
-    console.error({ flowProxy })
-    throw new Error(`Grant not found: ${flowProxy}`)
-  }
-
-  await context.db.update(grants, { id: flowRecipient.grantId }).set({
+  await context.db.update(grants, { id: grantId }).set({
     superToken: superToken.toLowerCase(),
     tcr: flowTCRProxy.toLowerCase(),
     arbitrator: arbitratorProxy.toLowerCase(),
@@ -66,7 +58,7 @@ ponder.on("NounsFlowTcrFactory:FlowTCRDeployed", async (params) => {
     rewardPoolProxy,
     flowTCRProxy,
     arbitratorProxy,
-    flowRecipient.grantId
+    grantId
   )
 })
 

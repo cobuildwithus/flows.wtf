@@ -1,6 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { votes, grants, votesByTokenIdAndContract, flowContractToGrantId } from "ponder:schema"
+import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
@@ -82,13 +82,13 @@ async function updateTotalVoteWeightCastOnFlow(
   tokenId: bigint,
   totalWeight: bigint
 ) {
-  const parentFlow = await db.find(flowContractToGrantId, { contract })
-  if (parentFlow) {
+  const grantId = contract
+  if (grantId) {
     const existingVoteIds = await db.find(votesByTokenIdAndContract, {
       contractTokenId: `${contract}_${tokenId}`,
     })
     if (!existingVoteIds || existingVoteIds.voteIds.length === 0) {
-      await db.update(grants, { id: parentFlow.grantId }).set((row) => ({
+      await db.update(grants, { id: grantId }).set((row) => ({
         totalVoteWeightCastOnFlow: (BigInt(row.totalVoteWeightCastOnFlow) + totalWeight).toString(),
       }))
     }
