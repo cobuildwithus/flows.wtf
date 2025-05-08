@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function GrantCard({ grant }: Props) {
-  const { status, isDisputed, derivedData } = grant
+  const { status, isDisputed, derivedData, isOnchainStartup } = grant
   const grade = derivedData?.overallGrade || null
 
   const isChallenged = status === Status.ClearingRequested
@@ -29,6 +29,8 @@ export function GrantCard({ grant }: Props) {
   const { coverImage } = derivedData || {}
   const isNew = isGrantNew(grant)
   const image = getIpfsUrl(coverImage || grant.image, "pinata")
+
+  const url = isOnchainStartup ? `/dashboard/${grant.id}` : `/item/${grant.id}`
 
   return (
     <article className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72">
@@ -41,10 +43,7 @@ export function GrantCard({ grant }: Props) {
       />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-gray-900/70 from-25% via-transparent to-gray-900/80" />
 
-      <Link
-        href={`/item/${grant.id}`}
-        className="flex h-full flex-col justify-between overflow-hidden p-2.5"
-      >
+      <Link href={url} className="flex h-full flex-col justify-between overflow-hidden p-2.5">
         <div className="relative flex items-center justify-between text-sm">
           {isActive && <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />}
           {!isActive && <DisputedGrantTag />}

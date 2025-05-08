@@ -14,4 +14,5 @@ export const imageDomains = [
   "flows-media-v0.s3.us-east-1.amazonaws.com",
   "*.cloudflarestream.com",
   "flows-media.s3.us-west-2.amazonaws.com",
+  "vrbscoffee.com",
 ]
