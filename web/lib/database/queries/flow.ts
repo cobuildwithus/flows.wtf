@@ -14,6 +14,7 @@ export const getFlowWithGrants = cache(async (flowId: string) => {
             select: { lastBuilderUpdate: true, overallGrade: true, title: true, coverImage: true },
           },
         },
+        orderBy: { monthlyIncomingFlowRate: "desc" },
       },
       derivedData: true,
     },

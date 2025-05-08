@@ -10,7 +10,7 @@ export function MissionCard(props: Props) {
   const { gradient, text } = props
 
   return (
-    <GradientCard gradient={gradient} className="p-5 lg:h-3/5">
+    <GradientCard gradient={gradient} className="p-5">
       <div className="flex flex-col items-start justify-between lg:h-full">
         <div className="items-top flex w-full justify-between gap-2">
           <Compass className="size-6" />
