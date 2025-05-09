@@ -35,6 +35,8 @@ async function handleMemberUnitsUpdated(params: {
 
   const grant = await getGrant(context.db, member, parentGrant.recipient)
 
+  console.log({ grant })
+
   if (!grant) {
     throw new Error(`Grant not found: ${member}`)
   }
@@ -96,6 +98,7 @@ async function getGrant(db: Context["db"], recipient: string, parentContract: st
   })
 
   if (!recipientAndParentLookup) {
+    console.log(recipient.toLowerCase(), parentContract.toLowerCase())
     throw new Error(
       `Recipient and parent lookup not found: ${recipient.toLowerCase()}-${parentContract.toLowerCase()}`
     )

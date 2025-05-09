@@ -1,6 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
+import { inArray } from "ponder"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
@@ -21,8 +22,8 @@ async function handleVoteCast(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const votesCount = bps / (totalWeight / BigInt(1e18))
 
-  const affectedGrantsIds = new Map<string, bigint>()
-  affectedGrantsIds.set(recipientId.toString(), votesCount)
+  const affectedRecipientIds = new Map<string, bigint>()
+  affectedRecipientIds.set(recipientId.toString(), votesCount)
 
   let hasPreviousVotes = false
 
@@ -32,8 +33,8 @@ async function handleVoteCast(params: {
   const oldVotes = await getOldVotes(context.db, contract, tokenId, blockNumber)
 
   for (const oldVote of oldVotes) {
-    const existingVotes = affectedGrantsIds.get(oldVote.recipientId) ?? BigInt(0)
-    affectedGrantsIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.votesCount))
+    const existingVotes = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
+    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.votesCount))
     hasPreviousVotes = true
   }
 
@@ -63,8 +64,15 @@ async function handleVoteCast(params: {
       voteIds: Array.from(new Set([...row.voteIds, voteId])),
     }))
 
-  for (const [affectedGrantId, votesDelta] of affectedGrantsIds) {
-    await context.db.update(grants, { id: affectedGrantId }).set((row) => ({
+  const grantIds = await context.db.sql.query.grants.findMany({
+    where: inArray(grants.recipientId, Array.from(affectedRecipientIds.keys())),
+  })
+
+  for (const [affectedRecipientId, votesDelta] of affectedRecipientIds) {
+    const grant = grantIds.find((grant) => grant.recipientId === affectedRecipientId)
+    if (!grant) throw new Error(`Grant not found: ${affectedRecipientId}`)
+
+    await context.db.update(grants, { id: grant.id }).set((row) => ({
       votesCount: (BigInt(row.votesCount) + votesDelta).toString(),
     }))
   }
