@@ -35,7 +35,9 @@ async function handleMemberUnitsUpdated(params: {
 
   const grant = await getGrant(context.db, member, parentGrant.recipient)
 
-  console.log({ grant })
+  console.log({ grantTitle: grant.title, member, parentGrantRecipient: parentGrant.recipient })
+
+  if (parentGrant.id === grant.id) throw new Error("machine broke")
 
   if (!grant) {
     throw new Error(`Grant not found: ${member}`)
@@ -93,6 +95,9 @@ async function getParentGrant(db: Context["db"], pool: string) {
 }
 
 async function getGrant(db: Context["db"], recipient: string, parentContract: string) {
+  if (recipient.toLowerCase() === parentContract.toLowerCase())
+    throw new Error("machine broke again")
+
   const recipientAndParentLookup = await db.find(recipientAndParentToGrantId, {
     recipientAndParent: `${recipient.toLowerCase()}-${parentContract.toLowerCase()}`,
   })
