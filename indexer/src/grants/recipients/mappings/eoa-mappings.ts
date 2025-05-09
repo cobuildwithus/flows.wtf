@@ -9,7 +9,7 @@ export async function handleRecipientMappings(
 ) {
   await Promise.all([
     db.insert(recipientAndParentToGrantId).values({
-      recipientAndParent: `${recipient.toLowerCase()}-${flowContract}`,
+      recipientAndParent: `${recipient.toLowerCase()}-${flowContract.toLowerCase()}`,
       grantId,
     }),
 

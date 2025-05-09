@@ -27,16 +27,11 @@ async function handleRecipientCreated(params: {
 
   const parentFlow = await getParentFlow(context.db, flowAddress)
 
-  let existingGrant = await context.db.find(grants, { id: grantId })
+  let existing = await context.db.find(grants, { id: flowAddress })
 
-  if (existingGrant) {
-    // this is recipient is a flow, so only update the metadata
-    await context.db.update(grants, { id: grantId }).set({
-      ...metadata,
-      updatedAt: timestamp,
-    })
-  } else {
-    existingGrant = await insertGrant(context.db, {
+  if (!existing) {
+    // this is an EOA recipient, so we need to insert a new grant
+    existing = await insertGrant(context.db, {
       id: grantId,
       title: metadata.title,
       description: metadata.description,
@@ -51,13 +46,14 @@ async function handleRecipientCreated(params: {
       createdAt: timestamp,
       updatedAt: timestamp,
       isOnchainStartup: isOnchainStartup(flowAddress),
+      recipientId: grantId,
     })
   }
 
   await Promise.all([
-    handleRecipientMappings(context.db, recipient, flowAddress, existingGrant.id),
+    handleRecipientMappings(context.db, recipient, flowAddress, existing.id),
     isBlockRecent(timestamp)
-      ? addGrantEmbedding(existingGrant, recipientType, parentFlow.id)
+      ? addGrantEmbedding(existing, recipientType, parentFlow.id)
       : Promise.resolve(),
   ])
 }

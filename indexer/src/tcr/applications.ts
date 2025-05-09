@@ -52,6 +52,7 @@ async function handleItemSubmitted(params: {
     isActive: false,
     isOnchainStartup: false,
     recipient: recipient.toString(),
+    recipientId: _itemID,
     flowId: flow.id,
     submitter: _submitter.toLowerCase(),
     parentContract: flow.recipient,
