@@ -4,6 +4,7 @@ import { addGrantEmbedding } from "../../embeddings/embed-grants"
 import { isBlockRecent } from "../../../utils"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { getParentFlow } from "../helpers"
+import { RecipientType } from "../../../enums"
 
 ponder.on("NounsFlowChildren:RecipientCreated", handleRecipientCreated)
 ponder.on("NounsFlow:RecipientCreated", handleRecipientCreated)
@@ -17,28 +18,29 @@ async function handleRecipientCreated(params: {
     recipient: { recipient: rawRecipient, metadata, recipientType },
     recipientId,
   } = event.args
+
+  if (recipientType === RecipientType.FlowContract) {
+    return
+  }
+
   const recipient = rawRecipient.toLowerCase()
 
   const flowAddress = event.log.address.toLowerCase()
-  const isRecent = isBlockRecent(Number(event.block.timestamp))
+  const timestamp = Number(event.block.timestamp)
 
   const parentFlow = await getParentFlow(context.db, flowAddress)
 
-  let grant = await context.db.find(grants, { id: flowAddress })
+  const grant = await context.db.update(grants, { id: recipientId.toString() }).set({
+    ...metadata,
+    recipient,
+    updatedAt: Number(event.block.timestamp),
+    activatedAt: Number(event.block.timestamp),
+    isActive: true,
+    recipientId: recipientId.toString(),
+  })
+  await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
 
-  if (!grant) {
-    grant = await context.db.update(grants, { id: recipientId.toString() }).set({
-      ...metadata,
-      recipient,
-      updatedAt: Number(event.block.timestamp),
-      activatedAt: Number(event.block.timestamp),
-      isActive: true,
-      recipientId: recipientId.toString(),
-    })
+  if (isBlockRecent(timestamp)) {
+    await addGrantEmbedding(grant, recipientType, parentFlow.id)
   }
-
-  await Promise.all([
-    handleRecipientMappings(context.db, recipient, flowAddress, grant.id),
-    isRecent ? addGrantEmbedding(grant, recipientType, parentFlow.id) : Promise.resolve(),
-  ])
 }

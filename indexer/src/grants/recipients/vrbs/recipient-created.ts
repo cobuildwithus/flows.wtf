@@ -5,6 +5,7 @@ import { getParentFlow } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { insertGrant } from "./insert-vrbs-grant"
 import { grants } from "ponder:schema"
+import { RecipientType } from "../../../enums"
 
 ponder.on("VrbsFlow:RecipientCreated", handleRecipientCreated)
 ponder.on("VrbsFlowChildren:RecipientCreated", handleRecipientCreated)
@@ -25,37 +26,30 @@ async function handleRecipientCreated(params: {
   const grantId = recipientId.toString()
   const timestamp = Number(event.block.timestamp)
 
-  const parentFlow = await getParentFlow(context.db, flowAddress)
-
-  let existing = await context.db.find(grants, { id: flowAddress })
-
-  if (!existing) {
-    // this is an EOA recipient, so we need to insert a new grant
-    existing = await insertGrant(context.db, {
-      id: grantId,
-      title: metadata.title,
-      description: metadata.description,
-      image: metadata.image,
-      tagline: metadata.tagline,
-      url: metadata.url,
-      recipient,
-      flowId: parentFlow.id,
-      isFlow: false,
-      submitter: approvedBy.toLowerCase(),
-      parentContract: flowAddress,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-      isOnchainStartup: isOnchainStartup(flowAddress),
-      recipientId: grantId,
-    })
+  if (recipientType === RecipientType.FlowContract) {
+    return
   }
 
-  await Promise.all([
-    handleRecipientMappings(context.db, recipient, flowAddress, existing.id),
-    isBlockRecent(timestamp)
-      ? addGrantEmbedding(existing, recipientType, parentFlow.id)
-      : Promise.resolve(),
-  ])
+  const parentFlow = await getParentFlow(context.db, flowAddress)
+
+  const grant = await insertGrant(context.db, {
+    id: grantId,
+    ...metadata,
+    recipient,
+    flowId: parentFlow.id,
+    isFlow: false,
+    submitter: approvedBy.toLowerCase(),
+    parentContract: flowAddress,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    isOnchainStartup: isOnchainStartup(flowAddress),
+    recipientId: grantId,
+  })
+  await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
+
+  if (isBlockRecent(timestamp)) {
+    await addGrantEmbedding(grant, recipientType, parentFlow.id)
+  }
 }
 
 function isOnchainStartup(flowContract: string) {

@@ -1,7 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { disputes } from "ponder:schema"
 import { and, eq } from "ponder"
-import { getDisputePrimaryKey } from "./create"
+import { getDisputePrimaryKey } from "./dispute-created"
 
 ponder.on("FlowTcr:Ruling", handleRuling)
 ponder.on("FlowTcrChildren:Ruling", handleRuling)

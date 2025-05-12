@@ -8,6 +8,7 @@ import {
   parentFlowToChildren,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
+import { base } from "../../../addresses"
 
 ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
 ponder.on("VrbsFlowChildren:FlowInitialized", handleFlowInitialized)
@@ -45,7 +46,7 @@ async function handleFlowInitialized(params: {
     ...metadata,
     recipient: contract,
     recipientId: null, // no parent flow or no recipient id yet
-    isTopLevel: true,
+    isTopLevel: contract === base.VrbsFlow,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,

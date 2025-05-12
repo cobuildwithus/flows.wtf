@@ -3,6 +3,7 @@ import { grants } from "ponder:schema"
 import { removeGrantEmbedding } from "../embeddings/embed-grants"
 import { isBlockRecent } from "../../utils"
 import { getParentFlow } from "./helpers"
+import { eq } from "ponder"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
@@ -19,9 +20,15 @@ async function handleRecipientRemoved(params: {
   const flowAddress = event.log.address.toLowerCase()
   const isRecent = isBlockRecent(Number(event.block.timestamp))
 
+  const grantToRemove = await context.db.sql.query.grants.findFirst({
+    where: eq(grants.recipientId, recipientId.toString()),
+  })
+  if (!grantToRemove) throw new Error(`Grant not found: ${recipientId.toString()}`)
+
   const [parentFlow, removedGrant] = await Promise.all([
     getParentFlow(context.db, flowAddress),
-    context.db.update(grants, { id: recipientId.toString() }).set({
+    //todo fix
+    context.db.update(grants, { id: grantToRemove.id }).set({
       isRemoved: true,
       removedAt: Number(event.block.timestamp),
       isActive: false,

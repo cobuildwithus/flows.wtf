@@ -4,6 +4,7 @@ import {
   bonusPoolToGrantId,
   parentFlowToChildren,
   baselinePoolToGrantId,
+  recipientAndParentToGrantId,
 } from "ponder:schema"
 
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
@@ -20,6 +21,7 @@ async function handleFlowRecipientCreated(params: {
   const timestamp = Number(event.block.timestamp)
   const { recipient, recipientId, baselinePool, bonusPool } = event.args
 
+  const parentFlowContract = event.log.address.toLowerCase() as `0x${string}`
   const submitter = event.transaction.from.toLowerCase() as `0x${string}`
   const flowContract = recipient.toLowerCase() as `0x${string}`
 
@@ -38,6 +40,7 @@ async function handleFlowRecipientCreated(params: {
   })
 
   await createFlowMappings(context.db, flowContract, bonusPool, baselinePool)
+  await createRecipientMappings(context.db, flowContract, parentFlowContract)
 }
 
 async function createFlowMappings(
@@ -59,5 +62,22 @@ async function createFlowMappings(
       parentFlowContract: flowContract,
       childGrantIds: [],
     }),
+  ])
+}
+
+async function createRecipientMappings(
+  db: Context["db"],
+  flowContract: string,
+  parentFlowContract: string
+) {
+  await Promise.all([
+    db.insert(recipientAndParentToGrantId).values({
+      recipientAndParent: `${flowContract.toLowerCase()}-${parentFlowContract.toLowerCase()}`,
+      grantId: flowContract,
+    }),
+
+    db.update(parentFlowToChildren, { parentFlowContract }).set((row) => ({
+      childGrantIds: [...row.childGrantIds, flowContract],
+    })),
   ])
 }

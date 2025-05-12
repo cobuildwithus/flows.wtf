@@ -59,9 +59,10 @@ async function handleDispute(params: {
 
   const arbitrator = _arbitrator.toString().toLowerCase()
 
-  const grant = await context.db
-    .update(grants, { id: _itemID.toString() })
-    .set({ isDisputed: true })
+  const grant = await context.db.sql.query.grants.findFirst({
+    where: eq(grants.recipientId, _itemID),
+  })
+  if (!grant) throw new Error(`Grant not found: ${_itemID}`)
 
   const parent = await context.db.find(arbitratorToGrantId, { arbitrator })
   if (!parent) throw new Error("Arbitrator not found")
@@ -71,7 +72,7 @@ async function handleDispute(params: {
   }))
 
   await context.db.update(disputes, { id: getDisputePrimaryKey(_disputeID, arbitrator) }).set({
-    grantId: _itemID.toString(),
+    grantId: grant.id,
     evidenceGroupID: _evidenceGroupID.toString(),
   })
 }
