@@ -4,6 +4,7 @@ import { RecipientType, Status } from "../enums"
 import { addApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants, tcrToGrantId } from "ponder:schema"
 import { isBlockRecent } from "../utils"
+import { addGrantIdToTcrAndItemId } from "./helpers"
 
 ponder.on("FlowTcr:ItemSubmitted", handleItemSubmitted)
 ponder.on("FlowTcrChildren:ItemSubmitted", handleItemSubmitted)
@@ -98,6 +99,8 @@ async function handleItemSubmitted(params: {
   const grant = await context.db.find(grants, { id: flow.id })
 
   if (!grant) throw new Error("Grant not found")
+
+  await addGrantIdToTcrAndItemId(context.db, tcr, _itemID, grant.id)
 
   if (isRecent) {
     await addApplicationEmbedding(grant, flow.id)

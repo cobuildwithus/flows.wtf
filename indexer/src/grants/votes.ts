@@ -2,6 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
 import { inArray } from "ponder"
+import { getGrantIdFromTcrAndItemId } from "../tcr/helpers"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
@@ -28,6 +29,8 @@ async function handleVoteCast(params: {
   let hasPreviousVotes = false
 
   await updateTotalVoteWeightCastOnFlow(context.db, contract, tokenId, totalWeight)
+  const flow = await context.db.find(grants, { id: contract })
+  if (!flow) throw new Error(`Flow not found: ${contract}`)
 
   // Mark old votes for this token as stale
   const oldVotes = await getOldVotes(context.db, contract, tokenId, blockNumber)
@@ -64,15 +67,35 @@ async function handleVoteCast(params: {
       voteIds: Array.from(new Set([...row.voteIds, voteId])),
     }))
 
-  const grantIds = await context.db.sql.query.grants.findMany({
-    where: inArray(grants.recipientId, Array.from(affectedRecipientIds.keys())),
-  })
+  // const grantIds = await context.db.sql.query.grants.findMany({
+  //   where: inArray(grants.recipientId, Array.from(affectedRecipientIds.keys())),
+  // })
+
+  let grantIds: { grantId: string; recipientId: string }[] = []
+
+  if (flow.tcr) {
+    grantIds = await Promise.all(
+      Array.from(affectedRecipientIds.keys()).map(async (recipientId) => {
+        const grantId = await getGrantIdFromTcrAndItemId(
+          context.db,
+          flow.tcr as string,
+          recipientId
+        )
+        return { grantId, recipientId }
+      })
+    )
+  } else {
+    grantIds = Array.from(affectedRecipientIds.entries()).map(([recipientId, _]) => ({
+      grantId: contract,
+      recipientId,
+    }))
+  }
 
   for (const [affectedRecipientId, votesDelta] of affectedRecipientIds) {
     const grant = grantIds.find((grant) => grant.recipientId === affectedRecipientId)
     if (!grant) throw new Error(`Grant not found: ${affectedRecipientId}`)
 
-    await context.db.update(grants, { id: grant.id }).set((row) => ({
+    await context.db.update(grants, { id: grant.grantId }).set((row) => ({
       votesCount: (BigInt(row.votesCount) + votesDelta).toString(),
     }))
   }

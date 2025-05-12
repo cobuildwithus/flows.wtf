@@ -226,6 +226,17 @@ export const tcrToGrantId = onchainTable(
   })
 )
 
+export const tcrAndItemIdToGrantId = onchainTable(
+  "_kv_TcrAndItemIdToGrantId",
+  (t) => ({
+    tcrAndItemId: t.text().primaryKey(),
+    grantId: t.text().notNull(),
+  }),
+  (table) => ({
+    grantIdIdx: index().on(table.grantId),
+  })
+)
+
 export const bonusPoolToGrantId = onchainTable(
   "_kv_BonusPoolToGrantId",
   (t) => ({

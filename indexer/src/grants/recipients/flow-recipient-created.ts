@@ -6,6 +6,7 @@ import {
   baselinePoolToGrantId,
   recipientAndParentToGrantId,
 } from "ponder:schema"
+import { updateTcrAndItemId } from "../../tcr/helpers"
 
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
@@ -29,10 +30,12 @@ async function handleFlowRecipientCreated(params: {
 
   if (grant) {
     // if the grant was previously added under recipientId via TCR, we need to delete it
-    context.db.delete(grants, { id: grant.id })
+    // we want to id grants by their address if they are a flow contract
+    await context.db.delete(grants, { id: grant.id })
+    await handleTCRMapping(context.db, flowContract, parentFlowContract, recipientId)
   }
 
-  context.db.update(grants, { id: flowContract }).set({
+  await context.db.update(grants, { id: flowContract }).set({
     updatedAt: timestamp,
     activatedAt: timestamp,
     submitter,
@@ -80,4 +83,18 @@ async function createRecipientMappings(
       childGrantIds: [...row.childGrantIds, flowContract],
     })),
   ])
+}
+
+async function handleTCRMapping(
+  db: Context["db"],
+  flowContract: string,
+  parentFlowContract: string,
+  recipientId: string
+) {
+  const parent = await db.find(grants, { id: parentFlowContract })
+  if (!parent) throw new Error("Parent grant not found")
+
+  if (!parent.tcr) return
+
+  await updateTcrAndItemId(db, parent.tcr, recipientId, flowContract)
 }

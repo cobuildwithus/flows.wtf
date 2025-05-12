@@ -4,7 +4,7 @@ import { getAddress } from "viem"
 import { removeApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants, tcrToGrantId } from "ponder:schema"
 import { isBlockRecent } from "../utils"
-import { eq } from "ponder"
+import { getGrantIdFromTcrAndItemId } from "./helpers"
 
 ponder.on("FlowTcr:ItemStatusChange", handleItemStatusChange)
 ponder.on("FlowTcrChildren:ItemStatusChange", handleItemStatusChange)
@@ -20,9 +20,10 @@ async function handleItemStatusChange(params: {
   const parent = await context.db.find(tcrToGrantId, { tcr: event.log.address.toLowerCase() })
   if (!parent) throw new Error(`Parent grant not found: ${event.log.address.toLowerCase()}`)
 
-  const grant = await context.db.sql.query.grants.findFirst({
-    where: eq(grants.recipientId, _itemID),
-  })
+  const grantId = await getGrantIdFromTcrAndItemId(context.db, parent.tcr, _itemID)
+  if (!grantId) throw new Error(`Grant not found: ${_itemID}`)
+
+  const grant = await context.db.find(grants, { id: grantId })
   if (!grant) throw new Error(`Grant not found: ${_itemID}`)
 
   let challengePeriodEndsAt = grant.challengePeriodEndsAt

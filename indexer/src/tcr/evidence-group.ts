@@ -1,6 +1,7 @@
 import { eq } from "ponder"
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
+import { getGrantIdFromTcrAndItemId } from "./helpers"
 
 ponder.on("FlowTcr:RequestEvidenceGroupID", handleRequestEvidenceGroupId)
 ponder.on("FlowTcrChildren:RequestEvidenceGroupID", handleRequestEvidenceGroupId)
@@ -11,13 +12,12 @@ async function handleRequestEvidenceGroupId(params: {
 }) {
   const { event, context } = params
   const { _itemID, _evidenceGroupID } = event.args
+  const tcr = event.log.address.toLowerCase()
 
-  const grant = await context.db.sql.query.grants.findFirst({
-    where: eq(grants.recipientId, _itemID),
-  })
-  if (!grant) throw new Error(`Grant not found: ${_itemID}`)
+  const grantId = await getGrantIdFromTcrAndItemId(context.db, tcr, _itemID)
+  if (!grantId) throw new Error(`Grant not found: ${_itemID}`)
 
-  await context.db.update(grants, { id: grant.id }).set({
+  await context.db.update(grants, { id: grantId }).set({
     evidenceGroupID: _evidenceGroupID.toString(),
   })
 }

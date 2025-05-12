@@ -4,6 +4,7 @@ import { removeGrantEmbedding } from "../embeddings/embed-grants"
 import { isBlockRecent } from "../../utils"
 import { getParentFlow } from "./helpers"
 import { eq } from "ponder"
+import { getGrantIdFromTcrAndItemId } from "../../tcr/helpers"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
@@ -20,21 +21,26 @@ async function handleRecipientRemoved(params: {
   const flowAddress = event.log.address.toLowerCase()
   const isRecent = isBlockRecent(Number(event.block.timestamp))
 
-  const grantToRemove = await context.db.sql.query.grants.findFirst({
-    where: eq(grants.recipientId, recipientId.toString()),
-  })
-  if (!grantToRemove) throw new Error(`Grant not found: ${recipientId.toString()}`)
+  const parentFlow = await getParentFlow(context.db, flowAddress)
 
-  const [parentFlow, removedGrant] = await Promise.all([
-    getParentFlow(context.db, flowAddress),
-    //todo fix
-    context.db.update(grants, { id: grantToRemove.id }).set({
-      isRemoved: true,
-      removedAt: Number(event.block.timestamp),
-      isActive: false,
-      monthlyIncomingFlowRate: "0",
-    }),
-  ])
+  if (!parentFlow) throw new Error(`Parent flow not found: ${flowAddress}`)
+
+  let removedGrantId = recipientId
+
+  if (parentFlow.tcr) {
+    removedGrantId = (await getGrantIdFromTcrAndItemId(
+      context.db,
+      parentFlow.tcr,
+      recipientId
+    )) as `0x${string}`
+  }
+
+  const removedGrant = await context.db.update(grants, { id: removedGrantId }).set({
+    isRemoved: true,
+    removedAt: Number(event.block.timestamp),
+    isActive: false,
+    monthlyIncomingFlowRate: "0",
+  })
 
   await Promise.all([
     context.db.update(grants, { id: parentFlow.id }).set({
