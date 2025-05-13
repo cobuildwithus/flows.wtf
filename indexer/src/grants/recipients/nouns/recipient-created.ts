@@ -3,7 +3,7 @@ import { grants } from "ponder:schema"
 import { addGrantEmbedding } from "../../embeddings/embed-grants"
 import { isBlockRecent } from "../../../utils"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
-import { getParentFlow } from "../helpers"
+import { getFlow } from "../helpers"
 import { RecipientType } from "../../../enums"
 
 ponder.on("NounsFlowChildren:RecipientCreated", handleRecipientCreated)
@@ -28,7 +28,7 @@ async function handleRecipientCreated(params: {
   const flowAddress = event.log.address.toLowerCase()
   const timestamp = Number(event.block.timestamp)
 
-  const parentFlow = await getParentFlow(context.db, flowAddress)
+  const parentFlow = await getFlow(context.db, flowAddress)
 
   const grant = await context.db.update(grants, { id: recipientId.toString() }).set({
     ...metadata,

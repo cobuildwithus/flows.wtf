@@ -47,7 +47,7 @@ async function handleItemSubmitted(params: {
     _data
   )
 
-  await context.db.insert(grants).values({
+  const grant = await context.db.insert(grants).values({
     id: _itemID,
     ...metadata,
     isActive: false,
@@ -95,10 +95,6 @@ async function handleItemSubmitted(params: {
     createdAt: Number(event.block.timestamp),
     updatedAt: Number(event.block.timestamp),
   })
-
-  const grant = await context.db.find(grants, { id: flow.id })
-
-  if (!grant) throw new Error("Grant not found")
 
   await addGrantIdToTcrAndItemId(context.db, tcr, _itemID, grant.id)
 

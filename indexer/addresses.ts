@@ -21,7 +21,7 @@ export const base = {
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
   // Vrbs Accelerator
-  AllocatorFlowImpl: "0xf8ad08b4ce94bf21f896ba670d76e88683548876",
-  VrbsFlowImpl: "0x8bd310902ce76fd6b6e25e7547c81b66b9397596",
-  VrbsFlow: "0x59a6088c0178accef66cc64d06a2b7f8f73ccba5",
+  SelfManagedFlowImpl: "0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41",
+  VrbsFlowImpl: "0x9c042cf5d48efceebfa1bb4b2072db9a5358c57d",
+  VrbsFlow: "0xe54c74df9e93f79ccd8d3b3283d3aca145afca98",
 } as const

@@ -21,7 +21,7 @@ const baseContracts = [
 
   { name: "tokenVerifier", address: base.TokenVerifier },
 
-  { name: "allocatorFlowImpl", address: base.AllocatorFlowImpl },
+  { name: "selfManagedFlowImpl", address: base.SelfManagedFlowImpl },
 
   { name: "vrbsFlowImpl", address: base.VrbsFlowImpl },
 

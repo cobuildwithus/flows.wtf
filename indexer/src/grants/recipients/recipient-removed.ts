@@ -2,8 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 import { removeGrantEmbedding } from "../embeddings/embed-grants"
 import { isBlockRecent } from "../../utils"
-import { getParentFlow } from "./helpers"
-import { eq } from "ponder"
+import { getFlow } from "./helpers"
 import { getGrantIdFromTcrAndItemId } from "../../tcr/helpers"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
@@ -21,16 +20,16 @@ async function handleRecipientRemoved(params: {
   const flowAddress = event.log.address.toLowerCase()
   const isRecent = isBlockRecent(Number(event.block.timestamp))
 
-  const parentFlow = await getParentFlow(context.db, flowAddress)
+  const flow = await getFlow(context.db, flowAddress)
 
-  if (!parentFlow) throw new Error(`Parent flow not found: ${flowAddress}`)
+  if (!flow) throw new Error(`Flow not found: ${flowAddress}`)
 
   let removedGrantId = recipientId
 
-  if (parentFlow.tcr) {
+  if (flow.tcr) {
     removedGrantId = (await getGrantIdFromTcrAndItemId(
       context.db,
-      parentFlow.tcr,
+      flow.tcr,
       recipientId
     )) as `0x${string}`
   }
@@ -43,8 +42,8 @@ async function handleRecipientRemoved(params: {
   })
 
   await Promise.all([
-    context.db.update(grants, { id: parentFlow.id }).set({
-      activeRecipientCount: parentFlow.activeRecipientCount - 1,
+    context.db.update(grants, { id: flow.id }).set({
+      activeRecipientCount: flow.activeRecipientCount - 1,
     }),
     isRecent ? removeGrantEmbedding(removedGrant) : Promise.resolve(),
   ])

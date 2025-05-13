@@ -1,10 +1,9 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { addGrantEmbedding } from "../../embeddings/embed-grants"
 import { isBlockRecent } from "../../../utils"
-import { getParentFlow } from "../helpers"
+import { getFlow } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { insertGrant } from "./insert-vrbs-grant"
-import { grants } from "ponder:schema"
 import { RecipientType } from "../../../enums"
 
 ponder.on("VrbsFlow:RecipientCreated", handleRecipientCreated)
@@ -30,13 +29,13 @@ async function handleRecipientCreated(params: {
     return
   }
 
-  const parentFlow = await getParentFlow(context.db, flowAddress)
+  const flow = await getFlow(context.db, flowAddress)
 
   const grant = await insertGrant(context.db, {
     id: grantId,
     ...metadata,
     recipient,
-    flowId: parentFlow.id,
+    flowId: flow.id,
     isFlow: false,
     submitter: approvedBy.toLowerCase(),
     parentContract: flowAddress,
@@ -48,7 +47,7 @@ async function handleRecipientCreated(params: {
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
 
   if (isBlockRecent(timestamp)) {
-    await addGrantEmbedding(grant, recipientType, parentFlow.id)
+    await addGrantEmbedding(grant, recipientType, flow.id)
   }
 }
 
