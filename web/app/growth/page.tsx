@@ -16,8 +16,8 @@ interface Props {
 }
 
 export const metadata: Metadata = {
-  title: "Impact",
-  description: "Explore the monthly impact and progress of grants.",
+  title: "Growth",
+  description: "Explore statistics and growth for Flows.",
 }
 
 export default async function GrowthPage(props: Props) {
