@@ -9,64 +9,70 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { Stat } from "@/app/item/[grantId]/cards/stats"
+import { Currency } from "@/components/ui/currency"
 import { ChevronDown } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import type { Grant } from "@prisma/flows"
-import { getRemovedGrants } from "./get-removed-grants"
+import { getRemovedGrants } from "@/lib/database/queries/get-removed-grants"
 import { GrantCell } from "./grant-cell"
 import RemovalReasonDialog from "./removal-reason-dialog"
+import { Stat } from "@/app/item/[grantId]/cards/stats"
+import { RugRateExplainerDialog } from "./rug-rate-explainer"
 
 interface Props {
-  flow: Pick<Grant, "id" | "totalEarned" | "activeRecipientCount">
+  flow: Pick<Grant, "id" | "totalEarned">
   defaultOpen?: boolean
   className?: string
 }
 
-export default async function RejectedGrantsSection(props: Props) {
+export default async function RemovedGrantsSection(props: Props) {
   const { flow, defaultOpen = false, className } = props
 
-  const grants = await getRemovedGrants(flow.id, "rejected")
-  const hasGrants = grants.length > 0
+  const removedGrants = await getRemovedGrants(flow.id, "removed")
 
-  const totalGrantsAccepted = flow.activeRecipientCount + grants.length
+  const hasRemovedGrants = removedGrants.length > 0
 
-  const acceptanceRate = ((totalGrantsAccepted - grants.length) / totalGrantsAccepted) * 100
+  if (!hasRemovedGrants) return null
 
   return (
     <div className={cn(className)}>
       <Collapsible defaultOpen={defaultOpen}>
         <CollapsibleTrigger className="mb-4 flex w-full items-center justify-between hover:opacity-70">
-          <span className="font-semibold text-muted-foreground md:text-xl">Approval rate</span>
+          <span className="font-semibold text-muted-foreground md:text-xl">Performance</span>
           <ChevronDown className="h-4 w-4" />
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="flex flex-col gap-4">
+        <CollapsibleContent>
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-12 gap-x-2 gap-y-4 py-1 lg:gap-x-4">
               <div className="col-span-full xl:col-span-3">
-                <Stat label="Acceptance rate">{acceptanceRate.toFixed(0)}%</Stat>
+                <Stat label="Total paid out">
+                  <Currency>{flow.totalEarned}</Currency>
+                </Stat>
               </div>
-              <div className="col-span-full xl:col-span-3">
-                <Stat label="Declined projects">{grants.length}</Stat>
-              </div>
-              <div className="col-span-full xl:col-span-3">
-                <Stat label="Accepted projects">{totalGrantsAccepted}</Stat>
-              </div>
+              <RugRateExplainerDialog removedGrants={removedGrants} flow={flow} />
             </div>
-            {hasGrants && (
+            {hasRemovedGrants && (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead colSpan={4}>Project</TableHead>
+                    <TableHead colSpan={4}>Removed project</TableHead>
+                    <TableHead className="text-right">Earned</TableHead>
                     <TableHead className="text-right">Reason</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {grants.map((grant) => (
+                  {removedGrants.map((grant) => (
                     <TableRow key={grant.id}>
                       <TableCell colSpan={4}>
                         <GrantCell grant={grant} />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col justify-end space-y-1">
+                          <Currency className="text-right text-xl font-medium">
+                            {grant.totalEarned}
+                          </Currency>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <RemovalReasonDialog grant={grant} />

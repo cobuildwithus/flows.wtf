@@ -2,7 +2,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/
 import { Badge } from "@/components/ui/badge"
 import { InfoIcon } from "lucide-react"
 import { Stat } from "@/app/item/[grantId]/cards/stats"
-import { RemovedGrant } from "./get-removed-grants"
+import { RemovedGrant } from "../../../lib/database/queries/get-removed-grants"
 import { Grant } from "@prisma/flows"
 
 export function RugRateExplainerDialog({
