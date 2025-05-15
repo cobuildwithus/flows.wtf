@@ -7,7 +7,9 @@ import { unstable_cache } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { Suspense } from "react"
-import PerformanceStats from "./components/Stats"
+import RejectedGrantsSection from "@/components/global/growth/rejected-grants-section"
+import RemovedGrantsSection from "@/components/global/growth/removed-grants-section"
+import { GrowthStats } from "./components/GrowthStats"
 
 interface Props {
   searchParams: Promise<{ flowId: string }>
@@ -27,13 +29,7 @@ export default async function GrowthPage(props: Props) {
     async () => {
       return database.grant.findMany({
         where: { flowId: pool.id },
-        select: {
-          id: true,
-          title: true,
-          image: true,
-          totalEarned: true,
-          activeRecipientCount: true,
-        },
+        omit: { description: true },
         orderBy: [{ activeRecipientCount: "desc" }],
       })
     },
@@ -44,7 +40,7 @@ export default async function GrowthPage(props: Props) {
   const flow = flows.find((flow) => flow.id === flowId) || flows[0]
 
   const grants = await unstable_cache(
-    async () => database.grant.findMany({ where: { flowId: flow.id } }),
+    async () => database.grant.findMany({ where: { flowId: flow.id, isActive: true } }),
     ["grants-for-flow", flow.id],
     { revalidate: 3600 },
   )()
@@ -83,12 +79,16 @@ export default async function GrowthPage(props: Props) {
           <Link href={`/flow/${flow.id}`} className="text-xl font-medium">
             {flow.title}
           </Link>
-          <p className="text-sm/relaxed opacity-75">
-            Explore the growth and stats of {grants.length} grants in this flow.
-          </p>
+          <p className="text-sm/relaxed opacity-75">Explore the growth of this flow.</p>
           <div className="relative flex flex-col">
             <Suspense>
-              <PerformanceStats flow={flow} className="mt-12" defaultOpen />
+              <GrowthStats flow={flow} className="mt-4" />
+            </Suspense>
+            <Suspense>
+              <RemovedGrantsSection flow={flow} className="mt-12" defaultOpen />
+            </Suspense>
+            <Suspense>
+              <RejectedGrantsSection flow={flow} className="mt-12" defaultOpen />
             </Suspense>
           </div>
         </div>

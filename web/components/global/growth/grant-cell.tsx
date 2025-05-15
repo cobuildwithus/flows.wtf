@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2 } from "lucide-react"
 import { getIpfsUrl } from "@/lib/utils"
-import { RemovedGrant } from "./get-removed-grants"
+import { RemovedGrant } from "../../../lib/database/queries/get-removed-grants"
 
 interface GrantCellProps {
   grant: RemovedGrant

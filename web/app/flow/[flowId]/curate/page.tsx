@@ -5,9 +5,9 @@ import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { FlowSubmenu } from "../components/flow-submenu"
 import { Suspense } from "react"
-import ApplicationsGrantsList from "./components/applications-grants-list"
-import RejectedGrantsSection from "./components/rejected-grants-section"
-import RemovedGrantsSection from "./components/removed-grants-section"
+import ApplicationsGrantsList from "@/components/global/growth/applications-grants-list"
+import RejectedGrantsSection from "@/components/global/growth/rejected-grants-section"
+import RemovedGrantsSection from "@/components/global/growth/removed-grants-section"
 
 interface Props {
   params: Promise<{

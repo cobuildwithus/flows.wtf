@@ -16,7 +16,7 @@ import {
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { Button } from "@/components/ui/button"
 import { getRemovalType, getRemovalTypeIcon, formatEvidence } from "./utils"
-import { RemovedGrant } from "./get-removed-grants"
+import { RemovedGrant } from "../../../lib/database/queries/get-removed-grants"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 interface Props {
