@@ -1,25 +1,21 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
 import { Status } from "../../enums"
-import { base as baseContracts, mainnet as mainnetContracts } from "../../../addresses"
 import {
-  arbitratorToGrantId,
   baselinePoolToGrantId,
   bonusPoolToGrantId,
   grants,
   parentFlowToChildren,
-  rewardPoolContractToGrantId,
-  tcrToGrantId,
-  tokenEmitterToErc20,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { mainnet } from "viem/chains"
+import { base } from "../../../addresses"
 
-ponder.on("NounsFlow:FlowInitialized", handleFlowInitialized)
+ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
+ponder.on("VrbsFlowChildren:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"NounsFlow:FlowInitialized">
-  context: Context<"NounsFlow:FlowInitialized">
+  event: Event<"VrbsFlow:FlowInitialized">
+  context: Context<"VrbsFlow:FlowInitialized">
 }) {
   const { context, event } = params
 
@@ -45,12 +41,14 @@ async function handleFlowInitialized(params: {
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
+  const isTopLevel = contract === base.VrbsFlow
+
   await context.db.insert(grants).values({
     id: grantId,
     ...metadata,
     recipient: contract,
-    isTopLevel: true,
-    recipientId: null, // no parent flow
+    recipientId: null, // no parent flow or no recipient id yet
+    isTopLevel,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,
@@ -68,7 +66,6 @@ async function handleFlowInitialized(params: {
     monthlyOutgoingFlowRate: "0",
     monthlyRewardPoolFlowRate: "0",
     monthlyBaselinePoolFlowRate: "0",
-    isOnchainStartup: false,
     monthlyBonusPoolFlowRate: "0",
     bonusMemberUnits: "0",
     baselineMemberUnits: "0",
@@ -77,23 +74,23 @@ async function handleFlowInitialized(params: {
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,
     bonusPoolQuorum: 0,
-    tcr: baseContracts.FlowTCR,
-    erc20: baseContracts.ERC20VotesMintable,
-    arbitrator: baseContracts.ERC20VotesArbitrator,
-    tokenEmitter: baseContracts.TokenEmitter,
+    tcr: null,
+    erc20: null,
+    isOnchainStartup: false,
+    arbitrator: null,
+    tokenEmitter: null,
     managerRewardPoolFlowRatePercent,
     baselinePoolFlowRatePercent,
     challengePeriodEndsAt: 0,
     status: Status.Registered,
-    flowId: "",
+    flowId: isTopLevel ? "" : parentContract,
     updatedAt: Number(event.block.timestamp),
     createdAt: Number(event.block.timestamp),
     isDisputed: false,
     isResolved: false,
     evidenceGroupID: "",
     isActive: true,
-    erc721VotingToken: mainnetContracts.NounsToken,
-    votingTokenChainId: mainnet.id,
+    votingTokenChainId: context.network.chainId, // assumes all these flows are voting on the same network they're deployed on
   })
 
   await createMappings(
@@ -113,22 +110,6 @@ async function createMappings(
   baselinePool: string
 ) {
   await Promise.all([
-    db.insert(tokenEmitterToErc20).values({
-      tokenEmitter: baseContracts.TokenEmitter,
-      erc20: baseContracts.ERC20VotesMintable,
-    }),
-    db.insert(tcrToGrantId).values({
-      tcr: baseContracts.FlowTCR,
-      grantId,
-    }),
-    db.insert(rewardPoolContractToGrantId).values({
-      contract: baseContracts.RewardPool,
-      grantId,
-    }),
-    db.insert(arbitratorToGrantId).values({
-      arbitrator: baseContracts.ERC20VotesArbitrator,
-      grantId,
-    }),
     db.insert(bonusPoolToGrantId).values({
       bonusPool,
       grantId,

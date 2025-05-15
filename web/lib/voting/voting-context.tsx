@@ -42,9 +42,13 @@ interface VotingContextType {
 const VotingContext = createContext<VotingContextType | null>(null)
 
 export const VotingProvider = (
-  props: PropsWithChildren<{ contract: `0x${string}`; chainId: number }>,
+  props: PropsWithChildren<{
+    contract: `0x${string}`
+    chainId: number
+    votingToken: string | null
+  }>,
 ) => {
-  const { children, contract, chainId } = props
+  const { children, contract, chainId, votingToken } = props
   const [isActive, setIsActive] = useState(false)
   const [votes, setVotes] = useState<UserVote[]>()
   const { address } = useAccount()

@@ -16,6 +16,7 @@ export const getPool = unstable_cache(
       erc20: pool.erc20 as `0x${string}`,
       tokenEmitter: pool.tokenEmitter as `0x${string}`,
       arbitrator: pool.arbitrator as `0x${string}`,
+      erc721VotingToken: pool.erc721VotingToken as `0x${string}`,
     }
   },
   ["getPool"],

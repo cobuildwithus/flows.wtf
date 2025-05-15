@@ -182,6 +182,9 @@ model Grant {
   bonusPoolQuorum                  Int     @map("bonus_pool_quorum")
   totalVoteWeightCastOnFlow        String  @map("total_vote_weight_cast_on_flow")
   isOnchainStartup                 Boolean @map("is_onchain_startup")
+  erc721VotingToken                String? @map("erc721_voting_token")
+  votingTokenChainId               Int?    @map("voting_token_chain_id")
+  allocator                        String? @map("allocator")
 
   flow         Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants    Grant[]       @relation("Subgrants")

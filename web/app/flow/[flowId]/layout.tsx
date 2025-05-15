@@ -32,9 +32,17 @@ export default async function FlowLayout(props: PropsWithChildren<Props>) {
   const votingPower = await getVotingPower(user?.address)
 
   return (
-    <VotingProvider chainId={base.id} contract={getEthAddress(flow.recipient)}>
+    <VotingProvider
+      chainId={base.id}
+      contract={getEthAddress(flow.recipient)}
+      votingToken={flow.erc721VotingToken}
+    >
       <div className="container mt-4 max-w-6xl md:mt-8">
-        <FlowHeader flow={flow} votingPower={Number(votingPower)} />
+        <FlowHeader
+          flow={flow}
+          votingPower={Number(votingPower)}
+          erc721VotingToken={flow.erc721VotingToken}
+        />
       </div>
 
       {children}
