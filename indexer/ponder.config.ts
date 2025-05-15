@@ -179,7 +179,7 @@ export default createConfig({
       network: "base",
       startBlock: VRBS_START_BLOCK,
     },
-    AllocatorFlow: {
+    SelfManagedFlow: {
       abi: selfManagedFlowImplAbi,
       filter: {
         event: "AllocatorChanged",
