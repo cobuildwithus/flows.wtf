@@ -104,7 +104,7 @@ export default async function GrowthPage(props: Props) {
               </Suspense>
             ) : (
               <Suspense>
-                <RemovedGrantsSection flow={flow} className="mt-12" />
+                <RemovedGrantsSection defaultOpen flow={flow} className="mt-12" />
               </Suspense>
             )}
             <Suspense>
