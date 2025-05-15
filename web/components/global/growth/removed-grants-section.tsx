@@ -20,15 +20,16 @@ import { Stat } from "@/app/item/[grantId]/cards/stats"
 import { RugRateExplainerDialog } from "./rug-rate-explainer"
 
 interface Props {
-  flow: Pick<Grant, "id" | "totalEarned">
+  flow: Pick<Grant, "id" | "totalEarned" | "isTopLevel">
   defaultOpen?: boolean
+  topLevelPaidOut?: number
   className?: string
 }
 
 export default async function RemovedGrantsSection(props: Props) {
-  const { flow, defaultOpen = false, className } = props
+  const { flow, defaultOpen = false, className, topLevelPaidOut = 0 } = props
 
-  const removedGrants = await getRemovedGrants(flow.id, "removed")
+  const removedGrants = await getRemovedGrants(flow.id, flow.isTopLevel, "removed")
 
   const hasRemovedGrants = removedGrants.length > 0
 
@@ -47,12 +48,15 @@ export default async function RemovedGrantsSection(props: Props) {
             <div className="grid grid-cols-12 gap-x-2 gap-y-4 py-1 lg:gap-x-4">
               <div className="col-span-full xl:col-span-3">
                 <Stat label="Total paid out">
-                  <Currency>{flow.totalEarned}</Currency>
+                  <Currency>{flow.isTopLevel ? topLevelPaidOut : flow.totalEarned}</Currency>
                 </Stat>
               </div>
-              <RugRateExplainerDialog removedGrants={removedGrants} flow={flow} />
+              <RugRateExplainerDialog
+                removedGrants={removedGrants}
+                totalPaidOut={flow.isTopLevel ? topLevelPaidOut : Number(flow.totalEarned)}
+              />
             </div>
-            {hasRemovedGrants && (
+            {hasRemovedGrants && !flow.isTopLevel && (
               <Table>
                 <TableHeader>
                   <TableRow>

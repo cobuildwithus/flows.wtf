@@ -7,10 +7,10 @@ import { Grant } from "@prisma/flows"
 
 export function RugRateExplainerDialog({
   removedGrants,
-  flow,
+  totalPaidOut,
 }: {
   removedGrants: RemovedGrant[]
-  flow: Pick<Grant, "totalEarned">
+  totalPaidOut: number
 }) {
   const adjustedTotal = removedGrants.reduce((acc, grant) => {
     const completionRate = grant.derivedData?.deliverablesCompletionRate?.completionRate ?? 0
@@ -20,7 +20,7 @@ export function RugRateExplainerDialog({
     return acc
   }, 0)
 
-  const rugRate = adjustedTotal / Number(flow.totalEarned)
+  const rugRate = adjustedTotal / totalPaidOut
 
   return (
     <Dialog>
