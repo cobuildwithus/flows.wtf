@@ -1,55 +1,58 @@
 "use server"
 
 import database from "@/lib/database/edge"
+import { unstable_cache } from "next/cache"
 
-export async function countFlowTotalUsers(flowId: string, tokenContract: `0x${string}`) {
-  const curators = await database.tokenHolder.findMany({
-    where: {
-      tokenContract,
-    },
-    select: {
-      holder: true,
-    },
-  })
-  console.log("curators", curators)
+export const countFlowTotalUsers = unstable_cache(
+  async (flowId: string, tokenContract: `0x${string}`) => {
+    const [curators, voters, recipients] = await Promise.all([
+      database.tokenHolder.findMany({
+        where: {
+          tokenContract,
+        },
+        select: {
+          holder: true,
+        },
+      }),
+      database.vote.findMany({
+        where: {
+          grant: {
+            flowId,
+          },
+        },
+        select: {
+          voter: true,
+        },
+      }),
+      database.grant.findMany({
+        where: {
+          flowId,
+        },
+        select: {
+          recipient: true,
+        },
+      }),
+    ])
 
-  const voters = await database.vote.findMany({
-    where: {
-      grant: {
-        flowId,
-      },
-    },
-    select: {
-      voter: true,
-    },
-  })
-  console.log("voters", voters)
+    const numCurators = Array.from(new Set(curators.map((c) => c.holder))).length
+    const numVoters = Array.from(new Set(voters.map((v) => v.voter))).length
+    const numRecipients = Array.from(new Set(recipients.map((r) => r.recipient))).length
 
-  const recipients = await database.grant.findMany({
-    where: {
-      flowId,
-    },
-    select: {
-      recipient: true,
-    },
-  })
+    const uniqueUsers = Array.from(
+      new Set([
+        ...curators.map((c) => c.holder),
+        ...voters.map((v) => v.voter),
+        ...recipients.map((r) => r.recipient),
+      ]),
+    )
 
-  const numCurators = Array.from(new Set(curators.map((c) => c.holder))).length
-  const numVoters = Array.from(new Set(voters.map((v) => v.voter))).length
-  const numRecipients = Array.from(new Set(recipients.map((r) => r.recipient))).length
-
-  const uniqueUsers = Array.from(
-    new Set([
-      ...curators.map((c) => c.holder),
-      ...voters.map((v) => v.voter),
-      ...recipients.map((r) => r.recipient),
-    ]),
-  )
-
-  return {
-    uniqueUsers: uniqueUsers.length,
-    numCurators,
-    numVoters,
-    numRecipients,
-  }
-}
+    return {
+      uniqueUsers: uniqueUsers.length,
+      numCurators,
+      numVoters,
+      numRecipients,
+    }
+  },
+  ["flow-total-users"],
+  { revalidate: 3600 },
+)
