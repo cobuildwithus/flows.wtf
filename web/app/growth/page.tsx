@@ -28,22 +28,23 @@ export default async function GrowthPage(props: Props) {
   const flows = await unstable_cache(
     async () => {
       return database.grant.findMany({
-        where: { flowId: pool.id },
+        where: {
+          OR: [{ flowId: pool.id }, { id: pool.id }],
+        },
         omit: { description: true },
-        orderBy: [{ activeRecipientCount: "desc" }],
+        orderBy: [{ isTopLevel: "desc" }, { activeRecipientCount: "desc" }],
       })
     },
     ["flows-for-growth"],
     { revalidate: 3600 },
   )()
 
-  const flow = flows.find((flow) => flow.id === flowId) || flows[0]
+  const flow = flows.find((flow) => flow.id === flowId) || pool
+  const topLevelRecipientCount = flows
+    .filter((f) => !f.isTopLevel && !f.isRemoved)
+    .reduce((acc, flow) => acc + flow.activeRecipientCount, 0)
 
-  const grants = await unstable_cache(
-    async () => database.grant.findMany({ where: { flowId: flow.id, isActive: true } }),
-    ["grants-for-flow", flow.id],
-    { revalidate: 3600 },
-  )()
+  const topLevelPaidOut = flows.reduce((acc, grant) => acc + Number(grant.totalEarned), 0)
 
   return (
     <main>
@@ -79,16 +80,38 @@ export default async function GrowthPage(props: Props) {
           <Link href={`/flow/${flow.id}`} className="text-xl font-medium">
             {flow.title}
           </Link>
-          <p className="text-sm/relaxed opacity-75">Explore the growth of this flow.</p>
+          <p className="text-sm/relaxed opacity-75">
+            {flow.isTopLevel ? (
+              <>
+                Explore stats for <strong>all flows</strong>.
+              </>
+            ) : (
+              "Explore stats for this flow."
+            )}
+          </p>
           <div className="relative flex flex-col">
             <Suspense>
-              <GrowthStats flow={flow} className="mt-4" />
+              <GrowthStats
+                topLevelRecipientCount={topLevelRecipientCount}
+                flow={flow}
+                className="mt-4"
+              />
             </Suspense>
             <Suspense>
-              <RemovedGrantsSection flow={flow} className="mt-12" defaultOpen />
+              <RemovedGrantsSection
+                topLevelPaidOut={topLevelPaidOut}
+                flow={flow}
+                className="mt-12"
+                defaultOpen
+              />
             </Suspense>
             <Suspense>
-              <RejectedGrantsSection flow={flow} className="mt-12" defaultOpen />
+              <RejectedGrantsSection
+                topLevelRecipientCount={topLevelRecipientCount}
+                flow={flow}
+                className="mt-12"
+                defaultOpen
+              />
             </Suspense>
           </div>
         </div>

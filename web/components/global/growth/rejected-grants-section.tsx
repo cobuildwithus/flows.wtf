@@ -18,18 +18,21 @@ import { GrantCell } from "./grant-cell"
 import RemovalReasonDialog from "./removal-reason-dialog"
 
 interface Props {
-  flow: Pick<Grant, "id" | "totalEarned" | "activeRecipientCount">
+  flow: Pick<Grant, "id" | "totalEarned" | "activeRecipientCount" | "isTopLevel">
   defaultOpen?: boolean
+  topLevelRecipientCount?: number
   className?: string
 }
 
 export default async function RejectedGrantsSection(props: Props) {
-  const { flow, defaultOpen = false, className } = props
+  const { flow, defaultOpen = false, className, topLevelRecipientCount = 0 } = props
 
-  const grants = await getRemovedGrants(flow.id, "rejected")
+  const grants = await getRemovedGrants(flow.id, flow.isTopLevel, "rejected")
   const hasGrants = grants.length > 0
 
-  const totalGrantsAccepted = flow.activeRecipientCount + grants.length
+  const totalGrantsAccepted = flow.isTopLevel
+    ? topLevelRecipientCount
+    : flow.activeRecipientCount + grants.length
 
   const acceptanceRate = ((totalGrantsAccepted - grants.length) / totalGrantsAccepted) * 100
 
@@ -54,11 +57,11 @@ export default async function RejectedGrantsSection(props: Props) {
                 <Stat label="Accepted projects">{totalGrantsAccepted}</Stat>
               </div>
             </div>
-            {hasGrants && (
+            {hasGrants && !flow.isTopLevel && (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead colSpan={4}>Project</TableHead>
+                    <TableHead colSpan={4}>Denied project</TableHead>
                     <TableHead className="text-right">Reason</TableHead>
                   </TableRow>
                 </TableHeader>

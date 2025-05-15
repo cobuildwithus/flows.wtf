@@ -4,34 +4,37 @@ import database from "@/lib/database/edge"
 import { getEthAddress } from "@/lib/utils"
 import { Status } from "@/lib/enums"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
+import { unstable_cache } from "next/cache"
 
-export async function getRemovedGrants(flowId: string, type: "removed" | "rejected") {
+function getWhereCondition(flowId: string, isTopLevel: boolean, type: "removed" | "rejected") {
+  const removed = type === "removed"
+  const rejected = { status: Status.Absent, isRemoved: false }
+  return isTopLevel
+    ? { isFlow: false, ...(removed ? { isRemoved: true } : rejected) }
+    : { flowId, ...(removed ? { isRemoved: true } : rejected) }
+}
+
+export async function getRemovedGrants(
+  flowId: string,
+  isTopLevel: boolean,
+  type: "removed" | "rejected",
+) {
+  const whereCondition = getWhereCondition(flowId, isTopLevel, type)
   const grants = await database.grant.findMany({
-    where:
-      type === "removed"
-        ? { flowId, isRemoved: true }
-        : { flowId, status: Status.Absent, isRemoved: false },
+    where: whereCondition,
     omit: { description: true },
     include: {
       evidences: true,
       disputes: { include: { evidences: true } },
       derivedData: { select: { deliverablesCompletionRate: true } },
     },
-
   })
 
   return await Promise.all(
     grants.map(async (grant) => {
       const [profile, reinstatedGrant] = await Promise.all([
         getUserProfile(getEthAddress(grant.recipient)),
-        database.grant.findFirst({
-          where: {
-            flowId,
-            recipient: grant.recipient,
-            isActive: true,
-          },
-          omit: { description: true },
-        }),
+        getGrant(flowId, grant.recipient),
       ])
 
       const numEvidences = grant.evidences.length
@@ -55,5 +58,20 @@ export async function getRemovedGrants(flowId: string, type: "removed" | "reject
     }),
   )
 }
+
+const getGrant = unstable_cache(
+  async (flowId: string, recipient: string) => {
+    return database.grant.findFirst({
+      where: {
+        flowId,
+        recipient,
+        isActive: true,
+      },
+      omit: { description: true },
+    })
+  },
+  ["get-grant-by-flow-recipient"],
+  { revalidate: 3600 },
+)
 
 export type RemovedGrant = Awaited<ReturnType<typeof getRemovedGrants>>[number]
