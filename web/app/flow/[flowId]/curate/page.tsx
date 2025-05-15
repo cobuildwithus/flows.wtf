@@ -45,7 +45,6 @@ export default async function FlowApplicationsPage(props: Props) {
         <RejectedGrantsSection
           className="mt-12"
           flow={flow}
-          removedGrantsCount={removedGrantsCount}
           defaultOpen={removedGrantsCount === 0 && grantsCount === 0}
         />
       </Suspense>
