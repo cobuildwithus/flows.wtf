@@ -10,6 +10,7 @@ import { Suspense } from "react"
 import RejectedGrantsSection from "@/components/global/growth/rejected-grants-section"
 import RemovedGrantsSection from "@/components/global/growth/removed-grants-section"
 import { GrowthStats } from "./components/GrowthStats"
+import TopLevelPerformanceSection from "@/components/global/growth/top-level-performance-section"
 
 interface Props {
   searchParams: Promise<{ flowId: string }>
@@ -97,14 +98,15 @@ export default async function GrowthPage(props: Props) {
                 className="mt-4"
               />
             </Suspense>
-            <Suspense>
-              <RemovedGrantsSection
-                topLevelPaidOut={topLevelPaidOut}
-                flow={flow}
-                className="mt-12"
-                defaultOpen
-              />
-            </Suspense>
+            {flow.isTopLevel ? (
+              <Suspense>
+                <TopLevelPerformanceSection className="mt-12" topLevelPaidOut={topLevelPaidOut} />
+              </Suspense>
+            ) : (
+              <Suspense>
+                <RemovedGrantsSection flow={flow} className="mt-12" />
+              </Suspense>
+            )}
             <Suspense>
               <RejectedGrantsSection
                 topLevelRecipientCount={topLevelRecipientCount}

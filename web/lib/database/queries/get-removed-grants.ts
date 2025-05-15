@@ -14,6 +14,16 @@ function getWhereCondition(flowId: string, isTopLevel: boolean, type: "removed" 
     : { flowId, ...(removed ? { isRemoved: true } : rejected) }
 }
 
+export async function getRemovedGrantsForTopLevel() {
+  return await database.grant.findMany({
+    where: { isFlow: false, isRemoved: true },
+    omit: { description: true },
+    include: {
+      derivedData: { select: { deliverablesCompletionRate: true } },
+    },
+  })
+}
+
 export async function getRemovedGrants(
   flowId: string,
   isTopLevel: boolean,

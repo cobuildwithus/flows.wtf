@@ -3,13 +3,12 @@ import { Badge } from "@/components/ui/badge"
 import { InfoIcon } from "lucide-react"
 import { Stat } from "@/app/item/[grantId]/cards/stats"
 import { RemovedGrant } from "../../../lib/database/queries/get-removed-grants"
-import { Grant } from "@prisma/flows"
 
 export function RugRateExplainerDialog({
   removedGrants,
   totalPaidOut,
 }: {
-  removedGrants: RemovedGrant[]
+  removedGrants: Pick<RemovedGrant, "totalEarned" | "derivedData">[]
   totalPaidOut: number
 }) {
   const adjustedTotal = removedGrants.reduce((acc, grant) => {

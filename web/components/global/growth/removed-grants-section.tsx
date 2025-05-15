@@ -22,12 +22,11 @@ import { RugRateExplainerDialog } from "./rug-rate-explainer"
 interface Props {
   flow: Pick<Grant, "id" | "totalEarned" | "isTopLevel">
   defaultOpen?: boolean
-  topLevelPaidOut?: number
   className?: string
 }
 
 export default async function RemovedGrantsSection(props: Props) {
-  const { flow, defaultOpen = false, className, topLevelPaidOut = 0 } = props
+  const { flow, defaultOpen = false, className } = props
 
   const removedGrants = await getRemovedGrants(flow.id, flow.isTopLevel, "removed")
 
@@ -48,15 +47,15 @@ export default async function RemovedGrantsSection(props: Props) {
             <div className="grid grid-cols-12 gap-x-2 gap-y-4 py-1 lg:gap-x-4">
               <div className="col-span-full xl:col-span-3">
                 <Stat label="Total paid out">
-                  <Currency>{flow.isTopLevel ? topLevelPaidOut : flow.totalEarned}</Currency>
+                  <Currency>{flow.totalEarned}</Currency>
                 </Stat>
               </div>
               <RugRateExplainerDialog
                 removedGrants={removedGrants}
-                totalPaidOut={flow.isTopLevel ? topLevelPaidOut : Number(flow.totalEarned)}
+                totalPaidOut={Number(flow.totalEarned)}
               />
             </div>
-            {hasRemovedGrants && !flow.isTopLevel && (
+            {hasRemovedGrants && (
               <Table>
                 <TableHeader>
                   <TableRow>
