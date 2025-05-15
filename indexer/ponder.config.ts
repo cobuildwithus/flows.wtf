@@ -12,13 +12,14 @@ import {
   gdav1ImplAbi,
   tokenEmitterImplAbi,
   vrbsFlowImplAbi,
-  allocatorFlowImplAbi,
+  selfManagedFlowImplAbi,
 } from "./abis"
 import { base as baseContracts } from "./addresses"
 
 const isDev = process.env.NODE_ENV === "development"
 
-const START_BLOCK = 21519031
+const NOUNS_START_BLOCK = 21519031
+const VRBS_START_BLOCK = 30152014
 
 export default createConfig({
   database: { kind: "postgres" },
@@ -35,7 +36,7 @@ export default createConfig({
       abi: nounsFlowImplAbi,
       address: baseContracts.NounsFlow,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     NounsFlowChildren: {
       abi: nounsFlowImplAbi,
@@ -48,13 +49,13 @@ export default createConfig({
         parameter: "recipient",
       }),
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     FlowTcr: {
       abi: flowTcrImplAbi,
       address: baseContracts.FlowTCR,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     FlowTcrChildren: {
       abi: flowTcrImplAbi,
@@ -67,19 +68,19 @@ export default createConfig({
         parameter: "flowTCRProxy",
       }),
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     NounsFlowTcrFactory: {
       abi: tcrFactoryImplAbi,
       address: baseContracts.TCRFactory,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     Arbitrator: {
       abi: erc20VotesArbitratorImplAbi,
       address: baseContracts.ERC20VotesArbitrator,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     ArbitratorChildren: {
       abi: erc20VotesArbitratorImplAbi,
@@ -92,13 +93,13 @@ export default createConfig({
         parameter: "arbitratorProxy",
       }),
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     TokenEmitter: {
       abi: tokenEmitterImplAbi,
       address: baseContracts.TokenEmitter,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
       // so we can pull erc20
       includeTransactionReceipts: true,
     },
@@ -114,13 +115,13 @@ export default createConfig({
       }),
       network: "base",
       includeTransactionReceipts: true,
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     Erc20Token: {
       abi: erc20VotesMintableImplAbi,
       address: baseContracts.ERC20VotesMintable,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     Erc20TokenChildren: {
       abi: erc20VotesMintableImplAbi,
@@ -133,7 +134,7 @@ export default createConfig({
         parameter: "erc20Proxy",
       }),
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     SuperfluidPool: {
       abi: superfluidPoolAbi,
@@ -144,13 +145,13 @@ export default createConfig({
         },
       },
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
     },
     GdaV1: {
       abi: gdav1ImplAbi,
       address: gdav1Address[8453],
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: NOUNS_START_BLOCK,
       filter: {
         event: "FlowDistributionUpdated",
         args: {
@@ -163,7 +164,7 @@ export default createConfig({
       abi: vrbsFlowImplAbi,
       address: baseContracts.VrbsFlow,
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: VRBS_START_BLOCK,
     },
     VrbsFlowChildren: {
       abi: vrbsFlowImplAbi,
@@ -176,16 +177,16 @@ export default createConfig({
         parameter: "recipient",
       }),
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: VRBS_START_BLOCK,
     },
     AllocatorFlow: {
-      abi: allocatorFlowImplAbi,
+      abi: selfManagedFlowImplAbi,
       filter: {
         event: "AllocatorChanged",
         args: {},
       },
       network: "base",
-      startBlock: START_BLOCK,
+      startBlock: VRBS_START_BLOCK,
     },
   },
   blocks: {

@@ -1,6 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { flowContractToGrantId, grants, rewardPoolContractToGrantId } from "ponder:schema"
+import { grants, rewardPoolContractToGrantId } from "ponder:schema"
 
 ponder.on("GdaV1:FlowDistributionUpdated", handleFlowDistributionUpdated)
 
@@ -68,13 +68,11 @@ const getMonthlyFlowRate = (flowRate: bigint) => {
 }
 
 async function getGrant(db: Context["db"], distributor: string) {
-  const grantIdFlow = await db.find(flowContractToGrantId, { contract: distributor })
+  const grantIdFlow = await db.find(grants, { id: distributor })
+  if (grantIdFlow) return grantIdFlow
+
   const grantIdRewardPool = await db.find(rewardPoolContractToGrantId, { contract: distributor })
-  const grantId = grantIdFlow?.grantId ?? grantIdRewardPool?.grantId
+  if (grantIdRewardPool) return db.find(grants, { id: grantIdRewardPool.grantId })
 
-  if (!grantId) return null
-
-  const grant = await db.find(grants, { id: grantId })
-  if (!grant) throw new Error(`Grant not found: ${grantId}`)
-  return grant
+  return null
 }

@@ -1,6 +1,8 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { votes, grants, votesByTokenIdAndContract, flowContractToGrantId } from "ponder:schema"
+import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
+import { inArray } from "ponder"
+import { getGrantIdFromTcrAndItemId } from "../tcr/helpers"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
@@ -21,19 +23,21 @@ async function handleVoteCast(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const votesCount = bps / (totalWeight / BigInt(1e18))
 
-  const affectedGrantsIds = new Map<string, bigint>()
-  affectedGrantsIds.set(recipientId.toString(), votesCount)
+  const affectedRecipientIds = new Map<string, bigint>()
+  affectedRecipientIds.set(recipientId.toString(), votesCount)
 
   let hasPreviousVotes = false
 
   await updateTotalVoteWeightCastOnFlow(context.db, contract, tokenId, totalWeight)
+  const flow = await context.db.find(grants, { id: contract })
+  if (!flow) throw new Error(`Flow not found: ${contract}`)
 
   // Mark old votes for this token as stale
   const oldVotes = await getOldVotes(context.db, contract, tokenId, blockNumber)
 
   for (const oldVote of oldVotes) {
-    const existingVotes = affectedGrantsIds.get(oldVote.recipientId) ?? BigInt(0)
-    affectedGrantsIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.votesCount))
+    const existingVotes = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
+    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.votesCount))
     hasPreviousVotes = true
   }
 
@@ -63,8 +67,12 @@ async function handleVoteCast(params: {
       voteIds: Array.from(new Set([...row.voteIds, voteId])),
     }))
 
-  for (const [affectedGrantId, votesDelta] of affectedGrantsIds) {
-    await context.db.update(grants, { id: affectedGrantId }).set((row) => ({
+  for (const [recipientId, votesDelta] of affectedRecipientIds) {
+    const grantId = flow.tcr
+      ? await getGrantIdFromTcrAndItemId(context.db, flow.tcr, recipientId)
+      : contract
+
+    await context.db.update(grants, { id: grantId }).set((row) => ({
       votesCount: (BigInt(row.votesCount) + votesDelta).toString(),
     }))
   }
@@ -82,13 +90,13 @@ async function updateTotalVoteWeightCastOnFlow(
   tokenId: bigint,
   totalWeight: bigint
 ) {
-  const parentFlow = await db.find(flowContractToGrantId, { contract })
-  if (parentFlow) {
+  const grantId = contract
+  if (grantId) {
     const existingVoteIds = await db.find(votesByTokenIdAndContract, {
       contractTokenId: `${contract}_${tokenId}`,
     })
     if (!existingVoteIds || existingVoteIds.voteIds.length === 0) {
-      await db.update(grants, { id: parentFlow.grantId }).set((row) => ({
+      await db.update(grants, { id: grantId }).set((row) => ({
         totalVoteWeightCastOnFlow: (BigInt(row.totalVoteWeightCastOnFlow) + totalWeight).toString(),
       }))
     }

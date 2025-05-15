@@ -4,12 +4,15 @@ import { Status } from "../../enums"
 import {
   baselinePoolToGrantId,
   bonusPoolToGrantId,
-  flowContractToGrantId,
   grants,
   parentFlowToChildren,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
+import { base } from "../../../addresses"
+
 ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
+ponder.on("VrbsFlowChildren:FlowInitialized", handleFlowInitialized)
+ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
   event: Event<"VrbsFlow:FlowInitialized">
@@ -28,6 +31,7 @@ async function handleFlowInitialized(params: {
   } = event.args
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
+  const parent = parentContract.toLowerCase() as `0x${string}`
 
   const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
     context,
@@ -38,16 +42,19 @@ async function handleFlowInitialized(params: {
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
+  const isTopLevel = contract === base.VrbsFlow
+
   await context.db.insert(grants).values({
     id: grantId,
     ...metadata,
     recipient: contract,
-    isTopLevel: true,
+    recipientId: null, // no parent flow or no recipient id yet
+    isTopLevel,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,
     isRemoved: false,
-    parentContract: parentContract.toLowerCase(),
+    parentContract: parent,
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
@@ -77,7 +84,7 @@ async function handleFlowInitialized(params: {
     baselinePoolFlowRatePercent,
     challengePeriodEndsAt: 0,
     status: Status.Registered,
-    flowId: "",
+    flowId: isTopLevel ? "" : parent,
     updatedAt: Number(event.block.timestamp),
     createdAt: Number(event.block.timestamp),
     isDisputed: false,
@@ -103,10 +110,6 @@ async function createMappings(
   baselinePool: string
 ) {
   await Promise.all([
-    db.insert(flowContractToGrantId).values({
-      contract,
-      grantId,
-    }),
     db.insert(bonusPoolToGrantId).values({
       bonusPool,
       grantId,

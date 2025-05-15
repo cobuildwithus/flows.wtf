@@ -35,6 +35,8 @@ async function handleMemberUnitsUpdated(params: {
 
   const grant = await getGrant(context.db, member, parentGrant.recipient)
 
+  if (parentGrant.id === grant.id) throw new Error("machine broke")
+
   if (!grant) {
     throw new Error(`Grant not found: ${member}`)
   }

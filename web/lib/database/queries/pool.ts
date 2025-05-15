@@ -2,11 +2,12 @@
 
 import { unstable_cache } from "next/cache"
 import database from "@/lib/database/edge"
+import { NOUNS_FLOW } from "@/lib/config"
 
 export const getPool = unstable_cache(
   async (): Promise<FlowWithTcr> => {
     const pool = await database.grant.findFirstOrThrow({
-      where: { isTopLevel: true, isFlow: true },
+      where: { id: NOUNS_FLOW },
     })
 
     return {

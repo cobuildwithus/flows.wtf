@@ -20,6 +20,7 @@ type GrantInsertParams = {
   createdAt: number
   updatedAt: number
   isFlow: boolean
+  recipientId: string
   isOnchainStartup?: boolean
 }
 
@@ -43,11 +44,13 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     updatedAt,
     isFlow,
     isOnchainStartup = false,
+    recipientId,
   } = params
 
   return db.insert(grants).values({
     id,
     title,
+    recipientId,
     description,
     image,
     tagline,

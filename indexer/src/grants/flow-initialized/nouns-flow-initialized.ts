@@ -6,7 +6,6 @@ import {
   arbitratorToGrantId,
   baselinePoolToGrantId,
   bonusPoolToGrantId,
-  flowContractToGrantId,
   grants,
   parentFlowToChildren,
   rewardPoolContractToGrantId,
@@ -49,6 +48,7 @@ async function handleFlowInitialized(params: {
     ...metadata,
     recipient: contract,
     isTopLevel: true,
+    recipientId: null, // no parent flow
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,
@@ -112,10 +112,6 @@ async function createMappings(
     db.insert(tokenEmitterToErc20).values({
       tokenEmitter: baseContracts.TokenEmitter,
       erc20: baseContracts.ERC20VotesMintable,
-    }),
-    db.insert(flowContractToGrantId).values({
-      contract,
-      grantId,
     }),
     db.insert(tcrToGrantId).values({
       tcr: baseContracts.FlowTCR,

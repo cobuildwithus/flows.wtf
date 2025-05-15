@@ -1,7 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { Party } from "../enums"
 import { disputes, disputeVotes } from "ponder:schema"
-import { getDisputePrimaryKey } from "./create"
+import { getDisputePrimaryKey } from "./dispute-created"
 
 ponder.on("Arbitrator:VoteCommitted", handleVoteCommitted)
 ponder.on("ArbitratorChildren:VoteCommitted", handleVoteCommitted)

@@ -2,6 +2,7 @@ import { and, eq } from "ponder"
 import { ponder, type Context, type Event } from "ponder:registry"
 import { arbitratorToGrantId, disputes, grants } from "ponder:schema"
 import { Party, Status } from "../enums"
+import { getGrantIdFromTcrAndItemId } from "../tcr/helpers"
 
 ponder.on("Arbitrator:DisputeCreated", handleDisputeCreated)
 ponder.on("ArbitratorChildren:DisputeCreated", handleDisputeCreated)
@@ -58,10 +59,10 @@ async function handleDispute(params: {
   const { _arbitrator, _disputeID, _itemID, _evidenceGroupID } = event.args
 
   const arbitrator = _arbitrator.toString().toLowerCase()
+  const tcr = event.log.address.toLowerCase()
 
-  const grant = await context.db
-    .update(grants, { id: _itemID.toString() })
-    .set({ isDisputed: true })
+  const grantId = await getGrantIdFromTcrAndItemId(context.db, tcr, _itemID)
+  if (!grantId) throw new Error(`Grant not found: ${_itemID}`)
 
   const parent = await context.db.find(arbitratorToGrantId, { arbitrator })
   if (!parent) throw new Error("Arbitrator not found")
@@ -71,7 +72,7 @@ async function handleDispute(params: {
   }))
 
   await context.db.update(disputes, { id: getDisputePrimaryKey(_disputeID, arbitrator) }).set({
-    grantId: _itemID.toString(),
+    grantId,
     evidenceGroupID: _evidenceGroupID.toString(),
   })
 }
