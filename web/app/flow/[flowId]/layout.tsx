@@ -29,7 +29,7 @@ export default async function FlowLayout(props: PropsWithChildren<Props>) {
 
   const [flow, user] = await Promise.all([getFlowWithGrants(flowId), getUser()])
 
-  const votingPower = await getVotingPower(user?.address)
+  const votingPower = await getVotingPower(user?.address, flowId)
 
   return (
     <VotingProvider

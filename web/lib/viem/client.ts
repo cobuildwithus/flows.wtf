@@ -13,6 +13,17 @@ export const l2Client = createPublicClient({
   batch: { multicall: true },
 })
 
+export const getClient = (chainId: number) => {
+  switch (chainId) {
+    case base.id:
+      return l2Client
+    case mainnet.id:
+      return l1Client
+    default:
+      throw new Error(`Unsupported chainId: ${chainId}`)
+  }
+}
+
 export function getChain(chainId: number) {
   switch (chainId) {
     case base.id:
