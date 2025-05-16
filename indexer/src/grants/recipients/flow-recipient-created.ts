@@ -6,7 +6,8 @@ import {
   baselinePoolToGrantId,
   recipientAndParentToGrantId,
 } from "ponder:schema"
-import { updateTcrAndItemId } from "../../tcr/helpers"
+import { addGrantIdToTcrAndItemId, updateTcrAndItemId } from "../../tcr/tcr-helpers"
+import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
 
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
@@ -43,7 +44,7 @@ async function handleFlowRecipientCreated(params: {
   })
 
   await createFlowMappings(context.db, flowContract, bonusPool, baselinePool)
-  await createRecipientMappings(context.db, flowContract, parentFlowContract)
+  await createRecipientMappings(context.db, flowContract, recipientId, parentFlowContract)
 }
 
 async function createFlowMappings(
@@ -71,6 +72,7 @@ async function createFlowMappings(
 async function createRecipientMappings(
   db: Context["db"],
   flowContract: string,
+  recipientId: string,
   parentFlowContract: string
 ) {
   await Promise.all([
@@ -82,6 +84,7 @@ async function createRecipientMappings(
     db.update(parentFlowToChildren, { parentFlowContract }).set((row) => ({
       childGrantIds: [...row.childGrantIds, flowContract],
     })),
+    addGrantIdToFlowContractAndRecipientId(db, parentFlowContract, recipientId, flowContract),
   ])
 }
 

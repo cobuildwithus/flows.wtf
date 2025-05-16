@@ -5,6 +5,7 @@ import { getFlow } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { insertGrant } from "./insert-vrbs-grant"
 import { RecipientType } from "../../../enums"
+import { addGrantIdToFlowContractAndRecipientId } from "../../grant-helpers"
 
 ponder.on("VrbsFlow:RecipientCreated", handleRecipientCreated)
 ponder.on("VrbsFlowChildren:RecipientCreated", handleRecipientCreated)
@@ -45,6 +46,7 @@ async function handleRecipientCreated(params: {
     recipientId: grantId,
   })
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
+  await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
 
   if (isBlockRecent(timestamp)) {
     await addGrantEmbedding(grant, recipientType, flow.id)

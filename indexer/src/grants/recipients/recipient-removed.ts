@@ -3,7 +3,7 @@ import { grants } from "ponder:schema"
 import { removeGrantEmbedding } from "../embeddings/embed-grants"
 import { isBlockRecent } from "../../utils"
 import { getFlow } from "./helpers"
-import { getGrantIdFromTcrAndItemId } from "../../tcr/helpers"
+import { getGrantIdFromTcrAndItemId } from "../../tcr/tcr-helpers"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)

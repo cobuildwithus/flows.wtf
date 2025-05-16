@@ -257,6 +257,15 @@ export const tcrAndItemIdToGrantId = onchainTable(
   })
 )
 
+export const flowContractAndRecipientIdToGrantId = onchainTable(
+  "_kv_FlowContractAndRecipientIdToGrantId",
+  (t) => ({
+    flowContractAndRecipientId: t.text().primaryKey(),
+    grantId: t.text().notNull(),
+  }),
+  (table) => ({})
+)
+
 export const bonusPoolToGrantId = onchainTable(
   "_kv_BonusPoolToGrantId",
   (t) => ({
