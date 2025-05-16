@@ -4,7 +4,11 @@ import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { useUserVotes } from "./user-votes/use-user-votes"
-import { getNumBatches, getTokensPerBatch } from "./batch-voting-lib"
+import {
+  getNumBatches,
+  getTokenBatchAndLoadingMessage,
+  getTokensPerBatch,
+} from "./batch-voting-lib"
 import { UserVote } from "./vote-types"
 import { useVoteNounsFlow } from "./use-vote-nouns-flow"
 import { mainnet } from "@/addresses"
@@ -88,17 +92,15 @@ export const VotingProvider = (
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
           if (!tokens.length) return toast.error("No delegated tokens found")
 
-          const start = batchIndex * TOKENS_PER_BATCH
-          const end = start + TOKENS_PER_BATCH
-          const tokenBatch = tokens.slice(start, end)
-
-          toast.loading(
-            batchTotal > 1
-              ? `Preparing vote batch ${batchIndex + 1} of ${batchTotal}...`
-              : "Preparing vote...",
+          const { tokenBatch, loadingMessage } = getTokenBatchAndLoadingMessage(
+            batchIndex,
+            batchTotal,
+            TOKENS_PER_BATCH,
+            tokens,
           )
 
           if (isNounsFlow(votingToken)) {
+            toast.loading(loadingMessage)
             return await saveVotesNounsFlow(existingVotes, address, tokenBatch)
           }
 
