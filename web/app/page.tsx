@@ -31,7 +31,11 @@ export default async function Home() {
   ])
 
   return (
-    <VotingProvider chainId={base.id} contract={getEthAddress(pool.recipient)}>
+    <VotingProvider
+      chainId={base.id}
+      contract={getEthAddress(pool.recipient)}
+      votingToken={pool.erc721VotingToken}
+    >
       <main>
         <div className="container mt-6">
           <HomepageIntro user={user} />

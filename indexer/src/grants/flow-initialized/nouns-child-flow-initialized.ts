@@ -8,10 +8,9 @@ import {
   parentFlowToChildren,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { base } from "../../../addresses"
+import { mainnet as mainnetContracts } from "../../../addresses"
+import { mainnet } from "viem/chains"
 
-ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
-ponder.on("VrbsFlowChildren:FlowInitialized", handleFlowInitialized)
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
@@ -21,7 +20,7 @@ async function handleFlowInitialized(params: {
   const { context, event } = params
 
   const {
-    parent: parentContract,
+    parent,
     managerRewardPool,
     superToken,
     baselinePool,
@@ -31,7 +30,7 @@ async function handleFlowInitialized(params: {
   } = event.args
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
-  const parent = parentContract.toLowerCase() as `0x${string}`
+  const parentContract = parent.toLowerCase() as `0x${string}`
 
   const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
     context,
@@ -42,19 +41,17 @@ async function handleFlowInitialized(params: {
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
-  const isTopLevel = contract === base.VrbsFlow
-
   await context.db.insert(grants).values({
     id: grantId,
     ...metadata,
     recipient: contract,
     recipientId: null, // no parent flow or no recipient id yet
-    isTopLevel,
+    isTopLevel: false,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,
     isRemoved: false,
-    parentContract: parent,
+    parentContract,
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
@@ -84,13 +81,15 @@ async function handleFlowInitialized(params: {
     baselinePoolFlowRatePercent,
     challengePeriodEndsAt: 0,
     status: Status.Registered,
-    flowId: isTopLevel ? "" : parent,
+    flowId: parentContract,
     updatedAt: Number(event.block.timestamp),
     createdAt: Number(event.block.timestamp),
     isDisputed: false,
     isResolved: false,
     evidenceGroupID: "",
     isActive: true,
+    votingTokenChainId: mainnet.id,
+    erc721VotingToken: mainnetContracts.NounsToken,
   })
 
   await createMappings(

@@ -33,6 +33,7 @@ export const FlowSubmenu = async (props: Props) => {
   const isFlowRemoved = flow.isRemoved
 
   const canSuggestFlow = !!flow.tcr && flow.isTopLevel
+  const canVote = !!flow.erc721VotingToken
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
@@ -73,7 +74,7 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {isApproved && approvedCount > 0 && <VotingToggle />}
+          {isApproved && approvedCount > 0 && canVote && <VotingToggle />}
           {(isDrafts || isCurate || (isApproved && approvedCount === 0)) &&
             !isFlowRemoved &&
             canSuggestFlow && (

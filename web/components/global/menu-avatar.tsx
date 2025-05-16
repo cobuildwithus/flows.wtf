@@ -14,7 +14,7 @@ import { ModeToggle } from "./mode-toggle"
 import { useRunUserJobs } from "@/lib/auth/use-run-user-jobs"
 import Link from "next/dist/client/link"
 import { AvatarLink } from "./avatar-link"
-import { NounsVoter } from "./nouns-voter-section"
+import { TokenVoter } from "./token-voter-section"
 import { FarcasterSignIn } from "./farcaster-sign-in"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
 import { useRouter } from "next/navigation"
@@ -68,7 +68,10 @@ export const MenuAvatar = (props: Props) => {
               </div>
             </div>
             {tokens.length > 0 ? (
-              <NounsVoter votingPower={votingPower} tokenIds={tokens.map((token) => token.id)} />
+              <TokenVoter
+                tokenContract={tokens[0].contract}
+                tokenIds={tokens.map((token) => token.tokenId)}
+              />
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">

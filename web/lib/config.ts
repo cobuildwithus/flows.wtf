@@ -5,17 +5,13 @@ import { nounsTokenAddress } from "./abis"
 export const NOUNS_FLOW = baseContracts.NounsFlow
 
 // Nouns token contract (for voting power)
-export const NOUNS_TOKEN = (process.env.NEXT_PUBLIC_NOUNS_TOKEN_ADDRESS ||
-  nounsTokenAddress[1]) as `0x${string}`
+export const NOUNS_TOKEN = nounsTokenAddress[1].toLowerCase() as `0x${string}`
 
 // x Noun = x * VOTING_POWER_SCALE votes
 export const VOTING_POWER_SCALE = BigInt(1000)
 
 // Voting scale from the contract
 export const PERCENTAGE_SCALE = 1e6
-
-// Subgraph ID
-export const NOUNS_SUBGRAPH_ID = "5qcR6rAfDMZCVGuZ6DDois7y4zyXqsyqvaqhE6NRRraW"
 
 // Macro forwarder address (same across all chains)
 export const MACRO_FORWARDER = "0xfD01285b9435bc45C243E5e7F978E288B2912de6" as `0x${string}`

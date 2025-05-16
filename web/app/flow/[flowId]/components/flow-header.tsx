@@ -1,32 +1,24 @@
 "use server"
 
 import { Badge } from "@/components/ui/badge"
-import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
 import type { FlowWithGrants } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
-import { cn, getEthAddress, getIpfsUrl } from "@/lib/utils"
+import { getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { BudgetDialog } from "./budget-dialog"
-import { FlowHeaderUserVotes } from "./flow-header-user-votes"
-import { erc20Abi } from "viem"
-import { nounsTokenAddress } from "@/lib/abis"
-import { l1Client } from "@/lib/viem/client"
+import { getVotingTokenSupply } from "./get-voting-token-supply"
 
 interface Props {
   flow: FlowWithGrants
   votingPower: number
+  erc721VotingToken: string | null
 }
 
 export const FlowHeader = async (props: Props) => {
-  const { flow, votingPower } = props
-  const { isTopLevel } = flow
+  const { flow, erc721VotingToken } = props
 
-  const nounsTokenSupply = await l1Client.readContract({
-    abi: erc20Abi,
-    address: nounsTokenAddress[1],
-    functionName: "totalSupply",
-  })
+  const votingTokenSupply = getVotingTokenSupply(erc721VotingToken, flow.votingTokenChainId)
 
   return (
     <div className="flex flex-col items-start justify-between space-y-6 md:flex-row md:items-center md:space-x-4 md:space-y-0">
@@ -48,7 +40,7 @@ export const FlowHeader = async (props: Props) => {
                 {flow.title}
               </Link>
               <div className="text-sm max-sm:text-xs md:text-center">
-                <BudgetDialog nounsTokenSupply={Number(nounsTokenSupply)} flow={flow} />
+                <BudgetDialog votingTokenSupply={Number(votingTokenSupply)} flow={flow} />
               </div>
             </div>
             {flow.status === Status.ClearingRequested && (

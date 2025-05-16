@@ -15,11 +15,11 @@ import { Separator } from "@radix-ui/react-select"
 
 interface Props {
   flow: FlowWithGrants
-  nounsTokenSupply: number
+  votingTokenSupply: number
 }
 
 export const BudgetDialog = (props: Props) => {
-  const { flow, nounsTokenSupply } = props
+  const { flow, votingTokenSupply } = props
   const tokenVoteWeight = 1000
 
   const managerFlowRatePercent = Number(flow.managerRewardPoolFlowRatePercent)
@@ -38,7 +38,7 @@ export const BudgetDialog = (props: Props) => {
   const managerPercent = (Number(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
 
   const currentVotes = Number(flow.totalVoteWeightCastOnFlow) / 1e18
-  const requiredVotes = (nounsTokenSupply * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6
+  const requiredVotes = (votingTokenSupply * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6
 
   const quorumData = {
     quorumPercentage: (currentVotes / requiredVotes) * 100,

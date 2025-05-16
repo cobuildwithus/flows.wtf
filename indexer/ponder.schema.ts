@@ -56,6 +56,8 @@ export const grants = onchainTable(
     totalVoteWeightCastOnFlow: t.text().notNull(),
     isOnchainStartup: t.boolean().notNull(),
     allocator: t.text(),
+    erc721VotingToken: t.text(),
+    votingTokenChainId: t.integer(),
   }),
   (table) => ({
     isTopLevelIdx: index().on(table.isTopLevel),
@@ -151,6 +153,24 @@ export const disputeVotes = onchainTable(
   (table) => ({
     disputeIdIdx: index().on(table.disputeId),
     arbitratorIdx: index().on(table.arbitrator),
+  })
+)
+
+export const erc721Tokens = onchainTable(
+  "ERC721Token",
+  (t) => ({
+    id: t.text().primaryKey(),
+    contract: t.text().notNull(),
+    owner: t.text().notNull(),
+    tokenId: t.integer().notNull(),
+    burned: t.boolean().notNull(),
+    chainId: t.integer().notNull(),
+    delegate: t.text().notNull(),
+  }),
+  (table) => ({
+    contractIdx: index().on(table.contract),
+    ownerIdx: index().on(table.owner),
+    delegateIdx: index().on(table.delegate),
   })
 )
 
@@ -295,3 +315,8 @@ export const votesByTokenIdAndContract = onchainTable(
   }),
   (table) => ({})
 )
+
+export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
+  ownerContractChainId: t.text().primaryKey(),
+  tokenIds: t.integer().array().notNull(),
+}))
