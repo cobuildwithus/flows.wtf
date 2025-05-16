@@ -4,11 +4,10 @@ import { NOUNS_TOKEN } from "@/lib/config"
 import { openseaNftUrl } from "@/lib/utils"
 import Image from "next/image"
 import { mainnet } from "viem/chains"
-import { Alert, AlertDescription } from "../ui/alert"
 import pluralize from "pluralize"
 
 export function NounsVoter(props: { votingPower: bigint; tokenIds: bigint[] }) {
-  const { votingPower, tokenIds } = props
+  const { tokenIds } = props
 
   const tokensCount = tokenIds.length
 

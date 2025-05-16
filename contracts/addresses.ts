@@ -24,4 +24,8 @@ export const base = {
   SelfManagedFlowImpl: "0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41",
   VrbsFlowImpl: "0x9c042cf5d48efceebfa1bb4b2072db9a5358c57d",
   VrbsFlow: "0xe54c74df9e93f79ccd8d3b3283d3aca145afca98",
+  // ERC721Tokens
+  VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
+  GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
+  GroundsToken: "0xebf2d8b25d3dcc3371d54c6727c207c4f3080b8c",
 } as const

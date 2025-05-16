@@ -156,6 +156,23 @@ export const disputeVotes = onchainTable(
   })
 )
 
+export const erc721Tokens = onchainTable(
+  "ERC721Token",
+  (t) => ({
+    id: t.text().primaryKey(),
+    contract: t.text().notNull(),
+    owner: t.text().notNull(),
+    tokenId: t.integer().notNull(),
+    burned: t.boolean().notNull(),
+    chainId: t.integer().notNull(),
+    delegate: t.text().notNull(),
+  }),
+  (table) => ({
+    contractIdx: index().on(table.contract),
+    ownerIdx: index().on(table.owner),
+  })
+)
+
 export const tokenHolders = onchainTable(
   "TokenHolder",
   (t) => ({
@@ -297,3 +314,8 @@ export const votesByTokenIdAndContract = onchainTable(
   }),
   (table) => ({})
 )
+
+export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
+  ownerContractChainId: t.text().primaryKey(),
+  tokenIds: t.integer().array().notNull(),
+}))
