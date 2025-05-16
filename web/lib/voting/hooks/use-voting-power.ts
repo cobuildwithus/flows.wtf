@@ -2,7 +2,7 @@
 
 import useSWR from "swr"
 import { useAccount } from "wagmi"
-import { getVotingPower } from "./get-voting-power"
+import { getVotingPower } from "../voting-power/get-voting-power"
 import { useParams } from "next/navigation"
 
 export function useVotingPower() {

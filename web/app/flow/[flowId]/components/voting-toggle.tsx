@@ -15,7 +15,7 @@ export const VotingToggle = () => {
     <AuthButton
       onClick={() => {
         if (tokens.length === 0) {
-          return toast.error("You don't have any Nouns delegated to vote with")
+          return toast.error("You don't have any voting power.")
         }
 
         activate()

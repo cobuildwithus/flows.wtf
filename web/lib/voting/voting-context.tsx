@@ -1,27 +1,17 @@
 "use client"
 
 import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
-import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { Vote } from "@prisma/flows"
-import { useRouter } from "next/navigation"
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
-import { toast } from "sonner"
 import { useAccount } from "wagmi"
-import {
-  cfav1ForwarderAbi,
-  erc20VotesMintableImplAbi,
-  gdav1ForwarderAbi,
-  nounsFlowImplAbi,
-  rewardPoolImplAbi,
-  superfluidPoolAbi,
-  tokenVerifierAbi,
-} from "../abis"
-import { PERCENTAGE_SCALE } from "../config"
 import { useUserVotes } from "./user-votes/use-user-votes"
-import { serialize } from "../serialize"
-import { getEthAddress } from "../utils"
-
-type UserVote = Pick<Vote, "bps" | "recipientId">
+import { useBatchVoting } from "./hooks/use-batch-voting"
+import { isValidVotingContract, UserVote } from "./vote-types"
+import { useVoteNounsFlow } from "./hooks/use-vote-nouns-flow"
+import { mainnet } from "@/addresses"
+import { toast } from "sonner"
+import { useVotingContextActive } from "./hooks/use-context-active"
+import { useVotingPower } from "./hooks/use-voting-power"
+import { useExistingVotes } from "./hooks/use-existing-votes"
 
 interface VotingContextType {
   activate: () => void
@@ -50,64 +40,22 @@ export const VotingProvider = (
   }>,
 ) => {
   const { children, contract, chainId, votingToken } = props
-  const [isActive, setIsActive] = useState(false)
-  const [votes, setVotes] = useState<UserVote[]>()
   const { address } = useAccount()
-  const router = useRouter()
-
-  const { votes: userVotes, mutate } = useUserVotes(contract, address)
-
-  const { writeContract, prepareWallet, isLoading } = useContractTransaction({
-    chainId,
-    onSuccess: async () => {
-      // If there are more batches to process, simply advance the index and let the
-      // user click the button again. Otherwise finish up as before.
-      setTimeout(() => {
-        mutate()
-      }, 3000)
-
-      setBatchIndex((prev) => {
-        const next = prev + 1
-        if (next < batchTotal) {
-          return next
-        }
-
-        // All batches submitted – close the voting bar and reset.
-        setIsActive(false)
-        router.refresh()
-        return 0
-      })
-    },
-  })
-
+  const { isActive, setIsActive } = useVotingContextActive()
+  const { userVotes, mutateUserVotes, votes, setVotes } = useExistingVotes(contract)
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
+  const { batchIndex, batchTotal, setBatchIndex, tokenBatch, loadingMessage } = useBatchVoting(
+    tokens,
+    votingToken,
+  )
 
-  const TOKENS_PER_BATCH = 15
-
-  const [batchIndex, setBatchIndex] = useState(0)
-
-  // Compute total batches whenever the delegated token list changes. We always have at
-  // least one batch so that the UI label logic is simplified.
-  const batchTotal = Math.max(1, Math.ceil(tokens.length / TOKENS_PER_BATCH))
-
-  useEffect(() => {
-    if (typeof votes !== "undefined") return
-    if (!userVotes.length) return
-    setVotes(userVotes)
-  }, [votes, userVotes])
-
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isActive) setIsActive(false)
-    }
-
-    document.addEventListener("keydown", handleEscape)
-    return () => {
-      document.removeEventListener("keydown", handleEscape)
-    }
-  }, [isActive])
+  const { saveVotes: saveVotesNounsFlow, isLoading: isLoadingNounsFlow } = useVoteNounsFlow(
+    contract,
+    chainId,
+    () => mutateUserVotes(),
+  )
 
   return (
     <VotingContext.Provider
@@ -121,89 +69,19 @@ export const VotingProvider = (
         },
         votes: votes || [],
         saveVotes: async () => {
-          try {
-            if (!votes) return
-            if (!address)
-              return toast.error("Please connect your wallet again. (Try logging out and back in)")
-            if (!tokens.length) return toast.error("No delegated tokens found")
+          const existingVotes = votes || []
+          if (!address)
+            return toast.error("Please connect your wallet again. (Try logging out and back in)")
+          if (!tokens.length) return toast.error("No delegated tokens found")
 
-            // Slice the delegated tokens for the current batch so that we never
-            // exceed the gas limit. Each batch handles at most TOKENS_PER_BATCH
-            // tokens (default 15).
-            const start = batchIndex * TOKENS_PER_BATCH
-            const end = start + TOKENS_PER_BATCH
-            const tokenBatch = tokens.slice(start, end)
+          if (!isValidVotingContract(votingToken)) {
+            return toast.error("Voting is not supported for this token")
+          }
 
-            const toastId = toast.loading(
-              batchTotal > 1
-                ? `Preparing vote batch ${batchIndex + 1} of ${batchTotal}...`
-                : "Preparing vote...",
-            )
+          toast.loading(loadingMessage)
 
-            // Get unique owners (or delegators) in order of first appearance **for the batch only**
-            const owners = tokenBatch.reduce((acc: `0x${string}`[], token) => {
-              if (!acc.includes(getEthAddress(token.owner))) acc.push(getEthAddress(token.owner))
-              return acc
-            }, [])
-
-            // Group tokenIds by owner (batch‑scoped)
-            const tokenIds: bigint[][] = owners.map((owner) =>
-              tokenBatch
-                .filter((token) => token.owner === owner)
-                .map((token) => BigInt(token.tokenId)),
-            )
-
-            const proofs = await fetch("/api/proofs", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ tokens: serialize(tokenBatch) }),
-            })
-              .then((res) => {
-                console.log(res)
-                return res.json()
-              })
-              .catch((error) => {
-                console.error(error)
-                return toast.error("Failed to fetch token ownership proofs", {
-                  description: error.message,
-                })
-              })
-
-            const recipientIds = votes.map((vote) => vote.recipientId as `0x${string}`)
-            const percentAllocations = votes.map((vote) => (vote.bps / 10000) * PERCENTAGE_SCALE)
-            const { ownershipStorageProofs, delegateStorageProofs, ...baseProofParams } = proofs
-
-            await prepareWallet(toastId)
-
-            writeContract({
-              account: address,
-              abi: [
-                ...nounsFlowImplAbi,
-                ...rewardPoolImplAbi,
-                ...erc20VotesMintableImplAbi,
-                ...superfluidPoolAbi,
-                ...tokenVerifierAbi,
-                ...gdav1ForwarderAbi,
-                ...cfav1ForwarderAbi,
-              ],
-              functionName: "castVotes",
-              address: contract,
-              chainId,
-              args: [
-                owners,
-                tokenIds,
-                recipientIds,
-                percentAllocations,
-                baseProofParams,
-                ownershipStorageProofs,
-                delegateStorageProofs,
-              ],
-            })
-          } catch (e: any) {
-            console.error(e)
-            return toast.error(`Failed to vote`, { description: e.message })
+          if (isNounsFlow(votingToken)) {
+            return await saveVotesNounsFlow(existingVotes, address, tokenBatch)
           }
         },
         updateVote: (vote: UserVote) => {
@@ -214,7 +92,7 @@ export const VotingProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading,
+        isLoading: isLoadingNounsFlow,
         allocatedBps: votes?.reduce((acc, v) => acc + v.bps, 0) || 0,
         votedCount: votes?.filter((v) => v.bps > 0).length || 0,
         batchIndex,
@@ -232,4 +110,8 @@ export const useVoting = (): VotingContextType => {
     throw new Error("useVoting must be used within a VotingProvider")
   }
   return context
+}
+
+function isNounsFlow(votingToken: string | null) {
+  return votingToken === mainnet.NounsToken
 }

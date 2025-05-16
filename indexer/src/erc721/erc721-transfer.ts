@@ -11,7 +11,6 @@ async function handleTransfer(params: {
   context: Context<"ERC721TokenMainnet:Transfer"> | Context<"ERC721TokenBase:Transfer">
 }) {
   const { event, context } = params
-  if (!event.transaction) return
 
   const { to, tokenId, from } = event.args
   const tokenContract = event.log.address.toLowerCase()

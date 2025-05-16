@@ -20,8 +20,6 @@ export function TokenVoter(props: { tokenContract: string; tokenIds: number[] })
 export function ERC721Name(props: { tokenContract: string }) {
   const { tokenContract } = props
 
-  console.log(tokenContract, NOUNS_TOKEN)
-
   if (tokenContract === NOUNS_TOKEN) {
     return "Noun"
   }
