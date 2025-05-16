@@ -2,7 +2,7 @@ import { Context, Event } from "ponder:registry"
 import { ponder } from "ponder:registry"
 import { erc721Tokens, tokenIdsByOwner } from "ponder:schema"
 import { zeroAddress } from "viem"
-import { getTokenIdentifier } from "./721-utils"
+import { getOwnerContractChainId, getTokenIdentifier } from "./721-utils"
 
 ponder.on("ERC721TokenBase:DelegateChanged", handleDelegateChanged)
 ponder.on("ERC721TokenMainnet:DelegateChanged", handleDelegateChanged)
@@ -20,7 +20,11 @@ async function handleDelegateChanged(params: {
   ).toLowerCase()
 
   const delegatorTokenIds = await context.db.find(tokenIdsByOwner, {
-    ownerContractChainId: `${context.network.chainId}-${event.log.address}-${delegator}`,
+    ownerContractChainId: getOwnerContractChainId(
+      context.network.chainId,
+      event.log.address.toLowerCase(),
+      delegator
+    ),
   })
 
   if (!delegatorTokenIds) return

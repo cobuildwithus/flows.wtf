@@ -4,18 +4,14 @@ import { NOUNS_TOKEN } from "@/lib/config"
 import pluralize from "pluralize"
 import { base } from "@/addresses"
 
-export function NounsVoter(props: { tokenContract: string; tokenIds: number[] }) {
+export function TokenVoter(props: { tokenContract: string; tokenIds: number[] }) {
   const { tokenContract, tokenIds } = props
 
   return (
     <>
       <div className="text-sm text-muted-foreground">
-        Help flow money to builders by voting.
-        <br />
-        <div className="mt-4 text-sm text-muted-foreground">
-          You can vote with your {tokenIds.length}{" "}
-          {pluralize(ERC721Name({ tokenContract }), tokenIds.length)}.
-        </div>
+        Help flow money to builders by voting with your {tokenIds.length}{" "}
+        {pluralize(ERC721Name({ tokenContract }), tokenIds.length)}.
       </div>
     </>
   )
@@ -23,6 +19,8 @@ export function NounsVoter(props: { tokenContract: string; tokenIds: number[] })
 
 export function ERC721Name(props: { tokenContract: string }) {
   const { tokenContract } = props
+
+  console.log(tokenContract, NOUNS_TOKEN)
 
   if (tokenContract === NOUNS_TOKEN) {
     return "Noun"

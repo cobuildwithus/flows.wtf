@@ -1,5 +1,5 @@
 export const getTokenIdentifier = (chainId: number, tokenContract: string, tokenId: number) =>
-  `${chainId}-${tokenContract}-${tokenId.toString()}`
+  `${chainId}-${tokenContract.toLowerCase()}-${tokenId.toString()}`
 
 export const getOwnerContractChainId = (chainId: number, tokenContract: string, owner: string) =>
-  `${chainId}-${tokenContract}-${owner}`
+  `${chainId}-${tokenContract.toLowerCase()}-${owner.toLowerCase()}`
