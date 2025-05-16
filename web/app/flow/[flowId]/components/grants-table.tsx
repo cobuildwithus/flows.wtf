@@ -55,7 +55,7 @@ export function GrantsTable(props: Props) {
 
           return (
             <TableRow key={grant.id}>
-              <GrantLogoCell image={getIpfsUrl(grant.image)} title={grant.title} />
+              <GrantLogoCell image={getIpfsUrl(grant.image, "pinata")} title={grant.title} />
 
               <TableCell className="space-y-1">
                 <div className="max-w-64 overflow-hidden text-ellipsis max-sm:truncate">

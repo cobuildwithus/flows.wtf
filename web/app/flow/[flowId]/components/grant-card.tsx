@@ -28,12 +28,13 @@ export function GrantCard({ grant }: Props) {
   const isActive = !isDisputed && !isChallenged
   const { coverImage } = derivedData || {}
   const isNew = isGrantNew(grant)
+  const image = getIpfsUrl(coverImage || grant.image, "pinata")
 
   return (
     <article className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72">
       <Image
         alt=""
-        src={getIpfsUrl(coverImage || grant.image)}
+        src={image}
         className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 md:group-hover:scale-110"
         width={256}
         height={256}

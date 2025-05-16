@@ -20,6 +20,7 @@ import { PERCENTAGE_SCALE } from "../config"
 import { useUserVotes } from "./user-votes/use-user-votes"
 import { serialize } from "../serialize"
 import { getEthAddress } from "../utils"
+import { mainnet } from "@/addresses"
 
 type UserVote = Pick<Vote, "bps" | "recipientId">
 
@@ -54,8 +55,13 @@ export const VotingProvider = (
   const [votes, setVotes] = useState<UserVote[]>()
   const { address } = useAccount()
   const router = useRouter()
-
+  const [batchIndex, setBatchIndex] = useState(0)
   const { votes: userVotes, mutate } = useUserVotes(contract, address)
+  const { tokens } = useDelegatedTokens(
+    address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
+  )
+
+  const TOKENS_PER_BATCH = getTokensPerBatch(votingToken)
 
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
@@ -79,14 +85,6 @@ export const VotingProvider = (
       })
     },
   })
-
-  const { tokens } = useDelegatedTokens(
-    address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
-  )
-
-  const TOKENS_PER_BATCH = 15
-
-  const [batchIndex, setBatchIndex] = useState(0)
 
   // Compute total batches whenever the delegated token list changes. We always have at
   // least one batch so that the UI label logic is simplified.
@@ -123,13 +121,13 @@ export const VotingProvider = (
         saveVotes: async () => {
           try {
             if (!votes) return
+            if (!votingToken) return toast.error("No voting token available")
             if (!address)
               return toast.error("Please connect your wallet again. (Try logging out and back in)")
             if (!tokens.length) return toast.error("No delegated tokens found")
 
             // Slice the delegated tokens for the current batch so that we never
             // exceed the gas limit. Each batch handles at most TOKENS_PER_BATCH
-            // tokens (default 15).
             const start = batchIndex * TOKENS_PER_BATCH
             const end = start + TOKENS_PER_BATCH
             const tokenBatch = tokens.slice(start, end)
@@ -201,9 +199,11 @@ export const VotingProvider = (
                 delegateStorageProofs,
               ],
             })
-          } catch (e: any) {
+          } catch (e) {
             console.error(e)
-            return toast.error(`Failed to vote`, { description: e.message })
+            return toast.error(`Failed to vote`, {
+              description: e instanceof Error ? e.message : "Unknown error",
+            })
           }
         },
         updateVote: (vote: UserVote) => {
@@ -232,4 +232,16 @@ export const useVoting = (): VotingContextType => {
     throw new Error("useVoting must be used within a VotingProvider")
   }
   return context
+}
+
+export const getTokensPerBatch = (tokenContract: string | null) => {
+  if (!tokenContract) return 1e3
+
+  // Since NounsFlow requires posting proofs onchain, we limit the number of tokens per batch
+  // to 15 to avoid hitting the gas limit.
+  if (tokenContract === mainnet.NounsToken) {
+    return 15
+  }
+
+  return 1e3
 }
