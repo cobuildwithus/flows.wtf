@@ -19,6 +19,7 @@ import {
 import { PERCENTAGE_SCALE } from "../config"
 import { useUserVotes } from "./user-votes/use-user-votes"
 import { serialize } from "../serialize"
+import { getEthAddress } from "../utils"
 
 type UserVote = Pick<Vote, "bps" | "recipientId">
 
@@ -141,13 +142,15 @@ export const VotingProvider = (
 
             // Get unique owners (or delegators) in order of first appearance **for the batch only**
             const owners = tokenBatch.reduce((acc: `0x${string}`[], token) => {
-              if (!acc.includes(token.owner)) acc.push(token.owner)
+              if (!acc.includes(getEthAddress(token.owner))) acc.push(getEthAddress(token.owner))
               return acc
             }, [])
 
             // Group tokenIds by owner (batch‑scoped)
             const tokenIds: bigint[][] = owners.map((owner) =>
-              tokenBatch.filter((token) => token.owner === owner).map((token) => token.id),
+              tokenBatch
+                .filter((token) => token.owner === owner)
+                .map((token) => BigInt(token.tokenId)),
             )
 
             const proofs = await fetch("/api/proofs", {
