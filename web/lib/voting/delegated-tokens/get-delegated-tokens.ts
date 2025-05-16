@@ -1,54 +1,26 @@
 "use server"
 
-import { NOUNS_SUBGRAPH_ID } from "@/lib/config"
 import database from "@/lib/database/edge"
-import { getEthAddress } from "@/lib/utils"
 
-const SUBGRAPH_URL = `https://gateway.thegraph.com/api/${process.env.SUBGRAPH_API_KEY}/subgraphs/id/${NOUNS_SUBGRAPH_ID}`
-
-export async function fetchDelegatedTokens(address: string, flowId: string | null) {
-  if (flowId) {
-    const tokenRecord = await database.grant.findUnique({
-      where: { id: flowId },
-      select: { erc721VotingToken: true, votingTokenChainId: true },
-    })
-  }
-
-  const query = `
-    query {
-      delegate(id: "${address}") {
-        nounsRepresented {
-          id
-          owner {
-            id
-          }
-        }
-      }
-    }
-  `
-
-  const response = await fetch(SUBGRAPH_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
+export async function fetchDelegatedTokens(address: string, flowId: string) {
+  const tokenRecord = await database.grant.findUnique({
+    where: { id: flowId },
+    select: { erc721VotingToken: true, votingTokenChainId: true },
   })
 
-  if (!response.ok) throw new Error(`Subgraph API error: ${response.status}`)
+  if (!tokenRecord) return []
 
-  const json: {
-    data: { delegate: { nounsRepresented: Array<{ id: string; owner: { id: string } }> } }
-    errors?: Array<{ message: string }>
-  } = await response.json()
+  const { erc721VotingToken, votingTokenChainId } = tokenRecord
 
-  if (json.errors) {
-    console.error(json.errors)
-    throw new Error(`Subgraph query error: ${json.errors[0].message}`)
-  }
+  if (!erc721VotingToken || !votingTokenChainId) return []
 
-  if (!json.data.delegate?.nounsRepresented) return []
+  const tokens = await database.erc721Token.findMany({
+    where: {
+      contract: erc721VotingToken,
+      chainId: votingTokenChainId,
+      delegate: address,
+    },
+  })
 
-  return json.data.delegate.nounsRepresented.map((noun) => ({
-    id: noun.id,
-    owner: getEthAddress(noun.owner.id),
-  }))
+  return tokens
 }

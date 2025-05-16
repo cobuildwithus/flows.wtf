@@ -170,6 +170,7 @@ export const erc721Tokens = onchainTable(
   (table) => ({
     contractIdx: index().on(table.contract),
     ownerIdx: index().on(table.owner),
+    delegateIdx: index().on(table.delegate),
   })
 )
 

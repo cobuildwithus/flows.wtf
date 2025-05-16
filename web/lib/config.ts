@@ -14,9 +14,6 @@ export const VOTING_POWER_SCALE = BigInt(1000)
 // Voting scale from the contract
 export const PERCENTAGE_SCALE = 1e6
 
-// Subgraph ID
-export const NOUNS_SUBGRAPH_ID = "5qcR6rAfDMZCVGuZ6DDois7y4zyXqsyqvaqhE6NRRraW"
-
 // Macro forwarder address (same across all chains)
 export const MACRO_FORWARDER = "0xfD01285b9435bc45C243E5e7F978E288B2912de6" as `0x${string}`
 

@@ -1,45 +1,41 @@
 "use client"
 
 import { NOUNS_TOKEN } from "@/lib/config"
-import { openseaNftUrl } from "@/lib/utils"
-import Image from "next/image"
-import { mainnet } from "viem/chains"
 import pluralize from "pluralize"
+import { base } from "@/addresses"
 
-export function NounsVoter(props: { votingPower: bigint; tokenIds: bigint[] }) {
-  const { tokenIds } = props
-
-  const tokensCount = tokenIds.length
+export function NounsVoter(props: { tokenContract: string; tokenIds: number[] }) {
+  const { tokenContract, tokenIds } = props
 
   return (
     <>
       <div className="text-sm text-muted-foreground">
-        Help flow money to builders by voting with your {pluralize("noun", tokensCount)}.
+        Help flow money to builders by voting.
         <br />
-        <div
-          className="mt-4 columns-2 gap-3 space-y-3 sm:columns-3 md:columns-4 lg:columns-6"
-          style={{ breakInside: "avoid" }}
-        >
-          {tokenIds.map((tokenId) => (
-            <a
-              key={tokenId.toString()}
-              rel="noreferrer"
-              target="_blank"
-              className="group mb-3 flex break-inside-avoid flex-col items-center justify-center"
-              href={openseaNftUrl(NOUNS_TOKEN, tokenId.toString(), mainnet.id)}
-            >
-              <Image
-                src={`https://noun.pics/${tokenId.toString()}.png`}
-                alt={`Noun ${tokenId}`}
-                width={32}
-                height={32}
-                className="size-8 rounded-md border border-muted object-cover"
-              />
-              <span className="mt-1 text-xs text-muted-foreground">{tokenId.toString()}</span>
-            </a>
-          ))}
+        <div className="mt-4 text-sm text-muted-foreground">
+          You can vote with your {tokenIds.length}{" "}
+          {pluralize(ERC721Name({ tokenContract }), tokenIds.length)}.
         </div>
       </div>
     </>
   )
+}
+
+export function ERC721Name(props: { tokenContract: string }) {
+  const { tokenContract } = props
+
+  if (tokenContract === NOUNS_TOKEN) {
+    return "Noun"
+  }
+  if (tokenContract === base.VrbsToken) {
+    return "Vrb"
+  }
+  if (tokenContract === base.GnarsToken) {
+    return "Gnars"
+  }
+  if (tokenContract === base.GroundsToken) {
+    return "Ground"
+  }
+
+  return tokenContract
 }

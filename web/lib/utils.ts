@@ -30,7 +30,7 @@ export function explorerUrl(address: string, chainId: number, type: "tx" | "addr
 export function getIpfsUrl(url: string, gateway: "pinata" | "ipfs" = "ipfs") {
   if (url.startsWith("http")) {
     if (url.includes("mypinata.cloud/ipfs/")) {
-      return url + `?pinataGatewayToken=${process.env.PINATA_GATEWAY_KEY}`
+      return `${url}?pinataGatewayToken=${process.env.PINATA_GATEWAY_KEY}`
     }
     return url
   }

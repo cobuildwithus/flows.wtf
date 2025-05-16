@@ -221,15 +221,19 @@ view Vote {
   @@schema("onchain")
 }
 
-view ERC721Token {
+view erc721Token {
   id String @id
   contract String
   owner String
-  tokenId Int
+  delegate String
+  tokenId Int @map("token_id")
   burned Boolean
-  chainId Int
+  chainId Int @map("chain_id")
+
   @@index([contract])
   @@index([owner])
+  @@index([delegate])
+  @@map("ERC721Token")
   @@schema("onchain")
 }
 
