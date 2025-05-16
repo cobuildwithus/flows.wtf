@@ -15,6 +15,14 @@ import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Image from "next/image"
 import { DateTime } from "@/components/ui/date-time"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 interface SaleItem {
   name: string
@@ -27,7 +35,6 @@ interface Sale {
   date: string // ISO string with time
   amount: string
   paymentStatus: "Paid" | "Unpaid" | "Refunded"
-  deliveryStatus: "Delivered" | "Processing" | "Shipped"
   items: SaleItem[]
   country: string
 }
@@ -43,7 +50,6 @@ const salesData: Sale[] = [
     date: "2023-05-04T14:23:00",
     amount: "$250.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [
       { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 1 },
       { name: "RUN Coffee", type: "Ground", quantity: 1 },
@@ -55,7 +61,6 @@ const salesData: Sale[] = [
     date: "2023-05-03T09:10:00",
     amount: "$150.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Processing",
     items: [{ name: "Vrbs Coffee v1", type: "Ground", quantity: 2 }],
     country: "Canada",
   },
@@ -64,7 +69,6 @@ const salesData: Sale[] = [
     date: "2023-05-02T16:45:00",
     amount: "$350.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [
       { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 1 },
       { name: "RUN Coffee", type: "Ground", quantity: 2 },
@@ -76,7 +80,6 @@ const salesData: Sale[] = [
     date: "2023-05-01T11:30:00",
     amount: "$450.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [
       { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 3 },
       { name: "RUN Coffee", type: "Ground", quantity: 1 },
@@ -88,7 +91,6 @@ const salesData: Sale[] = [
     date: "2023-04-30T18:05:00",
     amount: "$550.00",
     paymentStatus: "Refunded",
-    deliveryStatus: "Processing",
     items: [{ name: "RUN Coffee", type: "Whole Bean", quantity: 4 }],
     country: "Germany",
   },
@@ -97,7 +99,6 @@ const salesData: Sale[] = [
     date: "2023-04-29T08:50:00",
     amount: "$120.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [{ name: "Vrbs Coffee v1", type: "Ground", quantity: 2 }],
     country: "France",
   },
@@ -106,7 +107,6 @@ const salesData: Sale[] = [
     date: "2023-04-28T13:15:00",
     amount: "$180.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Processing",
     items: [{ name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 3 }],
     country: "Italy",
   },
@@ -115,7 +115,6 @@ const salesData: Sale[] = [
     date: "2023-04-27T17:40:00",
     amount: "$320.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [
       { name: "Vrbs Coffee v1", type: "Ground", quantity: 2 },
       { name: "RUN Coffee", type: "Whole Bean", quantity: 1 },
@@ -127,7 +126,6 @@ const salesData: Sale[] = [
     date: "2023-04-26T10:05:00",
     amount: "$90.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [{ name: "RUN Coffee", type: "Ground", quantity: 1 }],
     country: "Japan",
   },
@@ -136,7 +134,6 @@ const salesData: Sale[] = [
     date: "2023-04-25T15:55:00",
     amount: "$410.00",
     paymentStatus: "Paid",
-    deliveryStatus: "Delivered",
     items: [
       { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 2 },
       { name: "RUN Coffee", type: "Ground", quantity: 3 },
@@ -167,7 +164,6 @@ export function SalesTable() {
               <TableHead>Date</TableHead>
               <TableHead className="hidden md:table-cell">Country</TableHead>
               <TableHead>Payment Status</TableHead>
-              <TableHead>Delivery Status</TableHead>
               <TableHead>Items</TableHead>
               <TableHead className="text-right">Total Amount</TableHead>
             </TableRow>
@@ -184,7 +180,6 @@ export function SalesTable() {
                       year: "numeric",
                       hour: "numeric",
                       minute: "numeric",
-                      hour12: true,
                     }}
                   />
                 </TableCell>
@@ -194,7 +189,7 @@ export function SalesTable() {
                   <Badge
                     variant={
                       sale.paymentStatus === "Paid"
-                        ? "default"
+                        ? "success"
                         : sale.paymentStatus === "Refunded"
                           ? "destructive"
                           : "outline"
@@ -202,14 +197,6 @@ export function SalesTable() {
                     className="text-[10px]"
                   >
                     {sale.paymentStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={sale.deliveryStatus === "Delivered" ? "default" : "outline"}
-                    className="text-[10px]"
-                  >
-                    {sale.deliveryStatus}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -264,19 +251,27 @@ export function SalesTable() {
             ))}
           </TableBody>
         </Table>
-        <div className="flex items-center justify-end space-x-2 px-4 py-4">
-          <Button variant="outline" size="sm" className="h-7 w-7 p-0">
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Previous page</span>
-          </Button>
-          <div className="text-xs">
-            Page <span className="font-medium">1</span> of <span className="font-medium">10</span>
-          </div>
-          <Button variant="outline" size="sm" className="h-7 w-7 p-0">
-            <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Next page</span>
-          </Button>
-        </div>
+        <Pagination className="mt-6 justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#" isActive>
+                1
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">2</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">3</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </CardContent>
     </Card>
   )

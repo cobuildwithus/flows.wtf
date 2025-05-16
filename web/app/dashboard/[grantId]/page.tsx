@@ -18,11 +18,14 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
 import { MetricCard } from "./components/metric-card"
+import { MoneyFlowDiagram } from "./components/money-flow-diagram"
 import { PageVisits } from "./components/page-visits"
-import { ProductsTable } from "./components/products-table"
+import { products, ProductsTable } from "./components/products-table"
 import { SalesOverview } from "./components/sales-overview"
 import { SalesTable } from "./components/sales-table"
 import { SocialMediaMetrics } from "./components/social-media-metrics"
+import { getUserProfile } from "@/components/user-profile/get-user-profile"
+import database from "@/lib/database/edge"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -55,6 +58,27 @@ export default async function GrantPage(props: Props) {
     grant.derivedData
 
   const canEdit = canEditGrant(grant, user?.address)
+
+  const profiles = await Promise.all([
+    getUserProfile("0x10c9A060e009a081bD82D9bf96BB09051E772F2d" as `0x${string}`),
+    getUserProfile(grant.recipient as `0x${string}`),
+  ])
+
+  const supports = await database.grant.findMany({
+    where: {
+      isActive: true,
+      isFlow: false,
+      parentContract: "0x5a433ebbcc42c3ffe9e8fcd232e14293076e6012",
+    },
+    select: {
+      id: true,
+      title: true,
+      image: true,
+      tagline: true,
+    },
+    take: 2,
+    orderBy: { totalEarned: "desc" },
+  })
 
   // if (!grant.isOnchainStartup) {
   //   return redirect(`/item/${grant.id}`)
@@ -120,8 +144,9 @@ export default async function GrantPage(props: Props) {
                 <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
               )}
             </div>
+          </div>
 
-            {/* <Stat label="Budget" className="">
+          {/* <Stat label="Budget" className="">
               <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
             </Stat>
 
@@ -131,6 +156,16 @@ export default async function GrantPage(props: Props) {
                 monthlyRate={grant.monthlyIncomingFlowRate}
               />
             </Stat> */}
+
+          {/* Money Flow Diagram */}
+          <div className="col-span-full mt-8">
+            <MoneyFlowDiagram
+              products={products}
+              profiles={profiles}
+              user={user}
+              grant={grant}
+              supports={supports}
+            />
           </div>
         </div>
       </div>

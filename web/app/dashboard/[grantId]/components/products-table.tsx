@@ -9,8 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { DateTime } from "@/components/ui/date-time"
 
-const products = [
+export const products = [
   {
     id: 1,
     name: "Vrbs Coffee v1",
@@ -20,6 +21,8 @@ const products = [
     totalSales: "$12,495.00",
     orders: 500,
     stock: 124,
+    launchDate: "2024-01-15",
+    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
   },
   {
     id: 2,
@@ -30,6 +33,8 @@ const products = [
     totalSales: "$9,995.00",
     orders: 450,
     stock: 89,
+    launchDate: "2024-02-01",
+    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
   },
   {
     id: 3,
@@ -40,6 +45,8 @@ const products = [
     totalSales: "$8,997.00",
     orders: 300,
     stock: 56,
+    launchDate: "2024-02-15",
+    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
   },
   {
     id: 4,
@@ -50,6 +57,8 @@ const products = [
     totalSales: "$6,897.00",
     orders: 280,
     stock: 42,
+    launchDate: "2024-03-01",
+    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
   },
   {
     id: 5,
@@ -60,6 +69,8 @@ const products = [
     totalSales: "$4,398.00",
     orders: 200,
     stock: 78,
+    launchDate: "2024-03-15",
+    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
   },
   {
     id: 6,
@@ -70,6 +81,8 @@ const products = [
     totalSales: "$3,798.00",
     orders: 180,
     stock: 103,
+    launchDate: "2024-04-01",
+    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
   },
 ]
 
@@ -92,7 +105,7 @@ export function ProductsTable() {
             <TableRow>
               <TableHead className="w-[80px]">Image</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead>Launch Date</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Orders</TableHead>
               <TableHead>Total Sales</TableHead>
@@ -111,16 +124,19 @@ export function ProductsTable() {
                     className="rounded-md object-cover"
                   />
                 </TableCell>
-                <TableCell className="text-xs font-medium">{product.name}</TableCell>
-                <TableCell className="text-xs">{product.category}</TableCell>
+                <TableCell>
+                  <h3 className="text-sm font-medium">{product.name}</h3>
+                  <span className="mt-1.5 text-xs text-muted-foreground">{product.category}</span>
+                </TableCell>
+                <TableCell className="text-xs">
+                  <DateTime date={new Date(product.launchDate)} relative />
+                </TableCell>
                 <TableCell className="text-xs">{product.price}</TableCell>
                 <TableCell className="text-xs">{product.orders}</TableCell>
                 <TableCell className="text-xs font-medium">{product.totalSales}</TableCell>
                 <TableCell>
                   <Badge
-                    variant={
-                      product.stock > 100 ? "default" : product.stock > 50 ? "outline" : "secondary"
-                    }
+                    variant={product.stock > 50 ? "success" : "warning"}
                     className="text-[10px]"
                   >
                     {product.stock} in stock

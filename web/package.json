@@ -43,7 +43,7 @@
     "@vercel/functions": "^1.5.2",
     "@vercel/kv": "^3.0.0",
     "@vercel/speed-insights": "^1.1.0",
-    "@xyflow/react": "^12.3.6",
+    "@xyflow/react": "^12.6.1",
     "ai": "^4.0.39",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
