@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useVotingPower } from "@/lib/voting/use-voting-power"
+import { useVotingPower } from "@/lib/voting/hooks/use-voting-power"
 import { useVoting } from "@/lib/voting/voting-context"
 import Link from "next/link"
 import { useAccount } from "wagmi"
