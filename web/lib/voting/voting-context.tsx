@@ -9,7 +9,7 @@ import {
   getTokenBatchAndLoadingMessage,
   getTokensPerBatch,
 } from "./batch-voting-lib"
-import { UserVote } from "./vote-types"
+import { isValidVotingContract, UserVote } from "./vote-types"
 import { useVoteNounsFlow } from "./use-vote-nouns-flow"
 import { mainnet } from "@/addresses"
 import { toast } from "sonner"
@@ -99,12 +99,15 @@ export const VotingProvider = (
             tokens,
           )
 
-          if (isNounsFlow(votingToken)) {
-            toast.loading(loadingMessage)
-            return await saveVotesNounsFlow(existingVotes, address, tokenBatch)
+          if (!isValidVotingContract(votingToken)) {
+            return toast.error("Voting is not supported for this token")
           }
 
-          toast.error("Voting is not supported for this token")
+          toast.loading(loadingMessage)
+
+          if (isNounsFlow(votingToken)) {
+            return await saveVotesNounsFlow(existingVotes, address, tokenBatch)
+          }
         },
         updateVote: (vote: UserVote) => {
           const { recipientId, bps } = vote
