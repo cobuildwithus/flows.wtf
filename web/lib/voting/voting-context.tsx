@@ -1,17 +1,16 @@
 "use client"
 
 import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
+import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
-import { useUserVotes } from "./user-votes/use-user-votes"
 import { useBatchVoting } from "./hooks/use-batch-voting"
 import { isValidVotingContract, UserVote } from "./vote-types"
-import { useVoteNounsFlow } from "./hooks/use-vote-nouns-flow"
-import { mainnet } from "@/addresses"
+import { useVoteNouns } from "./hooks/use-vote-nouns"
+import { base, mainnet } from "@/addresses"
 import { toast } from "sonner"
 import { useVotingContextActive } from "./hooks/use-context-active"
-import { useVotingPower } from "./hooks/use-voting-power"
 import { useExistingVotes } from "./hooks/use-existing-votes"
+import { useVoteVrbs } from "./hooks/use-vote-vrbs"
 
 interface VotingContextType {
   activate: () => void
@@ -46,12 +45,15 @@ export const VotingProvider = (
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
-  const { batchIndex, batchTotal, setBatchIndex, tokenBatch, loadingMessage } = useBatchVoting(
-    tokens,
-    votingToken,
+  const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, votingToken)
+
+  const { saveVotes: saveVotesNouns, isLoading: isLoadingNouns } = useVoteNouns(
+    contract,
+    chainId,
+    () => mutateUserVotes(),
   )
 
-  const { saveVotes: saveVotesNounsFlow, isLoading: isLoadingNounsFlow } = useVoteNounsFlow(
+  const { saveVotes: saveVotesVrbs, isLoading: isLoadingVrbs } = useVoteVrbs(
     contract,
     chainId,
     () => mutateUserVotes(),
@@ -78,10 +80,12 @@ export const VotingProvider = (
             return toast.error("Voting is not supported for this token")
           }
 
-          toast.loading(loadingMessage)
-
           if (isNounsFlow(votingToken)) {
-            return await saveVotesNounsFlow(existingVotes, address, tokenBatch)
+            return await saveVotesNouns(existingVotes, address, tokenBatch)
+          }
+
+          if (isVrbsFlow(votingToken)) {
+            return await saveVotesVrbs(existingVotes, address, tokenBatch)
           }
         },
         updateVote: (vote: UserVote) => {
@@ -92,7 +96,7 @@ export const VotingProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading: isLoadingNounsFlow,
+        isLoading: isLoadingNouns || isLoadingVrbs,
         allocatedBps: votes?.reduce((acc, v) => acc + v.bps, 0) || 0,
         votedCount: votes?.filter((v) => v.bps > 0).length || 0,
         batchIndex,
@@ -114,4 +118,8 @@ export const useVoting = (): VotingContextType => {
 
 function isNounsFlow(votingToken: string | null) {
   return votingToken === mainnet.NounsToken
+}
+
+function isVrbsFlow(votingToken: string | null) {
+  return votingToken === base.VrbsToken
 }

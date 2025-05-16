@@ -1,4 +1,4 @@
-import { mainnet } from "@/addresses"
+import { base, mainnet } from "@/addresses"
 import { Vote } from "@prisma/flows"
 
 export type UserVote = Pick<Vote, "bps" | "recipientId">
@@ -12,5 +12,8 @@ export type ERC721VotingToken = {
 export const isValidVotingContract = (contract: string | null) => {
   if (!contract) return false
 
-  return contract.toLowerCase() === mainnet.NounsToken.toLowerCase()
+  return (
+    contract.toLowerCase() === mainnet.NounsToken.toLowerCase() ||
+    contract.toLowerCase() === base.VrbsToken.toLowerCase()
+  )
 }

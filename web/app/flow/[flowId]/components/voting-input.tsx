@@ -34,7 +34,7 @@ export const VotingInput = (props: Props) => {
         onChange={(e) =>
           updateVote({
             recipientId,
-            bps: parseFloat(e.target.value) * 100,
+            bps: Number.parseFloat(e.target.value) * 100,
           })
         }
         min={0}

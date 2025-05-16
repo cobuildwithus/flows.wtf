@@ -16,7 +16,7 @@ import { PERCENTAGE_SCALE } from "../../config"
 import { nounsFlowImplAbi } from "../../abis"
 import { ERC721VotingToken, UserVote } from "../vote-types"
 
-export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
+export function useVoteNouns(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess,
@@ -51,7 +51,6 @@ export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuc
           body: JSON.stringify({ tokens: serialize(tokenBatch) }),
         })
           .then((res) => {
-            console.log(res)
             return res.json()
           })
           .catch((error) => {
