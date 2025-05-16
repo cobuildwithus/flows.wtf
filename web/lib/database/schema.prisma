@@ -185,6 +185,7 @@ model Grant {
   erc721VotingToken                String? @map("erc721_voting_token")
   votingTokenChainId               Int?    @map("voting_token_chain_id")
   allocator                        String? @map("allocator")
+  recipientId                      String @map("recipient_id")
 
   flow         Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants    Grant[]       @relation("Subgrants")
@@ -200,6 +201,7 @@ model Grant {
   @@index([isFlow])
   @@index([isActive])
   @@index([isTopLevel, isFlow])
+  @@unique([recipientId])
   @@map("Grant")
   @@schema("onchain")
 }
@@ -214,7 +216,7 @@ view Vote {
   blockNumber String @map("block_number")
   votesCount  String @map("votes_count")
 
-  grant Grant @relation(fields: [recipientId], references: [id])
+  grant Grant @relation(fields: [recipientId], references: [recipientId])
 
   @@index([contract])
   @@index([recipientId])

@@ -134,7 +134,7 @@ export default async function FlowPage(props: Props) {
                   <Suspense>
                     <Voters
                       contract={flow.parentContract as `0x${string}`}
-                      grantId={flow.id}
+                      recipientId={flow.recipientId}
                       flowVotesCount={pool.votesCount}
                       isFlow={true}
                     />

@@ -127,7 +127,7 @@ export function GrantsTable(props: Props) {
 
               <TableCell className="w-[100px] max-w-[100px] text-center">
                 <div className="px-0.5">
-                  <VotingInput recipientId={grant.id} />
+                  <VotingInput recipientId={grant.recipientId} />
                 </div>
               </TableCell>
             </TableRow>

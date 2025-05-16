@@ -20,6 +20,7 @@ export const useContractTransaction = (args?: {
   onSuccess?: (hash: string) => void
   loading?: string
   success?: string
+  defaultToastId?: string
 }) => {
   const router = useRouter()
   const {
@@ -27,8 +28,9 @@ export const useContractTransaction = (args?: {
     loading = "Transaction in progress...",
     success,
     onSuccess = () => router.refresh(),
+    defaultToastId,
   } = args || {}
-  const [toastId, setToastId] = useState<number | string>()
+  const [toastId, setToastId] = useState<number | string>(defaultToastId || "")
   const [callbackHandled, setCallbackHandled] = useState(false)
   const { data: hash, isPending, error, ...writeContractRest } = useWriteContract()
   const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash })

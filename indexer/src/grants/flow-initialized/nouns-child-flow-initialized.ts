@@ -45,7 +45,7 @@ async function handleFlowInitialized(params: {
     id: grantId,
     ...metadata,
     recipient: contract,
-    recipientId: null, // no parent flow or no recipient id yet
+    recipientId: "", // no parent flow or no recipient id yet
     isTopLevel: false,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),

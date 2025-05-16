@@ -50,7 +50,7 @@ async function handleFlowInitialized(params: {
     ...metadata,
     recipient: contract,
     isTopLevel: true,
-    recipientId: null, // no parent flow
+    recipientId: "", // no parent flow
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,

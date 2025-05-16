@@ -6,19 +6,13 @@ export function useBatchVoting(tokens: ERC721VotingToken[], votingToken: string 
   const [batchIndex, setBatchIndex] = useState(0)
   const TOKENS_PER_BATCH = getTokensPerBatch(votingToken)
   const batchTotal = getNumBatches(tokens.length, TOKENS_PER_BATCH)
-  const { tokenBatch, loadingMessage } = getTokenBatchAndLoadingMessage(
-    batchIndex,
-    batchTotal,
-    TOKENS_PER_BATCH,
-    tokens,
-  )
+  const { tokenBatch } = getTokenBatch(batchIndex, TOKENS_PER_BATCH, tokens)
 
   return {
     batchIndex,
     batchTotal,
     setBatchIndex,
     tokenBatch,
-    loadingMessage,
   }
 }
 
@@ -38,18 +32,14 @@ const getNumBatches = (numTokens: number, tokensPerBatch: number) => {
   return Math.max(1, Math.ceil(numTokens / tokensPerBatch))
 }
 
-const getTokenBatchAndLoadingMessage = (
+const getTokenBatch = (
   batchIndex: number,
-  batchTotal: number,
   TOKENS_PER_BATCH: number,
   tokens: ERC721VotingToken[],
 ) => {
   const start = batchIndex * TOKENS_PER_BATCH
   const end = start + TOKENS_PER_BATCH
   const tokenBatch = tokens.slice(start, end)
-  const loadingMessage =
-    batchTotal > 1
-      ? `Preparing vote batch ${batchIndex + 1} of ${batchTotal}...`
-      : "Preparing vote..."
-  return { tokenBatch, loadingMessage }
+
+  return { tokenBatch }
 }

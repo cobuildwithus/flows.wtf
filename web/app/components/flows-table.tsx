@@ -31,6 +31,7 @@ export type LimitedFlow = FlowWithBudget &
     | "totalEarned"
     | "isFlow"
     | "votesCount"
+    | "recipientId"
   >
 
 interface Props {
@@ -109,7 +110,7 @@ export const FlowsTable = (props: Props) => {
               <TableCell className="text-center">{flow.votesCount}</TableCell>
               <TableCell className="w-[100px] max-w-[100px] text-center">
                 <div className="px-0.5">
-                  <VotingInput recipientId={flow.id} />
+                  <VotingInput recipientId={flow.recipientId} />
                 </div>
               </TableCell>
             </TableRow>

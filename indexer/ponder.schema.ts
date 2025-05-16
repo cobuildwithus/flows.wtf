@@ -5,7 +5,7 @@ export const grants = onchainTable(
   (t) => ({
     id: t.text().primaryKey(),
     recipient: t.text().notNull(),
-    recipientId: t.text(),
+    recipientId: t.text().notNull(),
     flowId: t.text().notNull(),
     submitter: t.text().notNull(),
     parentContract: t.text().notNull(),
