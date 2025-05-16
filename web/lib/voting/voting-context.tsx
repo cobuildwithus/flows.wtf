@@ -4,15 +4,14 @@ import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { useUserVotes } from "./user-votes/use-user-votes"
-import {
-  getNumBatches,
-  getTokenBatchAndLoadingMessage,
-  getTokensPerBatch,
-} from "./batch-voting-lib"
+import { useBatchVoting } from "./hooks/use-batch-voting"
 import { isValidVotingContract, UserVote } from "./vote-types"
-import { useVoteNounsFlow } from "./use-vote-nouns-flow"
+import { useVoteNounsFlow } from "./hooks/use-vote-nouns-flow"
 import { mainnet } from "@/addresses"
 import { toast } from "sonner"
+import { useVotingContextActive } from "./hooks/use-context-active"
+import { useVotingPower } from "./hooks/use-voting-power"
+import { useExistingVotes } from "./hooks/use-existing-votes"
 
 interface VotingContextType {
   activate: () => void
@@ -41,39 +40,22 @@ export const VotingProvider = (
   }>,
 ) => {
   const { children, contract, chainId, votingToken } = props
-  const [isActive, setIsActive] = useState(false)
-  const [votes, setVotes] = useState<UserVote[]>()
   const { address } = useAccount()
-  const [batchIndex, setBatchIndex] = useState(0)
-  const { votes: userVotes, mutate: mutateUserVotes } = useUserVotes(contract, address)
+  const { isActive, setIsActive } = useVotingContextActive()
+  const { userVotes, mutateUserVotes, votes, setVotes } = useExistingVotes(contract)
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
-  const TOKENS_PER_BATCH = getTokensPerBatch(votingToken)
-  const batchTotal = getNumBatches(tokens.length, TOKENS_PER_BATCH)
+  const { batchIndex, batchTotal, setBatchIndex, tokenBatch, loadingMessage } = useBatchVoting(
+    tokens,
+    votingToken,
+  )
 
   const { saveVotes: saveVotesNounsFlow, isLoading: isLoadingNounsFlow } = useVoteNounsFlow(
     contract,
     chainId,
     () => mutateUserVotes(),
   )
-
-  useEffect(() => {
-    if (typeof votes !== "undefined") return
-    if (!userVotes.length) return
-    setVotes(userVotes)
-  }, [votes, userVotes])
-
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isActive) setIsActive(false)
-    }
-
-    document.addEventListener("keydown", handleEscape)
-    return () => {
-      document.removeEventListener("keydown", handleEscape)
-    }
-  }, [isActive])
 
   return (
     <VotingContext.Provider
@@ -91,13 +73,6 @@ export const VotingProvider = (
           if (!address)
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
           if (!tokens.length) return toast.error("No delegated tokens found")
-
-          const { tokenBatch, loadingMessage } = getTokenBatchAndLoadingMessage(
-            batchIndex,
-            batchTotal,
-            TOKENS_PER_BATCH,
-            tokens,
-          )
 
           if (!isValidVotingContract(votingToken)) {
             return toast.error("Voting is not supported for this token")

@@ -1,13 +1,13 @@
 "use server"
 
 import { NOUNS_TOKEN, VOTING_POWER_SCALE } from "@/lib/config"
-import { nounsTokenAbi } from "../abis"
-import { VotesAbi } from "../abis/votes-abi"
+import { nounsTokenAbi } from "../../abis"
+import { VotesAbi } from "../../abis/votes-abi"
 import { getClient } from "@/lib/viem/client"
 import { getEthAddress } from "@/lib/utils"
 import { unstable_cache } from "next/cache"
 import { Address } from "viem"
-import database from "../database/edge"
+import database from "../../database/edge"
 import { mainnet } from "viem/chains"
 
 export const getVotingPower = unstable_cache(

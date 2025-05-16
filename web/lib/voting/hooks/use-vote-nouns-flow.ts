@@ -1,8 +1,8 @@
 "use client"
 
 import { toast } from "sonner"
-import { getEthAddress } from "../utils"
-import { useContractTransaction } from "../wagmi/use-contract-transaction"
+import { getEthAddress } from "../../utils"
+import { useContractTransaction } from "../../wagmi/use-contract-transaction"
 import {
   cfav1ForwarderAbi,
   erc20VotesMintableImplAbi,
@@ -10,11 +10,11 @@ import {
   rewardPoolImplAbi,
   superfluidPoolAbi,
   tokenVerifierAbi,
-} from "../abis"
-import { serialize } from "../serialize"
-import { PERCENTAGE_SCALE } from "../config"
-import { nounsFlowImplAbi } from "../abis"
-import { ERC721VotingToken, UserVote } from "./vote-types"
+} from "../../abis"
+import { serialize } from "../../serialize"
+import { PERCENTAGE_SCALE } from "../../config"
+import { nounsFlowImplAbi } from "../../abis"
+import { ERC721VotingToken, UserVote } from "../vote-types"
 
 export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
