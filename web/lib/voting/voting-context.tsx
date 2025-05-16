@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { useVotingContextActive } from "./hooks/use-context-active"
 import { useExistingVotes } from "./hooks/use-existing-votes"
 import { useVoteVrbs } from "./hooks/use-vote-vrbs"
+import { useRouter } from "next/navigation"
 
 interface VotingContextType {
   activate: () => void
@@ -40,6 +41,7 @@ export const VotingProvider = (
 ) => {
   const { children, contract, chainId, votingToken } = props
   const { address } = useAccount()
+  const router = useRouter()
   const { isActive, setIsActive } = useVotingContextActive()
   const { userVotes, mutateUserVotes, votes, setVotes } = useExistingVotes(contract)
   const { tokens } = useDelegatedTokens(
@@ -47,16 +49,36 @@ export const VotingProvider = (
   )
   const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, votingToken)
 
+  const onSuccess = async () => {
+    // If there are more batches to process, simply advance the index and let the
+    // user click the button again. Otherwise finish up as before.
+    setTimeout(() => {
+      mutateUserVotes()
+    }, 3000)
+
+    setBatchIndex((prev) => {
+      const next = prev + 1
+      if (next < batchTotal) {
+        return next
+      }
+
+      // All batches submitted – close the voting bar and reset.
+      setIsActive(false)
+      router.refresh()
+      return 0
+    })
+  }
+
   const { saveVotes: saveVotesNouns, isLoading: isLoadingNouns } = useVoteNouns(
     contract,
     chainId,
-    () => mutateUserVotes(),
+    onSuccess,
   )
 
   const { saveVotes: saveVotesVrbs, isLoading: isLoadingVrbs } = useVoteVrbs(
     contract,
     chainId,
-    () => mutateUserVotes(),
+    onSuccess,
   )
 
   return (
