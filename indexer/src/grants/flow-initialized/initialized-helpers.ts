@@ -3,7 +3,7 @@ import { rewardPoolImplAbi } from "../../../abis"
 import { zeroAddress } from "viem"
 
 export async function getFlowMetadataAndRewardPool(
-  context: Context<"NounsFlow:FlowInitialized"> | Context<"VrbsFlow:FlowInitialized">,
+  context: Context<"NounsFlow:FlowInitialized"> | Context<"RevolutionFlow:FlowInitialized">,
   contract: `0x${string}`,
   managerRewardPool: `0x${string}`
 ) {

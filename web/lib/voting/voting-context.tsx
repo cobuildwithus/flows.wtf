@@ -10,7 +10,7 @@ import { base, mainnet } from "@/addresses"
 import { toast } from "sonner"
 import { useVotingContextActive } from "./hooks/use-context-active"
 import { useExistingVotes } from "./hooks/use-existing-votes"
-import { useVoteVrbs } from "./hooks/use-vote-vrbs"
+import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
 
 interface VotingContextType {
@@ -75,7 +75,7 @@ export const VotingProvider = (
     onSuccess,
   )
 
-  const { saveVotes: saveVotesVrbs, isLoading: isLoadingVrbs } = useVoteVrbs(
+  const { saveVotes: saveVotesRevolution, isLoading: isLoadingRevolution } = useVoteRevolution(
     contract,
     chainId,
     onSuccess,
@@ -106,8 +106,8 @@ export const VotingProvider = (
             return await saveVotesNouns(existingVotes, address, tokenBatch)
           }
 
-          if (isVrbsFlow(votingToken)) {
-            return await saveVotesVrbs(existingVotes, address, tokenBatch)
+          if (isRevolutionFlow(votingToken)) {
+            return await saveVotesRevolution(existingVotes, address, tokenBatch)
           }
         },
         updateVote: (vote: UserVote) => {
@@ -118,7 +118,7 @@ export const VotingProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading: isLoadingNouns || isLoadingVrbs,
+        isLoading: isLoadingNouns || isLoadingRevolution,
         allocatedBps: votes?.reduce((acc, v) => acc + v.bps, 0) || 0,
         votedCount: votes?.filter((v) => v.bps > 0).length || 0,
         batchIndex,
@@ -142,6 +142,6 @@ function isNounsFlow(votingToken: string | null) {
   return votingToken === mainnet.NounsToken
 }
 
-function isVrbsFlow(votingToken: string | null) {
+function isRevolutionFlow(votingToken: string | null) {
   return votingToken === base.VrbsToken
 }

@@ -8,12 +8,12 @@ import {
   gdav1ForwarderAbi,
   rewardPoolImplAbi,
   superfluidPoolAbi,
-  vrbsFlowImplAbi,
+  revolutionFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
 import { ERC721VotingToken, UserVote } from "../vote-types"
 
-export function useVoteVrbs(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
+export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess,
@@ -36,7 +36,7 @@ export function useVoteVrbs(contract: `0x${string}`, chainId: number, onSuccess:
         writeContract({
           account,
           abi: [
-            ...vrbsFlowImplAbi,
+            ...revolutionFlowImplAbi,
             ...rewardPoolImplAbi,
             ...erc20VotesMintableImplAbi,
             ...superfluidPoolAbi,

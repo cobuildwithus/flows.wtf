@@ -11,9 +11,9 @@ import {
   gdav1Address,
   gdav1ImplAbi,
   tokenEmitterImplAbi,
-  vrbsFlowImplAbi,
   selfManagedFlowImplAbi,
   nounsTokenAbi,
+  revolutionFlowImplAbi,
 } from "./abis"
 import { base as baseContracts, mainnet as mainnetContracts } from "./addresses"
 
@@ -175,18 +175,18 @@ export default createConfig({
         },
       },
     },
-    VrbsFlow: {
-      abi: vrbsFlowImplAbi,
+    RevolutionFlow: {
+      abi: revolutionFlowImplAbi,
       address: baseContracts.VrbsFlow,
       network: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,
     },
-    VrbsFlowChildren: {
-      abi: vrbsFlowImplAbi,
+    RevolutionFlowChildren: {
+      abi: revolutionFlowImplAbi,
       address: factory({
         address: baseContracts.VrbsFlow,
         event: getAbiItem({
-          abi: vrbsFlowImplAbi,
+          abi: revolutionFlowImplAbi,
           name: "FlowRecipientCreated",
         }),
         parameter: "recipient",

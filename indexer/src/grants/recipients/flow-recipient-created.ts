@@ -6,18 +6,18 @@ import {
   baselinePoolToGrantId,
   recipientAndParentToGrantId,
 } from "ponder:schema"
-import { addGrantIdToTcrAndItemId, updateTcrAndItemId } from "../../tcr/tcr-helpers"
+import { updateTcrAndItemId } from "../../tcr/tcr-helpers"
 import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
 
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
 
-ponder.on("VrbsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
-ponder.on("VrbsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
+ponder.on("RevolutionFlow:FlowRecipientCreated", handleFlowRecipientCreated)
+ponder.on("RevolutionFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 
 async function handleFlowRecipientCreated(params: {
-  event: Event<"VrbsFlow:FlowRecipientCreated">
-  context: Context<"VrbsFlow:FlowRecipientCreated">
+  event: Event<"RevolutionFlow:FlowRecipientCreated">
+  context: Context<"RevolutionFlow:FlowRecipientCreated">
 }) {
   const { event, context } = params
   const timestamp = Number(event.block.timestamp)
@@ -43,30 +43,7 @@ async function handleFlowRecipientCreated(params: {
     recipientId,
   })
 
-  await createFlowMappings(context.db, flowContract, bonusPool, baselinePool)
   await createRecipientMappings(context.db, flowContract, recipientId, parentFlowContract)
-}
-
-async function createFlowMappings(
-  db: Context["db"],
-  flowContract: string,
-  bonusPool: string,
-  baselinePool: string
-) {
-  await Promise.all([
-    db.insert(bonusPoolToGrantId).values({
-      bonusPool: bonusPool.toLowerCase(),
-      grantId: flowContract,
-    }),
-    db.insert(baselinePoolToGrantId).values({
-      baselinePool: baselinePool.toLowerCase(),
-      grantId: flowContract,
-    }),
-    db.insert(parentFlowToChildren).values({
-      parentFlowContract: flowContract,
-      childGrantIds: [],
-    }),
-  ])
 }
 
 async function createRecipientMappings(

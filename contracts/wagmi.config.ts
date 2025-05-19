@@ -23,7 +23,7 @@ const baseContracts = [
 
   { name: "selfManagedFlowImpl", address: base.SelfManagedFlowImpl },
 
-  { name: "vrbsFlowImpl", address: base.VrbsFlowImpl },
+  { name: "revolutionFlowImpl", address: base.RevolutionFlowImpl },
 
   { name: "superToken", address: "0xeb796bdb90ffa0f28255275e16936d25d3418603" as `0x${string}` },
 

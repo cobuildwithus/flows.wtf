@@ -1,14 +1,12 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
-import { inArray } from "ponder"
-import { getGrantIdFromTcrAndItemId } from "../tcr/tcr-helpers"
 import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
-ponder.on("VrbsFlow:VoteCast", handleVoteCast)
-ponder.on("VrbsFlowChildren:VoteCast", handleVoteCast)
+ponder.on("RevolutionFlow:VoteCast", handleVoteCast)
+ponder.on("RevolutionFlowChildren:VoteCast", handleVoteCast)
 
 async function handleVoteCast(params: {
   event: Event<"NounsFlow:VoteCast">

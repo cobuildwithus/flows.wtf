@@ -14,8 +14,8 @@ import { mainnet } from "viem/chains"
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"VrbsFlow:FlowInitialized">
-  context: Context<"VrbsFlow:FlowInitialized">
+  event: Event<"RevolutionFlow:FlowInitialized">
+  context: Context<"RevolutionFlow:FlowInitialized">
 }) {
   const { context, event } = params
 

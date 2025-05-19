@@ -10,12 +10,12 @@ import {
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { base } from "../../../addresses"
 
-ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
-ponder.on("VrbsFlowChildren:FlowInitialized", handleFlowInitialized)
+ponder.on("RevolutionFlow:FlowInitialized", handleFlowInitialized)
+ponder.on("RevolutionFlowChildren:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"VrbsFlow:FlowInitialized">
-  context: Context<"VrbsFlow:FlowInitialized">
+  event: Event<"RevolutionFlow:FlowInitialized">
+  context: Context<"RevolutionFlow:FlowInitialized">
 }) {
   const { context, event } = params
 

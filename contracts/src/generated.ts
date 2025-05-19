@@ -6202,6 +6202,1348 @@ export const nounsTokenConfig = {
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// revolutionFlowImpl
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd)
+ */
+export const revolutionFlowImplAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'payable' },
+  { type: 'error', inputs: [], name: 'ADDRESS_ZERO' },
+  { type: 'error', inputs: [], name: 'ALLOCATION_MUST_BE_POSITIVE' },
+  { type: 'error', inputs: [], name: 'ARRAY_LENGTH_MISMATCH' },
+  { type: 'error', inputs: [], name: 'FLOW_RATE_NEGATIVE' },
+  { type: 'error', inputs: [], name: 'FLOW_RATE_TOO_HIGH' },
+  { type: 'error', inputs: [], name: 'INVALID_BPS' },
+  { type: 'error', inputs: [], name: 'INVALID_BPS_SUM' },
+  { type: 'error', inputs: [], name: 'INVALID_ERC20_VOTING_WEIGHT' },
+  { type: 'error', inputs: [], name: 'INVALID_ERC721_VOTING_WEIGHT' },
+  { type: 'error', inputs: [], name: 'INVALID_METADATA' },
+  { type: 'error', inputs: [], name: 'INVALID_PERCENTAGE' },
+  { type: 'error', inputs: [], name: 'INVALID_RATE_PERCENT' },
+  { type: 'error', inputs: [], name: 'INVALID_RECIPIENT_ID' },
+  { type: 'error', inputs: [], name: 'INVALID_SIGNATURE' },
+  { type: 'error', inputs: [], name: 'INVALID_VOTE_WEIGHT' },
+  { type: 'error', inputs: [], name: 'NOT_ABLE_TO_VOTE_WITH_TOKEN' },
+  { type: 'error', inputs: [], name: 'NOT_APPROVED_RECIPIENT' },
+  { type: 'error', inputs: [], name: 'NOT_A_VALID_CHILD_FLOW' },
+  { type: 'error', inputs: [], name: 'NOT_MANAGER' },
+  { type: 'error', inputs: [], name: 'NOT_OWNER_OR_MANAGER' },
+  { type: 'error', inputs: [], name: 'NOT_OWNER_OR_PARENT' },
+  { type: 'error', inputs: [], name: 'OVERFLOW' },
+  { type: 'error', inputs: [], name: 'POOL_CONNECTION_FAILED' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'recipientsLength', internalType: 'uint256', type: 'uint256' },
+      { name: 'allocationsLength', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'RECIPIENTS_ALLOCATIONS_MISMATCH',
+  },
+  { type: 'error', inputs: [], name: 'RECIPIENT_ALREADY_EXISTS' },
+  { type: 'error', inputs: [], name: 'RECIPIENT_ALREADY_REMOVED' },
+  { type: 'error', inputs: [], name: 'RECIPIENT_NOT_FOUND' },
+  { type: 'error', inputs: [], name: 'SANCTIONED_RECIPIENT' },
+  { type: 'error', inputs: [], name: 'SENDER_NOT_MANAGER' },
+  { type: 'error', inputs: [], name: 'SIGNATURE_EXPIRED' },
+  { type: 'error', inputs: [], name: 'TOO_FEW_RECIPIENTS' },
+  { type: 'error', inputs: [], name: 'UNITS_UPDATE_FAILED' },
+  { type: 'error', inputs: [], name: 'VOTING_DISABLED' },
+  { type: 'error', inputs: [], name: 'WEIGHT_TOO_LOW' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'newAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldBaselineFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'newBaselineFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'BaselineFlowRatePercentUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beacon',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'BeaconUpgraded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldBonusPoolQuorum',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'newBonusPoolQuorum',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'BonusPoolQuorumUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'erc20Token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ERC20VotingTokenChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldWeight',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'newWeight',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'ERC20VotingWeightChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'erc721Token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ERC721VotingTokenChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'flowImpl',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'FlowImplementationSet',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'superToken',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'flowImpl',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'manager',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'managerRewardPool',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'parent',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'baselinePool',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'bonusPool',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'baselinePoolFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'managerRewardPoolFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'FlowInitialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipientId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'baselinePool',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'bonusPool',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'managerRewardPoolFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'baselinePoolFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'FlowRecipientCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'version', internalType: 'uint8', type: 'uint8', indexed: false },
+    ],
+    name: 'Initialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldManagerRewardFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'newManagerRewardFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'ManagerRewardFlowRatePercentUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldManagerRewardPool',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newManagerRewardPool',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ManagerRewardPoolUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldManager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newManager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ManagerUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+        indexed: false,
+      },
+    ],
+    name: 'MetadataSet',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferStarted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipientId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'recipient',
+        internalType: 'struct FlowTypes.FlowRecipient',
+        type: 'tuple',
+        components: [
+          { name: 'recipient', internalType: 'address', type: 'address' },
+          { name: 'removed', internalType: 'bool', type: 'bool' },
+          {
+            name: 'recipientType',
+            internalType: 'enum FlowTypes.RecipientType',
+            type: 'uint8',
+          },
+          {
+            name: 'metadata',
+            internalType: 'struct FlowTypes.RecipientMetadata',
+            type: 'tuple',
+            components: [
+              { name: 'title', internalType: 'string', type: 'string' },
+              { name: 'description', internalType: 'string', type: 'string' },
+              { name: 'image', internalType: 'string', type: 'string' },
+              { name: 'tagline', internalType: 'string', type: 'string' },
+              { name: 'url', internalType: 'string', type: 'string' },
+            ],
+          },
+        ],
+        indexed: false,
+      },
+      {
+        name: 'approvedBy',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RecipientCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'recipientId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+    ],
+    name: 'RecipientRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newSanctionsOracle',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'SanctionsOracleSet',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'implementation',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'Upgraded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipientId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'memberUnits',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'bps', internalType: 'uint256', type: 'uint256', indexed: false },
+      {
+        name: 'totalWeight',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'VoteCast',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'BASELINE_MEMBER_UNITS',
+    outputs: [{ name: '', internalType: 'uint128', type: 'uint128' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PERCENTAGE_SCALE',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_initialOwner', internalType: 'address', type: 'address' },
+      { name: '_superToken', internalType: 'address', type: 'address' },
+      { name: '_flowImpl', internalType: 'address', type: 'address' },
+      { name: '_manager', internalType: 'address', type: 'address' },
+      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
+      { name: '_parent', internalType: 'address', type: 'address' },
+      {
+        name: '_flowParams',
+        internalType: 'struct IFlow.FlowParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'baselinePoolFlowRatePercent',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
+          {
+            name: 'managerRewardPoolFlowRatePercent',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
+          {
+            name: 'bonusPoolQuorumBps',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
+        ],
+      },
+      {
+        name: '_metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+      {
+        name: '_sanctionsOracle',
+        internalType: 'contract IChainalysisSanctionsList',
+        type: 'address',
+      },
+    ],
+    name: '__Flow_init',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'acceptOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'activeRecipientCount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_recipientId', internalType: 'bytes32', type: 'bytes32' },
+      {
+        name: '_metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+      { name: '_flowManager', internalType: 'address', type: 'address' },
+      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
+    ],
+    name: 'addFlowRecipient',
+    outputs: [
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_recipientId', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_recipient', internalType: 'address', type: 'address' },
+      {
+        name: '_metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+    ],
+    name: 'addRecipient',
+    outputs: [
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'baselinePool',
+    outputs: [
+      { name: '', internalType: 'contract ISuperfluidPool', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'baselinePoolFlowRatePercent',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'bonusPool',
+    outputs: [
+      { name: '', internalType: 'contract ISuperfluidPool', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: 'voter', internalType: 'address', type: 'address' },
+    ],
+    name: 'canVoteWithToken',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'tokenIds', internalType: 'uint256[]', type: 'uint256[]' },
+      { name: 'recipientIds', internalType: 'bytes32[]', type: 'bytes32[]' },
+      {
+        name: 'percentAllocations',
+        internalType: 'uint32[]',
+        type: 'uint32[]',
+      },
+    ],
+    name: 'castVotes',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'childFlowRatesOutOfSync',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'poolAddress',
+        internalType: 'contract ISuperfluidPool',
+        type: 'address',
+      },
+    ],
+    name: 'connectPool',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'disableVoting',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'enableVoting',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'erc20TokenVoteWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'erc20Votes',
+    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'erc721Votes',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract IERC721Checkpointable',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'flowImpl',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'flowMetadata',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'fs',
+    outputs: [
+      {
+        name: 'baselinePoolFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+      },
+      {
+        name: 'managerRewardPoolFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+      },
+      { name: 'flowImpl', internalType: 'address', type: 'address' },
+      { name: 'parent', internalType: 'address', type: 'address' },
+      { name: 'manager', internalType: 'address', type: 'address' },
+      { name: 'managerRewardPool', internalType: 'address', type: 'address' },
+      {
+        name: 'activeRecipientCount',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      {
+        name: 'metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      {
+        name: 'bonusPool',
+        internalType: 'contract ISuperfluidPool',
+        type: 'address',
+      },
+      {
+        name: 'baselinePool',
+        internalType: 'contract ISuperfluidPool',
+        type: 'address',
+      },
+      { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
+      { name: 'cachedFlowRate', internalType: 'int96', type: 'int96' },
+      {
+        name: 'totalActiveVoteWeight',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: 'bonusPoolQuorumBps', internalType: 'uint32', type: 'uint32' },
+      {
+        name: 'sanctionsOracle',
+        internalType: 'contract IChainalysisSanctionsList',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getActualFlowRate',
+    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getChildFlows',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'member', internalType: 'address', type: 'address' }],
+    name: 'getClaimableBalance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getManagerRewardPoolFlowRate',
+    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
+    name: 'getMemberTotalFlowRate',
+    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'recipientId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getRecipientById',
+    outputs: [
+      {
+        name: 'recipient',
+        internalType: 'struct FlowTypes.FlowRecipient',
+        type: 'tuple',
+        components: [
+          { name: 'recipient', internalType: 'address', type: 'address' },
+          { name: 'removed', internalType: 'bool', type: 'bool' },
+          {
+            name: 'recipientType',
+            internalType: 'enum FlowTypes.RecipientType',
+            type: 'uint8',
+          },
+          {
+            name: 'metadata',
+            internalType: 'struct FlowTypes.RecipientMetadata',
+            type: 'tuple',
+            components: [
+              { name: 'title', internalType: 'string', type: 'string' },
+              { name: 'description', internalType: 'string', type: 'string' },
+              { name: 'image', internalType: 'string', type: 'string' },
+              { name: 'tagline', internalType: 'string', type: 'string' },
+              { name: 'url', internalType: 'string', type: 'string' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getSuperToken',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getTotalFlowRate',
+    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
+    name: 'getTotalMemberUnits',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
+    name: 'getTotalReceivedByMember',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getVotesForTokenId',
+    outputs: [
+      {
+        name: 'allocations',
+        internalType: 'struct FlowTypes.VoteAllocation[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'recipientId', internalType: 'bytes32', type: 'bytes32' },
+          { name: 'bps', internalType: 'uint32', type: 'uint32' },
+          { name: 'memberUnits', internalType: 'uint128', type: 'uint128' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'tokenIds', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    name: 'getVotesForTokenIds',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct FlowTypes.VoteAllocation[][]',
+        type: 'tuple[][]',
+        components: [
+          { name: 'recipientId', internalType: 'bytes32', type: 'bytes32' },
+          { name: 'bps', internalType: 'uint32', type: 'uint32' },
+          { name: 'memberUnits', internalType: 'uint128', type: 'uint128' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_initialOwner', internalType: 'address', type: 'address' },
+      { name: '_erc721Token', internalType: 'address', type: 'address' },
+      { name: '_erc20Token', internalType: 'address', type: 'address' },
+      {
+        name: '_erc20TokenVoteWeight',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: '_superToken', internalType: 'address', type: 'address' },
+      { name: '_flowImpl', internalType: 'address', type: 'address' },
+      { name: '_manager', internalType: 'address', type: 'address' },
+      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
+      { name: '_parent', internalType: 'address', type: 'address' },
+      {
+        name: '_flowParams',
+        internalType: 'struct IFlow.FlowParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'baselinePoolFlowRatePercent',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
+          {
+            name: 'managerRewardPoolFlowRatePercent',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
+          {
+            name: 'bonusPoolQuorumBps',
+            internalType: 'uint32',
+            type: 'uint32',
+          },
+        ],
+      },
+      {
+        name: '_metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+      {
+        name: '_sanctionsOracle',
+        internalType: 'contract IChainalysisSanctionsList',
+        type: 'address',
+      },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'manager',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'managerRewardPool',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'managerRewardPoolFlowRatePercent',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'parent',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'pendingOwner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'proxiableUUID',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'recipient', internalType: 'address', type: 'address' }],
+    name: 'recipientExists',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'recipientId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'removeRecipient',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'resetFlowRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: '_baselineFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+      },
+    ],
+    name: 'setBaselineFlowRatePercent',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_quorumBps', internalType: 'uint32', type: 'uint32' }],
+    name: 'setBonusPoolQuorum',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'description', internalType: 'string', type: 'string' }],
+    name: 'setDescription',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_flowImpl', internalType: 'address', type: 'address' }],
+    name: 'setFlowImpl',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_flowRate', internalType: 'int96', type: 'int96' }],
+    name: 'setFlowRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_newManager', internalType: 'address', type: 'address' }],
+    name: 'setManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: '_managerRewardFlowRatePercent',
+        internalType: 'uint32',
+        type: 'uint32',
+      },
+    ],
+    name: 'setManagerRewardFlowRatePercent',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: '_newManagerRewardPool',
+        internalType: 'address',
+        type: 'address',
+      },
+    ],
+    name: 'setManagerRewardPool',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'metadata',
+        internalType: 'struct FlowTypes.RecipientMetadata',
+        type: 'tuple',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+    ],
+    name: 'setMetadata',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newSanctionsOracle', internalType: 'address', type: 'address' },
+    ],
+    name: 'setSanctionsOracle',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'superToken',
+    outputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'tokenVoteWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalActiveVoteWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalTokenSupplyVoteWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'upgradeAllChildFlows',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newImplementation', internalType: 'address', type: 'address' },
+    ],
+    name: 'upgradeTo',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newImplementation', internalType: 'address', type: 'address' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'upgradeToAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'votingEnabled',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'updateCount', internalType: 'uint256', type: 'uint256' }],
+    name: 'workOnChildFlowsToUpdate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+/**
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd)
+ */
+export const revolutionFlowImplAddress = {
+  8453: '0xA3D5C969Dc77Ed0E4D1c95f54A9EcdBE6eA3BdbD',
+} as const
+
+/**
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd)
+ */
+export const revolutionFlowImplConfig = {
+  address: revolutionFlowImplAddress,
+  abi: revolutionFlowImplAbi,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // rewardPoolImpl
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -10937,1303 +12279,4 @@ export const tokenVerifierAddress = {
 export const tokenVerifierConfig = {
   address: tokenVerifierAddress,
   abi: tokenVerifierAbi,
-} as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// vrbsFlowImpl
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x9c042cf5d48efceebfa1bb4b2072db9a5358c57d)
- */
-export const vrbsFlowImplAbi = [
-  { type: 'constructor', inputs: [], stateMutability: 'payable' },
-  { type: 'error', inputs: [], name: 'ADDRESS_ZERO' },
-  { type: 'error', inputs: [], name: 'ALLOCATION_MUST_BE_POSITIVE' },
-  { type: 'error', inputs: [], name: 'ARRAY_LENGTH_MISMATCH' },
-  { type: 'error', inputs: [], name: 'FLOW_RATE_NEGATIVE' },
-  { type: 'error', inputs: [], name: 'FLOW_RATE_TOO_HIGH' },
-  { type: 'error', inputs: [], name: 'INVALID_BPS' },
-  { type: 'error', inputs: [], name: 'INVALID_BPS_SUM' },
-  { type: 'error', inputs: [], name: 'INVALID_ERC20_VOTING_WEIGHT' },
-  { type: 'error', inputs: [], name: 'INVALID_ERC721_VOTING_WEIGHT' },
-  { type: 'error', inputs: [], name: 'INVALID_METADATA' },
-  { type: 'error', inputs: [], name: 'INVALID_PERCENTAGE' },
-  { type: 'error', inputs: [], name: 'INVALID_RATE_PERCENT' },
-  { type: 'error', inputs: [], name: 'INVALID_RECIPIENT_ID' },
-  { type: 'error', inputs: [], name: 'INVALID_SIGNATURE' },
-  { type: 'error', inputs: [], name: 'INVALID_VOTE_WEIGHT' },
-  { type: 'error', inputs: [], name: 'NOT_ABLE_TO_VOTE_WITH_TOKEN' },
-  { type: 'error', inputs: [], name: 'NOT_APPROVED_RECIPIENT' },
-  { type: 'error', inputs: [], name: 'NOT_A_VALID_CHILD_FLOW' },
-  { type: 'error', inputs: [], name: 'NOT_MANAGER' },
-  { type: 'error', inputs: [], name: 'NOT_OWNER_OR_MANAGER' },
-  { type: 'error', inputs: [], name: 'NOT_OWNER_OR_PARENT' },
-  { type: 'error', inputs: [], name: 'OVERFLOW' },
-  { type: 'error', inputs: [], name: 'POOL_CONNECTION_FAILED' },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'recipientsLength', internalType: 'uint256', type: 'uint256' },
-      { name: 'allocationsLength', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'RECIPIENTS_ALLOCATIONS_MISMATCH',
-  },
-  { type: 'error', inputs: [], name: 'RECIPIENT_ALREADY_EXISTS' },
-  { type: 'error', inputs: [], name: 'RECIPIENT_ALREADY_REMOVED' },
-  { type: 'error', inputs: [], name: 'RECIPIENT_NOT_FOUND' },
-  { type: 'error', inputs: [], name: 'SANCTIONED_RECIPIENT' },
-  { type: 'error', inputs: [], name: 'SENDER_NOT_MANAGER' },
-  { type: 'error', inputs: [], name: 'SIGNATURE_EXPIRED' },
-  { type: 'error', inputs: [], name: 'TOO_FEW_RECIPIENTS' },
-  { type: 'error', inputs: [], name: 'UNITS_UPDATE_FAILED' },
-  { type: 'error', inputs: [], name: 'VOTING_DISABLED' },
-  { type: 'error', inputs: [], name: 'WEIGHT_TOO_LOW' },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'previousAdmin',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'newAdmin',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'AdminChanged',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldBaselineFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-      {
-        name: 'newBaselineFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-    ],
-    name: 'BaselineFlowRatePercentUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'beacon',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'BeaconUpgraded',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldBonusPoolQuorum',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-      {
-        name: 'newBonusPoolQuorum',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-    ],
-    name: 'BonusPoolQuorumUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'erc721Token',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'ERC721VotingTokenChanged',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'flowImpl',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'FlowImplementationSet',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'owner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'superToken',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'flowImpl',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'manager',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'managerRewardPool',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'parent',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'baselinePool',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'bonusPool',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'baselinePoolFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-      {
-        name: 'managerRewardPoolFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-    ],
-    name: 'FlowInitialized',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'recipientId',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-      {
-        name: 'recipient',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'baselinePool',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'bonusPool',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'managerRewardPoolFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-      {
-        name: 'baselinePoolFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-    ],
-    name: 'FlowRecipientCreated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'version', internalType: 'uint8', type: 'uint8', indexed: false },
-    ],
-    name: 'Initialized',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldManagerRewardFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-      {
-        name: 'newManagerRewardFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-        indexed: false,
-      },
-    ],
-    name: 'ManagerRewardFlowRatePercentUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldManagerRewardPool',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newManagerRewardPool',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'ManagerRewardPoolUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldManager',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newManager',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'ManagerUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-        indexed: false,
-      },
-    ],
-    name: 'MetadataSet',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'previousOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipTransferStarted',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'previousOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipTransferred',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'recipientId',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-      {
-        name: 'recipient',
-        internalType: 'struct FlowTypes.FlowRecipient',
-        type: 'tuple',
-        components: [
-          { name: 'recipient', internalType: 'address', type: 'address' },
-          { name: 'removed', internalType: 'bool', type: 'bool' },
-          {
-            name: 'recipientType',
-            internalType: 'enum FlowTypes.RecipientType',
-            type: 'uint8',
-          },
-          {
-            name: 'metadata',
-            internalType: 'struct FlowTypes.RecipientMetadata',
-            type: 'tuple',
-            components: [
-              { name: 'title', internalType: 'string', type: 'string' },
-              { name: 'description', internalType: 'string', type: 'string' },
-              { name: 'image', internalType: 'string', type: 'string' },
-              { name: 'tagline', internalType: 'string', type: 'string' },
-              { name: 'url', internalType: 'string', type: 'string' },
-            ],
-          },
-        ],
-        indexed: false,
-      },
-      {
-        name: 'approvedBy',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'RecipientCreated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'recipient',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'recipientId',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-    ],
-    name: 'RecipientRemoved',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'newSanctionsOracle',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'SanctionsOracleSet',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'implementation',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'Upgraded',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'recipientId',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'memberUnits',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      { name: 'bps', internalType: 'uint256', type: 'uint256', indexed: false },
-      {
-        name: 'totalWeight',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'VoteCast',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'BASELINE_MEMBER_UNITS',
-    outputs: [{ name: '', internalType: 'uint128', type: 'uint128' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'PERCENTAGE_SCALE',
-    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_initialOwner', internalType: 'address', type: 'address' },
-      { name: '_superToken', internalType: 'address', type: 'address' },
-      { name: '_flowImpl', internalType: 'address', type: 'address' },
-      { name: '_manager', internalType: 'address', type: 'address' },
-      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
-      { name: '_parent', internalType: 'address', type: 'address' },
-      {
-        name: '_flowParams',
-        internalType: 'struct IFlow.FlowParams',
-        type: 'tuple',
-        components: [
-          { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
-          {
-            name: 'baselinePoolFlowRatePercent',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-          {
-            name: 'managerRewardPoolFlowRatePercent',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-          {
-            name: 'bonusPoolQuorumBps',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-        ],
-      },
-      {
-        name: '_metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-      {
-        name: '_sanctionsOracle',
-        internalType: 'contract IChainalysisSanctionsList',
-        type: 'address',
-      },
-    ],
-    name: '__Flow_init',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'acceptOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'activeRecipientCount',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_recipientId', internalType: 'bytes32', type: 'bytes32' },
-      {
-        name: '_metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-      { name: '_flowManager', internalType: 'address', type: 'address' },
-      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
-    ],
-    name: 'addFlowRecipient',
-    outputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'address', type: 'address' },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_recipientId', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_recipient', internalType: 'address', type: 'address' },
-      {
-        name: '_metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-    ],
-    name: 'addRecipient',
-    outputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'address', type: 'address' },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'baselinePool',
-    outputs: [
-      { name: '', internalType: 'contract ISuperfluidPool', type: 'address' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'baselinePoolFlowRatePercent',
-    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'bonusPool',
-    outputs: [
-      { name: '', internalType: 'contract ISuperfluidPool', type: 'address' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
-      { name: 'voter', internalType: 'address', type: 'address' },
-    ],
-    name: 'canVoteWithToken',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'tokenIds', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: 'recipientIds', internalType: 'bytes32[]', type: 'bytes32[]' },
-      {
-        name: 'percentAllocations',
-        internalType: 'uint32[]',
-        type: 'uint32[]',
-      },
-    ],
-    name: 'castVotes',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'childFlowRatesOutOfSync',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
-        name: 'poolAddress',
-        internalType: 'contract ISuperfluidPool',
-        type: 'address',
-      },
-    ],
-    name: 'connectPool',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'disableVoting',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'enableVoting',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'erc721Votes',
-    outputs: [
-      {
-        name: '',
-        internalType: 'contract IERC721Checkpointable',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'flowImpl',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'flowMetadata',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'fs',
-    outputs: [
-      {
-        name: 'baselinePoolFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-      },
-      {
-        name: 'managerRewardPoolFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-      },
-      { name: 'flowImpl', internalType: 'address', type: 'address' },
-      { name: 'parent', internalType: 'address', type: 'address' },
-      { name: 'manager', internalType: 'address', type: 'address' },
-      { name: 'managerRewardPool', internalType: 'address', type: 'address' },
-      {
-        name: 'activeRecipientCount',
-        internalType: 'uint256',
-        type: 'uint256',
-      },
-      {
-        name: 'metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-      {
-        name: 'superToken',
-        internalType: 'contract ISuperToken',
-        type: 'address',
-      },
-      {
-        name: 'bonusPool',
-        internalType: 'contract ISuperfluidPool',
-        type: 'address',
-      },
-      {
-        name: 'baselinePool',
-        internalType: 'contract ISuperfluidPool',
-        type: 'address',
-      },
-      { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
-      { name: 'cachedFlowRate', internalType: 'int96', type: 'int96' },
-      {
-        name: 'totalActiveVoteWeight',
-        internalType: 'uint256',
-        type: 'uint256',
-      },
-      { name: 'bonusPoolQuorumBps', internalType: 'uint32', type: 'uint32' },
-      {
-        name: 'sanctionsOracle',
-        internalType: 'contract IChainalysisSanctionsList',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'getActualFlowRate',
-    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'getChildFlows',
-    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'member', internalType: 'address', type: 'address' }],
-    name: 'getClaimableBalance',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'getManagerRewardPoolFlowRate',
-    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
-    name: 'getMemberTotalFlowRate',
-    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'recipientId', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'getRecipientById',
-    outputs: [
-      {
-        name: 'recipient',
-        internalType: 'struct FlowTypes.FlowRecipient',
-        type: 'tuple',
-        components: [
-          { name: 'recipient', internalType: 'address', type: 'address' },
-          { name: 'removed', internalType: 'bool', type: 'bool' },
-          {
-            name: 'recipientType',
-            internalType: 'enum FlowTypes.RecipientType',
-            type: 'uint8',
-          },
-          {
-            name: 'metadata',
-            internalType: 'struct FlowTypes.RecipientMetadata',
-            type: 'tuple',
-            components: [
-              { name: 'title', internalType: 'string', type: 'string' },
-              { name: 'description', internalType: 'string', type: 'string' },
-              { name: 'image', internalType: 'string', type: 'string' },
-              { name: 'tagline', internalType: 'string', type: 'string' },
-              { name: 'url', internalType: 'string', type: 'string' },
-            ],
-          },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'getSuperToken',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'getTotalFlowRate',
-    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
-    name: 'getTotalMemberUnits',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
-    name: 'getTotalReceivedByMember',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getVotesForTokenId',
-    outputs: [
-      {
-        name: 'allocations',
-        internalType: 'struct FlowTypes.VoteAllocation[]',
-        type: 'tuple[]',
-        components: [
-          { name: 'recipientId', internalType: 'bytes32', type: 'bytes32' },
-          { name: 'bps', internalType: 'uint32', type: 'uint32' },
-          { name: 'memberUnits', internalType: 'uint128', type: 'uint128' },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'tokenIds', internalType: 'uint256[]', type: 'uint256[]' },
-    ],
-    name: 'getVotesForTokenIds',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct FlowTypes.VoteAllocation[][]',
-        type: 'tuple[][]',
-        components: [
-          { name: 'recipientId', internalType: 'bytes32', type: 'bytes32' },
-          { name: 'bps', internalType: 'uint32', type: 'uint32' },
-          { name: 'memberUnits', internalType: 'uint128', type: 'uint128' },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_initialOwner', internalType: 'address', type: 'address' },
-      { name: '_vrbsToken', internalType: 'address', type: 'address' },
-      { name: '_superToken', internalType: 'address', type: 'address' },
-      { name: '_flowImpl', internalType: 'address', type: 'address' },
-      { name: '_manager', internalType: 'address', type: 'address' },
-      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
-      { name: '_parent', internalType: 'address', type: 'address' },
-      {
-        name: '_flowParams',
-        internalType: 'struct IFlow.FlowParams',
-        type: 'tuple',
-        components: [
-          { name: 'tokenVoteWeight', internalType: 'uint256', type: 'uint256' },
-          {
-            name: 'baselinePoolFlowRatePercent',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-          {
-            name: 'managerRewardPoolFlowRatePercent',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-          {
-            name: 'bonusPoolQuorumBps',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-        ],
-      },
-      {
-        name: '_metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-      {
-        name: '_sanctionsOracle',
-        internalType: 'contract IChainalysisSanctionsList',
-        type: 'address',
-      },
-    ],
-    name: 'initialize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'manager',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'managerRewardPool',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'managerRewardPoolFlowRatePercent',
-    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'parent',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'pendingOwner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'proxiableUUID',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'recipient', internalType: 'address', type: 'address' }],
-    name: 'recipientExists',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'recipientId', internalType: 'bytes32', type: 'bytes32' }],
-    name: 'removeRecipient',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'resetFlowRate',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newSanctionsOracle', internalType: 'address', type: 'address' },
-    ],
-    name: 'setAllChildFlowSanctionsOracle',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
-        name: '_baselineFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-      },
-    ],
-    name: 'setBaselineFlowRatePercent',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_quorumBps', internalType: 'uint32', type: 'uint32' }],
-    name: 'setBonusPoolQuorum',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'description', internalType: 'string', type: 'string' }],
-    name: 'setDescription',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_flowImpl', internalType: 'address', type: 'address' }],
-    name: 'setFlowImpl',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_flowRate', internalType: 'int96', type: 'int96' }],
-    name: 'setFlowRate',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '_newManager', internalType: 'address', type: 'address' }],
-    name: 'setManager',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
-        name: '_managerRewardFlowRatePercent',
-        internalType: 'uint32',
-        type: 'uint32',
-      },
-    ],
-    name: 'setManagerRewardFlowRatePercent',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
-        name: '_newManagerRewardPool',
-        internalType: 'address',
-        type: 'address',
-      },
-    ],
-    name: 'setManagerRewardPool',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
-        name: 'metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-    ],
-    name: 'setMetadata',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newSanctionsOracle', internalType: 'address', type: 'address' },
-    ],
-    name: 'setSanctionsOracle',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'superToken',
-    outputs: [
-      { name: '', internalType: 'contract ISuperToken', type: 'address' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'tokenVoteWeight',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'totalActiveVoteWeight',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'totalTokenSupplyVoteWeight',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'upgradeAllChildFlows',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-    ],
-    name: 'upgradeTo',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newImplementation', internalType: 'address', type: 'address' },
-      { name: 'data', internalType: 'bytes', type: 'bytes' },
-    ],
-    name: 'upgradeToAndCall',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'votingEnabled',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'updateCount', internalType: 'uint256', type: 'uint256' }],
-    name: 'workOnChildFlowsToUpdate',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-] as const
-
-/**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x9c042cf5d48efceebfa1bb4b2072db9a5358c57d)
- */
-export const vrbsFlowImplAddress = {
-  8453: '0x9c042Cf5d48efcEEbFA1bB4B2072db9A5358c57d',
-} as const
-
-/**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x9c042cf5d48efceebfa1bb4b2072db9a5358c57d)
- */
-export const vrbsFlowImplConfig = {
-  address: vrbsFlowImplAddress,
-  abi: vrbsFlowImplAbi,
 } as const
