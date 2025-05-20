@@ -17,6 +17,7 @@ import { getUser } from "@/lib/auth/user"
 import Link from "next/link"
 import { Suspense } from "react"
 import { GrantChat } from "@/app/item/[grantId]/components/grant-chat"
+import { Allocator } from "@/app/item/[grantId]/cards/allocator"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -30,7 +31,7 @@ export default async function FlowPage(props: Props) {
   const pool = await getPool()
   const user = await getUser()
 
-  const { description, parentContract, isTopLevel } = flow
+  const { description, parentContract, isTopLevel, allocator, erc721VotingToken } = flow
 
   return (
     <div className="container mt-2.5 max-w-6xl pb-24 md:mt-6">
@@ -125,7 +126,7 @@ export default async function FlowPage(props: Props) {
               </Card>
             )}
 
-            {!isTopLevel && (
+            {!isTopLevel && erc721VotingToken && (
               <Card>
                 <CardHeader>
                   <CardTitle>Voters</CardTitle>
@@ -139,6 +140,17 @@ export default async function FlowPage(props: Props) {
                       isFlow={true}
                     />
                   </Suspense>
+                </CardContent>
+              </Card>
+            )}
+
+            {allocator && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Flow manager</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Allocator allocator={allocator as `0x${string}`} />
                 </CardContent>
               </Card>
             )}
