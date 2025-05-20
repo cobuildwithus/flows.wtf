@@ -32,7 +32,7 @@ export const FlowSubmenu = async (props: Props) => {
   const awaitingCount = flow.subgrants.filter(isGrantAwaiting).length
   const isFlowRemoved = flow.isRemoved
 
-  const canSuggestFlow = !!flow.tcr && flow.isTopLevel
+  const canSuggestFlow = !!flow.tcr || !!flow.allocator
   const canVote = !!flow.erc721VotingToken
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
