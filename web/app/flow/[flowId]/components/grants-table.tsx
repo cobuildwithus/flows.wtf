@@ -36,7 +36,7 @@ export function GrantsTable(props: Props) {
       <TableHeader>
         <TableRow>
           <TableHead colSpan={2}>Name</TableHead>
-          {!flow.isTopLevel && <TableHead>Builders</TableHead>}
+          {!flow.isTopLevel && <TableHead>Builder</TableHead>}
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
           {!flow.allocator && <TableHead className="text-center">Votes</TableHead>}
