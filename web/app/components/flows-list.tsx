@@ -2,8 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { useAllocateFlow } from "@/lib/voting/allocation-context"
-import { FlowCard } from "./flow-card"
 import { FlowsTable, type LimitedFlow } from "./flows-table"
+import { FlowCard } from "./flow-card"
 
 interface Props {
   flows: Array<LimitedFlow>
