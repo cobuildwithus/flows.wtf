@@ -35,6 +35,7 @@ export default async function Home() {
       chainId={base.id}
       contract={getEthAddress(pool.recipient)}
       votingToken={pool.erc721VotingToken}
+      allocator={pool.allocator}
     >
       <main>
         <div className="container mt-6">

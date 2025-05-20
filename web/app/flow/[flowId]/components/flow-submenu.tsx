@@ -8,6 +8,7 @@ import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import Link from "next/link"
 import { AllocationToggle } from "./allocation-toggle"
 import { getEthAddress } from "@/lib/utils"
+import { getUser } from "@/lib/auth/user"
 
 interface Props {
   flowId: string
@@ -17,11 +18,12 @@ interface Props {
 export const FlowSubmenu = async (props: Props) => {
   const { flowId, segment } = props
 
-  const [flow, draftsCount] = await Promise.all([
+  const [flow, draftsCount, user] = await Promise.all([
     getFlowWithGrants(flowId),
     database.draft.count({
       where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
     }),
+    getUser(),
   ])
 
   const isApproved = segment === "approved"
@@ -33,7 +35,7 @@ export const FlowSubmenu = async (props: Props) => {
   const isFlowRemoved = flow.isRemoved
 
   const canSuggestFlow = !!flow.tcr || !!flow.allocator
-  const canVote = !!flow.erc721VotingToken
+  const canAllocate = !!flow.erc721VotingToken || flow.allocator === user?.address
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
@@ -74,7 +76,7 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {isApproved && approvedCount > 0 && canVote && <AllocationToggle />}
+          {isApproved && approvedCount > 0 && canAllocate && <AllocationToggle />}
           {(isDrafts || isCurate || (isApproved && approvedCount === 0)) &&
             !isFlowRemoved &&
             canSuggestFlow && (

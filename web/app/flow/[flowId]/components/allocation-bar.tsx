@@ -39,7 +39,7 @@ export const AllocationBar = () => {
                 onClick={saveVotes}
                 disabled={allocatedBps !== 10000 || isLoading || batchIndex >= batchTotal}
               >
-                {batchTotal > 1 ? `Save votes (${batchIndex + 1} of ${batchTotal})` : "Save votes"}
+                {batchTotal > 1 ? `Save (${batchIndex + 1} of ${batchTotal})` : "Save"}
               </Button>
             </TooltipTrigger>
             <TooltipContent>

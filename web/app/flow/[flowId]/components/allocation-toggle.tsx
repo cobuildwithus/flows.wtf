@@ -7,14 +7,14 @@ import { toast } from "sonner"
 import { useAccount } from "wagmi"
 
 export const AllocationToggle = () => {
-  const { isLoading, isActive, activate } = useAllocateFlow()
+  const { isLoading, isActive, activate, allocator, votingToken } = useAllocateFlow()
   const { address } = useAccount()
   const { tokens } = useDelegatedTokens(address)
 
   return (
     <AuthButton
       onClick={() => {
-        if (tokens.length === 0) {
+        if (tokens.length === 0 && !allocator) {
           return toast.error("You don't have any voting power.")
         }
 
@@ -24,7 +24,14 @@ export const AllocationToggle = () => {
       loading={isLoading}
       type="button"
     >
-      {isActive ? "In progress..." : `Vote`}
+      {getButtonText(isActive, allocator, votingToken)}
     </AuthButton>
   )
+}
+
+function getButtonText(isActive: boolean, allocator: string | null, votingToken: string | null) {
+  if (isActive) return "In progress..."
+  if (allocator) return "Split funds"
+  if (votingToken) return "Vote"
+  return "Allocate"
 }

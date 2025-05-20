@@ -12,6 +12,7 @@ import { useVotingContextActive } from "./hooks/use-context-active"
 import { useExistingVotes } from "./hooks/use-existing-votes"
 import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
+import { useAllocateSelfManagedFlow } from "./hooks/use-allocate-self-managed-flow"
 
 interface AllocationContextType {
   activate: () => void
@@ -28,6 +29,10 @@ interface AllocationContextType {
 
   batchIndex: number
   batchTotal: number
+
+  votingToken: string | null
+  allocator: string | null
+  isAllocator: boolean
 }
 
 const AllocationContext = createContext<AllocationContextType | null>(null)
@@ -37,9 +42,10 @@ export const AllocationProvider = (
     contract: `0x${string}`
     chainId: number
     votingToken: string | null
+    allocator: string | null
   }>,
 ) => {
-  const { children, contract, chainId, votingToken } = props
+  const { children, contract, chainId, votingToken, allocator } = props
   const { address } = useAccount()
   const router = useRouter()
   const { isActive, setIsActive } = useVotingContextActive()
@@ -81,6 +87,9 @@ export const AllocationProvider = (
     onSuccess,
   )
 
+  const { allocateFunds: allocateFundsSelfManaged, isLoading: isLoadingSelfManaged } =
+    useAllocateSelfManagedFlow(contract, chainId, onSuccess)
+
   return (
     <AllocationContext.Provider
       value={{
@@ -96,9 +105,14 @@ export const AllocationProvider = (
           const existingVotes = votes || []
           if (!address)
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
+
+          if (allocator) {
+            return await allocateFundsSelfManaged(existingVotes, address)
+          }
+
           if (!tokens.length) return toast.error("No delegated tokens found")
 
-          if (!isValidVotingContract(votingToken)) {
+          if (!isValidVotingContract(votingToken) && !allocator) {
             return toast.error("Voting is not supported for this token")
           }
 
@@ -118,11 +132,14 @@ export const AllocationProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading: isLoadingNouns || isLoadingRevolution,
+        isLoading: isLoadingNouns || isLoadingRevolution || isLoadingSelfManaged,
         allocatedBps: votes?.reduce((acc, v) => acc + v.bps, 0) || 0,
         votedCount: votes?.filter((v) => v.bps > 0).length || 0,
         batchIndex,
         batchTotal,
+        votingToken,
+        allocator,
+        isAllocator: allocator === address,
       }}
     >
       {children}
