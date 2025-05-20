@@ -10,16 +10,16 @@ interface Props {
 
 export const AllocationInput = (props: Props) => {
   const { recipientId } = props
-  const { votes, updateVote, isActive, activate } = useAllocateFlow()
+  const { allocations, updateAllocation, isActive, activate } = useAllocateFlow()
 
-  const currentVote = votes.find((v) => v.recipientId === recipientId)
+  const currentAllocation = allocations.find((a) => a.recipientId === recipientId)
 
   if (!isActive)
     return (
       <Tooltip>
         <TooltipTrigger asChild>
           <button type="button" onClick={() => activate()}>
-            {(currentVote?.bps || 0) / 100}%
+            {(currentAllocation?.bps || 0) / 100}%
           </button>
         </TooltipTrigger>
         <TooltipContent>Click to edit</TooltipContent>
@@ -30,9 +30,9 @@ export const AllocationInput = (props: Props) => {
     <div className="relative">
       <Input
         placeholder="0"
-        value={currentVote ? currentVote.bps / 100 : ""}
+        value={currentAllocation ? currentAllocation.bps / 100 : ""}
         onChange={(e) =>
-          updateVote({
+          updateAllocation({
             recipientId,
             bps: Number.parseFloat(e.target.value) * 100,
           })

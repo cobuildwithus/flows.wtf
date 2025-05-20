@@ -1,7 +1,6 @@
 "use client"
 
-import { useUserVotes } from "@/lib/voting/user-votes/use-user-votes"
-import { useAccount } from "wagmi"
+import { useUserAllocations } from "@/lib/voting/user-allocations/use-user-allocations"
 
 interface Props {
   parent: `0x${string}`
@@ -10,10 +9,9 @@ interface Props {
 
 export const FlowHeaderUserVotes = (props: Props) => {
   const { parent, recipientId } = props
-  const { address } = useAccount()
-  const { votes } = useUserVotes(parent, address)
+  const { allocations } = useUserAllocations(parent)
 
-  const votesCount = votes.find((v) => v.recipientId === recipientId)?.bps || 0
+  const votesCount = allocations.find((v) => v.recipientId === recipientId)?.bps || 0
 
   return (
     <div className="md:text-center">

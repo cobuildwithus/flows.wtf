@@ -4,12 +4,12 @@ import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-
 import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
 import { useBatchVoting } from "./hooks/use-batch-voting"
-import { isValidVotingContract, UserVote } from "./vote-types"
+import { isValidVotingContract, UserAllocation } from "./vote-types"
 import { useVoteNouns } from "./hooks/use-vote-nouns"
 import { base, mainnet } from "@/addresses"
 import { toast } from "sonner"
 import { useVotingContextActive } from "./hooks/use-context-active"
-import { useExistingVotes } from "./hooks/use-existing-votes"
+import { useExistingAllocations } from "./hooks/use-existing-allocations"
 import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
 import { useAllocateSelfManagedFlow } from "./hooks/use-allocate-self-managed-flow"
@@ -19,9 +19,9 @@ interface AllocationContextType {
   cancel: () => void
   isActive: boolean
 
-  votes: UserVote[]
-  saveVotes: () => void
-  updateVote: (vote: UserVote) => void
+  allocations: UserAllocation[]
+  saveAllocations: () => void
+  updateAllocation: (allocation: UserAllocation) => void
   isLoading: boolean
 
   allocatedBps: number
@@ -49,7 +49,8 @@ export const AllocationProvider = (
   const { address } = useAccount()
   const router = useRouter()
   const { isActive, setIsActive } = useVotingContextActive()
-  const { userVotes, mutateUserVotes, votes, setVotes } = useExistingVotes(contract)
+  const { userAllocations, mutateUserAllocations, allocations, setAllocations } =
+    useExistingAllocations(contract)
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
@@ -59,7 +60,7 @@ export const AllocationProvider = (
     // If there are more batches to process, simply advance the index and let the
     // user click the button again. Otherwise finish up as before.
     setTimeout(() => {
-      mutateUserVotes()
+      mutateUserAllocations()
     }, 3000)
 
     setBatchIndex((prev) => {
@@ -97,17 +98,17 @@ export const AllocationProvider = (
         activate: () => setIsActive(true),
         cancel: () => {
           setIsActive(false)
-          setVotes(userVotes)
+          setAllocations(userAllocations)
           setBatchIndex(0)
         },
-        votes: votes || [],
-        saveVotes: async () => {
-          const existingVotes = votes || []
+        allocations: allocations || [],
+        saveAllocations: async () => {
+          const existingAllocations = allocations || []
           if (!address)
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
 
           if (allocator) {
-            return await allocateFundsSelfManaged(existingVotes, address)
+            return await allocateFundsSelfManaged(existingAllocations, address)
           }
 
           if (!tokens.length) return toast.error("No delegated tokens found")
@@ -117,24 +118,24 @@ export const AllocationProvider = (
           }
 
           if (isNounsFlow(votingToken)) {
-            return await saveVotesNouns(existingVotes, address, tokenBatch)
+            return await saveVotesNouns(existingAllocations, address, tokenBatch)
           }
 
           if (isRevolutionFlow(votingToken)) {
-            return await saveVotesRevolution(existingVotes, address, tokenBatch)
+            return await saveVotesRevolution(existingAllocations, address, tokenBatch)
           }
         },
-        updateVote: (vote: UserVote) => {
-          const { recipientId, bps } = vote
+        updateAllocation: (allocation: UserAllocation) => {
+          const { recipientId, bps } = allocation
 
-          setVotes([
-            ...(votes || []).filter((v) => v.recipientId !== recipientId),
+          setAllocations([
+            ...(allocations || []).filter((a) => a.recipientId !== recipientId),
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
         isLoading: isLoadingNouns || isLoadingRevolution || isLoadingSelfManaged,
-        allocatedBps: votes?.reduce((acc, v) => acc + v.bps, 0) || 0,
-        votedCount: votes?.filter((v) => v.bps > 0).length || 0,
+        allocatedBps: allocations?.reduce((acc, a) => acc + a.bps, 0) || 0,
+        votedCount: allocations?.filter((a) => a.bps > 0).length || 0,
         batchIndex,
         batchTotal,
         votingToken,

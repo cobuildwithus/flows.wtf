@@ -11,7 +11,7 @@ import {
   selfManagedFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
-import { UserVote } from "../vote-types"
+import { UserAllocation } from "../vote-types"
 
 export function useAllocateSelfManagedFlow(
   contract: `0x${string}`,
@@ -25,12 +25,16 @@ export function useAllocateSelfManagedFlow(
 
   return {
     isLoading,
-    allocateFunds: async (votes: UserVote[], account: `0x${string}`) => {
+    allocateFunds: async (allocations: UserAllocation[], account: `0x${string}`) => {
       try {
         await prepareWallet()
 
-        const percentAllocations = votes.map((vote) => (vote.bps / 10000) * PERCENTAGE_SCALE)
-        const recipientIds = votes.map((vote) => vote.recipientId as `0x${string}`)
+        const percentAllocations = allocations.map(
+          (allocation) => (allocation.bps / 10000) * PERCENTAGE_SCALE,
+        )
+        const recipientIds = allocations.map(
+          (allocation) => allocation.recipientId as `0x${string}`,
+        )
 
         writeContract({
           account,

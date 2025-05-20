@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { useAllocateFlow } from "@/lib/voting/allocation-context"
 
 export const AllocationBar = () => {
-  const { isActive, cancel, saveVotes, allocatedBps, isLoading, batchIndex, batchTotal } =
+  const { isActive, cancel, saveAllocations, allocatedBps, isLoading, batchIndex, batchTotal } =
     useAllocateFlow()
 
   if (!isActive) return null
@@ -36,7 +36,7 @@ export const AllocationBar = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={saveVotes}
+                onClick={saveAllocations}
                 disabled={allocatedBps !== 10000 || isLoading || batchIndex >= batchTotal}
               >
                 {batchTotal > 1 ? `Save (${batchIndex + 1} of ${batchTotal})` : "Save"}

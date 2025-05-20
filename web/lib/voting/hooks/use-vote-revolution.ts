@@ -11,7 +11,7 @@ import {
   revolutionFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
-import { ERC721VotingToken, UserVote } from "../vote-types"
+import { ERC721VotingToken, UserAllocation } from "../vote-types"
 
 export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
@@ -22,7 +22,7 @@ export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSu
   return {
     isLoading,
     saveVotes: async (
-      votes: UserVote[],
+      allocations: UserAllocation[],
       account: `0x${string}`,
       tokenBatch: ERC721VotingToken[],
     ) => {
@@ -30,8 +30,12 @@ export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSu
         await prepareWallet()
 
         const tokenIds: bigint[] = tokenBatch.map((token) => BigInt(token.tokenId))
-        const percentAllocations = votes.map((vote) => (vote.bps / 10000) * PERCENTAGE_SCALE)
-        const recipientIds = votes.map((vote) => vote.recipientId as `0x${string}`)
+        const percentAllocations = allocations.map(
+          (allocation) => (allocation.bps / 10000) * PERCENTAGE_SCALE,
+        )
+        const recipientIds = allocations.map(
+          (allocation) => allocation.recipientId as `0x${string}`,
+        )
 
         writeContract({
           account,
