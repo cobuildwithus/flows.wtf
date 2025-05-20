@@ -18,7 +18,7 @@ import type { DerivedData } from "@prisma/flows"
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import Link from "next/link"
 import { GrantLogoCell } from "./grant-logo-cell"
-import { VotingInput } from "./voting-input"
+import { AllocationInput } from "./allocation-input"
 import type { LimitedGrant } from "./grants-list"
 
 interface Props {
@@ -36,10 +36,10 @@ export function GrantsTable(props: Props) {
       <TableHeader>
         <TableRow>
           <TableHead colSpan={2}>Name</TableHead>
-          {!flow.isTopLevel && <TableHead>Builders</TableHead>}
+          {!flow.isTopLevel && <TableHead>Builder</TableHead>}
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
-          <TableHead className="text-center">Votes</TableHead>
+          {!flow.allocator && <TableHead className="text-center">Votes</TableHead>}
           <TableHead className="text-center">Your Vote</TableHead>
         </TableRow>
       </TableHeader>
@@ -123,11 +123,12 @@ export function GrantsTable(props: Props) {
               <TableCell className="text-center">
                 <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />
               </TableCell>
-              <TableCell className="text-center">{grant.votesCount}</TableCell>
+
+              {!flow.allocator && <TableCell className="text-center">{grant.votesCount}</TableCell>}
 
               <TableCell className="w-[100px] max-w-[100px] text-center">
                 <div className="px-0.5">
-                  <VotingInput recipientId={grant.id} />
+                  <AllocationInput recipientId={grant.recipientId} />
                 </div>
               </TableCell>
             </TableRow>

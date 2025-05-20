@@ -6,15 +6,15 @@ import { getVoters } from "../components/get-voters"
 
 interface Props {
   contract: `0x${string}`
-  grantId: string
+  recipientId: string
   flowVotesCount: string
   isFlow?: boolean
 }
 
 export const Voters = async (props: Props) => {
-  const { contract, grantId, flowVotesCount, isFlow } = props
+  const { contract, recipientId, flowVotesCount, isFlow } = props
 
-  const voters = await getVoters(contract, grantId)
+  const voters = await getVoters(contract, recipientId)
 
   return (
     <>

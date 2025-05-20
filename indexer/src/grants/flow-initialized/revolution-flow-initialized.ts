@@ -10,12 +10,11 @@ import {
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { base } from "../../../addresses"
 
-ponder.on("VrbsFlow:FlowInitialized", handleFlowInitialized)
-ponder.on("VrbsFlowChildren:FlowInitialized", handleFlowInitialized)
+ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"VrbsFlow:FlowInitialized">
-  context: Context<"VrbsFlow:FlowInitialized">
+  event: Event<"CustomFlow:FlowInitialized">
+  context: Context<"CustomFlow:FlowInitialized">
 }) {
   const { context, event } = params
 
@@ -32,6 +31,8 @@ async function handleFlowInitialized(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const parentContract = parent.toLowerCase() as `0x${string}`
 
+  const parentFlow = await context.db.find(grants, { id: parentContract })
+
   const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
     context,
     contract,
@@ -47,7 +48,7 @@ async function handleFlowInitialized(params: {
     id: grantId,
     ...metadata,
     recipient: contract,
-    recipientId: null, // no parent flow or no recipient id yet
+    recipientId: "",
     isTopLevel,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),

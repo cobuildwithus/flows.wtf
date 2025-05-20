@@ -19,7 +19,6 @@ export const CheckUpdateButton = ({
 
   const checkUpdate = async () => {
     try {
-      console.log("Checking update")
       setLoading(true)
       const response = await fetch("/api/grant-update", {
         method: "POST",

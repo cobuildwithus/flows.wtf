@@ -12,7 +12,9 @@ async function handleAllocatorChanged(params: {
 
   const grantId = event.log.address.toLowerCase()
 
-  if (!grantId) {
+  const grant = await context.db.find(grants, { id: grantId })
+
+  if (!grant) {
     return
   }
 

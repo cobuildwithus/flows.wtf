@@ -4,7 +4,7 @@ import { getAddress } from "viem"
 import { removeApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants, tcrToGrantId } from "ponder:schema"
 import { isBlockRecent } from "../utils"
-import { getGrantIdFromTcrAndItemId } from "./helpers"
+import { getGrantIdFromTcrAndItemId } from "./tcr-helpers"
 
 ponder.on("FlowTcr:ItemStatusChange", handleItemStatusChange)
 ponder.on("FlowTcrChildren:ItemStatusChange", handleItemStatusChange)

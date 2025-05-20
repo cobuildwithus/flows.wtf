@@ -5,7 +5,7 @@ export const grants = onchainTable(
   (t) => ({
     id: t.text().primaryKey(),
     recipient: t.text().notNull(),
-    recipientId: t.text(),
+    recipientId: t.text().notNull(),
     flowId: t.text().notNull(),
     submitter: t.text().notNull(),
     parentContract: t.text().notNull(),
@@ -255,6 +255,15 @@ export const tcrAndItemIdToGrantId = onchainTable(
   (table) => ({
     grantIdIdx: index().on(table.grantId),
   })
+)
+
+export const flowContractAndRecipientIdToGrantId = onchainTable(
+  "_kv_FlowContractAndRecipientIdToGrantId",
+  (t) => ({
+    flowContractAndRecipientId: t.text().primaryKey(),
+    grantId: t.text().notNull(),
+  }),
+  (table) => ({})
 )
 
 export const bonusPoolToGrantId = onchainTable(

@@ -1,8 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { useVoting } from "@/lib/voting/voting-context"
-import type { Grant } from "@prisma/flows"
+import { useAllocateFlow } from "@/lib/voting/allocation-context"
 import { FlowCard } from "./flow-card"
 import { FlowsTable, type LimitedFlow } from "./flows-table"
 
@@ -12,7 +11,7 @@ interface Props {
 
 export default function FlowsList(props: Props) {
   const { flows } = props
-  const { isActive } = useVoting()
+  const { isActive } = useAllocateFlow()
 
   if (isActive) {
     return (

@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { useVoting } from "@/lib/voting/voting-context"
+import { useAllocateFlow } from "@/lib/voting/allocation-context"
 
-export const VotingBar = () => {
-  const { isActive, cancel, saveVotes, allocatedBps, isLoading, batchIndex, batchTotal } =
-    useVoting()
+export const AllocationBar = () => {
+  const { isActive, cancel, saveAllocations, allocatedBps, isLoading, batchIndex, batchTotal } =
+    useAllocateFlow()
 
   if (!isActive) return null
 
@@ -36,10 +36,10 @@ export const VotingBar = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={saveVotes}
+                onClick={saveAllocations}
                 disabled={allocatedBps !== 10000 || isLoading || batchIndex >= batchTotal}
               >
-                {batchTotal > 1 ? `Save votes (${batchIndex + 1} of ${batchTotal})` : "Save votes"}
+                {batchTotal > 1 ? `Save (${batchIndex + 1} of ${batchTotal})` : "Save"}
               </Button>
             </TooltipTrigger>
             <TooltipContent>

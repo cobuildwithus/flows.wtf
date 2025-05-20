@@ -1,7 +1,6 @@
 "use client"
 
-import { useUserVotes } from "@/lib/voting/user-votes/use-user-votes"
-import { useAccount } from "wagmi"
+import { useUserAllocations } from "@/lib/voting/user-allocations/use-user-allocations"
 
 interface Props {
   contract: `0x${string}`
@@ -10,10 +9,9 @@ interface Props {
 
 export const UserVotes = (props: Props) => {
   const { recipientId, contract } = props
-  const { address } = useAccount()
 
-  const { votes } = useUserVotes(contract, address)
+  const { allocations } = useUserAllocations(contract)
 
-  const votesCount = votes.find((v) => v.recipientId === recipientId)?.votesCount || 0
+  const votesCount = allocations.find((v) => v.recipientId === recipientId)?.bps || 0
   return votesCount.toString()
 }

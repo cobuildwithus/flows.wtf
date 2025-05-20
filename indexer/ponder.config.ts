@@ -11,9 +11,9 @@ import {
   gdav1Address,
   gdav1ImplAbi,
   tokenEmitterImplAbi,
-  vrbsFlowImplAbi,
   selfManagedFlowImplAbi,
   nounsTokenAbi,
+  revolutionFlowImplAbi,
 } from "./abis"
 import { base as baseContracts, mainnet as mainnetContracts } from "./addresses"
 
@@ -22,7 +22,7 @@ const isDev = process.env.NODE_ENV === "development"
 const blockStarts = {
   base: {
     FLOWS: 21519031,
-    VRBS_FLOWS: 30152014,
+    VRBS_FLOWS: 30459340,
     GNARS: 11194740,
   },
   mainnet: {
@@ -59,7 +59,7 @@ export default createConfig({
         address: baseContracts.NounsFlow,
         event: getAbiItem({
           abi: nounsFlowImplAbi,
-          name: "FlowRecipientCreated",
+          name: "FlowRecipientCreated", // only works because they were created via application first
         }),
         parameter: "recipient",
       }),
@@ -175,22 +175,18 @@ export default createConfig({
         },
       },
     },
-    VrbsFlow: {
-      abi: vrbsFlowImplAbi,
-      address: baseContracts.VrbsFlow,
-      network: "base",
-      startBlock: blockStarts.base.VRBS_FLOWS,
-    },
-    VrbsFlowChildren: {
-      abi: vrbsFlowImplAbi,
-      address: factory({
-        address: baseContracts.VrbsFlow,
-        event: getAbiItem({
-          abi: vrbsFlowImplAbi,
-          name: "FlowRecipientCreated",
-        }),
-        parameter: "recipient",
-      }),
+    CustomFlow: {
+      abi: revolutionFlowImplAbi,
+      filter: {
+        event: "FlowInitialized",
+        args: {
+          flowImpl: [
+            baseContracts.RevolutionFlowImpl,
+            baseContracts.SelfManagedFlowImpl,
+            baseContracts.SelfManagedFlowImplV00,
+          ],
+        },
+      },
       network: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,
     },

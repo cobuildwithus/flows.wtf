@@ -2,24 +2,24 @@
 
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useVoting } from "@/lib/voting/voting-context"
+import { useAllocateFlow } from "@/lib/voting/allocation-context"
 
 interface Props {
   recipientId: string
 }
 
-export const VotingInput = (props: Props) => {
+export const AllocationInput = (props: Props) => {
   const { recipientId } = props
-  const { votes, updateVote, isActive, activate } = useVoting()
+  const { allocations, updateAllocation, isActive, activate } = useAllocateFlow()
 
-  const currentVote = votes.find((v) => v.recipientId === recipientId)
+  const currentAllocation = allocations.find((a) => a.recipientId === recipientId)
 
   if (!isActive)
     return (
       <Tooltip>
         <TooltipTrigger asChild>
           <button type="button" onClick={() => activate()}>
-            {(currentVote?.bps || 0) / 100}%
+            {(currentAllocation?.bps || 0) / 100}%
           </button>
         </TooltipTrigger>
         <TooltipContent>Click to edit</TooltipContent>
@@ -30,11 +30,11 @@ export const VotingInput = (props: Props) => {
     <div className="relative">
       <Input
         placeholder="0"
-        value={currentVote ? currentVote.bps / 100 : ""}
+        value={currentAllocation ? currentAllocation.bps / 100 : ""}
         onChange={(e) =>
-          updateVote({
+          updateAllocation({
             recipientId,
-            bps: parseFloat(e.target.value) * 100,
+            bps: Number.parseFloat(e.target.value) * 100,
           })
         }
         min={0}

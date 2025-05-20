@@ -3,14 +3,14 @@ import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/edge"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
-import { VotingProvider } from "@/lib/voting/voting-context"
+import { AllocationProvider } from "@/lib/voting/allocation-context"
 import Link from "next/link"
 import { base } from "viem/chains"
 import FlowsList from "./components/flows-list"
 import type { LimitedFlow } from "./components/flows-table"
 import { HomepageIntro } from "./components/homepage-intro"
 import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
-import { VotingBar } from "./flow/[flowId]/components/voting-bar"
+import { AllocationBar } from "./flow/[flowId]/components/allocation-bar"
 import Footer from "@/components/global/footer"
 
 export default async function Home() {
@@ -31,10 +31,11 @@ export default async function Home() {
   ])
 
   return (
-    <VotingProvider
+    <AllocationProvider
       chainId={base.id}
       contract={getEthAddress(pool.recipient)}
       votingToken={pool.erc721VotingToken}
+      allocator={pool.allocator}
     >
       <main>
         <div className="container mt-6">
@@ -71,8 +72,8 @@ export default async function Home() {
           <Footer />
         </div>
       </main>
-      <VotingBar />
-    </VotingProvider>
+      <AllocationBar />
+    </AllocationProvider>
   )
 }
 

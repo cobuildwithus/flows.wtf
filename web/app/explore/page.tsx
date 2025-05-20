@@ -12,28 +12,25 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ExplorePage() {
-  const [flows, pool] = await Promise.all([
-    database.grant.findMany({
-      where: { isActive: true, isFlow: true, isTopLevel: false },
-      select: {
-        id: true,
-        title: true,
-        image: true,
-        monthlyIncomingFlowRate: true,
-        monthlyOutgoingFlowRate: true,
-        subgrants: {
-          where: { isActive: true },
-          select: {
-            id: true,
-            title: true,
-            image: true,
-          },
+  const pool = await getPool()
+  const flows = await database.grant.findMany({
+    where: { isActive: true, isFlow: true, isTopLevel: false, flowId: pool.id },
+    select: {
+      id: true,
+      title: true,
+      image: true,
+      monthlyIncomingFlowRate: true,
+      monthlyOutgoingFlowRate: true,
+      subgrants: {
+        where: { isActive: true },
+        select: {
+          id: true,
+          title: true,
+          image: true,
         },
       },
-
-    }),
-    getPool(),
-  ])
+    },
+  })
 
   return (
     <main className="flex grow flex-col">
