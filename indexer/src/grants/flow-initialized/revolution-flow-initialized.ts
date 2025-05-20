@@ -10,12 +10,11 @@ import {
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { base } from "../../../addresses"
 
-ponder.on("RevolutionFlow:FlowInitialized", handleFlowInitialized)
-ponder.on("RevolutionFlowChildren:FlowInitialized", handleFlowInitialized)
+ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"RevolutionFlow:FlowInitialized">
-  context: Context<"RevolutionFlow:FlowInitialized">
+  event: Event<"CustomFlow:FlowInitialized">
+  context: Context<"CustomFlow:FlowInitialized">
 }) {
   const { context, event } = params
 
@@ -44,8 +43,6 @@ async function handleFlowInitialized(params: {
   const grantId = contract
 
   const isTopLevel = contract === base.VrbsFlow
-
-  if (!parentFlow && !isTopLevel) return // contract not part of our system
 
   await context.db.insert(grants).values({
     id: grantId,

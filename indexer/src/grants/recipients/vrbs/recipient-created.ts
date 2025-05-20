@@ -7,12 +7,11 @@ import { insertGrant } from "./insert-vrbs-grant"
 import { RecipientType } from "../../../enums"
 import { addGrantIdToFlowContractAndRecipientId } from "../../grant-helpers"
 
-ponder.on("RevolutionFlow:RecipientCreated", handleRecipientCreated)
-ponder.on("RevolutionFlowChildren:RecipientCreated", handleRecipientCreated)
+ponder.on("CustomFlow:RecipientCreated", handleRecipientCreated)
 
 async function handleRecipientCreated(params: {
-  event: Event<"RevolutionFlow:RecipientCreated">
-  context: Context<"RevolutionFlow:RecipientCreated">
+  event: Event<"CustomFlow:RecipientCreated">
+  context: Context<"CustomFlow:RecipientCreated">
 }) {
   const { event, context } = params
   const {

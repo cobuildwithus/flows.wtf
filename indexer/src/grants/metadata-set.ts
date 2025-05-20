@@ -3,8 +3,7 @@ import { grants } from "ponder:schema"
 
 ponder.on("NounsFlow:MetadataSet", handleMetadataSet)
 ponder.on("NounsFlowChildren:MetadataSet", handleMetadataSet)
-ponder.on("RevolutionFlow:MetadataSet", handleMetadataSet)
-ponder.on("RevolutionFlowChildren:MetadataSet", handleMetadataSet)
+ponder.on("CustomFlow:MetadataSet", handleMetadataSet)
 
 async function handleMetadataSet(params: {
   event: Event<"NounsFlow:MetadataSet">

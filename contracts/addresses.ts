@@ -22,6 +22,7 @@ export const base = {
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
   // Flow Extensions
   SelfManagedFlowImpl: "0xbb4b2ca98289a80037ba499a4856d4870fe7e40e",
+  SelfManagedFlowImplV00: "0xe950d10f7f41e985fe14efd3044bb234b7af10a3",
   RevolutionFlowImpl: "0x0a13b8756164c78827e9e425886d01ed042b2f66",
   // Revolution Flows
   VrbsFlow: "0xc8e385198e2ac1b8130cc010f8e6b59151974a1d",

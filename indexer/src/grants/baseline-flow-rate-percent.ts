@@ -3,11 +3,7 @@ import { grants } from "ponder:schema"
 
 ponder.on("NounsFlow:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
 ponder.on("NounsFlowChildren:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
-ponder.on("RevolutionFlow:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
-ponder.on(
-  "RevolutionFlowChildren:BaselineFlowRatePercentUpdated",
-  handleBaselineFlowRatePercentUpdated
-)
+ponder.on("CustomFlow:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
 
 async function handleBaselineFlowRatePercentUpdated(params: {
   event: Event<"NounsFlow:BaselineFlowRatePercentUpdated">

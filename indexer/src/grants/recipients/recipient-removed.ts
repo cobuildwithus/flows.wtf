@@ -7,8 +7,7 @@ import { getGrantIdFromTcrAndItemId } from "../../tcr/tcr-helpers"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
-ponder.on("RevolutionFlow:RecipientRemoved", handleRecipientRemoved)
-ponder.on("RevolutionFlowChildren:RecipientRemoved", handleRecipientRemoved)
+ponder.on("CustomFlow:RecipientRemoved", handleRecipientRemoved)
 
 async function handleRecipientRemoved(params: {
   event: Event<"NounsFlow:RecipientRemoved">

@@ -1,12 +1,11 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
-ponder.on("RevolutionFlow:ERC721VotingTokenChanged", handleVotingTokenChanged)
-ponder.on("RevolutionFlowChildren:ERC721VotingTokenChanged", handleVotingTokenChanged)
+ponder.on("CustomFlow:ERC721VotingTokenChanged", handleVotingTokenChanged)
 
 async function handleVotingTokenChanged(params: {
-  event: Event<"RevolutionFlow:ERC721VotingTokenChanged">
-  context: Context<"RevolutionFlow:ERC721VotingTokenChanged">
+  event: Event<"CustomFlow:ERC721VotingTokenChanged">
+  context: Context<"CustomFlow:ERC721VotingTokenChanged">
 }) {
   const { event, context } = params
   const { erc721Token } = event.args

@@ -12,12 +12,11 @@ import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
 
-ponder.on("RevolutionFlow:FlowRecipientCreated", handleFlowRecipientCreated)
-ponder.on("RevolutionFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
+ponder.on("CustomFlow:FlowRecipientCreated", handleFlowRecipientCreated)
 
 async function handleFlowRecipientCreated(params: {
-  event: Event<"RevolutionFlow:FlowRecipientCreated">
-  context: Context<"RevolutionFlow:FlowRecipientCreated">
+  event: Event<"CustomFlow:FlowRecipientCreated">
+  context: Context<"CustomFlow:FlowRecipientCreated">
 }) {
   const { event, context } = params
   const timestamp = Number(event.block.timestamp)

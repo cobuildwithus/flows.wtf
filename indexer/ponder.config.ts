@@ -175,17 +175,17 @@ export default createConfig({
         },
       },
     },
-    RevolutionFlow: {
-      abi: revolutionFlowImplAbi,
-      address: baseContracts.VrbsFlow,
-      network: "base",
-      startBlock: blockStarts.base.VRBS_FLOWS,
-    },
-    RevolutionFlowChildren: {
+    CustomFlow: {
       abi: revolutionFlowImplAbi,
       filter: {
         event: "FlowInitialized",
-        args: {},
+        args: {
+          flowImpl: [
+            baseContracts.RevolutionFlowImpl,
+            baseContracts.SelfManagedFlowImpl,
+            baseContracts.SelfManagedFlowImplV00,
+          ],
+        },
       },
       network: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,

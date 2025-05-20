@@ -5,8 +5,7 @@ import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
-ponder.on("RevolutionFlow:VoteCast", handleVoteCast)
-ponder.on("RevolutionFlowChildren:VoteCast", handleVoteCast)
+ponder.on("CustomFlow:VoteCast", handleVoteCast)
 
 async function handleVoteCast(params: {
   event: Event<"NounsFlow:VoteCast">
