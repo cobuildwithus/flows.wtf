@@ -6,7 +6,7 @@ import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import Link from "next/link"
-import { VotingToggle } from "./voting-toggle"
+import { AllocationToggle } from "./allocation-toggle"
 import { getEthAddress } from "@/lib/utils"
 
 interface Props {
@@ -74,7 +74,7 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {isApproved && approvedCount > 0 && canVote && <VotingToggle />}
+          {isApproved && approvedCount > 0 && canVote && <AllocationToggle />}
           {(isDrafts || isCurate || (isApproved && approvedCount === 0)) &&
             !isFlowRemoved &&
             canSuggestFlow && (

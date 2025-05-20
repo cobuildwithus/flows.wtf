@@ -18,7 +18,7 @@ import type { DerivedData } from "@prisma/flows"
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import Link from "next/link"
 import { GrantLogoCell } from "./grant-logo-cell"
-import { VotingInput } from "./voting-input"
+import { AllocationInput } from "./allocation-input"
 import type { LimitedGrant } from "./grants-list"
 
 interface Props {
@@ -127,7 +127,7 @@ export function GrantsTable(props: Props) {
 
               <TableCell className="w-[100px] max-w-[100px] text-center">
                 <div className="px-0.5">
-                  <VotingInput recipientId={grant.recipientId} />
+                  <AllocationInput recipientId={grant.recipientId} />
                 </div>
               </TableCell>
             </TableRow>

@@ -14,7 +14,7 @@ import { getIpfsUrl } from "@/lib/utils"
 import type { Grant } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
-import { VotingInput } from "../flow/[flowId]/components/voting-input"
+import { AllocationInput } from "../flow/[flowId]/components/allocation-input"
 import { MonthlyBudget, type FlowWithBudget } from "./monthly-budget"
 
 export type LimitedFlow = FlowWithBudget &
@@ -110,7 +110,7 @@ export const FlowsTable = (props: Props) => {
               <TableCell className="text-center">{flow.votesCount}</TableCell>
               <TableCell className="w-[100px] max-w-[100px] text-center">
                 <div className="px-0.5">
-                  <VotingInput recipientId={flow.recipientId} />
+                  <AllocationInput recipientId={flow.recipientId} />
                 </div>
               </TableCell>
             </TableRow>

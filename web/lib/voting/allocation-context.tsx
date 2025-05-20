@@ -13,7 +13,7 @@ import { useExistingVotes } from "./hooks/use-existing-votes"
 import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
 
-interface VotingContextType {
+interface AllocationContextType {
   activate: () => void
   cancel: () => void
   isActive: boolean
@@ -30,9 +30,9 @@ interface VotingContextType {
   batchTotal: number
 }
 
-const VotingContext = createContext<VotingContextType | null>(null)
+const AllocationContext = createContext<AllocationContextType | null>(null)
 
-export const VotingProvider = (
+export const AllocationProvider = (
   props: PropsWithChildren<{
     contract: `0x${string}`
     chainId: number
@@ -82,7 +82,7 @@ export const VotingProvider = (
   )
 
   return (
-    <VotingContext.Provider
+    <AllocationContext.Provider
       value={{
         isActive,
         activate: () => setIsActive(true),
@@ -126,14 +126,14 @@ export const VotingProvider = (
       }}
     >
       {children}
-    </VotingContext.Provider>
+    </AllocationContext.Provider>
   )
 }
 
-export const useVoting = (): VotingContextType => {
-  const context = useContext(VotingContext)
+export const useAllocateFlow = (): AllocationContextType => {
+  const context = useContext(AllocationContext)
   if (context === null) {
-    throw new Error("useVoting must be used within a VotingProvider")
+    throw new Error("useAllocateFlow must be used within a AllocationProvider")
   }
   return context
 }

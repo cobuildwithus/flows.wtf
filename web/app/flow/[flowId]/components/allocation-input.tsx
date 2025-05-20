@@ -2,15 +2,15 @@
 
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useVoting } from "@/lib/voting/voting-context"
+import { useAllocateFlow } from "@/lib/voting/allocation-context"
 
 interface Props {
   recipientId: string
 }
 
-export const VotingInput = (props: Props) => {
+export const AllocationInput = (props: Props) => {
   const { recipientId } = props
-  const { votes, updateVote, isActive, activate } = useVoting()
+  const { votes, updateVote, isActive, activate } = useAllocateFlow()
 
   const currentVote = votes.find((v) => v.recipientId === recipientId)
 

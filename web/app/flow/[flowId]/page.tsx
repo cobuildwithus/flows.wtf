@@ -12,7 +12,7 @@ import type { Grant } from "@prisma/flows"
 import { FlowImpactSummary } from "./components/flow-impact-summary"
 import { FlowSubmenu } from "./components/flow-submenu"
 import GrantsList from "./components/grants-list"
-import { VotingBar } from "./components/voting-bar"
+import { AllocationBar } from "./components/allocation-bar"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -66,7 +66,7 @@ export default async function FlowPage(props: Props) {
         )}
       </div>
 
-      <VotingBar />
+      <AllocationBar />
     </AgentChatProvider>
   )
 }
