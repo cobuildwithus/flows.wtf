@@ -87,7 +87,43 @@ const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<"span"
 )
 PaginationEllipsis.displayName = "PaginationEllipsis"
 
+function getPaginationRange(page: number, totalPages: number, siblingCount = 1) {
+  const totalPageNumbers = siblingCount * 2 + 5
+  if (totalPages <= totalPageNumbers) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1)
+  }
+
+  const leftSiblingIndex = Math.max(page - siblingCount, 1)
+  const rightSiblingIndex = Math.min(page + siblingCount, totalPages)
+
+  const showLeftEllipsis = leftSiblingIndex > 2
+  const showRightEllipsis = rightSiblingIndex < totalPages - 1
+
+  const range: (number | "left-ellipsis" | "right-ellipsis")[] = []
+
+  range.push(1)
+  if (showLeftEllipsis) {
+    range.push("left-ellipsis")
+  }
+
+  for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
+    if (i !== 1 && i !== totalPages) {
+      range.push(i)
+    }
+  }
+
+  if (showRightEllipsis) {
+    range.push("right-ellipsis")
+  }
+  if (totalPages !== 1) {
+    range.push(totalPages)
+  }
+
+  return range
+}
+
 export {
+  getPaginationRange,
   Pagination,
   PaginationContent,
   PaginationEllipsis,

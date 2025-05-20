@@ -1,5 +1,6 @@
-import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { DateTime } from "@/components/ui/date-time"
 import {
   Table,
   TableBody,
@@ -8,85 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { DateTime } from "@/components/ui/date-time"
+import { Product } from "@/lib/shopify/products"
+import Image from "next/image"
 
-export const products = [
-  {
-    id: 1,
-    name: "Vrbs Coffee v1",
-    image: "https://vrbscoffee.com/cdn/shop/files/2.png",
-    category: "Whole Bean",
-    price: "$24.99",
-    totalSales: "$12,495.00",
-    orders: 500,
-    stock: 124,
-    launchDate: "2024-01-15",
-    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
-  },
-  {
-    id: 2,
-    name: "RUN Coffee",
-    image: "https://vrbscoffee.com/cdn/shop/files/RUNPhotos.png",
-    category: "Ground",
-    price: "$19.99",
-    totalSales: "$9,995.00",
-    orders: 450,
-    stock: 89,
-    launchDate: "2024-02-01",
-    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
-  },
-  {
-    id: 3,
-    name: "CoinCoffee",
-    image: "https://vrbscoffee.com/cdn/shop/files/RUNPhotos.png",
-    category: "Whole Bean",
-    price: "$29.99",
-    totalSales: "$8,997.00",
-    orders: 300,
-    stock: 56,
-    launchDate: "2024-02-15",
-    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
-  },
-  {
-    id: 4,
-    name: "Espresso Blend",
-    image: "https://vrbscoffee.com/cdn/shop/files/RUNPhotos.png",
-    category: "Ground",
-    price: "$22.99",
-    totalSales: "$6,897.00",
-    orders: 280,
-    stock: 42,
-    launchDate: "2024-03-01",
-    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
-  },
-  {
-    id: 5,
-    name: "Decaf Delight",
-    image: "https://vrbscoffee.com/cdn/shop/files/RUNPhotos.png",
-    category: "Whole Bean",
-    price: "$21.99",
-    totalSales: "$4,398.00",
-    orders: 200,
-    stock: 78,
-    launchDate: "2024-03-15",
-    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
-  },
-  {
-    id: 6,
-    name: "Morning Brew",
-    image: "https://vrbscoffee.com/cdn/shop/files/RUNPhotos.png",
-    category: "Ground",
-    price: "$18.99",
-    totalSales: "$3,798.00",
-    orders: 180,
-    stock: 103,
-    launchDate: "2024-04-01",
-    url: "https://vrbscoffee.com/products/vrbs-coffee-release-001",
-  },
-]
+interface Props {
+  products: Product[]
+}
 
-export function ProductsTable() {
+export async function ProductsTable(props: Props) {
+  const { products } = props
+
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardHeader className="pb-2">
@@ -94,7 +26,7 @@ export function ProductsTable() {
           <div>
             <CardTitle className="text-base">Products</CardTitle>
             <CardDescription className="mt-1.5 text-xs">
-              Available items in the store
+              Currently available items in the store
             </CardDescription>
           </div>
         </div>

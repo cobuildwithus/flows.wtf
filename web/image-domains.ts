@@ -15,4 +15,5 @@ export const imageDomains = [
   "*.cloudflarestream.com",
   "flows-media.s3.us-west-2.amazonaws.com",
   "vrbscoffee.com",
+  "cdn.shopify.com",
 ]

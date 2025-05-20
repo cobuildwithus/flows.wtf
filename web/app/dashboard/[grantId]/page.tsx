@@ -2,6 +2,7 @@ import { Builder } from "@/app/item/[grantId]/cards/builder"
 import { DeliverablesCard } from "@/app/item/[grantId]/cards/deliverables"
 import { MissionCard } from "@/app/item/[grantId]/cards/mission"
 import { getGrant } from "@/app/item/[grantId]/get-grant"
+import { AnimatedSalary } from "@/components/global/animated-salary"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,22 +11,25 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { Currency } from "@/components/ui/currency"
+import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getUser } from "@/lib/auth/user"
+import database from "@/lib/database/edge"
 import { canEditGrant } from "@/lib/database/helpers"
+import { getAllOrders } from "@/lib/shopify/orders"
+import { getProducts } from "@/lib/shopify/products"
+import { getSalesSummary } from "@/lib/shopify/summary"
 import { getIpfsUrl } from "@/lib/utils"
-import { DollarSign, RefreshCw, ShoppingBag, Users } from "lucide-react"
+import { Banknote, DollarSign, Repeat, ShoppingBag } from "lucide-react"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
 import { MetricCard } from "./components/metric-card"
 import { MoneyFlowDiagram } from "./components/money-flow-diagram"
-import { PageVisits } from "./components/page-visits"
-import { products, ProductsTable } from "./components/products-table"
+import { ProductsTable } from "./components/products-table"
 import { SalesOverview } from "./components/sales-overview"
 import { SalesTable } from "./components/sales-table"
 import { SocialMediaMetrics } from "./components/social-media-metrics"
-import { getUserProfile } from "@/components/user-profile/get-user-profile"
-import database from "@/lib/database/edge"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -59,26 +63,34 @@ export default async function GrantPage(props: Props) {
 
   const canEdit = canEditGrant(grant, user?.address)
 
+  // ToDo: Add real team profiles
   const profiles = await Promise.all([
     getUserProfile("0x10c9A060e009a081bD82D9bf96BB09051E772F2d" as `0x${string}`),
     getUserProfile(grant.recipient as `0x${string}`),
   ])
 
+  // ToDo: Add real grants
   const supports = await database.grant.findMany({
     where: {
       isActive: true,
       isFlow: false,
       parentContract: "0x5a433ebbcc42c3ffe9e8fcd232e14293076e6012",
     },
-    select: {
-      id: true,
-      title: true,
-      image: true,
-      tagline: true,
-    },
+    select: { id: true, title: true, image: true, tagline: true },
     take: 2,
     orderBy: { totalEarned: "desc" },
   })
+
+  // ToDo: Make store dynamic
+  const orders = await getAllOrders("vrbs-coffee")
+  const products = await getProducts("vrbs-coffee", orders)
+  const salesSummary = await getSalesSummary(orders)
+
+  const thisMonth = salesSummary.monthlySales[0]
+  const lastMonth = salesSummary.monthlySales[1]
+
+  const salesChange = thisMonth && lastMonth ? thisMonth.sales - lastMonth.sales : 0
+  const ordersChange = thisMonth && lastMonth ? thisMonth.orders - lastMonth.orders : 0
 
   // if (!grant.isOnchainStartup) {
   //   return redirect(`/item/${grant.id}`)
@@ -146,18 +158,6 @@ export default async function GrantPage(props: Props) {
             </div>
           </div>
 
-          {/* <Stat label="Budget" className="">
-              <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
-            </Stat>
-
-            <Stat label="Total Earned">
-              <AnimatedSalary
-                value={grant.totalEarned}
-                monthlyRate={grant.monthlyIncomingFlowRate}
-              />
-            </Stat> */}
-
-          {/* Money Flow Diagram */}
           <div className="col-span-full mt-8">
             <MoneyFlowDiagram
               products={products}
@@ -171,27 +171,56 @@ export default async function GrantPage(props: Props) {
       </div>
       <div className="container mt-6 space-y-6 pb-12">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <MetricCard title="Sales Total" value="$24,567.89" change={20.1} icon={DollarSign} />
-          <MetricCard title="Total Orders" value="1,234" change={12.5} icon={ShoppingBag} />
-          <MetricCard title="Unique Clients" value="892" change={7.2} icon={Users} />
-          <MetricCard title="Returning Clients" value="42%" change={3.1} icon={RefreshCw} />
+          <MetricCard
+            title="Sales Total"
+            value={`$${salesSummary.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            icon={DollarSign}
+            change={salesChange}
+          />
+          <MetricCard
+            title="Total Orders"
+            value={salesSummary.totalOrders.toLocaleString()}
+            icon={ShoppingBag}
+            change={ordersChange}
+          />
+
+          <MetricCard
+            title="Budget"
+            value={
+              <>
+                <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
+              </>
+            }
+            icon={Repeat}
+          />
+
+          <MetricCard
+            title="Total Earned"
+            value={
+              <AnimatedSalary
+                value={grant.totalEarned}
+                monthlyRate={grant.monthlyIncomingFlowRate}
+              />
+            }
+            icon={Banknote}
+          />
         </div>
 
         <div className="grid gap-6">
-          <SalesOverview />
+          <SalesOverview monthlySales={salesSummary.monthlySales} />
         </div>
 
         <div className="grid gap-6">
-          <SalesTable />
+          <SalesTable orders={orders} products={products} />
         </div>
 
         <div className="grid gap-6">
-          <ProductsTable />
+          <ProductsTable products={products} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <SocialMediaMetrics />
-          <PageVisits />
+          {/* <PageVisits  /> */}
         </div>
       </div>
     </>

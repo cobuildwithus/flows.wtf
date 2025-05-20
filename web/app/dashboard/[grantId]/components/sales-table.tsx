@@ -1,6 +1,20 @@
 "use client"
-import { useState } from "react"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { DateTime } from "@/components/ui/date-time"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  getPaginationRange,
+} from "@/components/ui/pagination"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Table,
   TableBody,
@@ -9,141 +23,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Order } from "@/lib/shopify/orders"
+import { Product } from "@/lib/shopify/products"
+import { ChevronDown } from "lucide-react"
 import Image from "next/image"
-import { DateTime } from "@/components/ui/date-time"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { useState } from "react"
 
-interface SaleItem {
-  name: string
-  type: string
-  quantity: number
+interface Props {
+  orders: Order[]
+  products: Product[]
 }
 
-interface Sale {
-  id: string
-  date: string // ISO string with time
-  amount: string
-  paymentStatus: "Paid" | "Unpaid" | "Refunded"
-  items: SaleItem[]
-  country: string
-}
+const ORDERS_PER_PAGE = 10
 
-const productImages: Record<string, string> = {
-  "Vrbs Coffee v1": "https://vrbscoffee.com/cdn/shop/files/2.png",
-  "RUN Coffee": "https://vrbscoffee.com/cdn/shop/files/RUNPhotos.png",
-}
+export function SalesTable(props: Props) {
+  const { orders, products } = props
 
-const salesData: Sale[] = [
-  {
-    id: "INV001",
-    date: "2023-05-04T14:23:00",
-    amount: "$250.00",
-    paymentStatus: "Paid",
-    items: [
-      { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 1 },
-      { name: "RUN Coffee", type: "Ground", quantity: 1 },
-    ],
-    country: "United States",
-  },
-  {
-    id: "INV002",
-    date: "2023-05-03T09:10:00",
-    amount: "$150.00",
-    paymentStatus: "Paid",
-    items: [{ name: "Vrbs Coffee v1", type: "Ground", quantity: 2 }],
-    country: "Canada",
-  },
-  {
-    id: "INV003",
-    date: "2023-05-02T16:45:00",
-    amount: "$350.00",
-    paymentStatus: "Paid",
-    items: [
-      { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 1 },
-      { name: "RUN Coffee", type: "Ground", quantity: 2 },
-    ],
-    country: "United Kingdom",
-  },
-  {
-    id: "INV004",
-    date: "2023-05-01T11:30:00",
-    amount: "$450.00",
-    paymentStatus: "Paid",
-    items: [
-      { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 3 },
-      { name: "RUN Coffee", type: "Ground", quantity: 1 },
-    ],
-    country: "Australia",
-  },
-  {
-    id: "INV005",
-    date: "2023-04-30T18:05:00",
-    amount: "$550.00",
-    paymentStatus: "Refunded",
-    items: [{ name: "RUN Coffee", type: "Whole Bean", quantity: 4 }],
-    country: "Germany",
-  },
-  {
-    id: "INV006",
-    date: "2023-04-29T08:50:00",
-    amount: "$120.00",
-    paymentStatus: "Paid",
-    items: [{ name: "Vrbs Coffee v1", type: "Ground", quantity: 2 }],
-    country: "France",
-  },
-  {
-    id: "INV007",
-    date: "2023-04-28T13:15:00",
-    amount: "$180.00",
-    paymentStatus: "Paid",
-    items: [{ name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 3 }],
-    country: "Italy",
-  },
-  {
-    id: "INV008",
-    date: "2023-04-27T17:40:00",
-    amount: "$320.00",
-    paymentStatus: "Paid",
-    items: [
-      { name: "Vrbs Coffee v1", type: "Ground", quantity: 2 },
-      { name: "RUN Coffee", type: "Whole Bean", quantity: 1 },
-    ],
-    country: "Spain",
-  },
-  {
-    id: "INV009",
-    date: "2023-04-26T10:05:00",
-    amount: "$90.00",
-    paymentStatus: "Paid",
-    items: [{ name: "RUN Coffee", type: "Ground", quantity: 1 }],
-    country: "Japan",
-  },
-  {
-    id: "INV010",
-    date: "2023-04-25T15:55:00",
-    amount: "$410.00",
-    paymentStatus: "Paid",
-    items: [
-      { name: "Vrbs Coffee v1", type: "Whole Bean", quantity: 2 },
-      { name: "RUN Coffee", type: "Ground", quantity: 3 },
-    ],
-    country: "South Korea",
-  },
-]
-
-export function SalesTable() {
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+
+  const images: Record<string, string> = {}
+  products.forEach((product) => {
+    const id = product.id.replace("gid://shopify/Product/", "")
+    images[id] = product.image
+  })
+
+  const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE)
+  const paginatedOrders = orders.slice((page - 1) * ORDERS_PER_PAGE, page * ORDERS_PER_PAGE)
+
+  function goToPage(newPage: number) {
+    if (newPage < 1 || newPage > totalPages) return
+    setPage(newPage)
+  }
+
+  const range = getPaginationRange(page, totalPages)
 
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
@@ -169,7 +82,7 @@ export function SalesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {salesData.map((sale) => (
+            {paginatedOrders.map((sale) => (
               <TableRow key={sale.id}>
                 <TableCell className="text-xs">
                   <DateTime
@@ -222,7 +135,7 @@ export function SalesTable() {
                           >
                             <div className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded bg-muted">
                               <Image
-                                src={productImages[item.name]}
+                                src={images[item.productId ?? ""] || "/placeholder.svg"}
                                 alt={item.name}
                                 width={40}
                                 height={40}
@@ -251,24 +164,51 @@ export function SalesTable() {
             ))}
           </TableBody>
         </Table>
+
         <Pagination className="mt-6 justify-end">
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href="#" />
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  goToPage(page - 1)
+                }}
+                aria-disabled={page === 1}
+              />
             </PaginationItem>
+            {range.map((item, idx) => {
+              if (item === "left-ellipsis" || item === "right-ellipsis") {
+                return (
+                  <PaginationItem key={item + idx}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )
+              }
+              return (
+                <PaginationItem key={item}>
+                  <PaginationLink
+                    href="#"
+                    isActive={page === item}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      goToPage(item as number)
+                    }}
+                  >
+                    {item}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            })}
             <PaginationItem>
-              <PaginationLink href="#" isActive>
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  goToPage(page + 1)
+                }}
+                aria-disabled={page === totalPages}
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
