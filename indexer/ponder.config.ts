@@ -22,7 +22,7 @@ const isDev = process.env.NODE_ENV === "development"
 const blockStarts = {
   base: {
     FLOWS: 21519031,
-    VRBS_FLOWS: 30152014,
+    VRBS_FLOWS: 30459340,
     GNARS: 11194740,
   },
   mainnet: {
@@ -59,7 +59,7 @@ export default createConfig({
         address: baseContracts.NounsFlow,
         event: getAbiItem({
           abi: nounsFlowImplAbi,
-          name: "FlowRecipientCreated",
+          name: "FlowRecipientCreated", // only works because they were created via application first
         }),
         parameter: "recipient",
       }),
@@ -183,14 +183,10 @@ export default createConfig({
     },
     RevolutionFlowChildren: {
       abi: revolutionFlowImplAbi,
-      address: factory({
-        address: baseContracts.VrbsFlow,
-        event: getAbiItem({
-          abi: revolutionFlowImplAbi,
-          name: "FlowRecipientCreated",
-        }),
-        parameter: "recipient",
-      }),
+      filter: {
+        event: "FlowInitialized",
+        args: {},
+      },
       network: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,
     },

@@ -32,6 +32,8 @@ async function handleFlowInitialized(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const parentContract = parent.toLowerCase() as `0x${string}`
 
+  const parentFlow = await context.db.find(grants, { id: parentContract })
+
   const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
     context,
     contract,
@@ -42,6 +44,8 @@ async function handleFlowInitialized(params: {
   const grantId = contract
 
   const isTopLevel = contract === base.VrbsFlow
+
+  if (!parentFlow && !isTopLevel) return // contract not part of our system
 
   await context.db.insert(grants).values({
     id: grantId,

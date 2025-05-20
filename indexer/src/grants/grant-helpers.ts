@@ -18,7 +18,6 @@ export async function getGrantIdFromFlowContractAndRecipientId(
   flowContract: string,
   recipientId: string
 ) {
-  console.log("getGrantIdFromFlowContractAndRecipientId", flowContract, recipientId)
   const result = await db.find(flowContractAndRecipientIdToGrantId, {
     flowContractAndRecipientId: getId(flowContract, recipientId),
   })

@@ -6206,7 +6206,7 @@ export const nounsTokenConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x0a13b8756164c78827e9e425886d01ed042b2f66)
  */
 export const revolutionFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -6835,6 +6835,7 @@ export const revolutionFlowImplAbi = [
       },
       { name: '_flowManager', internalType: 'address', type: 'address' },
       { name: '_managerRewardPool', internalType: 'address', type: 'address' },
+      { name: '_initializationData', internalType: 'bytes', type: 'bytes' },
     ],
     name: 'addFlowRecipient',
     outputs: [
@@ -6937,6 +6938,18 @@ export const revolutionFlowImplAbi = [
     name: 'connectPool',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_data', internalType: 'bytes', type: 'bytes' }],
+    name: 'decodeInitializationData',
+    outputs: [
+      { name: 'flowImpl', internalType: 'address', type: 'address' },
+      { name: 'erc721', internalType: 'address', type: 'address' },
+      { name: 'erc20', internalType: 'address', type: 'address' },
+      { name: 'erc20Weight', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'pure',
   },
   {
     type: 'function',
@@ -7212,13 +7225,6 @@ export const revolutionFlowImplAbi = [
     type: 'function',
     inputs: [
       { name: '_initialOwner', internalType: 'address', type: 'address' },
-      { name: '_erc721Token', internalType: 'address', type: 'address' },
-      { name: '_erc20Token', internalType: 'address', type: 'address' },
-      {
-        name: '_erc20TokenVoteWeight',
-        internalType: 'uint256',
-        type: 'uint256',
-      },
       { name: '_superToken', internalType: 'address', type: 'address' },
       { name: '_flowImpl', internalType: 'address', type: 'address' },
       { name: '_manager', internalType: 'address', type: 'address' },
@@ -7264,6 +7270,7 @@ export const revolutionFlowImplAbi = [
         internalType: 'contract IChainalysisSanctionsList',
         type: 'address',
       },
+      { name: '_data', internalType: 'bytes', type: 'bytes' },
     ],
     name: 'initialize',
     outputs: [],
@@ -7529,14 +7536,14 @@ export const revolutionFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x0a13b8756164c78827e9e425886d01ed042b2f66)
  */
 export const revolutionFlowImplAddress = {
-  8453: '0xA3D5C969Dc77Ed0E4D1c95f54A9EcdBE6eA3BdbD',
+  8453: '0x0a13B8756164C78827e9e425886d01eD042b2F66',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x0a13b8756164c78827e9e425886d01ed042b2f66)
  */
 export const revolutionFlowImplConfig = {
   address: revolutionFlowImplAddress,
@@ -7863,7 +7870,7 @@ export const rewardPoolImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xbb4b2ca98289a80037ba499a4856d4870fe7e40e)
  */
 export const selfManagedFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -8467,6 +8474,7 @@ export const selfManagedFlowImplAbi = [
       },
       { name: '_flowManager', internalType: 'address', type: 'address' },
       { name: '_managerRewardPool', internalType: 'address', type: 'address' },
+      { name: '_initializationData', internalType: 'bytes', type: 'bytes' },
     ],
     name: 'addFlowRecipient',
     outputs: [
@@ -8560,6 +8568,16 @@ export const selfManagedFlowImplAbi = [
     name: 'connectPool',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'data', internalType: 'bytes', type: 'bytes' }],
+    name: 'decodeInitializationData',
+    outputs: [
+      { name: 'flowImpl_', internalType: 'address', type: 'address' },
+      { name: 'allocator_', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'pure',
   },
   {
     type: 'function',
@@ -8794,7 +8812,6 @@ export const selfManagedFlowImplAbi = [
     type: 'function',
     inputs: [
       { name: '_initialOwner', internalType: 'address', type: 'address' },
-      { name: '_allocator', internalType: 'address', type: 'address' },
       { name: '_superToken', internalType: 'address', type: 'address' },
       { name: '_flowImpl', internalType: 'address', type: 'address' },
       { name: '_manager', internalType: 'address', type: 'address' },
@@ -8840,6 +8857,7 @@ export const selfManagedFlowImplAbi = [
         internalType: 'contract IChainalysisSanctionsList',
         type: 'address',
       },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
     ],
     name: 'initialize',
     outputs: [],
@@ -8919,15 +8937,6 @@ export const selfManagedFlowImplAbi = [
     type: 'function',
     inputs: [],
     name: 'resetFlowRate',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'newSanctionsOracle', internalType: 'address', type: 'address' },
-    ],
-    name: 'setAllChildFlowSanctionsOracle',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -9117,14 +9126,14 @@ export const selfManagedFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xbb4b2ca98289a80037ba499a4856d4870fe7e40e)
  */
 export const selfManagedFlowImplAddress = {
-  8453: '0xFDA4Db2F8AD0D510a811B318b3C40Ef8C0b23A41',
+  8453: '0xbb4b2ca98289A80037BA499A4856d4870fE7e40E',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xbb4b2ca98289a80037ba499a4856d4870fe7e40e)
  */
 export const selfManagedFlowImplConfig = {
   address: selfManagedFlowImplAddress,

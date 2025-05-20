@@ -21,9 +21,10 @@ export const base = {
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
   // Flow Extensions
-  SelfManagedFlowImpl: "0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41",
-  RevolutionFlowImpl: "0xa3d5c969dc77ed0e4d1c95f54a9ecdbe6ea3bdbd",
-  VrbsFlow: "0xca0695af8c612bb6fe0ff227c48831fda8fd3a83",
+  SelfManagedFlowImpl: "0xbb4b2ca98289a80037ba499a4856d4870fe7e40e",
+  RevolutionFlowImpl: "0x0a13b8756164c78827e9e425886d01ed042b2f66",
+  // Revolution Flows
+  VrbsFlow: "0xc8e385198e2ac1b8130cc010f8e6b59151974a1d",
   // ERC721Tokens
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
