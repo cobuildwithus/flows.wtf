@@ -12,6 +12,8 @@ import Link from "next/link"
 import { BuyToken } from "./nodes/buy-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
+import { Products } from "./nodes/products"
+import { Reviews } from "./nodes/reviews"
 import SampleImage from "./plantation.jpg"
 
 const COLUMN_WIDTH = 330
@@ -27,10 +29,11 @@ interface Props {
   user: User | undefined
   grant: Grant
   supports: Array<Pick<Grant, "id" | "title" | "image" | "tagline">>
+  reviews: Array<{ url: string; image: string }>
 }
 
 export function MoneyFlowDiagram(props: Props) {
-  const { products, profiles, user, grant, supports } = props
+  const { products, profiles, user, grant, supports, reviews } = props
 
   const { nodes, height } = generateDiagram(
     [
@@ -53,33 +56,11 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 236,
+        height: 192,
         id: "user_action",
         title: "Order Coffee",
         className: "bg-background dark:bg-background/50 shadow",
-        content: (
-          <div className="pointer-events-auto grid grid-cols-2 gap-2.5">
-            {products.slice(0, 2).map((p) => (
-              <a
-                key={p.name}
-                href={p.url}
-                target="_blank"
-                className="transition-hover flex flex-col items-center hover:opacity-80"
-              >
-                <Image
-                  src={p.image}
-                  alt={p.name}
-                  width={80}
-                  height={80}
-                  className="aspect-square w-full rounded-md"
-                />
-                <span className="mt-1.5 line-clamp-1 text-[11px] text-muted-foreground">
-                  {p.name}
-                </span>
-              </a>
-            ))}
-          </div>
-        ),
+        content: <Products products={products.slice(0, 10)} />,
         handles: [{ type: "source", position: Position.Right }],
       },
       {
@@ -98,19 +79,18 @@ export function MoneyFlowDiagram(props: Props) {
         height: 96,
         title: ["Team", "40%"],
         content: (
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="flex items-center gap-2.5">
             {profiles
               .filter((p) => !!p.pfp_url)
               .map((p) => (
-                <div key={p.address} className="flex items-center space-x-1.5">
+                <div key={p.address}>
                   <Image
                     src={p.pfp_url!}
                     alt={p.display_name}
-                    width={48}
-                    height={48}
+                    width={28}
+                    height={28}
                     className="size-7 rounded-full shadow"
                   />
-                  <span className="text-sm">{p.display_name}</span>
                 </div>
               ))}
           </div>
@@ -169,11 +149,14 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         id: "product",
         title: "Fresh roasted Coffee",
-        height: 106,
+        height: reviews.length > 0 ? 256 : 106,
         content: (
-          <div className="text-pretty text-sm text-muted-foreground">
-            Beans ready for your cup of espresso or pour over
-          </div>
+          <>
+            <div className="mb-2.5 text-pretty text-sm text-muted-foreground">
+              Beans ready for your cup of espresso or pour over
+            </div>
+            <Reviews reviews={reviews} />
+          </>
         ),
         handles: [{ type: "target", position: Position.Left }],
       },
@@ -260,6 +243,7 @@ export function MoneyFlowDiagram(props: Props) {
         defaultNodes={nodes}
         defaultEdges={edges}
         fitView
+        fitViewOptions={{ minZoom: 0.75 }}
         panOnDrag={false}
         nodesDraggable={false}
         nodesFocusable={false}

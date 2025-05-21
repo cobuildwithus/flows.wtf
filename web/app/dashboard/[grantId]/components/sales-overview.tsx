@@ -32,7 +32,7 @@ export function SalesOverview(props: Props) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-6 pb-4 pt-0 md:grid-cols-2">
+      <CardContent className="grid grid-cols-1 gap-6 pb-4 pt-2 md:grid-cols-2">
         <ChartContainer config={chartConfig}>
           <LineChart data={monthlySales} accessibilityLayer>
             <CartesianGrid vertical={false} />
@@ -42,6 +42,7 @@ export function SalesOverview(props: Props) {
               tickLine={false}
               tick={{ fontSize: 10 }}
               tickFormatter={(value) => `$${value}`}
+              width={32}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
 
@@ -64,7 +65,7 @@ export function SalesOverview(props: Props) {
           <BarChart data={monthlySales} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} width={32} />
             <ChartTooltip content={<ChartTooltipContent />} />
             <ChartLegend
               content={() => (

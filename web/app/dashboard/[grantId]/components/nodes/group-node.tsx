@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn, getIpfsUrl } from "@/lib/utils"
 import { Handle, HandleType, Node, NodeProps, Position } from "@xyflow/react"
 import Image from "next/image"
 import { memo } from "react"
@@ -27,7 +27,13 @@ function GroupNode(props: NodeProps<IGroupNode>) {
     >
       <div className="mt-4 flex h-8 items-center justify-center gap-2 px-2">
         {image && (
-          <Image src={image} alt={label} width={28} className="size-7 rounded-full" height={28} />
+          <Image
+            src={getIpfsUrl(image)}
+            alt={label}
+            width={28}
+            className="size-7 rounded-full"
+            height={28}
+          />
         )}
         <span className="text-[15px] font-medium">{label}</span>
       </div>

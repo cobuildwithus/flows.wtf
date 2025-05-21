@@ -24,12 +24,14 @@ import { Banknote, DollarSign, Repeat, ShoppingBag } from "lucide-react"
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
+import { Suspense } from "react"
 import { MetricCard } from "./components/metric-card"
 import { MoneyFlowDiagram } from "./components/money-flow-diagram"
+import { OrdersTable } from "./components/orders-table"
 import { ProductsTable } from "./components/products-table"
 import { SalesOverview } from "./components/sales-overview"
-import { SalesTable } from "./components/sales-table"
-import { SocialMediaMetrics } from "./components/social-media-metrics"
+import { SocialProfiles } from "./components/social-profiles"
+import { Team } from "./components/team"
 
 interface Props {
   params: Promise<{ grantId: string }>
@@ -67,6 +69,8 @@ export default async function GrantPage(props: Props) {
   const profiles = await Promise.all([
     getUserProfile("0x10c9A060e009a081bD82D9bf96BB09051E772F2d" as `0x${string}`),
     getUserProfile(grant.recipient as `0x${string}`),
+    getUserProfile("0x289715fFBB2f4b482e2917D2f183FeAb564ec84F" as `0x${string}`),
+    getUserProfile("0x2830e21792019CE670fBc548AacB004b08c7f71f" as `0x${string}`),
   ])
 
   // ToDo: Add real grants
@@ -80,6 +84,29 @@ export default async function GrantPage(props: Props) {
     take: 2,
     orderBy: { totalEarned: "desc" },
   })
+
+  const reviews = [
+    {
+      url: "https://warpcast.com/rocketman/0x136e36aa",
+      image:
+        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/cc70cf70-395c-4937-cfca-15618fe0d900/original",
+    },
+    {
+      url: "https://warpcast.com/coolbeans1r.eth/0x5ef9a347",
+      image:
+        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/1c6f7f8b-a8c2-49d0-14ca-3b434c0aed00/original",
+    },
+    {
+      url: "https://warpcast.com/rocketman/0x139bb055",
+      image:
+        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/a85b8da4-b246-4ae2-175c-e14539c46500/original",
+    },
+    {
+      url: "https://warpcast.com/coolbeans1r.eth/0x64ad0e4e",
+      image:
+        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/5e973b20-0817-4da4-2c35-2ca29e89d000/original",
+    },
+  ]
 
   // ToDo: Make store dynamic
   const orders = await getAllOrders("vrbs-coffee")
@@ -158,18 +185,19 @@ export default async function GrantPage(props: Props) {
             </div>
           </div>
 
-          <div className="col-span-full mt-8">
+          <div className="col-span-full">
             <MoneyFlowDiagram
               products={products}
               profiles={profiles}
               user={user}
               grant={grant}
               supports={supports}
+              reviews={reviews}
             />
           </div>
         </div>
       </div>
-      <div className="container mt-6 space-y-6 pb-12">
+      <div className="container space-y-6 pb-12">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Sales Total"
@@ -206,21 +234,24 @@ export default async function GrantPage(props: Props) {
           />
         </div>
 
-        <div className="grid gap-6">
-          <SalesOverview monthlySales={salesSummary.monthlySales} />
-        </div>
+        <SalesOverview monthlySales={salesSummary.monthlySales} />
 
-        <div className="grid gap-6">
-          <SalesTable orders={orders} products={products} />
-        </div>
+        <OrdersTable orders={orders} products={products} />
 
-        <div className="grid gap-6">
-          <ProductsTable products={products} />
-        </div>
+        <ProductsTable products={products} />
 
         <div className="grid gap-6 md:grid-cols-2">
-          <SocialMediaMetrics />
-          {/* <PageVisits  /> */}
+          <Suspense>
+            <SocialProfiles
+              usernames={{
+                x: "vrbscoffee",
+                instagram: "vrbscoffee",
+                tiktok: "vrbscoffee",
+                farcasterChannel: "vrbscoffee",
+              }}
+            />
+          </Suspense>
+          <Team profiles={profiles} />
         </div>
       </div>
     </>

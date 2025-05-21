@@ -14,6 +14,7 @@ export interface Order {
     productId: string | null
     price: string
   }[]
+  itemsCount: number
   country: string
 }
 
@@ -54,7 +55,7 @@ async function _getAllOrders(store: Store): Promise<Order[]> {
       store,
       `
         query ($first: Int!, $after: String, $q: String!) {
-          orders(first: $first, after: $after, query: $q, sortKey: CREATED_AT) {
+          orders(first: $first, after: $after, query: $q, sortKey: CREATED_AT, reverse: true) {
             pageInfo {
               hasNextPage
               endCursor
@@ -119,6 +120,7 @@ async function _getAllOrders(store: Store): Promise<Order[]> {
             : null,
           price: i.node.originalTotalSet.shopMoney.amount,
         })),
+        itemsCount: o.lineItems.edges.reduce((acc, i) => acc + i.node.quantity, 0),
         country: o.shippingAddress?.country ?? "—",
       })
     })

@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Currency } from "@/components/ui/currency"
 import { DateTime } from "@/components/ui/date-time"
 import {
   Pagination,
@@ -36,7 +37,7 @@ interface Props {
 
 const ORDERS_PER_PAGE = 10
 
-export function SalesTable(props: Props) {
+export function OrdersTable(props: Props) {
   const { orders, products } = props
 
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null)
@@ -75,52 +76,38 @@ export function SalesTable(props: Props) {
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
+              <TableHead>Products</TableHead>
               <TableHead className="hidden md:table-cell">Country</TableHead>
-              <TableHead>Payment Status</TableHead>
-              <TableHead>Items</TableHead>
+              <TableHead className="w-24">Payment Status</TableHead>
               <TableHead className="text-right">Total Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedOrders.map((sale) => (
-              <TableRow key={sale.id}>
+            {paginatedOrders.map((order) => (
+              <TableRow key={order.id}>
                 <TableCell className="text-xs">
                   <DateTime
-                    date={new Date(sale.date)}
+                    date={new Date(order.date)}
                     options={{
-                      month: "numeric",
+                      month: "long",
                       day: "numeric",
                       year: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
                     }}
                   />
                 </TableCell>
-                <TableCell className="hidden text-xs md:table-cell">{sale.country}</TableCell>
 
                 <TableCell>
-                  <Badge
-                    variant={
-                      sale.paymentStatus === "Paid"
-                        ? "success"
-                        : sale.paymentStatus === "Refunded"
-                          ? "destructive"
-                          : "outline"
-                    }
-                    className="text-[10px]"
-                  >
-                    {sale.paymentStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell>
                   <Popover
-                    open={openPopoverId === sale.id}
-                    onOpenChange={(open) => setOpenPopoverId(open ? sale.id : null)}
+                    open={openPopoverId === order.id}
+                    onOpenChange={(open) => setOpenPopoverId(open ? order.id : null)}
                   >
                     <PopoverTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-6 text-xs">
-                        {sale.items.length} {sale.items.length === 1 ? "item" : "items"}
-                        <ChevronDown className="ml-1 h-3 w-3" />
+                        {order.itemsCount} {order.itemsCount === 1 ? "item" : "items"}
+                        <ChevronDown className="ml-1 size-3" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-0">
@@ -128,7 +115,7 @@ export function SalesTable(props: Props) {
                         <span className="text-xs font-medium">Products</span>
                       </div>
                       <div className="max-h-64 overflow-y-auto">
-                        {sale.items.map((item, idx) => (
+                        {order.items.map((item, idx) => (
                           <div
                             key={idx}
                             className="flex items-center border-b px-4 py-3 last:border-b-0"
@@ -159,7 +146,25 @@ export function SalesTable(props: Props) {
                     </PopoverContent>
                   </Popover>
                 </TableCell>
-                <TableCell className="text-right text-xs font-medium">{sale.amount}</TableCell>
+                <TableCell className="hidden text-xs md:table-cell">{order.country}</TableCell>
+
+                <TableCell>
+                  <Badge
+                    variant={
+                      order.paymentStatus === "Paid"
+                        ? "success"
+                        : order.paymentStatus === "Refunded"
+                          ? "destructive"
+                          : "outline"
+                    }
+                    className="text-[10px]"
+                  >
+                    {order.paymentStatus}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right text-xs font-medium">
+                  <Currency>{order.amount}</Currency>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
