@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache"
 import { queryShopify } from "./client"
-import { Store } from "./stores"
+import { StoreConfig } from "./stores"
 
 export interface Order {
   id: string
@@ -18,7 +18,7 @@ export interface Order {
   country: string
 }
 
-async function _getAllOrders(store: Store): Promise<Order[]> {
+async function _getAllOrders(store: StoreConfig): Promise<Order[]> {
   let hasNext = true
   let cursor: string | null = null
   const orders: Order[] = []
