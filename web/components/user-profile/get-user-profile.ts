@@ -2,6 +2,7 @@ import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { getEthAddress, getShortEthAddress } from "@/lib/utils"
 import { Profile as FarcasterProfile } from "@prisma/farcaster"
 import { Address } from "viem"
+import { unstable_cache } from "next/cache"
 
 export type Profile = {
   address: Address
@@ -11,10 +12,14 @@ export type Profile = {
   bio?: string
 }
 
-export async function getUserProfile(address: Address): Promise<Profile> {
-  const user = await getFarcasterUserByEthAddress(address)
-  return transformUser(address, user)
-}
+export const getUserProfile = unstable_cache(
+  async (address: Address): Promise<Profile> => {
+    const user = await getFarcasterUserByEthAddress(address)
+    return transformUser(address, user)
+  },
+  ["user-profile"],
+  { revalidate: 1800 },
+)
 
 function transformUser(address: string, profile: FarcasterProfile | null) {
   return {

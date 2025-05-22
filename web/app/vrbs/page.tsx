@@ -7,14 +7,12 @@ import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
+import { getStartups } from "@/lib/onchain-startup/startup"
 import { getEthAddress } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
-import { GrantCard } from "../flow/[flowId]/components/grant-card"
-// import { base } from "@/addresses"
 
-// const flowId = base.VrbsFlowImpl
-const flowId = "0xae37d62d313dba60efb068cdfe313f574983928e5a0297886359188234ba3fd7"
+const flowId = "0xca1d9e8a93f316ef7e6f880116a160333d085f92"
 
 export default async function VrbsPage() {
   const { subgrants, ...flow } = await getFlowWithGrants(flowId)
@@ -29,6 +27,8 @@ export default async function VrbsPage() {
         profile: await getUserProfile(getEthAddress(g.recipient)),
       })),
   )
+
+  const startups = getStartups()
 
   return (
     <AgentChatProvider
@@ -126,8 +126,29 @@ export default async function VrbsPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3 xl:grid-cols-5">
-          {grants.map((grant) => (
-            <GrantCard key={grant.id} grant={grant} />
+          {startups.map((startup) => (
+            <article
+              className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72"
+              key={`${startup.id}${startup.title}`}
+            >
+              <Image
+                alt={startup.title}
+                src={startup.image}
+                className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 md:group-hover:scale-110"
+                width={256}
+                height={256}
+              />
+              <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-gray-900/70 from-25% via-transparent to-gray-900/80" />
+
+              <Link
+                href={`/dashboard/${startup.id}`}
+                className="flex h-full flex-col justify-end overflow-hidden p-4"
+              >
+                <h3 className="line-clamp-3 text-balance text-sm font-medium leading-5 text-white md:text-base">
+                  {startup.title}
+                </h3>
+              </Link>
+            </article>
           ))}
         </div>
       </div>

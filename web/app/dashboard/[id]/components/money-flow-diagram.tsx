@@ -1,9 +1,9 @@
 "use client"
 
 import { Currency } from "@/components/ui/currency"
-import { Profile } from "@/components/user-profile/get-user-profile"
 import { User } from "@/lib/auth/user"
 import { Grant } from "@/lib/database/types"
+import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { getIpfsUrl } from "@/lib/utils"
 import { Background, type Edge, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
@@ -25,7 +25,7 @@ const GROUP_PADDING = 30
 
 interface Props {
   products: Array<{ name: string; image: string; url: string }>
-  profiles: Array<Profile>
+  members: Array<TeamMember>
   user: User | undefined
   grant: Grant
   supports: Array<Pick<Grant, "id" | "title" | "image" | "tagline">>
@@ -33,7 +33,7 @@ interface Props {
 }
 
 export function MoneyFlowDiagram(props: Props) {
-  const { products, profiles, user, grant, supports, reviews } = props
+  const { products, members, user, grant, supports, reviews } = props
 
   const { nodes, height } = generateDiagram(
     [
@@ -80,19 +80,17 @@ export function MoneyFlowDiagram(props: Props) {
         title: ["Team", "40%"],
         content: (
           <div className="flex items-center gap-2.5">
-            {profiles
-              .filter((p) => !!p.pfp_url)
-              .map((p) => (
-                <div key={p.address}>
-                  <Image
-                    src={p.pfp_url!}
-                    alt={p.display_name}
-                    width={28}
-                    height={28}
-                    className="size-7 rounded-full shadow"
-                  />
-                </div>
-              ))}
+            {members.map((p) => (
+              <div key={p.address}>
+                <Image
+                  src={p.pfp_url!}
+                  alt={p.display_name}
+                  width={28}
+                  height={28}
+                  className="size-7 rounded-full shadow"
+                />
+              </div>
+            ))}
           </div>
         ),
       },
@@ -297,11 +295,7 @@ function generateDiagram(
           x: getX(1) + GROUP_PADDING,
           y: GROUP_PADDING + 32 + currentItemsHeight + Math.max(0, ROW_SPACING * (row - 1)),
         },
-        data: {
-          // className: "bg-background border-primary",
-          ...data,
-          // bg-background border-green-500
-        },
+        data,
         width: COLUMN_WIDTH,
         height,
       })

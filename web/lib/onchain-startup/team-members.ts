@@ -1,0 +1,45 @@
+import { getUserProfile, Profile } from "@/components/user-profile/get-user-profile"
+import database from "@/lib/database/edge"
+
+export type TeamMember = {
+  recipient: string
+  monthlyIncomingFlowRate: number
+  totalEarned: number
+  description: string
+} & Profile
+
+export async function getTeamMembers(allocator: string): Promise<TeamMember[]> {
+  const salaryBudgets = await database.grant.findMany({
+    select: { id: true },
+    where: { allocator, isFlow: true, isActive: true },
+  })
+
+  const recipients = await database.grant.findMany({
+    select: {
+      recipient: true,
+      monthlyIncomingFlowRate: true,
+      totalEarned: true,
+      description: true,
+    },
+    where: { parentContract: { in: salaryBudgets.map((b) => b.id) } },
+  })
+
+  const uniqueMembers = Object.values(
+    recipients.reduce(
+      (acc, { recipient, monthlyIncomingFlowRate, totalEarned, description }) => {
+        acc[recipient] ??= { recipient, monthlyIncomingFlowRate: 0, totalEarned: 0, description }
+        acc[recipient].monthlyIncomingFlowRate += Number(monthlyIncomingFlowRate)
+        acc[recipient].totalEarned += Number(totalEarned)
+        return acc
+      },
+      {} as Record<string, Omit<TeamMember, keyof Profile>>,
+    ),
+  )
+
+  return await Promise.all(
+    uniqueMembers.map(async (member) => {
+      const profile = await getUserProfile(member.recipient as `0x${string}`)
+      return { ...member, ...profile }
+    }),
+  )
+}
