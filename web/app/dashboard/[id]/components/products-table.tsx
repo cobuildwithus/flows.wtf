@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { DateTime } from "@/components/ui/date-time"
 import {
   Table,
   TableBody,
@@ -37,11 +36,12 @@ export async function ProductsTable(props: Props) {
             <TableRow>
               <TableHead className="w-[80px]">Image</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Launch Date</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Orders</TableHead>
-              <TableHead>Total Sales</TableHead>
+              {/* <TableHead>Launch Date</TableHead> */}
               <TableHead>Stock</TableHead>
+
+              <TableHead>Price</TableHead>
+              {/* <TableHead>Orders</TableHead> */}
+              <TableHead className="text-right">Total Sales</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,15 +57,17 @@ export async function ProductsTable(props: Props) {
                   />
                 </TableCell>
                 <TableCell>
-                  <h3 className="text-sm font-medium">{product.name}</h3>
-                  <span className="mt-1.5 text-xs text-muted-foreground">{product.category}</span>
+                  <h3 className="text-sm font-medium">
+                    <a
+                      href={product.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      {product.name}
+                    </a>
+                  </h3>
                 </TableCell>
-                <TableCell className="text-xs">
-                  <DateTime date={new Date(product.launchDate)} relative />
-                </TableCell>
-                <TableCell className="text-xs">{product.price}</TableCell>
-                <TableCell className="text-xs">{product.orders}</TableCell>
-                <TableCell className="text-xs font-medium">{product.totalSales}</TableCell>
                 <TableCell>
                   <Badge
                     variant={product.stock > 50 ? "success" : "warning"}
@@ -73,6 +75,14 @@ export async function ProductsTable(props: Props) {
                   >
                     {product.stock} in stock
                   </Badge>
+                </TableCell>
+                {/* <TableCell className="text-xs">
+                  <DateTime date={new Date(product.launchDate)} relative />
+                </TableCell> */}
+                <TableCell className="text-xs">{product.price}</TableCell>
+                {/* <TableCell className="text-xs">{product.orders}</TableCell> */}
+                <TableCell className="text-right text-xs font-medium">
+                  {product.totalSales}
                 </TableCell>
               </TableRow>
             ))}

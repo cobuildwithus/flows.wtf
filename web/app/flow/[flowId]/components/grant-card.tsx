@@ -7,11 +7,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
-import type { DerivedData, Grant } from "@prisma/flows"
+import type { DerivedData } from "@prisma/flows"
 import Link from "next/dist/client/link"
 import Image from "next/image"
-import { isGrantNew } from "./is-new"
 import type { LimitedGrant } from "./grants-list"
+import { isGrantNew } from "./is-new"
 
 interface Props {
   grant: LimitedGrant & {

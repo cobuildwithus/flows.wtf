@@ -1,16 +1,7 @@
-const stores = {
-  "vrbs-coffee": {
-    url: "8fab74-1b.myshopify.com",
-    adminApiAccessToken: `${process.env.SHOPIFY_VRBS_COFFEE}`,
-  },
-} as const
+export type StoreConfig = { url: string; adminApiAccessToken: string }
 
-export function getStore(storeName: keyof typeof stores) {
-  const store = stores[storeName]
-
-  if (!store.adminApiAccessToken) throw new Error(`Missing token for ${storeName} store`)
+export function getStore(store: StoreConfig) {
+  if (!store.adminApiAccessToken) throw new Error(`Missing token for the ${store.url}`)
 
   return store
 }
-
-export type Store = keyof typeof stores

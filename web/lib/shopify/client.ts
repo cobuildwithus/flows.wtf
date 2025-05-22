@@ -1,6 +1,6 @@
 import { GraphqlClient, LATEST_API_VERSION, shopifyApi } from "@shopify/shopify-api"
 import "@shopify/shopify-api/adapters/node"
-import { getStore, Store } from "./stores"
+import { getStore, StoreConfig } from "./stores"
 
 const hostName = (process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "localhost").replace(
   /^https?:\/\//,
@@ -9,8 +9,8 @@ const hostName = (process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "localhost").repl
 
 const clients: Record<string, GraphqlClient> = {}
 
-function getShopifyClient(store: Store) {
-  if (clients[store]) return clients[store]
+function getShopifyClient(store: StoreConfig) {
+  if (clients[store.url]) return clients[store.url]
 
   const { url, adminApiAccessToken } = getStore(store)
 
@@ -27,13 +27,13 @@ function getShopifyClient(store: Store) {
   const session = shopify.session.customAppSession(url)
 
   const client = new shopify.clients.Graphql({ session })
-  clients[store] = client
+  clients[store.url] = client
 
   return client
 }
 
 export async function queryShopify<T>(
-  store: Store,
+  store: StoreConfig,
   query: string,
   options?: { variables?: Record<string, unknown> },
 ): Promise<T> {
