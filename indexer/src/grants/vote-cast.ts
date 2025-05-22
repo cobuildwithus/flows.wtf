@@ -1,13 +1,11 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
-import { inArray } from "ponder"
-import { getGrantIdFromTcrAndItemId } from "../tcr/helpers"
+import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("NounsFlow:VoteCast", handleVoteCast)
 ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
-ponder.on("VrbsFlow:VoteCast", handleVoteCast)
-ponder.on("VrbsFlowChildren:VoteCast", handleVoteCast)
+ponder.on("CustomFlow:VoteCast", handleVoteCast)
 
 async function handleVoteCast(params: {
   event: Event<"NounsFlow:VoteCast">
@@ -68,9 +66,11 @@ async function handleVoteCast(params: {
     }))
 
   for (const [recipientId, votesDelta] of affectedRecipientIds) {
-    const grantId = flow.tcr
-      ? await getGrantIdFromTcrAndItemId(context.db, flow.tcr, recipientId)
-      : contract
+    const grantId = await getGrantIdFromFlowContractAndRecipientId(
+      context.db,
+      contract,
+      recipientId
+    )
 
     await context.db.update(grants, { id: grantId }).set((row) => ({
       votesCount: (BigInt(row.votesCount) + votesDelta).toString(),

@@ -14,9 +14,9 @@ import {
 import { serialize } from "../../serialize"
 import { PERCENTAGE_SCALE } from "../../config"
 import { nounsFlowImplAbi } from "../../abis"
-import { ERC721VotingToken, UserVote } from "../vote-types"
+import { ERC721VotingToken, UserAllocation } from "../vote-types"
 
-export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
+export function useVoteNouns(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess,
@@ -25,7 +25,7 @@ export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuc
   return {
     isLoading,
     saveVotes: async (
-      votes: UserVote[],
+      allocations: UserAllocation[],
       account: `0x${string}`,
       tokenBatch: ERC721VotingToken[],
     ) => {
@@ -51,7 +51,6 @@ export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuc
           body: JSON.stringify({ tokens: serialize(tokenBatch) }),
         })
           .then((res) => {
-            console.log(res)
             return res.json()
           })
           .catch((error) => {
@@ -61,8 +60,12 @@ export function useVoteNounsFlow(contract: `0x${string}`, chainId: number, onSuc
             })
           })
 
-        const recipientIds = votes.map((vote) => vote.recipientId as `0x${string}`)
-        const percentAllocations = votes.map((vote) => (vote.bps / 10000) * PERCENTAGE_SCALE)
+        const recipientIds = allocations.map(
+          (allocation) => allocation.recipientId as `0x${string}`,
+        )
+        const percentAllocations = allocations.map(
+          (allocation) => (allocation.bps / 10000) * PERCENTAGE_SCALE,
+        )
         const { ownershipStorageProofs, delegateStorageProofs, ...baseProofParams } = proofs
 
         writeContract({

@@ -3,12 +3,11 @@ import { grants } from "ponder:schema"
 import { removeGrantEmbedding } from "../embeddings/embed-grants"
 import { isBlockRecent } from "../../utils"
 import { getFlow } from "./helpers"
-import { getGrantIdFromTcrAndItemId } from "../../tcr/helpers"
+import { getGrantIdFromTcrAndItemId } from "../../tcr/tcr-helpers"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
-ponder.on("VrbsFlow:RecipientRemoved", handleRecipientRemoved)
-ponder.on("VrbsFlowChildren:RecipientRemoved", handleRecipientRemoved)
+ponder.on("CustomFlow:RecipientRemoved", handleRecipientRemoved)
 
 async function handleRecipientRemoved(params: {
   event: Event<"NounsFlow:RecipientRemoved">

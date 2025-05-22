@@ -14,8 +14,8 @@ import { mainnet } from "viem/chains"
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
 async function handleFlowInitialized(params: {
-  event: Event<"VrbsFlow:FlowInitialized">
-  context: Context<"VrbsFlow:FlowInitialized">
+  event: Event<"NounsFlowChildren:FlowInitialized">
+  context: Context<"NounsFlowChildren:FlowInitialized">
 }) {
   const { context, event } = params
 
@@ -45,7 +45,7 @@ async function handleFlowInitialized(params: {
     id: grantId,
     ...metadata,
     recipient: contract,
-    recipientId: null, // no parent flow or no recipient id yet
+    recipientId: "", // no parent flow or no recipient id yet
     isTopLevel: false,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),

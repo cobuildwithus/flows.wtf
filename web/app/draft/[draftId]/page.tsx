@@ -20,6 +20,7 @@ import DraftContent from "./draft-content"
 import { DraftEditButton } from "./draft-edit-button"
 import { TCRDraftPublishButton } from "./tcr-draft-publish-button"
 import { getUser } from "@/lib/auth/user"
+import { ManagedFlowDraftPublishButton } from "./self-managed-draft-publish-button"
 
 interface Props {
   params: Promise<{ draftId: string }>
@@ -62,8 +63,10 @@ export default async function DraftPage(props: Props) {
     getTcrCosts(draft.flow.tcr, draft.flow.erc20),
   ])
 
-  const { title, flow, isOnchain, createdAt, users, isFlow, description } = draft
-
+  const { title, flow, isOnchain, createdAt, users, description } = draft
+  const isTcrFlow = flow.tcr && flow.erc20 && flow.tokenEmitter
+  const isSelfManagedFlow = flow.allocator
+  const isAllocator = flow.allocator === user?.address
   const edit = searchParams.edit === "true"
 
   return (
@@ -88,20 +91,29 @@ export default async function DraftPage(props: Props) {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="flex items-center space-x-1.5">
-          <DraftEditButton draft={draft} edit={edit} />
-          {!isOnchain && !edit && flow.tcr && flow.erc20 && flow.tokenEmitter && (
-            <TCRDraftPublishButton
-              grantsCount={existingGrants}
-              draft={draft}
-              flow={flow}
-              user={user}
-              tcrAddress={getEthAddress(flow.tcr)}
-              erc20Address={getEthAddress(flow.erc20)}
-              tokenEmitterAddress={getEthAddress(flow.tokenEmitter)}
-            />
-          )}
-        </div>
+        {!isOnchain && (
+          <div className="flex items-center space-x-1.5">
+            <DraftEditButton draft={draft} edit={edit} />
+            {!edit && (
+              <>
+                {isTcrFlow && (
+                  <TCRDraftPublishButton
+                    grantsCount={existingGrants}
+                    draft={draft}
+                    flow={flow}
+                    user={user}
+                    tcrAddress={getEthAddress(flow.tcr as `0x${string}`)}
+                    erc20Address={getEthAddress(flow.erc20 as `0x${string}`)}
+                    tokenEmitterAddress={getEthAddress(flow.tokenEmitter as `0x${string}`)}
+                  />
+                )}
+                {isSelfManagedFlow && isAllocator && (
+                  <ManagedFlowDraftPublishButton draft={draft} flow={flow} user={user} />
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-8 grid grow grid-cols-1 gap-8 md:grid-cols-5 md:gap-20">
@@ -144,12 +156,7 @@ export default async function DraftPage(props: Props) {
                 </div>
 
                 <div>
-                  <h4 className="mb-1 text-[13px] text-muted-foreground">Type</h4>
-                  <p className="max-sm:text-sm">{isFlow ? "Flow" : "Grant"}</p>
-                </div>
-
-                <div>
-                  <h4 className="mb-1 text-[13px] text-muted-foreground">Is onchain?</h4>
+                  <h4 className="mb-1 text-[13px] text-muted-foreground">Onchain</h4>
                   {isOnchain ? <p>Yes</p> : <p>No</p>}
                 </div>
               </div>

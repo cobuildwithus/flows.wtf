@@ -1,7 +1,7 @@
 import { eq } from "ponder"
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
-import { getGrantIdFromTcrAndItemId } from "./helpers"
+import { getGrantIdFromTcrAndItemId } from "./tcr-helpers"
 
 ponder.on("FlowTcr:RequestEvidenceGroupID", handleRequestEvidenceGroupId)
 ponder.on("FlowTcrChildren:RequestEvidenceGroupID", handleRequestEvidenceGroupId)

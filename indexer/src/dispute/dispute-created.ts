@@ -2,7 +2,7 @@ import { and, eq } from "ponder"
 import { ponder, type Context, type Event } from "ponder:registry"
 import { arbitratorToGrantId, disputes, grants } from "ponder:schema"
 import { Party, Status } from "../enums"
-import { getGrantIdFromTcrAndItemId } from "../tcr/helpers"
+import { getGrantIdFromTcrAndItemId } from "../tcr/tcr-helpers"
 
 ponder.on("Arbitrator:DisputeCreated", handleDisputeCreated)
 ponder.on("ArbitratorChildren:DisputeCreated", handleDisputeCreated)

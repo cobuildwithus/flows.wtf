@@ -4,7 +4,7 @@ import { RecipientType, Status } from "../enums"
 import { addApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants, tcrToGrantId } from "ponder:schema"
 import { isBlockRecent } from "../utils"
-import { addGrantIdToTcrAndItemId } from "./helpers"
+import { addGrantIdToTcrAndItemId } from "./tcr-helpers"
 
 ponder.on("FlowTcr:ItemSubmitted", handleItemSubmitted)
 ponder.on("FlowTcrChildren:ItemSubmitted", handleItemSubmitted)

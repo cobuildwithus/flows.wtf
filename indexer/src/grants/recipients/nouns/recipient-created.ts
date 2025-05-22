@@ -5,6 +5,7 @@ import { isBlockRecent } from "../../../utils"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { getFlow } from "../helpers"
 import { RecipientType } from "../../../enums"
+import { addGrantIdToFlowContractAndRecipientId } from "../../grant-helpers"
 
 ponder.on("NounsFlowChildren:RecipientCreated", handleRecipientCreated)
 ponder.on("NounsFlow:RecipientCreated", handleRecipientCreated)
@@ -39,6 +40,7 @@ async function handleRecipientCreated(params: {
     recipientId: recipientId.toString(),
   })
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
+  await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
 
   if (isBlockRecent(timestamp)) {
     await addGrantEmbedding(grant, recipientType, parentFlow.id)

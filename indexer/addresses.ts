@@ -20,10 +20,12 @@ export const base = {
   TokenEmitter: "0x14de2e56ebe65d2cc81b5186f8cb299cfbb37ee1",
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
-  // Vrbs Accelerator
-  SelfManagedFlowImpl: "0xfda4db2f8ad0d510a811b318b3c40ef8c0b23a41",
-  VrbsFlowImpl: "0x9c042cf5d48efceebfa1bb4b2072db9a5358c57d",
-  VrbsFlow: "0xe54c74df9e93f79ccd8d3b3283d3aca145afca98",
+  // Flow Extensions
+  SelfManagedFlowImpl: "0xbb4b2ca98289a80037ba499a4856d4870fe7e40e",
+  SelfManagedFlowImplV00: "0xe950d10f7f41e985fe14efd3044bb234b7af10a3",
+  RevolutionFlowImpl: "0x0a13b8756164c78827e9e425886d01ed042b2f66",
+  // Revolution Flows
+  VrbsFlow: "0xc8e385198e2ac1b8130cc010f8e6b59151974a1d",
   // ERC721Tokens
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
