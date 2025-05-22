@@ -19,7 +19,7 @@ export const Allocator = async (props: Props) => {
               <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
             </Avatar>
 
-            <span className="truncate text-base font-medium text-black dark:text-white">
+            <span className="truncate text-sm text-black dark:text-white">
               {profile.display_name}
             </span>
           </div>
