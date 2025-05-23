@@ -18,6 +18,6 @@ async function handleVotingTokenChanged(params: {
 
   await context.db.update(grants, { id: grantId }).set({
     erc721VotingToken: erc721Token.toLowerCase(),
-    votingTokenChainId: context.network.chainId,
+    votingTokenChainId: context.chain.id,
   })
 }

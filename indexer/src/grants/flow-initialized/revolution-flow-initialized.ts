@@ -91,7 +91,7 @@ async function handleFlowInitialized(params: {
     isResolved: false,
     evidenceGroupID: "",
     isActive: true,
-    votingTokenChainId: context.network.chainId, // assumes all these flows are voting on the same network they're deployed on
+    votingTokenChainId: context.chain.id, // assumes all these flows are voting on the same network they're deployed on
   })
 
   await createMappings(

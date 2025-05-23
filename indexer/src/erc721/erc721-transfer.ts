@@ -14,7 +14,7 @@ async function handleTransfer(params: {
 
   const { to, tokenId, from } = event.args
   const tokenContract = event.log.address.toLowerCase()
-  const chainId = context.network.chainId
+  const chainId = context.chain.id
   const toAddress = to.toLowerCase()
   const fromAddress = from.toLowerCase()
   const id = getTokenIdentifier(chainId, tokenContract, Number(tokenId))

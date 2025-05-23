@@ -15,13 +15,14 @@ async function handleDelegateChanged(params: {
 }) {
   const { event, context } = params
   const delegator = event.args.delegator.toLowerCase()
+  const chainId = context.chain.id
   const newDelegate = (
     event.args.toDelegate === zeroAddress ? delegator : event.args.toDelegate
   ).toLowerCase()
 
   const delegatorTokenIds = await context.db.find(tokenIdsByOwner, {
     ownerContractChainId: getOwnerContractChainId(
-      context.network.chainId,
+      chainId,
       event.log.address.toLowerCase(),
       delegator
     ),
@@ -32,7 +33,7 @@ async function handleDelegateChanged(params: {
   for (const tokenId of delegatorTokenIds.tokenIds) {
     await context.db
       .update(erc721Tokens, {
-        id: getTokenIdentifier(context.network.chainId, event.log.address, tokenId),
+        id: getTokenIdentifier(chainId, event.log.address, tokenId),
       })
       .set({ delegate: newDelegate })
   }

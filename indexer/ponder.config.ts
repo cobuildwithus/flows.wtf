@@ -16,6 +16,7 @@ import {
   revolutionFlowImplAbi,
 } from "./abis"
 import { base as baseContracts, mainnet as mainnetContracts } from "./addresses"
+import { getChainsAndRpcUrls } from "./src/utils"
 
 const isDev = process.env.NODE_ENV === "development"
 
@@ -32,25 +33,12 @@ const blockStarts = {
 
 export default createConfig({
   database: { kind: "postgres" },
-  networks: {
-    base: {
-      chainId: base.id,
-      transport: rateLimit(http(process.env.PONDER_RPC_URL_8453), {
-        requestsPerSecond: isDev ? 40 : 25,
-      }),
-    },
-    mainnet: {
-      chainId: mainnet.id,
-      transport: rateLimit(http(process.env.PONDER_RPC_URL_1), {
-        requestsPerSecond: isDev ? 40 : 25,
-      }),
-    },
-  },
+  chains: getChainsAndRpcUrls(),
   contracts: {
     NounsFlow: {
       abi: nounsFlowImplAbi,
       address: baseContracts.NounsFlow,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     NounsFlowChildren: {
@@ -63,13 +51,13 @@ export default createConfig({
         }),
         parameter: "recipient",
       }),
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     FlowTcr: {
       abi: flowTcrImplAbi,
       address: baseContracts.FlowTCR,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     FlowTcrChildren: {
@@ -82,19 +70,19 @@ export default createConfig({
         }),
         parameter: "flowTCRProxy",
       }),
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     NounsFlowTcrFactory: {
       abi: tcrFactoryImplAbi,
       address: baseContracts.TCRFactory,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     Arbitrator: {
       abi: erc20VotesArbitratorImplAbi,
       address: baseContracts.ERC20VotesArbitrator,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     ArbitratorChildren: {
@@ -107,13 +95,13 @@ export default createConfig({
         }),
         parameter: "arbitratorProxy",
       }),
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     TokenEmitter: {
       abi: tokenEmitterImplAbi,
       address: baseContracts.TokenEmitter,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
       // so we can pull erc20
       includeTransactionReceipts: true,
@@ -128,14 +116,14 @@ export default createConfig({
         }),
         parameter: "tokenEmitterProxy",
       }),
-      network: "base",
+      chain: "base",
       includeTransactionReceipts: true,
       startBlock: blockStarts.base.FLOWS,
     },
     Erc20Token: {
       abi: erc20VotesMintableImplAbi,
       address: baseContracts.ERC20VotesMintable,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     Erc20TokenChildren: {
@@ -148,7 +136,7 @@ export default createConfig({
         }),
         parameter: "erc20Proxy",
       }),
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     SuperfluidPool: {
@@ -159,13 +147,13 @@ export default createConfig({
           token: "0xd04383398dd2426297da660f9cca3d439af9ce1b",
         },
       },
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
     GdaV1: {
       abi: gdav1ImplAbi,
       address: gdav1Address[8453],
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.FLOWS,
       filter: {
         event: "FlowDistributionUpdated",
@@ -187,7 +175,7 @@ export default createConfig({
           ],
         },
       },
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,
     },
     SelfManagedFlow: {
@@ -196,25 +184,25 @@ export default createConfig({
         event: "AllocatorChanged",
         args: {},
       },
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,
     },
     ERC721TokenMainnet: {
       abi: nounsTokenAbi,
-      network: "mainnet",
+      chain: "ethereum",
       startBlock: blockStarts.mainnet.NOUNS_TOKEN,
       address: [mainnetContracts.NounsToken],
     },
     ERC721TokenBase: {
       abi: nounsTokenAbi,
-      network: "base",
+      chain: "base",
       startBlock: blockStarts.base.GNARS,
       address: [baseContracts.VrbsToken, baseContracts.GroundsToken],
     },
   },
   blocks: {
     TotalEarned: {
-      network: "base",
+      chain: "base",
       startBlock: "latest",
       interval: (6 * 60 * 60) / 2, // Every 6 hours (base block time is 2s)
     },
