@@ -51,6 +51,13 @@ export default async function Footer() {
             <nav className="flex flex-col space-y-2 text-sm text-muted-foreground">
               <Link
                 target="_blank"
+                href="https://discord.gg/u3buFmphF8"
+                className="hover:underline"
+              >
+                Discord
+              </Link>
+              <Link
+                target="_blank"
                 href="https://warpcast.com/~/channel/flows"
                 className="hover:underline"
               >
