@@ -17,4 +17,20 @@ export interface StartupData {
     mission: Gradient
     deliverables: Gradient
   }
+  ticker: string
+  diagram: {
+    action: { name: string; description?: string }
+    receive: { name: string; description?: string }
+  }
+  splits: {
+    team: number
+    support: number
+    treasury: number
+    costs: Array<{
+      name: string
+      amount: number
+      description: string
+      image?: string
+    }>
+  }
 }

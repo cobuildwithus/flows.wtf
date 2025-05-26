@@ -1,7 +1,7 @@
 import { StartupData } from "./interface"
 
 export const vrbscoffee = {
-  accelerator: "vrbs",
+  accelerator: "vrbs", // path: /vrbs
   title: "VRBS Coffee",
   tagline: "The best coffee in the world",
   image:
@@ -24,22 +24,22 @@ export const vrbscoffee = {
   },
   reviews: [
     {
-      url: "https://warpcast.com/rocketman/0x136e36aa",
+      url: "https://farcaster.xyz/rocketman/0x136e36aa",
       image:
         "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/cc70cf70-395c-4937-cfca-15618fe0d900/original",
     },
     {
-      url: "https://warpcast.com/coolbeans1r.eth/0x5ef9a347",
+      url: "https://farcaster.xyz/coolbeans1r.eth/0x5ef9a347",
       image:
         "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/1c6f7f8b-a8c2-49d0-14ca-3b434c0aed00/original",
     },
     {
-      url: "https://warpcast.com/rocketman/0x139bb055",
+      url: "https://farcaster.xyz/rocketman/0x139bb055",
       image:
         "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/a85b8da4-b246-4ae2-175c-e14539c46500/original",
     },
     {
-      url: "https://warpcast.com/coolbeans1r.eth/0x64ad0e4e",
+      url: "https://farcaster.xyz/coolbeans1r.eth/0x64ad0e4e",
       image:
         "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/5e973b20-0817-4da4-2c35-2ca29e89d000/original",
     },
@@ -53,5 +53,27 @@ export const vrbscoffee = {
       light: { gradientStart: "#B6E388", gradientEnd: "#FFF6D5", text: "#1A3A1A" },
       dark: { gradientStart: "#295C2F", gradientEnd: "#BFA76A", text: "#FFFDEB" },
     },
+  },
+  ticker: "$BEANS",
+  diagram: {
+    action: { name: "Order coffee" },
+    receive: {
+      name: "Fresh roasted coffee",
+      description: "Beans ready for your cup of espresso or pour over",
+    },
+  },
+  splits: {
+    team: 0.4,
+    support: 0.1,
+    treasury: 0.1,
+    costs: [
+      {
+        name: "Farmers & Roasting",
+        amount: 0.4,
+        image:
+          "https://images.unsplash.com/photo-1746623691157-c4c7a3bad0c4?q=80&w=1750&auto=format&fit=crop",
+        description: "Plantation X in Peru",
+      },
+    ],
   },
 } satisfies StartupData

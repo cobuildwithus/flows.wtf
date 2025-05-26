@@ -73,72 +73,68 @@ export default async function GrantPage(props: Props) {
   const salesChange = thisMonth && lastMonth ? thisMonth.sales - lastMonth.sales : 0
   const ordersChange = thisMonth && lastMonth ? thisMonth.orders - lastMonth.orders : 0
 
-  const { title, image, tagline, gradients, mission, deliverables, reviews } = startup
+  const { title, image, tagline, gradients, mission, deliverables } = startup
 
   return (
     <>
-      <div className="container mt-2.5 md:mt-6">
-        <div className="md:flex md:items-center md:justify-between">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Flows</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/${startup.accelerator}`}>
-                  {startup.flow.title}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="max-sm:hidden" />
-              <BreadcrumbItem className="max-sm:hidden">
-                <BreadcrumbPage>{title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+      <div className="container mt-2.5 md:mt-6 md:flex md:items-center md:justify-between">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Flows</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/${startup.accelerator}`}>{startup.flow.title}</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="max-sm:hidden" />
+            <BreadcrumbItem className="max-sm:hidden">
+              <BreadcrumbPage>{title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
-        <div className="mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
-          {title && image && tagline && (
-            <div className="relative col-span-full lg:col-span-7">
-              <div className="relative h-full min-h-56 overflow-hidden rounded-xl">
-                <Image
-                  src={getIpfsUrl(image, "pinata")}
-                  alt={title}
-                  fill
-                  priority
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-40% to-black/75" />
-                <div className="absolute bottom-0 p-5">
-                  <h1 className="text-balance text-xl font-bold text-white lg:text-3xl">{title}</h1>
-                  <p className="mt-1 hidden text-pretty text-base text-white/80 sm:block lg:text-lg">
-                    {tagline}
-                  </p>
-                </div>
-              </div>
+      <div className="container mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
+        <div className="relative col-span-full lg:col-span-7">
+          <div className="relative h-full min-h-56 overflow-hidden rounded-xl">
+            <Image
+              src={getIpfsUrl(image, "pinata")}
+              alt={title}
+              fill
+              priority
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-40% to-black/75" />
+            <div className="absolute bottom-0 p-5">
+              <h1 className="text-balance text-xl font-bold text-white lg:text-3xl">{title}</h1>
+              <p className="mt-1 hidden text-pretty text-base text-white/80 sm:block lg:text-lg">
+                {tagline}
+              </p>
             </div>
-          )}
-          <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
-            {gradients && mission && <MissionCard gradient={gradients.mission} text={mission} />}
-
-            {deliverables && gradients && (
-              <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
-            )}
           </div>
         </div>
 
-        <div className="mt-8">
-          <Team members={teamMembers} />
-        </div>
+        <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
+          {gradients && mission && <MissionCard gradient={gradients.mission} text={mission} />}
 
+          {deliverables && gradients && (
+            <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
+          )}
+        </div>
+      </div>
+
+      <div className="container mb-2 mt-4 flex">
+        <Team members={teamMembers} />
+      </div>
+
+      <div className="container">
         <MoneyFlowDiagram
           products={products}
           members={teamMembers}
           user={user}
-          grant={startup}
+          startup={startup}
           supports={supports}
-          reviews={reviews}
         />
       </div>
 
@@ -183,7 +179,7 @@ export default async function GrantPage(props: Props) {
 
         <OrdersTable orders={orders} products={products} />
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <ProductsTable products={products} />
 
           <Suspense>

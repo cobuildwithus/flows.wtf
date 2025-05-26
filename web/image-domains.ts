@@ -16,4 +16,5 @@ export const imageDomains = [
   "flows-media.s3.us-west-2.amazonaws.com",
   "vrbscoffee.com",
   "cdn.shopify.com",
+  "images.unsplash.com",
 ]

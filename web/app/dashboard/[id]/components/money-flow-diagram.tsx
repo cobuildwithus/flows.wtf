@@ -3,9 +3,10 @@
 import { Currency } from "@/components/ui/currency"
 import { User } from "@/lib/auth/user"
 import { Grant } from "@/lib/database/types"
+import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { getIpfsUrl } from "@/lib/utils"
-import { Background, type Edge, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
+import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,9 +15,8 @@ import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
-import SampleImage from "./plantation.jpg"
 
-const COLUMN_WIDTH = 330
+const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
 
 const ROW_HEIGHT = 52
@@ -27,13 +27,14 @@ interface Props {
   products: Array<{ name: string; image: string; url: string }>
   members: Array<TeamMember>
   user: User | undefined
-  grant: Grant
+  startup: Startup
   supports: Array<Pick<Grant, "id" | "title" | "image" | "tagline">>
-  reviews: Array<{ url: string; image: string }>
 }
 
 export function MoneyFlowDiagram(props: Props) {
-  const { products, members, user, grant, supports, reviews } = props
+  const { products, members, user, startup, supports } = props
+
+  const { splits, diagram } = startup
 
   const { nodes, height } = generateDiagram(
     [
@@ -41,13 +42,13 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 2,
         data: {
-          label: "VRBS Coffee",
+          label: startup.title,
           handles: [
             { type: "target", position: Position.Left },
             { type: "source", position: Position.Right },
           ],
           className: "bg-accent dark:bg-accent/25 text-accent-foreground",
-          image: grant.image,
+          image: startup.image,
         },
       },
       { col: 3, data: { label: "You receive", image: user?.avatar } },
@@ -58,7 +59,7 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         height: 192,
         id: "user_action",
-        title: "Order Coffee",
+        title: startup.diagram.action.name,
         className: "bg-background dark:bg-background/50 shadow",
         content: <Products products={products.slice(0, 10)} />,
         handles: [{ type: "source", position: Position.Right }],
@@ -77,7 +78,7 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         id: "team",
         height: 96,
-        title: ["Team", "40%"],
+        title: ["Team", `${splits.team * 100}%`],
         content: (
           <div className="flex items-center gap-2.5">
             {members.map((p) => (
@@ -97,27 +98,8 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 2,
         row: 2,
-        height: 260,
-        id: "costs1",
-        title: ["Farmers & Roasting", "40%"],
-        content: (
-          <div>
-            <Image
-              src={SampleImage}
-              alt="Plantation in Peru"
-              className="aspect-video h-auto w-full rounded-md object-cover"
-            />
-            <div className="mt-1.5 text-center text-xs text-muted-foreground">
-              Plantation X in Peru
-            </div>
-          </div>
-        ),
-      },
-      {
-        col: 2,
-        row: 3,
         id: "public_goods",
-        title: ["Public Goods", "10%"],
+        title: ["Public Goods", `${splits.support * 100}%`],
         height: 106,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
@@ -127,9 +109,9 @@ export function MoneyFlowDiagram(props: Props) {
       },
       {
         col: 2,
-        row: 4,
+        row: 3,
         id: "treasury",
-        title: ["Treasury", "10%"],
+        title: ["Treasury", `${splits.treasury * 100}%`],
         height: 106,
         content: (
           <div className="flex flex-col justify-between text-sm text-muted-foreground">
@@ -142,18 +124,39 @@ export function MoneyFlowDiagram(props: Props) {
           </div>
         ),
       },
+      ...splits.costs.map((c, ci) => ({
+        col: 2,
+        row: 4 + ci,
+        height: c.image ? 260 : 92,
+        id: `costs_${c.name}_${ci}`,
+        title: [c.name, `${c.amount * 100}%`],
+        content: (
+          <div>
+            {c.image && (
+              <Image
+                src={c.image}
+                alt={c.description}
+                className="aspect-video h-auto w-full rounded-md object-cover"
+                width={298}
+                height={168}
+              />
+            )}
+            <div className="mt-1.5 text-center text-xs text-muted-foreground">{c.description}</div>
+          </div>
+        ),
+      })),
       {
         col: 3,
         row: 1,
         id: "product",
-        title: "Fresh roasted Coffee",
-        height: reviews.length > 0 ? 256 : 106,
+        title: diagram.receive.name,
+        height: startup.reviews.length > 0 ? 256 : 106,
         content: (
           <>
             <div className="mb-2.5 text-pretty text-sm text-muted-foreground">
-              Beans ready for your cup of espresso or pour over
+              {diagram.receive.description}
             </div>
-            <Reviews reviews={reviews} />
+            <Reviews reviews={startup.reviews} />
           </>
         ),
         handles: [{ type: "target", position: Position.Left }],
@@ -190,56 +193,29 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: "$BEANS",
+        title: startup.ticker,
         handles: [{ type: "target", position: Position.Left }],
         height: 106,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
-            By ordering coffee, you receive $BEANS rewards
+            With each order you receive {startup.ticker} rewards
           </div>
         ),
       },
     ],
   )
 
-  const edges: Edge[] = [
-    {
-      id: "c1_c2_1",
-      source: "user_action",
-      target: "column_2",
-      style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
-    },
-    {
-      id: "c1_c2_5",
-      source: "user_token",
-      target: "column_2",
-      style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
-    },
-    {
-      id: "c2_c3_1",
-      source: "column_2",
-      target: "product",
-      style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
-    },
-    {
-      id: "c2_c3_2",
-      source: "column_2",
-      target: "impact",
-      style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
-    },
-    {
-      id: "c2_c3_3",
-      source: "column_2",
-      target: "token",
-      style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
-    },
-  ]
-
   return (
     <div style={{ width: "100%", height: height + 160 }}>
       <ReactFlow
         defaultNodes={nodes}
-        defaultEdges={edges}
+        defaultEdges={[
+          { id: "c1_c2_1", source: "user_action", target: "column_2" },
+          { id: "c1_c2_5", source: "user_token", target: "column_2" },
+          { id: "c2_c3_1", source: "column_2", target: "product" },
+          { id: "c2_c3_2", source: "column_2", target: "impact" },
+          { id: "c2_c3_3", source: "column_2", target: "token" },
+        ]}
         fitView
         fitViewOptions={{ minZoom: 0.75 }}
         panOnDrag={false}
@@ -256,9 +232,10 @@ export function MoneyFlowDiagram(props: Props) {
         defaultEdgeOptions={{
           animated: true,
           markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
         }}
       >
-        <Background gap={32} />
+        <Background gap={32} offset={-10} />
       </ReactFlow>
     </div>
   )

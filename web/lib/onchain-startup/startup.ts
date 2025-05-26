@@ -31,6 +31,8 @@ export async function getStartup(id: string) {
   }
 }
 
+export type Startup = Awaited<ReturnType<typeof getStartup>>
+
 export function getStartups() {
   return Object.entries(startups).map(([id, startup]) => ({ ...startup, id }))
 }

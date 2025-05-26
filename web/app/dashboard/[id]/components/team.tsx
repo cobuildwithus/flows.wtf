@@ -5,7 +5,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import Image from "next/image"
-import Link from "next/link"
 
 interface Props {
   members: TeamMember[]
@@ -15,16 +14,23 @@ export async function Team(props: Props) {
   const { members } = props
 
   return (
-    <ScrollArea className="pointer-events-auto mt-2 w-full whitespace-nowrap">
-      <div className="flex space-x-4">
-        {members.map((m) => (
-          <TeamMemberCard key={m.recipient} member={m} />
-        ))}
-        <OpportunityCard title="Artist" description="Making logo bigger" />
-        <OpportunityCard title="Barista" description="Remember guests names" />
+    <>
+      <div className="relative h-full w-9 shrink-0">
+        <div className="absolute left-4 top-5 z-10 origin-right -translate-x-full -rotate-90 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground">
+          Meet the team
+        </div>
       </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+      <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
+        <div className="flex space-x-4">
+          {members.map((m) => (
+            <TeamMemberCard key={m.recipient} member={m} />
+          ))}
+          <OpportunityCard title="Artist" description="Making logo bigger" />
+          <OpportunityCard title="Barista" description="Remember guests names" />
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </>
   )
 }
 
@@ -35,26 +41,31 @@ async function TeamMemberCard(props: { member: TeamMember }) {
   const { display_name, pfp_url, username } = profile
 
   return (
-    <div className="flex shrink-0 flex-col items-center">
+    <div className="flex min-w-64 shrink-0 items-center space-x-4 rounded-lg border bg-accent/50 p-4 dark:bg-muted/30">
       <Image
         src={pfp_url!}
         alt={display_name}
         width={64}
         height={64}
-        className="z-20 size-14 rounded-full shadow"
+        className="z-20 size-16 rounded-full"
       />
-      <div className="-mt-7 flex w-64 grow flex-col items-center justify-between rounded-lg bg-accent/50 p-4 pt-12 dark:bg-muted/30">
-        <div className="text-center">
-          <h3 className="text-sm font-medium">
-            <Link href={`https://warpcast.com/${username}`} className="hover:underline">
+      <div className="flex flex-col">
+        <div>
+          <Badge>
+            <Currency>{member.monthlyIncomingFlowRate.toString()}</Currency> /mo
+          </Badge>
+          <h3 className="mt-2.5 text-sm font-medium">
+            <a
+              href={`https://farcaster.xyz/${username}`}
+              className="hover:underline"
+              target="_blank"
+            >
               {display_name}
-            </Link>
+            </a>
           </h3>
+
           <div className="mb-3 mt-1 text-xs text-muted-foreground">{member.description}</div>
         </div>
-        <Badge>
-          <Currency>{member.monthlyIncomingFlowRate.toString()}</Currency> /mo
-        </Badge>
       </div>
     </div>
   )
@@ -64,16 +75,16 @@ async function OpportunityCard(props: { title: string; description: string }) {
   const { title, description } = props
 
   return (
-    <div className="flex shrink-0 flex-col items-center pt-7">
+    <div className="flex shrink-0 flex-col items-center">
       <div className="flex w-56 grow flex-col justify-between rounded-lg border border-dashed border-primary p-4 dark:border-muted/50">
         <div>
-          <Badge variant="warning" className="mb-2.5 py-0 text-[11px]">
+          <Badge variant="warning" className="py-0 text-[11px]">
             Vacancy
           </Badge>
-          <h3 className="text-sm font-medium">{title}</h3>
-          <div className="mt-1 text-xs text-muted-foreground">{description}</div>
+          <h3 className="mt-2.5 text-sm font-medium">{title}</h3>
+          <div className="mt-0.5 text-xs text-muted-foreground">{description}</div>
         </div>
-        <Button size="sm" className="mt-4 py-0.5">
+        <Button size="sm" className="mt-3 py-0.5">
           Apply
         </Button>
       </div>
