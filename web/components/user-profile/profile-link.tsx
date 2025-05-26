@@ -11,7 +11,7 @@ export function ProfileLink({ username, address, children }: ProfileLinkProps) {
   return (
     <a
       href={
-        username ? `https://warpcast.com/${username}` : explorerUrl(address, base.id, "address")
+        username ? `https://farcaster.xyz/${username}` : explorerUrl(address, base.id, "address")
       }
       className="text-muted-foreground transition-colors hover:text-foreground"
       target="_blank"

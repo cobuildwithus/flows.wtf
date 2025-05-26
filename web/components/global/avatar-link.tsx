@@ -15,7 +15,7 @@ export function AvatarLink({ user }: { user: User }) {
       )}
       {user.fid ? (
         <Link
-          href={`https://warpcast.com/${user.username}`}
+          href={`https://farcaster.xyz/${user.username}`}
           target="_blank"
           className="text-sm font-medium hover:underline"
         >

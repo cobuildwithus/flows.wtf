@@ -35,7 +35,7 @@ export function Builder(props: Props) {
                 target="_blank"
                 href={
                   profile.username
-                    ? `https://warpcast.com/${profile.username}`
+                    ? `https://farcaster.xyz/${profile.username}`
                     : `https://basescan.org/address/${recipient}`
                 }
                 className="inline-flex items-center gap-4 hover:opacity-80"

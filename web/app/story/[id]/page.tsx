@@ -51,12 +51,10 @@ const getStory = cache(async (id: string) => {
     database.grant.findMany({
       where: { id: { in: story.grant_ids } },
       omit: { description: true },
-
     }),
     database.grant.findMany({
       where: { id: { in: story.parent_flow_ids } },
       omit: { description: true },
-
     }),
   ])
 
@@ -132,7 +130,7 @@ export default async function Page(props: Props) {
                       <div className="flex flex-col items-start justify-center">
                         <Link
                           target="_blank"
-                          href={`https://warpcast.com/${profile.username}`}
+                          href={`https://farcaster.xyz/${profile.username}`}
                           className="text-sm font-medium"
                         >
                           {profile.display_name}

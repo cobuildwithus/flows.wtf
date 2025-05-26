@@ -45,7 +45,7 @@ export default function BlockSources({ sources, maxVisible = 4 }: Props) {
                     .split(".")[0]
                     .charAt(0)
                     .toUpperCase()}
-                  {source.url.startsWith("https://warpcast.com") && (
+                  {source.url.startsWith("https://farcaster.xyz") && (
                     <Image
                       src={FarcasterLogo}
                       alt="Farcaster"

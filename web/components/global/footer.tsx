@@ -58,7 +58,7 @@ export default async function Footer() {
               </Link>
               <Link
                 target="_blank"
-                href="https://warpcast.com/~/channel/flows"
+                href="https://farcaster.xyz/~/channel/flows"
                 className="hover:underline"
               >
                 Farcaster
@@ -73,14 +73,14 @@ export default async function Footer() {
             <nav className="flex flex-col space-y-2 text-sm text-muted-foreground">
               <Link
                 target="_blank"
-                href="https://warpcast.com/riderway.eth"
+                href="https://farcaster.xyz/riderway.eth"
                 className="hover:underline"
               >
                 riderway
               </Link>
               <Link
                 target="_blank"
-                href="https://warpcast.com/rocketman"
+                href="https://farcaster.xyz/rocketman"
                 className="hover:underline"
               >
                 rocketman
@@ -99,7 +99,7 @@ export default async function Footer() {
               </Link>
               <Link
                 target="_blank"
-                href="https://warpcast.com/rocketman"
+                href="https://farcaster.xyz/rocketman"
                 className="hover:underline"
               >
                 Contact
