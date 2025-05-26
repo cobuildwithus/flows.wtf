@@ -94,12 +94,12 @@ export function ManagedFlowDraftPublishButton(props: Props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-xs">
         <DialogHeader>
-          <DialogTitle className="px-4 text-center text-lg font-medium">
+          <DialogTitle className="px-4 text-center text-xl font-medium">
             Add {draft.title} to {flow.title}
           </DialogTitle>
         </DialogHeader>
         <div>
-          <p>
+          <p className="text-sm text-muted-foreground">
             This is a self managed flow. You can add and remove applicants at any time, and set a
             custom flow rate for each applicant.
           </p>

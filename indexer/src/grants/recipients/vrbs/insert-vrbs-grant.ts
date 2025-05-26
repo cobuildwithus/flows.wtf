@@ -52,6 +52,7 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     title,
     recipientId,
     description,
+    manager: "",
     image,
     tagline,
     url,

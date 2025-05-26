@@ -66,7 +66,7 @@ export default async function DraftPage(props: Props) {
   const { title, flow, isOnchain, createdAt, users, description } = draft
   const isTcrFlow = flow.tcr && flow.erc20 && flow.tokenEmitter
   const isSelfManagedFlow = flow.allocator
-  const isAllocator = flow.allocator === user?.address
+  const isManager = flow.manager === user?.address
   const edit = searchParams.edit === "true"
 
   return (
@@ -107,7 +107,7 @@ export default async function DraftPage(props: Props) {
                     tokenEmitterAddress={getEthAddress(flow.tokenEmitter as `0x${string}`)}
                   />
                 )}
-                {isSelfManagedFlow && isAllocator && (
+                {isSelfManagedFlow && isManager && (
                   <ManagedFlowDraftPublishButton draft={draft} flow={flow} user={user} />
                 )}
               </>

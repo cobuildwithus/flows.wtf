@@ -25,6 +25,7 @@ async function handleFlowInitialized(params: {
     baselinePool,
     baselinePoolFlowRatePercent,
     bonusPool,
+    manager,
     managerRewardPoolFlowRatePercent,
   } = event.args
 
@@ -79,6 +80,7 @@ async function handleFlowInitialized(params: {
     erc20: null,
     isOnchainStartup: false,
     arbitrator: null,
+    manager: manager.toLowerCase(),
     tokenEmitter: null,
     managerRewardPoolFlowRatePercent,
     baselinePoolFlowRatePercent,

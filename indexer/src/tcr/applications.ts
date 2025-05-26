@@ -50,6 +50,7 @@ async function handleItemSubmitted(params: {
   const grant = await context.db.insert(grants).values({
     id: _itemID,
     ...metadata,
+    manager: "",
     isActive: false,
     isOnchainStartup: false,
     recipient: recipient.toLowerCase(),

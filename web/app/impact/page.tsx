@@ -1,5 +1,6 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import database from "@/lib/database/edge"
+import { getPool } from "@/lib/database/queries/pool"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { Metadata } from "next"
 import { unstable_cache } from "next/cache"
@@ -17,11 +18,12 @@ export const metadata: Metadata = {
 
 export default async function ImpactPage(props: Props) {
   const { flowId } = await props.searchParams
+  const pool = await getPool()
 
   const flows = await unstable_cache(
     async () => {
       return database.grant.findMany({
-        where: { isFlow: true, isActive: true, isTopLevel: false },
+        where: { isFlow: true, isActive: true, isTopLevel: false, flowId: pool.id },
         select: {
           id: true,
           title: true,

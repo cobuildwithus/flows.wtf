@@ -21,6 +21,7 @@ async function handleFlowInitialized(params: {
 
   const {
     parent,
+    manager,
     managerRewardPool,
     superToken,
     baselinePool,
@@ -77,6 +78,7 @@ async function handleFlowInitialized(params: {
     isOnchainStartup: false,
     arbitrator: null,
     tokenEmitter: null,
+    manager: manager.toLowerCase(),
     managerRewardPoolFlowRatePercent,
     baselinePoolFlowRatePercent,
     challengePeriodEndsAt: 0,
