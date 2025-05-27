@@ -27,8 +27,8 @@ export function SalesOverview(props: Props) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base">Revenue & Orders</CardTitle>
-            <CardDescription className="mt-1 text-xs">Monthly performance metrics</CardDescription>
+            <CardTitle className="text-base">Revenue</CardTitle>
+            <CardDescription className="mt-1 text-xs">Monthly performance</CardDescription>
           </div>
         </div>
       </CardHeader>

@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
@@ -24,9 +24,7 @@ export async function ProductsTable(props: Props) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-base">Products</CardTitle>
-            <CardDescription className="mt-1.5 text-xs">
-              Currently available items in the store
-            </CardDescription>
+            <CardDescription className="mt-1.5 text-xs">Currently available</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -34,55 +32,52 @@ export async function ProductsTable(props: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[80px]">Image</TableHead>
-              <TableHead>Name</TableHead>
-              {/* <TableHead>Launch Date</TableHead> */}
-              <TableHead>Stock</TableHead>
-
+              <TableHead>Product</TableHead>
               <TableHead>Price</TableHead>
-              {/* <TableHead>Orders</TableHead> */}
-              <TableHead className="text-right">Total Sales</TableHead>
+              <TableHead>Sales</TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
-                <TableCell>
-                  <Image
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    width={40}
-                    height={40}
-                    className="rounded-md object-cover"
-                  />
-                </TableCell>
-                <TableCell>
-                  <h3 className="text-sm font-medium">
-                    <a
-                      href={product.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      {product.name}
-                    </a>
-                  </h3>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={product.stock > 50 ? "success" : "warning"}
-                    className="text-[10px]"
+                <TableCell className="p-0">
+                  <a
+                    href={product.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-4 pl-0 transition-colors"
                   >
-                    {product.stock} in stock
-                  </Badge>
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      width={40}
+                      height={40}
+                      className="rounded-md object-cover"
+                    />
+                    <div className="flex flex-col gap-1">
+                      <h3 className="text-sm font-medium leading-tight">{product.name}</h3>
+                      <p className="text-[10px] leading-tight text-muted-foreground">
+                        {product.stock} in stock
+                      </p>
+                    </div>
+                  </a>
                 </TableCell>
-                {/* <TableCell className="text-xs">
-                  <DateTime date={new Date(product.launchDate)} relative />
-                </TableCell> */}
                 <TableCell className="text-xs">{product.price}</TableCell>
-                {/* <TableCell className="text-xs">{product.orders}</TableCell> */}
-                <TableCell className="text-right text-xs font-medium">
-                  {product.totalSales}
+                <TableCell className="text-xs">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium leading-tight">{product.totalSales}</span>
+                    <span className="text-[10px] leading-tight text-muted-foreground">
+                      {product.orders} orders
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button asChild size="xs" className="bg-green-600 text-white hover:bg-green-700">
+                    <a href={product.url} target="_blank" rel="noopener noreferrer">
+                      Order
+                    </a>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

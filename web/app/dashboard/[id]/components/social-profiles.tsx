@@ -18,9 +18,7 @@ export async function SocialProfiles(props: Props) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-base">Social Media</CardTitle>
-            <CardDescription className="mt-1.5 text-xs">
-              Follower counts across platforms
-            </CardDescription>
+            <CardDescription className="mt-1.5 text-xs">Engagement across the web</CardDescription>
           </div>
         </div>
       </CardHeader>

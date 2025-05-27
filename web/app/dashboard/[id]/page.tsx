@@ -141,7 +141,7 @@ export default async function GrantPage(props: Props) {
       <div className="container space-y-6 pb-12">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
-            title="Sales Total"
+            title="Sales Volume"
             value={`$${salesSummary.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             icon={DollarSign}
             change={salesChange}
@@ -164,7 +164,7 @@ export default async function GrantPage(props: Props) {
           />
 
           <MetricCard
-            title="Total Earned"
+            title="Funding from Vrbs"
             value={
               <AnimatedSalary
                 value={startup.totalEarned}
@@ -175,10 +175,6 @@ export default async function GrantPage(props: Props) {
           />
         </div>
 
-        <SalesOverview monthlySales={salesSummary.monthlySales} />
-
-        <OrdersTable orders={orders} products={products} />
-
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <ProductsTable products={products} />
 
@@ -186,6 +182,10 @@ export default async function GrantPage(props: Props) {
             <SocialProfiles usernames={startup.socialUsernames} />
           </Suspense>
         </div>
+
+        <SalesOverview monthlySales={salesSummary.monthlySales} />
+
+        <OrdersTable orders={orders} products={products} />
       </div>
     </>
   )

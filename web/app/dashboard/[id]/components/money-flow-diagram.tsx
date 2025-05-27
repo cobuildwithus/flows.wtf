@@ -15,6 +15,7 @@ import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
+import { Team } from "./nodes/team"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -67,7 +68,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 2,
-        title: "Buy Token",
+        title: "Join DAO",
         id: "user_token",
         height: 280,
         content: <BuyToken />,
@@ -79,31 +80,17 @@ export function MoneyFlowDiagram(props: Props) {
         id: "team",
         height: 96,
         title: ["Team", `${splits.team * 100}%`],
-        content: (
-          <div className="flex items-center gap-2.5">
-            {members.map((p) => (
-              <div key={p.address}>
-                <Image
-                  src={p.pfp_url!}
-                  alt={p.display_name}
-                  width={28}
-                  height={28}
-                  className="size-7 rounded-full shadow"
-                />
-              </div>
-            ))}
-          </div>
-        ),
+        content: <Team members={members} />,
       },
       {
         col: 2,
         row: 2,
         id: "public_goods",
-        title: ["Public Goods", `${splits.support * 100}%`],
+        title: ["Public Good", `${splits.support * 100}%`],
         height: 106,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
-            Profits support team selected community initiatives
+            Profits support community impact
           </div>
         ),
       },
@@ -119,7 +106,7 @@ export function MoneyFlowDiagram(props: Props) {
               <Currency className="font-medium">1293</Currency> balance
             </div>
             <div>
-              <strong className="font-medium">283</strong> token owners
+              <strong className="font-medium">283</strong> owners
             </div>
           </div>
         ),
@@ -198,7 +185,7 @@ export function MoneyFlowDiagram(props: Props) {
         height: 106,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
-            With each order you receive {startup.ticker} rewards
+            Earn {startup.ticker} rewards with each order
           </div>
         ),
       },

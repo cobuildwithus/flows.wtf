@@ -1,11 +1,5 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import {
-  grants,
-  bonusPoolToGrantId,
-  parentFlowToChildren,
-  baselinePoolToGrantId,
-  recipientAndParentToGrantId,
-} from "ponder:schema"
+import { grants, parentFlowToChildren, recipientAndParentToGrantId } from "ponder:schema"
 import { updateTcrAndItemId } from "../../tcr/tcr-helpers"
 import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
 import { isOnchainStartup } from "./helpers"
