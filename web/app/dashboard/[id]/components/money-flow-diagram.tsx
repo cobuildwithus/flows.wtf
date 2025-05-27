@@ -5,6 +5,7 @@ import { User } from "@/lib/auth/user"
 import { Grant } from "@/lib/database/types"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
+import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import { getIpfsUrl } from "@/lib/utils"
 import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
@@ -71,7 +72,16 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 2,
-        title: `Join ${startup.title}`,
+        title: (
+          <Link
+            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Join {startup.title}
+          </Link>
+        ),
         id: "user_token",
         height: 280,
         content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
@@ -101,7 +111,18 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 3,
         id: "treasury",
-        title: ["Treasury", `${splits.treasury * 100}%`],
+        title: [
+          <Link
+            key="treasury-link"
+            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Treasury
+          </Link>,
+          `${splits.treasury * 100}%`,
+        ],
         height: 106,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },

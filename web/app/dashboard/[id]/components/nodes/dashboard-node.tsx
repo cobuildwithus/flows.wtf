@@ -5,7 +5,7 @@ import { memo, ReactNode } from "react"
 
 export type IDashboardNode = Node<
   {
-    title?: string | string[]
+    title?: ReactNode | string[]
     content?: ReactNode
     handles?: Array<{ type: HandleType; position: Position; id?: string }>
     className?: string
@@ -21,7 +21,7 @@ function DashboardNode(props: NodeProps<IDashboardNode>) {
   return (
     <div
       className={cn(
-        "space-y-3 rounded-lg bg-background p-4 shadow dark:border dark:bg-background/40 dark:shadow-none",
+        "pointer-events-auto space-y-3 rounded-lg bg-background p-4 shadow dark:border dark:bg-background/40 dark:shadow-none",
         className,
       )}
       style={{ width, height }}

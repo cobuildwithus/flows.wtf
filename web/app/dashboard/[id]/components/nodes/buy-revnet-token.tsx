@@ -97,7 +97,7 @@ export function BuyRevnetToken({ projectId }: Props) {
         token: "0x000000000000000000000000000000000000EEEe",
         amount: payAmount,
         beneficiary: address,
-        memo: `Buying ${tokenSymbol} tokens`,
+        memo: "",
       },
       address,
     )

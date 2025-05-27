@@ -2,6 +2,7 @@
 
 import { EthInUsd } from "@/components/global/eth-in-usd"
 import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
+import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import Link from "next/link"
 
 interface Props {
@@ -21,7 +22,7 @@ export function Treasury({ projectId, chainId }: Props) {
 
   return (
     <Link
-      href={`https://revnet.app/base:${projectId}`}
+      href={getRevnetUrl(chainId, Number(projectId))}
       target="_blank"
       rel="noopener noreferrer"
       className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"
