@@ -17,6 +17,7 @@ import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
 import { Treasury } from "./nodes/treasury"
+import { TokenRewards } from "./nodes/token-rewards"
 import { base } from "viem/chains"
 
 const COLUMN_WIDTH = 340
@@ -60,7 +61,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 192,
+        height: 210,
         id: "user_action",
         title: startup.diagram.action.name,
         className: "bg-background dark:bg-background/50 shadow",
@@ -173,13 +174,16 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `${startup.ticker} rewards`,
+        title: `Rewards on every order`,
         handles: [{ type: "target", position: Position.Left }],
-        height: 106,
+        height: user?.address ? 140 : 106,
         content: (
-          <div className="text-pretty text-sm text-muted-foreground">
-            Earn {startup.ticker} on every purchase
-          </div>
+          <TokenRewards
+            projectId={startup.revnetProjectIds.base}
+            chainId={base.id}
+            userAddress={user?.address}
+            ticker={startup.ticker}
+          />
         ),
       },
     ],
