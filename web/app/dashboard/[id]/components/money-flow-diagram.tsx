@@ -16,6 +16,8 @@ import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./node
 import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
+import { Treasury } from "./nodes/treasury"
+import { base } from "viem/chains"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -100,16 +102,7 @@ export function MoneyFlowDiagram(props: Props) {
         id: "treasury",
         title: ["Treasury", `${splits.treasury * 100}%`],
         height: 106,
-        content: (
-          <div className="flex flex-col justify-between text-sm text-muted-foreground">
-            <div>
-              <Currency className="font-medium">1293</Currency> balance
-            </div>
-            <div>
-              <strong className="font-medium">283</strong> owners
-            </div>
-          </div>
-        ),
+        content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
       ...splits.costs.map((c, ci) => ({
         col: 2,

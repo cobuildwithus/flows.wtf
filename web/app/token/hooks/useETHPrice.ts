@@ -13,17 +13,29 @@ export function useETHPrice(skip?: boolean) {
 export function formatUSDValue(ethPrice: number, ethAmount: bigint): string {
   const usdValue = (Number(ethAmount) / 1e18) * ethPrice
 
-  if (usdValue === 0) {
-    return `$${usdValue.toFixed(2)}`
-  } else if (usdValue < 0.01) {
-    return `$${usdValue.toFixed(4)}`
-  } else if (usdValue < 1) {
-    return `$${usdValue.toFixed(3)}`
-  } else if (usdValue < 10) {
-    return `$${usdValue.toFixed(2)}`
-  } else if (usdValue < 1e6) {
-    return `$${usdValue.toFixed(0)}`
-  } else {
-    return `$${(usdValue / 1000000).toFixed(2)}M`
+  if (usdValue >= 1000) {
+    if (usdValue >= 1000000) {
+      const millions = usdValue / 1000000
+      const roundedMillions = Math.round(millions * 10) / 10
+      return `$${millions.toFixed(roundedMillions % 1 === 0 ? 0 : 1)}M`
+    }
+    const thousands = usdValue / 1000
+    const roundedThousands = Math.round(thousands * 10) / 10
+    return `$${thousands.toFixed(roundedThousands % 1 === 0 ? 0 : 1)}k`
   }
+
+  return Intl.NumberFormat("en", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: getCurrencyFractionDigits(usdValue),
+  }).format(usdValue)
+}
+
+function getCurrencyFractionDigits(amount: number) {
+  if (amount === 0) return 2
+  if (amount < 0.001) return 5
+  if (amount < 0.01) return 4
+  if (amount < 0.1) return 3
+  if (amount < 99) return 2
+  return 0
 }

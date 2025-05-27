@@ -1,6 +1,7 @@
 "use client"
 
 import useSWR, { type SWRConfiguration, type SWRResponse } from "swr"
+import { serialize } from "@/lib/serialize"
 
 type ServerFunction<T, P extends any[]> = (...args: P) => Promise<T>
 
@@ -12,7 +13,7 @@ export function useServerFunction<T, P extends any[]>(
 ): SWRResponse<T, any> {
   const key =
     name && params.every((param) => param !== undefined)
-      ? `${name}:${JSON.stringify(params)}`
+      ? `${name}:${JSON.stringify(serialize(params))}`
       : undefined
 
   const fetcher = async () => {

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { usePayRevnet } from "@/lib/hooks/use-pay-revnet"
+import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { useState } from "react"

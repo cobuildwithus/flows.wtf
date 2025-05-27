@@ -2,9 +2,9 @@
 
 import { toast } from "sonner"
 import { parseEther } from "viem"
-import { base } from "../../addresses"
-import { useContractTransaction } from "../wagmi/use-contract-transaction"
-import { jbMultiTerminalAbi } from "../abis"
+import { base } from "../../../addresses"
+import { useContractTransaction } from "../../wagmi/use-contract-transaction"
+import { jbMultiTerminalAbi } from "../../abis"
 
 interface PayRevnetArgs {
   projectId: bigint

@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "prisma generate --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints",
+    "prebuild": "prisma generate --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints && prisma generate --schema=./lib/database/juicebox.prisma --no-hints",
     "build": "NODE_OPTIONS=--max-old-space-size=6144 next build",
     "start": "next start",
-    "db:generate": "prisma generate --no-hints && prisma generate --no-hints --schema=./lib/database/farcaster.prisma",
+    "db:generate": "prisma generate --no-hints && prisma generate --no-hints --schema=./lib/database/farcaster.prisma && prisma generate --no-hints --schema=./lib/database/juicebox.prisma",
     "lint": "next lint"
   },
   "dependencies": {
