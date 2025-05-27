@@ -59,9 +59,7 @@ export function ViewOpportunities(props: Props) {
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>
-              Applications for {opportunityTitle} ({applications.length})
-            </DialogTitle>
+            <DialogTitle>Applications for {opportunityTitle}</DialogTitle>
           </DialogHeader>
 
           <div className="max-h-[60vh] overflow-y-auto">
@@ -69,9 +67,9 @@ export function ViewOpportunities(props: Props) {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>User</TableHead>
+                  <TableHead>Builder</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right"></TableHead>
+                  <TableHead className="text-right" />
                 </TableRow>
               </TableHeader>
               <TableBody>

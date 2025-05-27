@@ -58,8 +58,8 @@ export function AddOpportunity(props: Props) {
               <Badge variant="outline" className="py-0 text-[11px]">
                 Manage
               </Badge>
-              <h3 className="mt-2.5 text-sm font-medium">Add Vacancy</h3>
-              <div className="mt-0.5 text-xs text-muted-foreground">Create a new opportunity</div>
+              <h3 className="mt-2.5 text-sm font-medium">Add Opportunity</h3>
+              <div className="mt-0.5 text-xs text-muted-foreground">Create a new job posting</div>
             </div>
             <Button size="sm" className="mt-3 py-0.5" variant="secondary">
               + Add new

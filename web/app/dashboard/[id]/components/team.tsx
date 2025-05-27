@@ -26,6 +26,7 @@ export async function Team(props: Props) {
   const { members, user, startup } = props
 
   const canManage = user?.address === startup.manager || isAdmin(user?.address)
+  // const canManage = false
 
   const budgets = await getStartupBudgets(startup.id, startup.allocator)
 
@@ -107,7 +108,7 @@ async function TeamMemberCard(props: { member: TeamMember }) {
   return (
     <div className="flex min-w-64 shrink-0 items-center space-x-4 rounded-lg border bg-accent/50 p-4 dark:bg-muted/30">
       <Image
-        src={pfp_url!}
+        src={pfp_url || ""}
         alt={display_name}
         width={64}
         height={64}
@@ -123,6 +124,7 @@ async function TeamMemberCard(props: { member: TeamMember }) {
               href={`https://farcaster.xyz/${username}`}
               className="hover:underline"
               target="_blank"
+              rel="noreferrer"
             >
               {display_name}
             </a>
