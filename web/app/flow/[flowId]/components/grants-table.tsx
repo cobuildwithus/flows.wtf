@@ -40,7 +40,7 @@ export function GrantsTable(props: Props) {
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
           {!flow.allocator && <TableHead className="text-center">Votes</TableHead>}
-          <TableHead className="text-center">Your Vote</TableHead>
+          <TableHead className="text-right">{flow.allocator ? "Manage" : "Your Vote"}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
