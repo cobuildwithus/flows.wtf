@@ -5,7 +5,7 @@ interface Props {
   members: Array<TeamMember>
 }
 
-export function Team(props: Props) {
+export function ShortTeam(props: Props) {
   const { members } = props
 
   return (

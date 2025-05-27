@@ -15,7 +15,7 @@ import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
-import { Team } from "./nodes/team"
+import { ShortTeam } from "./nodes/short-team"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -80,7 +80,7 @@ export function MoneyFlowDiagram(props: Props) {
         id: "team",
         height: 96,
         title: ["Team", `${splits.team * 100}%`],
-        content: <Team members={members} />,
+        content: <ShortTeam members={members} />,
       },
       {
         col: 2,
@@ -180,12 +180,12 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: startup.ticker,
+        title: `${startup.ticker} rewards`,
         handles: [{ type: "target", position: Position.Left }],
         height: 106,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
-            Earn {startup.ticker} rewards with each order
+            Earn {startup.ticker} on every purchase
           </div>
         ),
       },
