@@ -4,17 +4,25 @@ import { Badge } from "@/components/ui/badge"
 import { Currency } from "@/components/ui/currency"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
+import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { TeamMemberLink } from "./team-member-link"
 
-export async function TeamMemberCard(props: { member: TeamMember }) {
-  const { member } = props
+export async function TeamMemberCard(props: { member: TeamMember; isAllocator: boolean }) {
+  const { member, isAllocator } = props
 
   const profile = await getUserProfile(member.recipient as `0x${string}`)
   const { display_name, pfp_url, username } = profile
 
   return (
-    <div className="flex min-w-64 shrink-0 items-center space-x-4 rounded-lg border bg-accent/50 p-4 dark:bg-muted/30">
+    <div
+      className={cn(
+        "flex min-w-64 shrink-0 items-center space-x-4 rounded-lg border bg-accent/50 p-4 dark:bg-muted/30",
+        {
+          "hover:border-dashed hover:border-primary": isAllocator,
+        },
+      )}
+    >
       <Image
         src={pfp_url || ""}
         alt={display_name}

@@ -54,7 +54,7 @@ export async function Team(props: Props) {
             grants={budgets.map((b) => b.subgrants)}
           >
             {members.map((m) => (
-              <TeamMemberCard key={m.recipient} member={m} />
+              <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
             ))}
           </AllocateBudgets>
           {opportunitiesWithProfiles.map((o) => (
