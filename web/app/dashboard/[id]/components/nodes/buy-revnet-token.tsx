@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
+import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { useState, useMemo } from "react"
@@ -18,9 +19,12 @@ export function BuyRevnetToken({ projectId }: Props) {
   const { address } = useAccount()
   const { payRevnet, isLoading } = usePayRevnet(base.id)
   const { data: priceData, isLoading: isPriceLoading } = useRevnetTokenPrice(projectId, base.id)
+  const { data: tokenDetails } = useRevnetTokenDetails(projectId, base.id)
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
+
+  const tokenSymbol = tokenDetails?.symbol || ""
 
   // Calculate tokens when ETH amount changes
   const calculatedTokens = useMemo(() => {
@@ -93,7 +97,7 @@ export function BuyRevnetToken({ projectId }: Props) {
         token: "0x000000000000000000000000000000000000EEEe",
         amount: payAmount,
         beneficiary: address,
-        memo: "Buying $BEANS tokens",
+        memo: "",
       },
       address,
     )
@@ -135,7 +139,7 @@ export function BuyRevnetToken({ projectId }: Props) {
             readOnly={isPriceLoading}
             placeholder={isPriceLoading ? "Loading..." : "0"}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm">$BEANS</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm">{tokenSymbol}</span>
         </div>
       </fieldset>
 
@@ -145,7 +149,7 @@ export function BuyRevnetToken({ projectId }: Props) {
         type="submit"
         disabled={isLoading || !address || !payAmount}
       >
-        {isLoading ? "Processing..." : "Buy $BEANS"}
+        {isLoading ? "Processing..." : `Buy $${tokenSymbol}`}
       </Button>
     </form>
   )

@@ -5,6 +5,7 @@ import { User } from "@/lib/auth/user"
 import { Grant } from "@/lib/database/types"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
+import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import { getIpfsUrl } from "@/lib/utils"
 import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
@@ -17,6 +18,7 @@ import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
 import { Treasury } from "./nodes/treasury"
+import { TokenRewards } from "./nodes/token-rewards"
 import { base } from "viem/chains"
 
 const COLUMN_WIDTH = 340
@@ -60,7 +62,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 192,
+        height: 210,
         id: "user_action",
         title: startup.diagram.action.name,
         className: "bg-background dark:bg-background/50 shadow",
@@ -70,7 +72,16 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 2,
-        title: "Join DAO",
+        title: (
+          <Link
+            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Join {startup.title}
+          </Link>
+        ),
         id: "user_token",
         height: 280,
         content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
@@ -100,7 +111,18 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 3,
         id: "treasury",
-        title: ["Treasury", `${splits.treasury * 100}%`],
+        title: [
+          <Link
+            key="treasury-link"
+            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Treasury
+          </Link>,
+          `${splits.treasury * 100}%`,
+        ],
         height: 106,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
@@ -173,13 +195,15 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `${startup.ticker} rewards`,
+        title: `Token rewards`,
         handles: [{ type: "target", position: Position.Left }],
-        height: 106,
+        height: 95,
         content: (
-          <div className="text-pretty text-sm text-muted-foreground">
-            Earn {startup.ticker} on every purchase
-          </div>
+          <TokenRewards
+            projectId={startup.revnetProjectIds.base}
+            chainId={base.id}
+            userAddress={user?.address}
+          />
         ),
       },
     ],

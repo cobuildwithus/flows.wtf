@@ -54,7 +54,6 @@ export const vrbscoffee = {
       dark: { gradientStart: "#295C2F", gradientEnd: "#BFA76A", text: "#FFFDEB" },
     },
   },
-  ticker: "$BEANS",
   diagram: {
     action: { name: "Order coffee" },
     receive: {
