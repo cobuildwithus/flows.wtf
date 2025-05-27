@@ -156,7 +156,7 @@ export const RecipientPopover = (props: Props) => {
                 <Link href="/apply" onClick={closePopover}>
                   <Button size="lg">Apply now</Button>
                 </Link>
-                <p className="px-2">Apply for a grant today to start earning.</p>
+                <p className="px-2">Apply for funding today and start earning.</p>
               </div>
             )}
           </div>

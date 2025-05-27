@@ -8,6 +8,7 @@ import {
 } from "ponder:schema"
 import { updateTcrAndItemId } from "../../tcr/tcr-helpers"
 import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
+import { isOnchainStartup } from "./helpers"
 
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
@@ -20,7 +21,7 @@ async function handleFlowRecipientCreated(params: {
 }) {
   const { event, context } = params
   const timestamp = Number(event.block.timestamp)
-  const { recipient, recipientId, baselinePool, bonusPool } = event.args
+  const { recipient, recipientId } = event.args
 
   const parentFlowContract = event.log.address.toLowerCase() as `0x${string}`
   const submitter = event.transaction.from.toLowerCase() as `0x${string}`
@@ -40,6 +41,7 @@ async function handleFlowRecipientCreated(params: {
     activatedAt: timestamp,
     submitter,
     recipientId,
+    isOnchainStartup: isOnchainStartup(parentFlowContract),
   })
 
   await createRecipientMappings(context.db, flowContract, recipientId, parentFlowContract)

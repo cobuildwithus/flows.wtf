@@ -64,7 +64,7 @@ export default async function VrbsPage() {
               <div className="flex flex-col max-md:gap-y-4 md:flex-row md:gap-x-12">
                 {[
                   { name: "Check opportunities", href: `/vrbs/opportunities` },
-                  { name: `Apply for a grant`, href: `/apply/${flowId}` },
+                  { name: `Apply for funding`, href: `/apply/${flowId}` },
                 ].map((link) => (
                   <Link
                     key={link.name}
