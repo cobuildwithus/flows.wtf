@@ -19,7 +19,7 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
 
   if (!userAddress) {
     return (
-      <div className="text-pretty text-sm text-muted-foreground">Login to see your rewards</div>
+      <div className="text-pretty text-sm text-muted-foreground">Earn rewards on every order</div>
     )
   }
 
