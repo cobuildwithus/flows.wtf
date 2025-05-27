@@ -3,6 +3,7 @@
 import { Currency } from "@/components/ui/currency"
 import { useUserRevnetBalance } from "@/lib/revnet/hooks/use-user-revnet-balance"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
+import Link from "next/link"
 
 interface Props {
   projectId: bigint
@@ -25,9 +26,13 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
   }
 
   const balance = data?.balance || "0"
-
   return (
-    <div className="flex flex-col justify-between text-sm text-muted-foreground">
+    <Link
+      href={`https://revda.sh/account/${userAddress}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"
+    >
       <div>
         You hold{" "}
         {isLoading ? (
@@ -40,6 +45,6 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
           <span className="font-medium">0 {tokenSymbol}</span>
         )}{" "}
       </div>
-    </div>
+    </Link>
   )
 }

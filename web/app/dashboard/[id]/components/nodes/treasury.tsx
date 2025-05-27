@@ -2,6 +2,7 @@
 
 import { EthInUsd } from "@/components/global/eth-in-usd"
 import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
+import Link from "next/link"
 
 interface Props {
   projectId: bigint
@@ -19,7 +20,12 @@ export function Treasury({ projectId, chainId }: Props) {
   const participantsCount = isLoading ? "..." : data?.participantsCount || 0
 
   return (
-    <div className="flex flex-col justify-between text-sm text-muted-foreground">
+    <Link
+      href={`https://revnet.app/base:${projectId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"
+    >
       <div>
         {isLoading ? (
           <span className="font-medium">...</span>
@@ -33,6 +39,6 @@ export function Treasury({ projectId, chainId }: Props) {
       <div>
         <strong className="font-medium">{participantsCount}</strong> owners
       </div>
-    </div>
+    </Link>
   )
 }
