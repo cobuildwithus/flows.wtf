@@ -24,9 +24,9 @@ interface Props {
 export async function Team(props: Props) {
   const { members, user, startup } = props
 
-  const canManage = user?.address === startup.manager || isAdmin(user?.address)
+  // const canManage = user?.address === startup.manager || isAdmin(user?.address)
   const canAllocate = user?.address === startup.allocator
-  // const canManage = false
+  const canManage = false
 
   const [budgets, privyIdToken, opportunitiesWithProfiles] = await Promise.all([
     getBudgetsWithGrants(startup.id, startup.allocator),
@@ -64,7 +64,7 @@ export async function Team(props: Props) {
               key={o.id}
               id={o.id}
               title={o.position}
-              applicationsCount={o._count.applications}
+              applicationsCount={o._count.drafts}
               canManage={canManage}
               user={user}
               applications={o.applications}
@@ -83,18 +83,8 @@ async function getOpportunitiesWithProfiles(startupId: string) {
     select: {
       id: true,
       position: true,
-      _count: { select: { applications: true } },
-      applications: {
-        select: {
-          id: true,
-          opportunityId: true,
-          content: true,
-          submitter: true,
-          status: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
+      _count: { select: { drafts: true } },
+      drafts: true,
     },
     where: { startupId, status: 1 },
   })
@@ -102,9 +92,9 @@ async function getOpportunitiesWithProfiles(startupId: string) {
   return Promise.all(
     opportunities.map(async (opportunity) => {
       const applicationsWithProfiles = await Promise.all(
-        opportunity.applications.map(async (application) => {
-          const profile = await getUserProfile(application.submitter as `0x${string}`)
-          return { ...application, profile }
+        opportunity.drafts.map(async (draft) => {
+          const profile = await getUserProfile(draft.users[0] as `0x${string}`)
+          return { ...draft, profile }
         }),
       )
       return { ...opportunity, applications: applicationsWithProfiles }

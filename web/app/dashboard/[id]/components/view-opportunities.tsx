@@ -4,13 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DateTime } from "@/components/ui/date-time"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -20,11 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Profile } from "@/components/user-profile/get-user-profile"
-import { Application } from "@prisma/flows"
+import { Draft } from "@prisma/flows"
 import { useState } from "react"
 import { Markdown } from "@/components/ui/markdown"
 
-interface ApplicationWithProfile extends Application {
+export interface ApplicationWithProfile extends Draft {
   profile: Profile
 }
 
@@ -114,7 +108,7 @@ export function ViewOpportunities(props: Props) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(application.status)}</TableCell>
+                    <TableCell>{getStatusBadge(application.isOnchain ? 1 : 0)}</TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="outline"
@@ -143,7 +137,7 @@ export function ViewOpportunities(props: Props) {
 
           {selectedApplication && (
             <div className="flex flex-col gap-4 whitespace-pre-wrap break-words text-sm leading-6">
-              <Markdown>{selectedApplication.content}</Markdown>
+              <Markdown>{selectedApplication.description}</Markdown>
             </div>
           )}
         </DialogContent>

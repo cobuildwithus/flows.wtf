@@ -29,8 +29,10 @@ model Draft {
   flowId          String
   isFlow          Boolean  @default(false)
   transactionHash String?
+  opportunityId   String?  @map("opportunity_id")
 
-  flow Grant @relation(fields: [flowId], references: [id])
+  flow        Grant         @relation(fields: [flowId], references: [id])
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id])
 
   @@index([isPrivate])
   @@index([isOnchain])
@@ -358,7 +360,7 @@ model Opportunity {
 
   startup      Grant         @relation("StartupOpportunity", fields: [startupId], references: [id])
   budget       Grant         @relation("StartupBudgetOpportunity", fields: [flowId], references: [id])
-  applications Application[]
+  drafts       Draft[]
 
   @@index([flowId])
   @@index([startupId])
@@ -366,20 +368,3 @@ model Opportunity {
   @@schema("web")
 }
 
-model Application {
-  id            String   @id @default(uuid())
-  opportunityId String   @map("opportunity_id")
-  content       String
-  submitter     String
-  status        Int      @default(0) // 0: awaiting, 1: accepted, 2: rejected
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  opportunity Opportunity @relation(fields: [opportunityId], references: [id])
-
-  @@index([opportunityId])
-  @@index([submitter])
-  @@index([status])
-  @@map("Application")
-  @@schema("web")
-}

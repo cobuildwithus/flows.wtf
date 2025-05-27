@@ -8,15 +8,10 @@ import pluralize from "pluralize"
 import { toast } from "sonner"
 import { deleteOpportunity } from "./delete-opportunity"
 import { ApplyOpportunity } from "./apply-opportunity"
-import { ViewOpportunities } from "./view-opportunities"
+import { ApplicationWithProfile, ViewOpportunities } from "./view-opportunities"
 import { User } from "@/lib/auth/user"
-import { Profile } from "@/components/user-profile/get-user-profile"
-import { Application } from "@prisma/flows"
+import { Draft } from "@prisma/flows"
 import { useState } from "react"
-
-interface ApplicationWithProfile extends Application {
-  profile: Profile
-}
 
 interface Props {
   id: string
