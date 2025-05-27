@@ -1,13 +1,18 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["views", "multiSchema", "relationJoins"]
   output          = "../../node_modules/@prisma/juicebox"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
-  provider = "postgresql"
-  url      = env("JUICEBOX_DATABASE_URL")
-  schemas = ["onchain"]
+  provider  = "postgresql"
+  url       = env("JUICEBOX_DATABASE_URL")
+  directUrl = env("JUICEBOX_DATABASE_URL")
+  schemas   = ["onchain"]
 }
 
 view Project {
