@@ -30,4 +30,6 @@ export const base = {
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
   GroundsToken: "0xebf2d8b25d3dcc3371d54c6727c207c4f3080b8c",
+  // Juicebox
+  JBMultiTerminal: "0xdb9644369c79c3633cde70d2df50d827d7dc7dbc",
 } as const

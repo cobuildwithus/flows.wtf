@@ -10,12 +10,14 @@ import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/
 import "@xyflow/react/dist/style.css"
 import Image from "next/image"
 import Link from "next/link"
-import { BuyToken } from "./nodes/buy-token"
+import { BuyRevnetToken } from "./nodes/buy-revnet-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
+import { Treasury } from "./nodes/treasury"
+import { base } from "viem/chains"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -71,7 +73,7 @@ export function MoneyFlowDiagram(props: Props) {
         title: "Join DAO",
         id: "user_token",
         height: 280,
-        content: <BuyToken />,
+        content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
         handles: [{ type: "source", position: Position.Right }],
       },
       {
@@ -100,16 +102,7 @@ export function MoneyFlowDiagram(props: Props) {
         id: "treasury",
         title: ["Treasury", `${splits.treasury * 100}%`],
         height: 106,
-        content: (
-          <div className="flex flex-col justify-between text-sm text-muted-foreground">
-            <div>
-              <Currency className="font-medium">1293</Currency> balance
-            </div>
-            <div>
-              <strong className="font-medium">283</strong> owners
-            </div>
-          </div>
-        ),
+        content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
       ...splits.costs.map((c, ci) => ({
         col: 2,

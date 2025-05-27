@@ -25,6 +25,8 @@ const baseContracts = [
 
   { name: "revolutionFlowImpl", address: base.RevolutionFlowImpl },
 
+  { name: "jbMultiTerminal", address: base.JBMultiTerminal },
+
   { name: "superToken", address: "0xeb796bdb90ffa0f28255275e16936d25d3418603" as `0x${string}` },
 
   { name: "multicall3", address: "0xcA11bde05977b3631167028862bE2a173976CA11" as `0x${string}` },

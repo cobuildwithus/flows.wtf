@@ -3991,6 +3991,1371 @@ export const gdav1ImplConfig = {
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// jbMultiTerminal
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xdb9644369c79c3633cde70d2df50d827d7dc7dbc)
+ */
+export const jbMultiTerminalAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      {
+        name: 'feelessAddresses',
+        internalType: 'contract IJBFeelessAddresses',
+        type: 'address',
+      },
+      {
+        name: 'permissions',
+        internalType: 'contract IJBPermissions',
+        type: 'address',
+      },
+      {
+        name: 'projects',
+        internalType: 'contract IJBProjects',
+        type: 'address',
+      },
+      { name: 'splits', internalType: 'contract IJBSplits', type: 'address' },
+      {
+        name: 'store',
+        internalType: 'contract IJBTerminalStore',
+        type: 'address',
+      },
+      { name: 'tokens', internalType: 'contract IJBTokens', type: 'address' },
+      { name: 'permit2', internalType: 'contract IPermit2', type: 'address' },
+      { name: 'trustedForwarder', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  { type: 'error', inputs: [], name: 'FailedCall' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'InsufficientBalance',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'JBMultiTerminal_AccountingContextAlreadySet',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'JBMultiTerminal_AddingAccountingContextNotAllowed',
+  },
+  { type: 'error', inputs: [], name: 'JBMultiTerminal_FeeTerminalNotFound' },
+  {
+    type: 'error',
+    inputs: [{ name: 'value', internalType: 'uint256', type: 'uint256' }],
+    name: 'JBMultiTerminal_NoMsgValueAllowed',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+      { name: 'limit', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'JBMultiTerminal_OverflowAlert',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'allowance', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'JBMultiTerminal_PermitAllowanceNotEnough',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+    ],
+    name: 'JBMultiTerminal_RecipientProjectTerminalNotFound',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'hook', internalType: 'contract IJBSplitHook', type: 'address' },
+    ],
+    name: 'JBMultiTerminal_SplitHookInvalid',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'JBMultiTerminal_TerminalTokensIncompatible',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'JBMultiTerminal_TokenNotAccepted',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+      { name: 'min', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'JBMultiTerminal_UnderMinReturnedTokens',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'min', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'JBMultiTerminal_UnderMinTokensPaidOut',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'min', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'JBMultiTerminal_UnderMinTokensReclaimed',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'JBMultiTerminal_ZeroAccountingContextCurrency',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'JBMultiTerminal_ZeroAccountingContextDecimals',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'permissionId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'JBPermissioned_Unauthorized',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'x', internalType: 'uint256', type: 'uint256' },
+      { name: 'y', internalType: 'uint256', type: 'uint256' },
+      { name: 'denominator', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'PRBMath_MulDiv_Overflow',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'SafeERC20FailedOperation',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'returnedFees',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'memo', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'metadata',
+        internalType: 'bytes',
+        type: 'bytes',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AddToBalance',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'rulesetId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'rulesetCycleNumber',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'holder',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'cashOutCount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'cashOutTaxRate',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'reclaimAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'metadata',
+        internalType: 'bytes',
+        type: 'bytes',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'CashOutTokens',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'feeProjectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'reason', internalType: 'bytes', type: 'bytes', indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'FeeReverted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      { name: 'fee', internalType: 'uint256', type: 'uint256', indexed: false },
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'HoldFee',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'hook',
+        internalType: 'contract IJBCashOutHook',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'context',
+        internalType: 'struct JBAfterCashOutRecordedContext',
+        type: 'tuple',
+        components: [
+          { name: 'holder', internalType: 'address', type: 'address' },
+          { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+          { name: 'rulesetId', internalType: 'uint256', type: 'uint256' },
+          { name: 'cashOutCount', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'reclaimedAmount',
+            internalType: 'struct JBTokenAmount',
+            type: 'tuple',
+            components: [
+              { name: 'token', internalType: 'address', type: 'address' },
+              { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+              { name: 'currency', internalType: 'uint32', type: 'uint32' },
+              { name: 'value', internalType: 'uint256', type: 'uint256' },
+            ],
+          },
+          {
+            name: 'forwardedAmount',
+            internalType: 'struct JBTokenAmount',
+            type: 'tuple',
+            components: [
+              { name: 'token', internalType: 'address', type: 'address' },
+              { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+              { name: 'currency', internalType: 'uint32', type: 'uint32' },
+              { name: 'value', internalType: 'uint256', type: 'uint256' },
+            ],
+          },
+          { name: 'cashOutTaxRate', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'beneficiary',
+            internalType: 'address payable',
+            type: 'address',
+          },
+          { name: 'hookMetadata', internalType: 'bytes', type: 'bytes' },
+          { name: 'cashOutMetadata', internalType: 'bytes', type: 'bytes' },
+        ],
+        indexed: false,
+      },
+      {
+        name: 'specificationAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'fee', internalType: 'uint256', type: 'uint256', indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'HookAfterRecordCashOut',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'hook',
+        internalType: 'contract IJBPayHook',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'context',
+        internalType: 'struct JBAfterPayRecordedContext',
+        type: 'tuple',
+        components: [
+          { name: 'payer', internalType: 'address', type: 'address' },
+          { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+          { name: 'rulesetId', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'amount',
+            internalType: 'struct JBTokenAmount',
+            type: 'tuple',
+            components: [
+              { name: 'token', internalType: 'address', type: 'address' },
+              { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+              { name: 'currency', internalType: 'uint32', type: 'uint32' },
+              { name: 'value', internalType: 'uint256', type: 'uint256' },
+            ],
+          },
+          {
+            name: 'forwardedAmount',
+            internalType: 'struct JBTokenAmount',
+            type: 'tuple',
+            components: [
+              { name: 'token', internalType: 'address', type: 'address' },
+              { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+              { name: 'currency', internalType: 'uint32', type: 'uint32' },
+              { name: 'value', internalType: 'uint256', type: 'uint256' },
+            ],
+          },
+          { name: 'weight', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'newlyIssuedTokenCount',
+            internalType: 'uint256',
+            type: 'uint256',
+          },
+          { name: 'beneficiary', internalType: 'address', type: 'address' },
+          { name: 'hookMetadata', internalType: 'bytes', type: 'bytes' },
+          { name: 'payerMetadata', internalType: 'bytes', type: 'bytes' },
+        ],
+        indexed: false,
+      },
+      {
+        name: 'specificationAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'HookAfterRecordPay',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'to',
+        internalType: 'contract IJBTerminal',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'MigrateTerminal',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'rulesetId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'rulesetCycleNumber',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'payer',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'newlyIssuedTokenCount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'memo', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'metadata',
+        internalType: 'bytes',
+        type: 'bytes',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Pay',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'split',
+        internalType: 'struct JBSplit',
+        type: 'tuple',
+        components: [
+          { name: 'percent', internalType: 'uint32', type: 'uint32' },
+          { name: 'projectId', internalType: 'uint64', type: 'uint64' },
+          {
+            name: 'beneficiary',
+            internalType: 'address payable',
+            type: 'address',
+          },
+          { name: 'preferAddToBalance', internalType: 'bool', type: 'bool' },
+          { name: 'lockedUntil', internalType: 'uint48', type: 'uint48' },
+          {
+            name: 'hook',
+            internalType: 'contract IJBSplitHook',
+            type: 'address',
+          },
+        ],
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'reason', internalType: 'bytes', type: 'bytes', indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'PayoutReverted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'addr',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'fee', internalType: 'uint256', type: 'uint256', indexed: false },
+      { name: 'reason', internalType: 'bytes', type: 'bytes', indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'PayoutTransferReverted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      { name: 'wasHeld', internalType: 'bool', type: 'bool', indexed: false },
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'ProcessFee',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'returnedFees',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'leftoverAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'ReturnHeldFees',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'rulesetId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'group',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'split',
+        internalType: 'struct JBSplit',
+        type: 'tuple',
+        components: [
+          { name: 'percent', internalType: 'uint32', type: 'uint32' },
+          { name: 'projectId', internalType: 'uint64', type: 'uint64' },
+          {
+            name: 'beneficiary',
+            internalType: 'address payable',
+            type: 'address',
+          },
+          { name: 'preferAddToBalance', internalType: 'bool', type: 'bool' },
+          { name: 'lockedUntil', internalType: 'uint48', type: 'uint48' },
+          {
+            name: 'hook',
+            internalType: 'contract IJBSplitHook',
+            type: 'address',
+          },
+        ],
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'netAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'SendPayoutToSplit',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'rulesetId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'rulesetCycleNumber',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'projectOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'amountPaidOut',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'fee', internalType: 'uint256', type: 'uint256', indexed: false },
+      {
+        name: 'netLeftoverPayoutAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'SendPayouts',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'context',
+        internalType: 'struct JBAccountingContext',
+        type: 'tuple',
+        components: [
+          { name: 'token', internalType: 'address', type: 'address' },
+          { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+          { name: 'currency', internalType: 'uint32', type: 'uint32' },
+        ],
+        indexed: false,
+      },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'SetAccountingContext',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'rulesetId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'rulesetCycleNumber',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'projectId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'feeBeneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'amountPaidOut',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'netAmountPaidOut',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      { name: 'memo', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'UseAllowance',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'DIRECTORY',
+    outputs: [
+      { name: '', internalType: 'contract IJBDirectory', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'FEE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'FEELESS_ADDRESSES',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract IJBFeelessAddresses',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PERMISSIONS',
+    outputs: [
+      { name: '', internalType: 'contract IJBPermissions', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PERMIT2',
+    outputs: [{ name: '', internalType: 'contract IPermit2', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PROJECTS',
+    outputs: [
+      { name: '', internalType: 'contract IJBProjects', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'RULESETS',
+    outputs: [
+      { name: '', internalType: 'contract IJBRulesets', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SPLITS',
+    outputs: [
+      { name: '', internalType: 'contract IJBSplits', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'STORE',
+    outputs: [
+      { name: '', internalType: 'contract IJBTerminalStore', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'TOKENS',
+    outputs: [
+      { name: '', internalType: 'contract IJBTokens', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+    ],
+    name: 'accountingContextForTokenOf',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct JBAccountingContext',
+        type: 'tuple',
+        components: [
+          { name: 'token', internalType: 'address', type: 'address' },
+          { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+          { name: 'currency', internalType: 'uint32', type: 'uint32' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'projectId', internalType: 'uint256', type: 'uint256' }],
+    name: 'accountingContextsOf',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct JBAccountingContext[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'token', internalType: 'address', type: 'address' },
+          { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+          { name: 'currency', internalType: 'uint32', type: 'uint32' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      {
+        name: 'accountingContexts',
+        internalType: 'struct JBAccountingContext[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'token', internalType: 'address', type: 'address' },
+          { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+          { name: 'currency', internalType: 'uint32', type: 'uint32' },
+        ],
+      },
+    ],
+    name: 'addAccountingContextsFor',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'shouldReturnHeldFees', internalType: 'bool', type: 'bool' },
+      { name: 'memo', internalType: 'string', type: 'string' },
+      { name: 'metadata', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'addToBalanceOf',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'holder', internalType: 'address', type: 'address' },
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'cashOutCount', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenToReclaim', internalType: 'address', type: 'address' },
+      { name: 'minTokensReclaimed', internalType: 'uint256', type: 'uint256' },
+      { name: 'beneficiary', internalType: 'address payable', type: 'address' },
+      { name: 'metadata', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'cashOutTokensOf',
+    outputs: [
+      { name: 'reclaimAmount', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      {
+        name: 'accountingContexts',
+        internalType: 'struct JBAccountingContext[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'token', internalType: 'address', type: 'address' },
+          { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+          { name: 'currency', internalType: 'uint32', type: 'uint32' },
+        ],
+      },
+      { name: 'decimals', internalType: 'uint256', type: 'uint256' },
+      { name: 'currency', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'currentSurplusOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'split',
+        internalType: 'struct JBSplit',
+        type: 'tuple',
+        components: [
+          { name: 'percent', internalType: 'uint32', type: 'uint32' },
+          { name: 'projectId', internalType: 'uint64', type: 'uint64' },
+          {
+            name: 'beneficiary',
+            internalType: 'address payable',
+            type: 'address',
+          },
+          { name: 'preferAddToBalance', internalType: 'bool', type: 'bool' },
+          { name: 'lockedUntil', internalType: 'uint48', type: 'uint48' },
+          {
+            name: 'hook',
+            internalType: 'contract IJBSplitHook',
+            type: 'address',
+          },
+        ],
+      },
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      {
+        name: 'originalMessageSender',
+        internalType: 'address',
+        type: 'address',
+      },
+    ],
+    name: 'executePayout',
+    outputs: [
+      { name: 'netPayoutAmount', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'beneficiary', internalType: 'address', type: 'address' },
+      {
+        name: 'feeTerminal',
+        internalType: 'contract IJBTerminal',
+        type: 'address',
+      },
+    ],
+    name: 'executeProcessFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'addr', internalType: 'address payable', type: 'address' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'executeTransferTo',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'heldFeesOf',
+    outputs: [
+      {
+        name: 'heldFees',
+        internalType: 'struct JBFee[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'amount', internalType: 'uint256', type: 'uint256' },
+          { name: 'beneficiary', internalType: 'address', type: 'address' },
+          { name: 'unlockTimestamp', internalType: 'uint48', type: 'uint48' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'forwarder', internalType: 'address', type: 'address' }],
+    name: 'isTrustedForwarder',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'contract IJBTerminal', type: 'address' },
+    ],
+    name: 'migrateBalanceOf',
+    outputs: [{ name: 'balance', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'beneficiary', internalType: 'address', type: 'address' },
+      { name: 'minReturnedTokens', internalType: 'uint256', type: 'uint256' },
+      { name: 'memo', internalType: 'string', type: 'string' },
+      { name: 'metadata', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'pay',
+    outputs: [
+      {
+        name: 'beneficiaryTokenCount',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'count', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'processHeldFeesOf',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'currency', internalType: 'uint256', type: 'uint256' },
+      { name: 'minTokensPaidOut', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'sendPayoutsOf',
+    outputs: [
+      { name: 'amountPaidOut', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'trustedForwarder',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'projectId', internalType: 'uint256', type: 'uint256' },
+      { name: 'token', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'currency', internalType: 'uint256', type: 'uint256' },
+      { name: 'minTokensPaidOut', internalType: 'uint256', type: 'uint256' },
+      { name: 'beneficiary', internalType: 'address payable', type: 'address' },
+      {
+        name: 'feeBeneficiary',
+        internalType: 'address payable',
+        type: 'address',
+      },
+      { name: 'memo', internalType: 'string', type: 'string' },
+    ],
+    name: 'useAllowanceOf',
+    outputs: [
+      { name: 'netAmountPaidOut', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+/**
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xdb9644369c79c3633cde70d2df50d827d7dc7dbc)
+ */
+export const jbMultiTerminalAddress = {
+  8453: '0xDB9644369c79C3633cDE70D2Df50d827D7dC7Dbc',
+} as const
+
+/**
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xdb9644369c79c3633cde70d2df50d827d7dc7dbc)
+ */
+export const jbMultiTerminalConfig = {
+  address: jbMultiTerminalAddress,
+  abi: jbMultiTerminalAbi,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // multicall3
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
