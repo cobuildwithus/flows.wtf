@@ -25,7 +25,7 @@ interface Props {
 export async function Team(props: Props) {
   const { members, user, startup } = props
 
-  const canManage = user?.address === startup.allocator || isAdmin(user?.address)
+  const canManage = user?.address === startup.manager || isAdmin(user?.address)
 
   const budgets = await getStartupBudgets(startup.id, startup.allocator)
 
