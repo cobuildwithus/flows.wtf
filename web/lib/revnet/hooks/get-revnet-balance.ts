@@ -54,13 +54,14 @@ export async function getRevnetBalance(
       },
       select: {
         address: true,
+        balance: true,
       },
       distinct: ["address"],
     })
 
     return {
       balance: totalBalance.toString(),
-      participantsCount: participants.length,
+      participantsCount: participants.filter((p) => Number(p.balance) > 0).length,
     }
   } catch (error) {
     console.error("Error fetching revnet balance:", error)

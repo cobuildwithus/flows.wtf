@@ -17,7 +17,6 @@ export interface StartupData {
     mission: Gradient
     deliverables: Gradient
   }
-  ticker: string
   diagram: {
     action: { name: string; description?: string }
     receive: { name: string; description?: string }

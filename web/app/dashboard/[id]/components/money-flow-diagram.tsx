@@ -182,7 +182,6 @@ export function MoneyFlowDiagram(props: Props) {
             projectId={startup.revnetProjectIds.base}
             chainId={base.id}
             userAddress={user?.address}
-            ticker={startup.ticker}
           />
         ),
       },
