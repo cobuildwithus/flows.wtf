@@ -100,7 +100,7 @@ export const CastPreview = (props: NewCastData) => {
                   setStatus("published")
                   append({
                     role: "user",
-                    content: `I've published the cast! https://warpcast.com/${user.username}/${publication.cast.hash}`,
+                    content: `I've published the cast! https://farcaster.xyz/${user.username}/${publication.cast.hash}`,
                   })
                 } catch (error) {
                   console.error(error)

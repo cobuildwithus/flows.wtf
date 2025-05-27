@@ -27,7 +27,7 @@ export function Participants(props: Props) {
                 <div className="flex flex-col items-start justify-center">
                   <Link
                     target="_blank"
-                    href={`https://warpcast.com/${profile.username}`}
+                    href={`https://farcaster.xyz/${profile.username}`}
                     className="text-sm"
                   >
                     {profile.display_name}

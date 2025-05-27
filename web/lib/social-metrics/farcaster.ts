@@ -44,7 +44,7 @@ export async function getFarcasterProfile(
       imageUrl: user.pfp_url,
       bio: user.profile?.bio?.text || "",
       followersCount: user.follower_count,
-      url: `https://warpcast.com/${user.username}`,
+      url: `https://farcaster.xyz/${user.username}`,
       platform: "farcaster",
     }
   } catch (error) {

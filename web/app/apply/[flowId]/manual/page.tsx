@@ -18,7 +18,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const flow = await getFlow((await props.params).flowId)
 
   return {
-    title: `Apply for a grant - ${flow.title}`,
+    title: `Apply for funding - ${flow.title}`,
     description: `Submit your grant application in ${flow.title} flow.`,
   }
 }
@@ -36,7 +36,7 @@ export default async function ApplyFlowPage(props: Props) {
   return (
     <main className="container flex h-[calc(100vh-68px)] flex-col pb-12 pt-8">
       <h3 className="text-pretty font-semibold tracking-tight">
-        {flow.isTopLevel ? "Suggest new flow" : `Apply for a grant in "${flow.title}"`}
+        {flow.isTopLevel ? "Suggest new flow" : `Apply for funding in "${flow.title}"`}
       </h3>
       <p className="mt-1.5 max-w-screen-md whitespace-pre-line text-balance text-sm text-muted-foreground">
         {flow.isTopLevel

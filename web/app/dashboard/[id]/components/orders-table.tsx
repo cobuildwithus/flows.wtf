@@ -65,9 +65,7 @@ export function OrdersTable(props: Props) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-base">Orders</CardTitle>
-            <CardDescription className="mt-1.5 text-xs">
-              All sales from the Vrbs Coffee store
-            </CardDescription>
+            <CardDescription className="mt-1.5 text-xs">All sales from the store</CardDescription>
           </div>
         </div>
       </CardHeader>

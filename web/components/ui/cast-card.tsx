@@ -37,7 +37,7 @@ export const CastCard = (props: Props) => {
         })}
       >
         <a
-          href={`https://warpcast.com/${cast.profile.fname}/0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`}
+          href={`https://farcaster.xyz/${cast.profile.fname}/0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`}
           target="_blank"
           className="block"
           rel="noreferrer"

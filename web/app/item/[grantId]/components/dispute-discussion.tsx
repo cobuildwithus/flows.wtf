@@ -23,7 +23,7 @@ export async function DisputeDiscussionLink({ grant }: { grant: Pick<Grant, "id"
   return (
     <Button variant="secondary" size="md" className="flex items-center gap-1" asChild>
       <a
-        href={`https://warpcast.com/${latestDiscussionPost.profile.fname}/0x${Buffer.from(new Uint8Array(latestDiscussionPost.hash)).toString("hex")}`}
+        href={`https://farcaster.xyz/${latestDiscussionPost.profile.fname}/0x${Buffer.from(new Uint8Array(latestDiscussionPost.hash)).toString("hex")}`}
         target="_blank"
         rel="noreferrer"
       >

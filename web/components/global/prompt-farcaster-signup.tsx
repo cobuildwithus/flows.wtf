@@ -67,7 +67,7 @@ export const PromptFarcasterSignup = ({ user }: Props) => {
               <SignInWithNeynar variant="default" user={user} />
               <p className="text-center text-sm text-muted-foreground">or</p>
               <Button asChild variant="outline">
-                <a href="https://warpcast.com" target="_blank" rel="noreferrer">
+                <a href="https://farcaster.xyz" target="_blank" rel="noreferrer">
                   Sign up
                 </a>
               </Button>

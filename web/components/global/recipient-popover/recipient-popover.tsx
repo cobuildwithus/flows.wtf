@@ -44,8 +44,8 @@ export const RecipientPopover = (props: Props) => {
 
   const canPostUpdates = !isLoading && !!hasFarcasterAccount
   const channelLink = updatesChannel
-    ? `https://warpcast.com/~/compose?text=&channelKey=${updatesChannel}`
-    : "https://warpcast.com/~/compose?text="
+    ? `https://farcaster.xyz/~/compose?text=&channelKey=${updatesChannel}`
+    : "https://farcaster.xyz/~/compose?text="
 
   const needsVerify = !isLoading && !hasFarcasterAccount
   const shouldJoinFlowsChannel = !isLoading && !isFlowsMember && hasFarcasterAccount
@@ -140,7 +140,7 @@ export const RecipientPopover = (props: Props) => {
                       <br />
                       <Button asChild size="sm" variant="default" className="mt-2">
                         <a
-                          href="https://warpcast.com/~/channel/flows/join?inviteCode=35EHtdIhE-ivqVxl2SaEFg"
+                          href="https://farcaster.xyz/~/channel/flows/join?inviteCode=35EHtdIhE-ivqVxl2SaEFg"
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -156,7 +156,7 @@ export const RecipientPopover = (props: Props) => {
                 <Link href="/apply" onClick={closePopover}>
                   <Button size="lg">Apply now</Button>
                 </Link>
-                <p className="px-2">Apply for a grant today to start earning.</p>
+                <p className="px-2">Apply for funding today and start earning.</p>
               </div>
             )}
           </div>

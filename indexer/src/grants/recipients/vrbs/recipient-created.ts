@@ -1,7 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { addGrantEmbedding } from "../../embeddings/embed-grants"
 import { isBlockRecent } from "../../../utils"
-import { getFlow } from "../helpers"
+import { getFlow, isOnchainStartup } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { insertGrant } from "./insert-vrbs-grant"
 import { RecipientType } from "../../../enums"
@@ -50,10 +50,4 @@ async function handleRecipientCreated(params: {
   if (isBlockRecent(timestamp)) {
     await addGrantEmbedding(grant, recipientType, flow.id)
   }
-}
-
-function isOnchainStartup(flowContract: string) {
-  const acceleratorFlows = ["0x3c6d95bc94dca34ba46365ee99d3469dc5cdbe61"]
-
-  return acceleratorFlows.includes(flowContract)
 }
