@@ -35,7 +35,9 @@ export function BuyRevnetToken({ projectId }: Props) {
       const tokens = (payAmountWei * BigInt(1e18)) / currentPriceWei
       const tokensFormatted = formatEther(tokens)
 
-      return Number.parseFloat(tokensFormatted).toFixed(2)
+      // Remove trailing zeros
+      const rounded = Number.parseFloat(tokensFormatted).toFixed(2)
+      return Number.parseFloat(rounded).toString()
     } catch (error) {
       return ""
     }
@@ -53,7 +55,9 @@ export function BuyRevnetToken({ projectId }: Props) {
       const ethNeeded = (tokenAmountWei * currentPriceWei) / BigInt(1e18)
       const ethFormatted = formatEther(ethNeeded)
 
-      return Number.parseFloat(ethFormatted).toFixed(6)
+      // Remove trailing zeros
+      const rounded = Number.parseFloat(ethFormatted).toFixed(6)
+      return Number.parseFloat(rounded).toString()
     } catch (error) {
       return ""
     }
