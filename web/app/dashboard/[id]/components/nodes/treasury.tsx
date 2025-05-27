@@ -21,7 +21,13 @@ export function Treasury({ projectId, chainId }: Props) {
   return (
     <div className="flex flex-col justify-between text-sm text-muted-foreground">
       <div>
-        {isLoading ? <span className="font-medium">...</span> : <EthInUsd amount={balance} />}{" "}
+        {isLoading ? (
+          <span className="font-medium">...</span>
+        ) : (
+          <strong>
+            <EthInUsd amount={balance} />
+          </strong>
+        )}{" "}
         balance
       </div>
       <div>

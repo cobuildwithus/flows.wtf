@@ -95,7 +95,7 @@ view Ruleset {
   basedOnId                      BigInt  @map("based_on_id")
   start                          BigInt
   duration                       BigInt
-  weight                         BigInt
+  weight                         Decimal
   weightCutPercent               Int     @map("weight_cut_percent")
   approvalHook                   String? @db.VarChar(42) @map("approval_hook")
   reservedPercent                Int     @map("reserved_percent")
