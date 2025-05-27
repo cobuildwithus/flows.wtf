@@ -39,13 +39,14 @@ export function canEditStory(
 }
 
 export function isAdmin(user: string | undefined): boolean {
+  if (!user) return false
   const lowerUser = user?.toLowerCase()
   return lowerUser === rocketman.toLowerCase() || lowerUser === riderway.toLowerCase()
 }
 
 export function canEditGrant(grant: Pick<Grant, "recipient">, user: string | undefined): boolean {
   if (!user) return false
-  return [grant.recipient, rocketman, riderway].includes(user)
+  return user === grant.recipient || isAdmin(user)
 }
 
 export function meetsMinimumSalary(

@@ -12,7 +12,6 @@ import {
 import { Currency } from "@/components/ui/currency"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/edge"
-import { canEditGrant } from "@/lib/database/helpers"
 import { getStartup } from "@/lib/onchain-startup/startup"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import { getAllOrders } from "@/lib/shopify/orders"
@@ -53,10 +52,9 @@ export default async function GrantPage(props: Props) {
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
 
-  const teamMembers = await getTeamMembers(startup.allocator)
+  const teamMembers = await getTeamMembers(startup.id, startup.allocator)
 
   const user = await getUser()
-  const canEdit = canEditGrant(startup, user?.address)
 
   const supports = await database.grant.findMany({
     where: { isActive: true, id: { in: startup.supports } },
@@ -125,7 +123,7 @@ export default async function GrantPage(props: Props) {
       </div>
 
       <div className="container mb-2 mt-4 flex">
-        <Team members={teamMembers} />
+        <Team members={teamMembers} user={user} startup={startup} />
       </div>
 
       <div className="container">

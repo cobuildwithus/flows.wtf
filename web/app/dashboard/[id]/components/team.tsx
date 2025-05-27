@@ -1,20 +1,74 @@
+import "server-only"
+
+import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Currency } from "@/components/ui/currency"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
+import { User } from "@/lib/auth/user"
+import database from "@/lib/database/edge"
+import { isAdmin } from "@/lib/database/helpers"
+import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
+import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import Image from "next/image"
+import { AddOpportunity } from "./add-opportunity"
+import { OpportunityCard } from "./opportunity-card"
 
 interface Props {
   members: TeamMember[]
+  user: User | undefined
+  startup: Startup
 }
 
 export async function Team(props: Props) {
-  const { members } = props
+  const { members, user, startup } = props
+
+  const canManage = user?.address === startup.allocator || isAdmin(user?.address)
+
+  const budgets = await getStartupBudgets(startup.id, startup.allocator)
+
+  const opportunities = await database.opportunity.findMany({
+    select: {
+      id: true,
+      position: true,
+      _count: { select: { applications: true } },
+      applications: {
+        select: {
+          id: true,
+          opportunityId: true,
+          content: true,
+          submitter: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    },
+    where: { startupId: startup.id, status: 1 },
+  })
+
+  const opportunitiesWithProfiles = await Promise.all(
+    opportunities.map(async (opportunity) => {
+      const applicationsWithProfiles = await Promise.all(
+        opportunity.applications.map(async (application) => {
+          const profile = await getUserProfile(application.submitter as `0x${string}`)
+          return { ...application, profile }
+        }),
+      )
+      return { ...opportunity, applications: applicationsWithProfiles }
+    }),
+  )
 
   return (
-    <>
+    <AgentChatProvider
+      id={`startup-${startup.id}-${user?.address}`}
+      type="flo"
+      user={user}
+      data={{ startupId: startup.id }}
+      identityToken={await getPrivyIdToken()}
+    >
       <div className="relative h-full w-9 shrink-0">
         <div className="absolute left-4 top-5 z-10 origin-right -translate-x-full -rotate-90 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground">
           Meet the team
@@ -25,12 +79,22 @@ export async function Team(props: Props) {
           {members.map((m) => (
             <TeamMemberCard key={m.recipient} member={m} />
           ))}
-          <OpportunityCard title="Artist" description="Making logo bigger" />
-          <OpportunityCard title="Barista" description="Remember guests names" />
+          {opportunitiesWithProfiles.map((o) => (
+            <OpportunityCard
+              key={o.id}
+              id={o.id}
+              title={o.position}
+              applicationsCount={o._count.applications}
+              canManage={canManage}
+              user={user}
+              applications={o.applications}
+            />
+          ))}
+          {canManage && <AddOpportunity budgets={budgets} startupId={startup.id} />}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-    </>
+    </AgentChatProvider>
   )
 }
 
@@ -66,27 +130,6 @@ async function TeamMemberCard(props: { member: TeamMember }) {
 
           <div className="mb-3 mt-1 text-xs text-muted-foreground">{member.description}</div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-async function OpportunityCard(props: { title: string; description: string }) {
-  const { title, description } = props
-
-  return (
-    <div className="flex shrink-0 flex-col items-center">
-      <div className="flex w-56 grow flex-col justify-between rounded-lg border border-dashed border-primary p-4 dark:border-muted/50">
-        <div>
-          <Badge variant="warning" className="py-0 text-[11px]">
-            Vacancy
-          </Badge>
-          <h3 className="mt-2.5 text-sm font-medium">{title}</h3>
-          <div className="mt-0.5 text-xs text-muted-foreground">{description}</div>
-        </div>
-        <Button size="sm" className="mt-3 py-0.5">
-          Apply
-        </Button>
       </div>
     </div>
   )

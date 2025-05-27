@@ -86,6 +86,7 @@ export const MessageItem = (props: Props) => {
                 case "updateStory":
                 case "updateGrant":
                 case "updateImpact":
+                case "submitOpportunityApplication":
                   return <SuccessMessageResult key={toolCallId} message={tool.result} />
                 case "castPreview":
                   return <CastPreview key={toolCallId} {...tool.result} />

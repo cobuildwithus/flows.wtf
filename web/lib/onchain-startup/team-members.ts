@@ -1,5 +1,6 @@
 import { getUserProfile, Profile } from "@/components/user-profile/get-user-profile"
 import database from "@/lib/database/edge"
+import { getStartupBudgets } from "./budgets"
 
 export type TeamMember = {
   recipient: string
@@ -8,11 +9,8 @@ export type TeamMember = {
   description: string
 } & Profile
 
-export async function getTeamMembers(allocator: string): Promise<TeamMember[]> {
-  const salaryBudgets = await database.grant.findMany({
-    select: { id: true },
-    where: { allocator, isFlow: true, isActive: true },
-  })
+export async function getTeamMembers(id: string, allocator: string): Promise<TeamMember[]> {
+  const budgets = await getStartupBudgets(id, allocator)
 
   const recipients = await database.grant.findMany({
     select: {
@@ -21,7 +19,7 @@ export async function getTeamMembers(allocator: string): Promise<TeamMember[]> {
       totalEarned: true,
       description: true,
     },
-    where: { parentContract: { in: salaryBudgets.map((b) => b.id) } },
+    where: { parentContract: { in: budgets.map((b) => b.id) } },
   })
 
   const uniqueMembers = Object.values(
