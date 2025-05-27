@@ -29,7 +29,7 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
   return (
     <div className="flex flex-col justify-between text-sm text-muted-foreground">
       <div>
-        You own{" "}
+        You hold{" "}
         {isLoading ? (
           <span className="font-medium">...</span>
         ) : Number(balance) > 0 ? (

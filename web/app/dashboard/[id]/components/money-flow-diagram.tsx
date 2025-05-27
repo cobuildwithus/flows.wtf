@@ -71,7 +71,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 2,
-        title: "Join DAO",
+        title: `Join ${startup.title}`,
         id: "user_token",
         height: 280,
         content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
