@@ -19,7 +19,7 @@ export async function getTeamMembers(id: string, allocator: string): Promise<Tea
       totalEarned: true,
       description: true,
     },
-    where: { parentContract: { in: budgets.map((b) => b.id) } },
+    where: { parentContract: { in: budgets.map((b) => b.id) }, isActive: true },
   })
 
   const uniqueMembers = Object.values(
