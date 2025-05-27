@@ -11,13 +11,13 @@ import {
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import type { DerivedData } from "@prisma/flows"
 import { useState } from "react"
-import { type LimitedGrant } from "@/app/flow/[flowId]/components/grants-list"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/voting/allocation-context"
 import { base } from "viem/chains"
-import { GrantsTable } from "@/app/flow/[flowId]/components/grants-table"
+import { GrantsTable } from "@/components/global/grants-table"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import { Currency } from "@/components/ui/currency"
+import { LimitedGrant } from "@/lib/database/types"
 
 interface Props {
   flows: LimitedGrant[]
@@ -31,11 +31,12 @@ interface Props {
     }
   >[]
   isAllocator: boolean
+  isManager: boolean
   children?: React.ReactNode
 }
 
 export function AllocateBudgets(props: Props) {
-  const { flows, grants, children, isAllocator } = props
+  const { flows, grants, children, isAllocator, isManager } = props
   const [open, setOpen] = useState(false)
   const [selectedFlowIndex, setSelectedFlowIndex] = useState(0)
 
@@ -94,7 +95,7 @@ export function AllocateBudgets(props: Props) {
               allocator={selectedFlow.allocator}
               defaultActive
             >
-              <GrantsTable flow={selectedFlow} grants={selectedGrants} />
+              <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />
               <AllocationBar />
             </AllocationProvider>
           </div>

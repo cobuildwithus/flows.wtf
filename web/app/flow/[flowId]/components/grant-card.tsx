@@ -10,8 +10,8 @@ import { getIpfsUrl } from "@/lib/utils"
 import type { DerivedData } from "@prisma/flows"
 import Link from "next/dist/client/link"
 import Image from "next/image"
-import type { LimitedGrant } from "./grants-list"
 import { isGrantNew } from "./is-new"
+import { LimitedGrant } from "@/lib/database/types"
 
 interface Props {
   grant: LimitedGrant & {

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "typecheck": "tsc --noEmit",
     "prebuild": "prisma generate --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints && prisma generate --schema=./lib/database/juicebox.prisma --no-hints",
     "build": "NODE_OPTIONS=--max-old-space-size=6144 next build",
     "start": "next start",

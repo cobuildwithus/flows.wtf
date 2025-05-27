@@ -25,6 +25,7 @@ export async function Team(props: Props) {
   const { members, user, startup } = props
 
   const canManage = user?.address === startup.manager || isAdmin(user?.address)
+  const canAllocate = user?.address === startup.allocator
   // const canManage = false
 
   const [budgets, privyIdToken, opportunitiesWithProfiles] = await Promise.all([
@@ -49,7 +50,8 @@ export async function Team(props: Props) {
       <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
         <div className="flex space-x-4">
           <AllocateBudgets
-            isAllocator={canManage}
+            isAllocator={canAllocate}
+            isManager={canManage}
             flows={budgets}
             grants={budgets.map((b) => b.subgrants)}
           >

@@ -17,19 +17,21 @@ import { cn, getIpfsUrl } from "@/lib/utils"
 import type { DerivedData } from "@prisma/flows"
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import Link from "next/link"
-import { GrantLogoCell } from "./grant-logo-cell"
-import { AllocationInput } from "./allocation-input"
-import type { LimitedGrant } from "./grants-list"
+import { GrantLogoCell } from "@/components/global/grant-logo-cell"
+import { AllocationInput } from "@/components/global/allocation-input"
+import { LimitedGrant } from "@/lib/database/types"
+import { RemoveRecipientButton } from "./remove-recipient-button"
 
 interface Props {
   flow: LimitedGrant
   grants: Array<
     LimitedGrant & { derivedData: Pick<DerivedData, "lastBuilderUpdate"> | null; profile: Profile }
   >
+  canManage?: boolean
 }
 
 export function GrantsTable(props: Props) {
-  const { flow, grants } = props
+  const { flow, grants, canManage = false } = props
 
   return (
     <Table>
@@ -40,7 +42,7 @@ export function GrantsTable(props: Props) {
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
           {!flow.allocator && <TableHead className="text-center">Votes</TableHead>}
-          <TableHead className="text-right">{flow.allocator ? "Manage" : "Your Vote"}</TableHead>
+          <TableHead className="text-right">{canManage ? "Manage payout" : "Your Vote"}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -126,9 +128,17 @@ export function GrantsTable(props: Props) {
 
               {!flow.allocator && <TableCell className="text-center">{grant.votesCount}</TableCell>}
 
-              <TableCell className="w-[100px] max-w-[100px] text-center">
-                <div className="px-0.5">
-                  <AllocationInput recipientId={grant.recipientId} />
+              <TableCell className="w-[120px] max-w-[120px] text-center">
+                <div className="flex items-center gap-1 px-0.5">
+                  <div className="w-[100px]">
+                    <AllocationInput recipientId={grant.recipientId} />
+                  </div>
+                  {canManage && (
+                    <RemoveRecipientButton
+                      contract={flow.recipient}
+                      recipientId={grant.recipientId}
+                    />
+                  )}
                 </div>
               </TableCell>
             </TableRow>
