@@ -149,7 +149,7 @@ export function BuyRevnetToken({ projectId }: Props) {
         type="submit"
         disabled={isLoading || !address || !payAmount}
       >
-        {isLoading ? "Processing..." : `Buy ${tokenSymbol}`}
+        {isLoading ? "Processing..." : `Buy $${tokenSymbol}`}
       </Button>
     </form>
   )

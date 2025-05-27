@@ -1,7 +1,6 @@
 "use client"
 
 import { Currency } from "@/components/ui/currency"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useUserRevnetBalance } from "@/lib/revnet/hooks/use-user-revnet-balance"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 
@@ -25,22 +24,22 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
     )
   }
 
-  if (isLoading) {
-    return <Skeleton height={75} />
-  }
-
   const balance = data?.balance || "0"
 
   return (
-    <div className="space-y-2">
-      {data && Number(balance) > 0 && (
-        <div className="rounded-md bg-muted/50 p-3">
-          <div className="text-xs text-muted-foreground">Your balance</div>
-          <div className="mt-1 text-lg font-semibold">
+    <div className="flex flex-col justify-between text-sm text-muted-foreground">
+      <div>
+        You own{" "}
+        {isLoading ? (
+          <span className="font-medium">...</span>
+        ) : Number(balance) > 0 ? (
+          <strong>
             <Currency currency="ERC20">{balance}</Currency> {tokenSymbol}
-          </div>
-        </div>
-      )}
+          </strong>
+        ) : (
+          <span className="font-medium">0 {tokenSymbol}</span>
+        )}{" "}
+      </div>
     </div>
   )
 }

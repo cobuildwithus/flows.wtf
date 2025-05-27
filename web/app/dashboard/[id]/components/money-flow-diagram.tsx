@@ -174,9 +174,9 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `Rewards on every order`,
+        title: `Token rewards`,
         handles: [{ type: "target", position: Position.Left }],
-        height: user?.address ? 140 : 106,
+        height: 95,
         content: (
           <TokenRewards
             projectId={startup.revnetProjectIds.base}
