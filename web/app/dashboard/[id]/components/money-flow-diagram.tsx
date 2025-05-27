@@ -10,7 +10,7 @@ import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/
 import "@xyflow/react/dist/style.css"
 import Image from "next/image"
 import Link from "next/link"
-import { BuyToken } from "./nodes/buy-token"
+import { BuyRevnetToken } from "./nodes/buy-revnet-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { Products } from "./nodes/products"
@@ -71,7 +71,7 @@ export function MoneyFlowDiagram(props: Props) {
         title: "Join DAO",
         id: "user_token",
         height: 280,
-        content: <BuyToken />,
+        content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
         handles: [{ type: "source", position: Position.Right }],
       },
       {

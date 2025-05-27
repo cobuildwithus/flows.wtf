@@ -5,10 +5,16 @@ const startups = {
   "0x802d57b225d84da0403f7d72c16bead63e21d16f": {
     ...vrbscoffee,
     title: "Vrbs Health AI Coffee",
+    revnetProjectIds: {
+      base: 3n,
+    },
   },
   "0xa1add56e8308175688c2366d69e8fd1bb8567e72": {
     ...vrbscoffee,
     title: "Real Madrid Coffee",
+    revnetProjectIds: {
+      base: 3n,
+    },
   },
 } as const
 
