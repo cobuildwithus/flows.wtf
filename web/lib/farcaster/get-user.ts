@@ -1,4 +1,4 @@
-import { farcasterDb } from "@/lib/database/farcaster-edge"
+import { farcasterDb } from "@/lib/database/farcaster"
 import { Profile as FarcasterProfile } from "@prisma/farcaster"
 
 export const getFarcasterUserByEthAddress = async (

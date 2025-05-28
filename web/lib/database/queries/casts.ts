@@ -1,6 +1,6 @@
 "use server"
 
-import { farcasterDb } from "../farcaster-edge"
+import { farcasterDb } from "../farcaster"
 
 export const getCastsByIds = async (castIds: number[]) => {
   if (castIds.length === 0) return []
@@ -18,6 +18,5 @@ export const getCastsByIds = async (castIds: number[]) => {
     orderBy: {
       timestamp: "desc",
     },
-
   })
 }

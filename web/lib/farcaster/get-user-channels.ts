@@ -1,7 +1,7 @@
 import "server-only"
 
 import { cache } from "react"
-import { farcasterDb } from "../database/farcaster-edge"
+import { farcasterDb } from "../database/farcaster"
 
 export const getFarcasterUserChannels = cache(async (fid: number) => {
   try {

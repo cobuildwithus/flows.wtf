@@ -2,7 +2,7 @@
 
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import type { Grant } from "@prisma/flows"
-import { farcasterDb } from "../farcaster-edge"
+import { farcasterDb } from "../farcaster"
 import type { Profile } from "@prisma/farcaster"
 
 const MAX_LEVEL = 3
