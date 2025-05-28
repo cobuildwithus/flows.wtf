@@ -15,8 +15,6 @@ import {
 } from "@/components/ui/table"
 import { Profile } from "@/components/user-profile/get-user-profile"
 import { Draft } from "@prisma/flows"
-import { useState } from "react"
-import { Markdown } from "@/components/ui/markdown"
 
 export interface ApplicationWithProfile extends Draft {
   profile: Profile
@@ -44,9 +42,6 @@ function getStatusBadge(status: number) {
 
 export function ViewOpportunities(props: Props) {
   const { isOpen, onOpenChange, opportunityTitle, applications } = props
-  const [selectedApplication, setSelectedApplication] = useState<ApplicationWithProfile | null>(
-    null,
-  )
 
   return (
     <>
@@ -110,12 +105,14 @@ export function ViewOpportunities(props: Props) {
                     </TableCell>
                     <TableCell>{getStatusBadge(application.isOnchain ? 1 : 0)}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedApplication(application)}
-                      >
-                        View
+                      <Button variant="outline" size="sm" asChild>
+                        <a
+                          href={`/draft/${application.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View
+                        </a>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -123,23 +120,6 @@ export function ViewOpportunities(props: Props) {
               </TableBody>
             </Table>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={!!selectedApplication}
-        onOpenChange={(open) => !open && setSelectedApplication(null)}
-      >
-        <DialogContent className="max-w-4xl">
-          <DialogHeader className="hidden">
-            <DialogTitle>{selectedApplication?.profile.display_name}</DialogTitle>
-          </DialogHeader>
-
-          {selectedApplication && (
-            <div className="flex flex-col gap-4 whitespace-pre-wrap break-words text-sm leading-6">
-              <Markdown>{selectedApplication.description}</Markdown>
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </>

@@ -24,9 +24,9 @@ interface Props {
 export async function Team(props: Props) {
   const { members, user, startup } = props
 
-  // const canManage = user?.address === startup.manager || isAdmin(user?.address)
+  const canManage = user?.address === startup.manager || isAdmin(user?.address)
   const canAllocate = user?.address === startup.allocator
-  const canManage = false
+  // const canManage = false
 
   const [budgets, privyIdToken, opportunitiesWithProfiles] = await Promise.all([
     getBudgetsWithGrants(startup.id, startup.allocator),
