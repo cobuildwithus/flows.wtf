@@ -48,7 +48,7 @@ export default async function DraftPage(props: Props) {
 
   const draft = await database.draft.findUniqueOrThrow({
     where: { id: Number(draftId), isPrivate: false },
-    include: { flow: { include: { derivedData: true } } },
+    include: { flow: { include: { derivedData: true } }, opportunity: true },
   })
 
   const [existingGrants, user, costs] = await Promise.all([
@@ -63,7 +63,7 @@ export default async function DraftPage(props: Props) {
     getTcrCosts(draft.flow.tcr, draft.flow.erc20),
   ])
 
-  const { title, flow, isOnchain, createdAt, users, description } = draft
+  const { title, flow, isOnchain, createdAt, users, description, opportunity } = draft
   const isTcrFlow = flow.tcr && flow.erc20 && flow.tokenEmitter
   const isSelfManagedFlow = flow.allocator
   const isManager = flow.manager === user?.address
@@ -122,6 +122,19 @@ export default async function DraftPage(props: Props) {
         </div>
 
         <div className="space-y-4 md:col-span-2">
+          {opportunity && !isOnchain && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Opportunity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  Applied for the <strong>{opportunity.position}</strong> opening
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>About</CardTitle>

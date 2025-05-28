@@ -89,7 +89,7 @@ export function ManagedFlowDraftPublishButton(props: Props) {
     <Dialog>
       <DialogTrigger asChild>
         <AuthButton ref={ref} size={size}>
-          Add to flow
+          {draft.opportunityId ? "Approve application" : "Add to flow"}
         </AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-xs">
