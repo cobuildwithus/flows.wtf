@@ -86,21 +86,35 @@ export function AllocateBudgets(props: Props) {
               ))}
             </div>
           )}
-
           <div className="min-h-[340px]">
-            <AllocationProvider
-              chainId={base.id}
-              contract={getEthAddress(selectedFlow.recipient)}
-              votingToken={selectedFlow.erc721VotingToken}
-              allocator={selectedFlow.allocator}
-              defaultActive
-            >
-              <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />
-              <AllocationBar />
-            </AllocationProvider>
+            {selectedGrants.length > 0 ? (
+              <AllocationProvider
+                chainId={base.id}
+                contract={getEthAddress(selectedFlow.recipient)}
+                votingToken={selectedFlow.erc721VotingToken}
+                allocator={selectedFlow.allocator}
+                defaultActive
+              >
+                <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />
+                <AllocationBar />
+              </AllocationProvider>
+            ) : (
+              <EmptyBudgetState />
+            )}
           </div>
         </div>
       </DialogContent>
     </Dialog>
+  )
+}
+
+const EmptyBudgetState = () => {
+  return (
+    <div className="flex h-[340px] flex-col items-center justify-center space-y-4 py-20 text-center">
+      <div className="text-lg font-medium text-muted-foreground">No contributors to pay yet</div>
+      <div className="text-sm text-muted-foreground">
+        Create an opportunity or review applications to start allocating your budget
+      </div>
+    </div>
   )
 }
