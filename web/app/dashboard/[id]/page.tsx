@@ -12,7 +12,6 @@ import {
 import { Currency } from "@/components/ui/currency"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/edge"
-import { canEditGrant } from "@/lib/database/helpers"
 import { getStartup } from "@/lib/onchain-startup/startup"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import { getAllOrders } from "@/lib/shopify/orders"
@@ -53,19 +52,20 @@ export default async function GrantPage(props: Props) {
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
 
-  const teamMembers = await getTeamMembers(startup.allocator)
+  const [teamMembers, user, supports, orders] = await Promise.all([
+    getTeamMembers(startup.id, startup.allocator),
+    getUser(),
+    database.grant.findMany({
+      where: { isActive: true, id: { in: startup.supports } },
+      select: { id: true, title: true, image: true, tagline: true },
+    }),
+    getAllOrders(startup.shopify),
+  ])
 
-  const user = await getUser()
-  const canEdit = canEditGrant(startup, user?.address)
-
-  const supports = await database.grant.findMany({
-    where: { isActive: true, id: { in: startup.supports } },
-    select: { id: true, title: true, image: true, tagline: true },
-  })
-
-  const orders = await getAllOrders(startup.shopify)
-  const products = await getProducts(startup.shopify, orders)
-  const salesSummary = await getSalesSummary(orders)
+  const [products, salesSummary] = await Promise.all([
+    getProducts(startup.shopify, orders),
+    getSalesSummary(orders),
+  ])
 
   const thisMonth = salesSummary.monthlySales[0]
   const lastMonth = salesSummary.monthlySales[1]
@@ -125,7 +125,7 @@ export default async function GrantPage(props: Props) {
       </div>
 
       <div className="container mb-2 mt-4 flex">
-        <Team members={teamMembers} />
+        <Team members={teamMembers} user={user} startup={startup} />
       </div>
 
       <div className="container">

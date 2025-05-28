@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 
-export function useVotingContextActive() {
-  const [isActive, setIsActive] = useState(false)
+export function useAllocationContextActive(defaultActive: boolean) {
+  const [isActive, setIsActive] = useState(defaultActive)
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {

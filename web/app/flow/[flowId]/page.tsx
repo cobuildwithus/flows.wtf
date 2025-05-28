@@ -12,7 +12,7 @@ import type { Grant } from "@prisma/flows"
 import { FlowImpactSummary } from "./components/flow-impact-summary"
 import { FlowSubmenu } from "./components/flow-submenu"
 import GrantsList from "./components/grants-list"
-import { AllocationBar } from "./components/allocation-bar"
+import { AllocationBar } from "@/components/global/allocation-bar"
 
 interface Props {
   params: Promise<{ flowId: string }>

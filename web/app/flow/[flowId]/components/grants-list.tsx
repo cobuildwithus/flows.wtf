@@ -3,11 +3,10 @@
 import { Card, CardContent } from "@/components/ui/card"
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import { useAllocateFlow } from "@/lib/voting/allocation-context"
-import type { DerivedData, Grant } from "@prisma/flows"
+import type { DerivedData } from "@prisma/flows"
 import { GrantCard } from "./grant-card"
-import { GrantsTable } from "./grants-table"
-
-export type LimitedGrant = Omit<Grant, "description">
+import { GrantsTable } from "../../../../components/global/grants-table"
+import { LimitedGrant } from "@/lib/database/types"
 
 interface Props {
   flow: LimitedGrant

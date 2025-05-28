@@ -10,7 +10,7 @@ import FlowsList from "./components/flows-list"
 import type { LimitedFlow } from "./components/flows-table"
 import { HomepageIntro } from "./components/homepage-intro"
 import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
-import { AllocationBar } from "./flow/[flowId]/components/allocation-bar"
+import { AllocationBar } from "@/components/global/allocation-bar"
 import Footer from "@/components/global/footer"
 
 export default async function Home() {

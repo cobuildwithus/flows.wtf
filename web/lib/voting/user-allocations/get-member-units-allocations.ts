@@ -23,6 +23,7 @@ export async function getMemberUnitsAllocations(flowId: string, address: `0x${st
     },
     where: {
       flowId: flow.id,
+      isActive: true,
     },
     distinct: ["recipientId"],
   })

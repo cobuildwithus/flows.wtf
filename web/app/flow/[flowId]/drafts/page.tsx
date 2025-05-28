@@ -15,7 +15,7 @@ import {
 import { UserProfile } from "@/components/user-profile/user-profile"
 import database from "@/lib/database/edge"
 import { FlowSubmenu } from "../components/flow-submenu"
-import { GrantLogoCell } from "../components/grant-logo-cell"
+import { GrantLogoCell } from "../../../../components/global/grant-logo-cell"
 import { GrantTitleCell } from "../components/grant-title-cell"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 import { getUser } from "@/lib/auth/user"

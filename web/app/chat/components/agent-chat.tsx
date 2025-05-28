@@ -64,6 +64,7 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
         case "updateGrant":
         case "updateStory":
         case "updateImpact":
+        case "submitOpportunityApplication":
           router.refresh()
           break
         default:

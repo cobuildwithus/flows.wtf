@@ -8,7 +8,7 @@ import { isValidVotingContract, UserAllocation } from "./vote-types"
 import { useVoteNouns } from "./hooks/use-vote-nouns"
 import { base, mainnet } from "@/addresses"
 import { toast } from "sonner"
-import { useVotingContextActive } from "./hooks/use-context-active"
+import { useAllocationContextActive } from "./hooks/use-context-active"
 import { useExistingAllocations } from "./hooks/use-existing-allocations"
 import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
@@ -43,12 +43,13 @@ export const AllocationProvider = (
     chainId: number
     votingToken: string | null
     allocator: string | null
+    defaultActive?: boolean
   }>,
 ) => {
-  const { children, contract, chainId, votingToken, allocator } = props
+  const { children, contract, chainId, votingToken, allocator, defaultActive = false } = props
   const { address } = useAccount()
   const router = useRouter()
-  const { isActive, setIsActive } = useVotingContextActive()
+  const { isActive, setIsActive } = useAllocationContextActive(defaultActive)
   const { userAllocations, mutateUserAllocations, allocations, setAllocations } =
     useExistingAllocations(contract)
   const { tokens } = useDelegatedTokens(

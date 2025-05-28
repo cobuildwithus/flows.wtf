@@ -14,7 +14,7 @@ import { getIpfsUrl } from "@/lib/utils"
 import type { Grant } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
-import { AllocationInput } from "../flow/[flowId]/components/allocation-input"
+import { AllocationInput } from "@/components/global/allocation-input"
 import { MonthlyBudget, type FlowWithBudget } from "./monthly-budget"
 
 export type LimitedFlow = FlowWithBudget &

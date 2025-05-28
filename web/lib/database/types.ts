@@ -2,6 +2,8 @@ import { Grant } from "@prisma/flows"
 
 export type { Grant }
 
+export type LimitedGrant = Omit<Grant, "description">
+
 declare global {
   type FlowWithTcr = Grant & {
     tcr: `0x${string}`

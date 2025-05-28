@@ -48,7 +48,7 @@ export default async function DraftPage(props: Props) {
 
   const draft = await database.draft.findUniqueOrThrow({
     where: { id: Number(draftId), isPrivate: false },
-    include: { flow: { include: { derivedData: true } } },
+    include: { flow: { include: { derivedData: true } }, opportunity: true },
   })
 
   const [existingGrants, user, costs] = await Promise.all([
@@ -63,11 +63,13 @@ export default async function DraftPage(props: Props) {
     getTcrCosts(draft.flow.tcr, draft.flow.erc20),
   ])
 
-  const { title, flow, isOnchain, createdAt, users, description } = draft
+  const { title, flow, isOnchain, createdAt, users, description, opportunity } = draft
   const isTcrFlow = flow.tcr && flow.erc20 && flow.tokenEmitter
   const isSelfManagedFlow = flow.allocator
   const isManager = flow.manager === user?.address
   const edit = searchParams.edit === "true"
+
+  const flowLink = flow.isOnchainStartup ? `/dashboard/${flow.id}` : `/flow/${flow.id}/drafts`
 
   return (
     <div className="container mt-2.5 flex grow flex-col pb-12 md:mt-6">
@@ -81,7 +83,7 @@ export default async function DraftPage(props: Props) {
             <BreadcrumbSeparator />
 
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/flow/${flow.id}/drafts`}>{flow.title} Drafts</BreadcrumbLink>
+              <BreadcrumbLink href={flowLink}>{flow.title} Drafts</BreadcrumbLink>
             </BreadcrumbItem>
 
             <BreadcrumbSeparator />
@@ -122,6 +124,20 @@ export default async function DraftPage(props: Props) {
         </div>
 
         <div className="space-y-4 md:col-span-2">
+          {opportunity && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Opportunity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  {isOnchain ? "Hired for the " : "Applied for the "}
+                  <strong>{opportunity.position}</strong> opening
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>About</CardTitle>

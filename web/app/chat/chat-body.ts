@@ -15,4 +15,6 @@ export type ChatData = {
   storyId?: string
   impactId?: string
   castId?: string
+  startupId?: string
+  opportunityId?: string
 }

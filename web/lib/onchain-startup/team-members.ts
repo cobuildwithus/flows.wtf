@@ -1,33 +1,36 @@
 import { getUserProfile, Profile } from "@/components/user-profile/get-user-profile"
 import database from "@/lib/database/edge"
+import { getStartupBudgets } from "./budgets"
 
 export type TeamMember = {
   recipient: string
   monthlyIncomingFlowRate: number
   totalEarned: number
-  description: string
+  tagline: string
 } & Profile
 
-export async function getTeamMembers(allocator: string): Promise<TeamMember[]> {
-  const salaryBudgets = await database.grant.findMany({
-    select: { id: true },
-    where: { allocator, isFlow: true, isActive: true },
-  })
+export async function getTeamMembers(id: string, allocator: string): Promise<TeamMember[]> {
+  const budgets = await getStartupBudgets(id, allocator)
 
   const recipients = await database.grant.findMany({
     select: {
       recipient: true,
       monthlyIncomingFlowRate: true,
       totalEarned: true,
-      description: true,
+      tagline: true,
     },
-    where: { parentContract: { in: salaryBudgets.map((b) => b.id) } },
+    where: { parentContract: { in: budgets.map((b) => b.id) }, isActive: true },
   })
 
   const uniqueMembers = Object.values(
     recipients.reduce(
-      (acc, { recipient, monthlyIncomingFlowRate, totalEarned, description }) => {
-        acc[recipient] ??= { recipient, monthlyIncomingFlowRate: 0, totalEarned: 0, description }
+      (acc, { recipient, monthlyIncomingFlowRate, totalEarned, tagline }) => {
+        acc[recipient] ??= {
+          recipient,
+          monthlyIncomingFlowRate: 0,
+          totalEarned: 0,
+          tagline: tagline || "",
+        }
         acc[recipient].monthlyIncomingFlowRate += Number(monthlyIncomingFlowRate)
         acc[recipient].totalEarned += Number(totalEarned)
         return acc

@@ -29,8 +29,10 @@ model Draft {
   flowId          String
   isFlow          Boolean  @default(false)
   transactionHash String?
+  opportunityId   String?  @map("opportunity_id")
 
-  flow Grant @relation(fields: [flowId], references: [id])
+  flow        Grant         @relation(fields: [flowId], references: [id])
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id])
 
   @@index([isPrivate])
   @@index([isOnchain])
@@ -159,10 +161,10 @@ model Grant {
   activeRecipientCount             Int     @map("active_recipient_count")
   awaitingRecipientCount           Int     @map("awaiting_recipient_count")
   challengedRecipientCount         Int     @map("challenged_recipient_count")
-  tcr                              String?  @unique
-  erc20                            String?  @unique
-  arbitrator                       String?  @unique
-  tokenEmitter                     String?  @unique @map("token_emitter")
+  tcr                              String? @unique
+  erc20                            String? @unique
+  arbitrator                       String? @unique
+  tokenEmitter                     String? @unique @map("token_emitter")
   status                           Int
   challengePeriodEndsAt            Int     @map("challenge_period_ends_at")
   activatedAt                      Int?    @map("activated_at")
@@ -186,23 +188,25 @@ model Grant {
   erc721VotingToken                String? @map("erc721_voting_token")
   votingTokenChainId               Int?    @map("voting_token_chain_id")
   allocator                        String? @map("allocator")
-  recipientId                      String @map("recipient_id")
+  recipientId                      String  @map("recipient_id")
 
-  flow         Grant         @relation("Subgrants", fields: [flowId], references: [id])
-  subgrants    Grant[]       @relation("Subgrants")
-  drafts       Draft[]
-  disputes     Dispute[]
-  tokenHolders TokenHolder[]
-  evidences    Evidence[]
-  derivedData  DerivedData?
-  votes        Vote[]
-  impacts      Impact[]
+  flow                 Grant         @relation("Subgrants", fields: [flowId], references: [id])
+  subgrants            Grant[]       @relation("Subgrants")
+  drafts               Draft[]
+  disputes             Dispute[]
+  tokenHolders         TokenHolder[]
+  evidences            Evidence[]
+  derivedData          DerivedData?
+  votes                Vote[]
+  impacts              Impact[]
+  opportunities        Opportunity[] @relation("StartupOpportunity")
+  opportunitiesBudgets Opportunity[] @relation("StartupBudgetOpportunity") // not needed, just required by Prisma
 
+  @@unique([recipientId])
   @@index([isTopLevel])
   @@index([isFlow])
   @@index([isActive])
   @@index([isTopLevel, isFlow])
-  @@unique([recipientId])
   @@map("Grant")
   @@schema("onchain")
 }
@@ -225,13 +229,13 @@ view Vote {
 }
 
 view erc721Token {
-  id String @id
+  id       String  @id
   contract String
-  owner String
+  owner    String
   delegate String
-  tokenId Int @map("token_id")
-  burned Boolean
-  chainId Int @map("chain_id")
+  tokenId  Int     @map("token_id")
+  burned   Boolean
+  chainId  Int     @map("chain_id")
 
   @@index([contract])
   @@index([owner])
@@ -342,3 +346,25 @@ model Impact {
   @@map("Impact")
   @@schema("web")
 }
+
+model Opportunity {
+  id                      String   @id @default(uuid())
+  position                String
+  description             String
+  applicationRequirements String   @map("application_requirements")
+  startupId               String   @map("startup_id")
+  flowId                  String   @map("flow_id")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+  status                  Int      @default(1) // 0: closed, 1: open
+
+  startup      Grant         @relation("StartupOpportunity", fields: [startupId], references: [id])
+  budget       Grant         @relation("StartupBudgetOpportunity", fields: [flowId], references: [id])
+  drafts       Draft[]
+
+  @@index([flowId])
+  @@index([startupId])
+  @@map("Opportunity")
+  @@schema("web")
+}
+

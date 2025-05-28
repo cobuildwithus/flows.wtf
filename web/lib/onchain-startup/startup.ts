@@ -4,7 +4,7 @@ import { vrbscoffee } from "./data/vrbscoffee"
 const startups = {
   "0x802d57b225d84da0403f7d72c16bead63e21d16f": {
     ...vrbscoffee,
-    title: "Vrbs Health AI Coffee",
+    title: "Health AI",
     revnetProjectIds: {
       base: 3n,
     },
