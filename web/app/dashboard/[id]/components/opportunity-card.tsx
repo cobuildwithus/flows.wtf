@@ -47,8 +47,8 @@ export function OpportunityCard(props: Props) {
       <div className="flex w-56 grow flex-col justify-between rounded-lg border border-dashed border-muted-foreground/50 p-4 transition-colors hover:border-primary">
         <div>
           <div className="flex items-center justify-between gap-x-1.5">
-            <Badge variant="warning" className="py-0 text-[11px]">
-              Vacancy
+            <Badge variant="secondary" className="py-0 text-[11px]">
+              Hiring
             </Badge>
             {canManage && (
               <Button size="sm" variant="ghost" className="py-0.5" onClick={handleDelete}>

@@ -10,6 +10,7 @@ import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { useState, useMemo } from "react"
 import { formatEther, parseEther } from "viem"
+import { AuthButton } from "@/components/ui/auth-button"
 
 interface Props {
   projectId: bigint
@@ -143,14 +144,9 @@ export function BuyRevnetToken({ projectId }: Props) {
         </div>
       </fieldset>
 
-      <Button
-        variant="default"
-        size="lg"
-        type="submit"
-        disabled={isLoading || !address || !payAmount}
-      >
+      <AuthButton variant="default" size="lg" type="submit" disabled={isLoading || !payAmount}>
         {isLoading ? "Processing..." : `Buy $${tokenSymbol}`}
-      </Button>
+      </AuthButton>
     </form>
   )
 }

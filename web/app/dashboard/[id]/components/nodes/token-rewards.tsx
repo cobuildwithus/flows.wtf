@@ -18,9 +18,7 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
   const tokenSymbol = tokenDetails?.symbol || ""
 
   if (!userAddress) {
-    return (
-      <div className="text-pretty text-sm text-muted-foreground">Earn rewards on every order</div>
-    )
+    return <div className="text-pretty text-sm text-muted-foreground">Earn on every order</div>
   }
 
   const balance = data?.balance || "0"
