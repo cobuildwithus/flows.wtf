@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table"
 import { Profile } from "@/components/user-profile/get-user-profile"
 import { Draft } from "@prisma/flows"
+import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-flow-button"
 
 export interface ApplicationWithProfile extends Draft {
   profile: Profile
@@ -25,6 +26,7 @@ interface Props {
   onOpenChange: (open: boolean) => void
   opportunityTitle: string
   applications: ApplicationWithProfile[]
+  flowContract: `0x${string}`
 }
 
 function getStatusBadge(status: number) {
@@ -40,8 +42,8 @@ function getStatusBadge(status: number) {
   }
 }
 
-export function ViewOpportunities(props: Props) {
-  const { isOpen, onOpenChange, opportunityTitle, applications } = props
+export function ViewApplications(props: Props) {
+  const { isOpen, onOpenChange, opportunityTitle, applications, flowContract } = props
 
   return (
     <>
@@ -58,7 +60,7 @@ export function ViewOpportunities(props: Props) {
                   <TableHead>Date</TableHead>
                   <TableHead>Builder</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right" />
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -105,15 +107,24 @@ export function ViewOpportunities(props: Props) {
                     </TableCell>
                     <TableCell>{getStatusBadge(application.isOnchain ? 1 : 0)}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm" asChild>
-                        <a
-                          href={`/draft/${application.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View
-                        </a>
-                      </Button>
+                      <div className="flex items-center justify-end space-x-2">
+                        {!application.isOnchain && (
+                          <AddRecipientToFlowButton
+                            draft={application}
+                            contract={flowContract}
+                            size="sm"
+                          />
+                        )}
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={`/draft/${application.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {application.isOnchain ? "View" : "Review"}
+                          </a>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

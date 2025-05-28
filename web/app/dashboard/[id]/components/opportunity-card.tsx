@@ -8,9 +8,8 @@ import pluralize from "pluralize"
 import { toast } from "sonner"
 import { deleteOpportunity } from "./delete-opportunity"
 import { ApplyOpportunity } from "./apply-opportunity"
-import { ApplicationWithProfile, ViewOpportunities } from "./view-opportunities"
+import { ApplicationWithProfile, ViewApplications } from "./view-applications"
 import { User } from "@/lib/auth/user"
-import { Draft } from "@prisma/flows"
 import { useState } from "react"
 
 interface Props {
@@ -20,10 +19,11 @@ interface Props {
   canManage: boolean
   user: User | undefined
   applications: ApplicationWithProfile[]
+  flowContract: `0x${string}`
 }
 
 export function OpportunityCard(props: Props) {
-  const { id, title, applicationsCount, canManage, user, applications } = props
+  const { id, title, applicationsCount, canManage, user, applications, flowContract } = props
   const router = useRouter()
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
@@ -74,11 +74,12 @@ export function OpportunityCard(props: Props) {
         )}
       </div>
 
-      <ViewOpportunities
+      <ViewApplications
         isOpen={isViewModalOpen}
         onOpenChange={setIsViewModalOpen}
         opportunityTitle={title}
         applications={applications}
+        flowContract={flowContract}
       />
     </div>
   )

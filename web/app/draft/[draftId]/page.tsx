@@ -69,6 +69,8 @@ export default async function DraftPage(props: Props) {
   const isManager = flow.manager === user?.address
   const edit = searchParams.edit === "true"
 
+  const flowLink = flow.isOnchainStartup ? `/dashboard/${flow.id}` : `/flow/${flow.id}/drafts`
+
   return (
     <div className="container mt-2.5 flex grow flex-col pb-12 md:mt-6">
       <div className="flex flex-col max-md:space-y-4 md:flex-row md:items-center md:justify-between">
@@ -81,7 +83,7 @@ export default async function DraftPage(props: Props) {
             <BreadcrumbSeparator />
 
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/flow/${flow.id}/drafts`}>{flow.title} Drafts</BreadcrumbLink>
+              <BreadcrumbLink href={flowLink}>{flow.title} Drafts</BreadcrumbLink>
             </BreadcrumbItem>
 
             <BreadcrumbSeparator />
@@ -122,14 +124,15 @@ export default async function DraftPage(props: Props) {
         </div>
 
         <div className="space-y-4 md:col-span-2">
-          {opportunity && !isOnchain && (
+          {opportunity && (
             <Card>
               <CardHeader>
                 <CardTitle>Opportunity</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm">
-                  Applied for the <strong>{opportunity.position}</strong> opening
+                  {isOnchain ? "Hired for the " : "Applied for the "}
+                  <strong>{opportunity.position}</strong> opening
                 </p>
               </CardContent>
             </Card>

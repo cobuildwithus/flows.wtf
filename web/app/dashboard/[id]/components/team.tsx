@@ -68,6 +68,7 @@ export async function Team(props: Props) {
               canManage={canManage}
               user={user}
               applications={o.applications}
+              flowContract={o.flowId as `0x${string}`}
             />
           ))}
           {canManage && <AddOpportunity budgets={budgets} startupId={startup.id} />}
@@ -85,6 +86,7 @@ async function getOpportunitiesWithProfiles(startupId: string) {
       position: true,
       _count: { select: { drafts: true } },
       drafts: true,
+      flowId: true,
     },
     where: { startupId, status: 1 },
   })

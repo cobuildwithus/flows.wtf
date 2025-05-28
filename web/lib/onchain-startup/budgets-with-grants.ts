@@ -9,6 +9,7 @@ export const getBudgetsWithGrants = async (id: string, allocator: string) => {
     orderBy: { createdAt: "asc" },
     include: {
       subgrants: {
+        where: { isActive: true },
         include: { derivedData: true },
       },
     },
