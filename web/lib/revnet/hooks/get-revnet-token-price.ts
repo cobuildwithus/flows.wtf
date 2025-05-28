@@ -1,6 +1,6 @@
 "use server"
 
-import { juiceboxDb } from "@/lib/database/juicebox-db"
+import database from "@/lib/database/flows-db"
 
 // Helper to calculate the decay factor based on weight cut and cycles passed
 function calculateDecayFactor(weightCutPercent: number, cyclesPassed: number): number {
@@ -40,7 +40,7 @@ export const getRevnetTokenPrice = async (
     const currentTime = Math.floor(Date.now() / 1000)
 
     // Find the currently active ruleset
-    const activeRuleset = await juiceboxDb.ruleset.findFirst({
+    const activeRuleset = await database.juiceboxRuleset.findFirst({
       where: {
         chainId,
         projectId: Number(projectId),

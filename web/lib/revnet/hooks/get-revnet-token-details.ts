@@ -1,6 +1,6 @@
 "use server"
 
-import { juiceboxDb } from "@/lib/database/juicebox-db"
+import database from "@/lib/database/flows-db"
 
 export async function getRevnetTokenDetails(
   projectId: bigint,
@@ -11,7 +11,7 @@ export async function getRevnetTokenDetails(
   address: string | null
 }> {
   try {
-    const project = await juiceboxDb.project.findUnique({
+    const project = await database.juiceboxProject.findUnique({
       where: {
         chainId_projectId: {
           chainId,

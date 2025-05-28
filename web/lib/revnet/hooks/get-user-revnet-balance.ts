@@ -1,6 +1,6 @@
 "use server"
 
-import { juiceboxDb } from "@/lib/database/juicebox-db"
+import database from "@/lib/database/flows-db"
 
 export async function getUserRevnetBalance(
   projectId: bigint,
@@ -12,7 +12,7 @@ export async function getUserRevnetBalance(
 }> {
   try {
     // First, find the project to get its suckerGroupId
-    const project = await juiceboxDb.project.findUnique({
+    const project = await database.juiceboxProject.findUnique({
       where: {
         chainId_projectId: {
           chainId,
@@ -29,7 +29,7 @@ export async function getUserRevnetBalance(
     }
 
     // Get all projects with the same suckerGroupId
-    const projects = await juiceboxDb.project.findMany({
+    const projects = await database.juiceboxProject.findMany({
       where: {
         suckerGroupId: project.suckerGroupId,
       },
@@ -40,7 +40,7 @@ export async function getUserRevnetBalance(
     })
 
     // Get all participant records for this user across all projects in the sucker group
-    const participants = await juiceboxDb.participant.findMany({
+    const participants = await database.juiceboxParticipant.findMany({
       where: {
         address: userAddress.toLowerCase(),
         OR: projects.map((p) => ({

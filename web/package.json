@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "typecheck": "tsc --noEmit",
-    "prebuild": "prisma generate --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints && prisma generate --schema=./lib/database/juicebox.prisma --no-hints",
+    "prebuild": "prisma generate --no-hints && prisma generate --schema=./lib/database/farcaster.prisma --no-hints",
     "build": "NODE_OPTIONS=--max-old-space-size=6144 next build",
     "start": "next start",
-    "db:generate": "prisma generate --no-hints && prisma generate --no-hints --schema=./lib/database/farcaster.prisma && prisma generate --no-hints --schema=./lib/database/juicebox.prisma",
+    "db:generate": "prisma generate --no-hints && prisma generate --no-hints --schema=./lib/database/farcaster.prisma",
     "lint": "next lint"
   },
   "dependencies": {
@@ -94,6 +94,6 @@
     "typescript": "^5.7.3"
   },
   "prisma": {
-    "schema": "lib/database/schema.prisma"
+    "schema": "lib/database/flows.prisma"
   }
 }

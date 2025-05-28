@@ -2,7 +2,7 @@ import type { NextConfig } from "next"
 import { imageDomains } from "./image-domains"
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@prisma/flows", "@prisma/farcaster", "@prisma/juicebox"],
+  serverExternalPackages: ["@prisma/flows", "@prisma/farcaster"],
   images: {
     remotePatterns: imageDomains.map((hostname) => ({
       protocol: "https",
