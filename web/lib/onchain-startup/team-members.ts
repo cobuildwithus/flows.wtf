@@ -12,15 +12,18 @@ export type TeamMember = {
 export async function getTeamMembers(id: string, allocator: string): Promise<TeamMember[]> {
   const budgets = await getStartupBudgets(id, allocator)
 
-  const recipients = await database.grant.findMany({
-    select: {
-      recipient: true,
-      monthlyIncomingFlowRate: true,
-      totalEarned: true,
-      tagline: true,
-    },
-    where: { parentContract: { in: budgets.map((b) => b.id) }, isActive: true },
-  })
+  const [recipients, founder] = await Promise.all([
+    database.grant.findMany({
+      select: {
+        recipient: true,
+        monthlyIncomingFlowRate: true,
+        totalEarned: true,
+        tagline: true,
+      },
+      where: { parentContract: { in: budgets.map((b) => b.id) }, isActive: true },
+    }),
+    getUserProfile("0xa5dd97000e0f5311B4dDc71f3a1E6A5b0C74aCE3"),
+  ])
 
   const uniqueMembers = Object.values(
     recipients.reduce(
@@ -39,10 +42,18 @@ export async function getTeamMembers(id: string, allocator: string): Promise<Tea
     ),
   )
 
-  return await Promise.all(
+  const members = await Promise.all(
     uniqueMembers.map(async (member) => {
       const profile = await getUserProfile(member.recipient as `0x${string}`)
       return { ...member, ...profile }
     }),
   )
+  members.push({
+    recipient: allocator,
+    monthlyIncomingFlowRate: 0,
+    totalEarned: 0,
+    tagline: "Founder",
+    ...(founder || {}),
+  })
+  return members
 }

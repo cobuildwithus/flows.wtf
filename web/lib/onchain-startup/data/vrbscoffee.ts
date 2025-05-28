@@ -3,11 +3,11 @@ import { StartupData } from "./interface"
 export const vrbscoffee = {
   accelerator: "vrbs", // path: /vrbs
   title: "VRBS Coffee",
-  tagline: "The best coffee in the world",
+  tagline: "Good Coffee for a Good Cause",
   image:
-    "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/6b5db00e-b79a-422a-0a51-3f0abe50e000/original",
+    "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/716dbbeb-c537-4b65-a843-6f96f39a7200/original",
   mission: "To make the best coffee in the world",
-  deliverables: ["Ground coffee", "Coffee beans", "Coffee accessories"],
+  deliverables: ["Ground coffee", "Community", "Positive impact"],
   shopify: {
     url: "8fab74-1b.myshopify.com",
     adminApiAccessToken: `${process.env.SHOPIFY_VRBS_COFFEE}`,

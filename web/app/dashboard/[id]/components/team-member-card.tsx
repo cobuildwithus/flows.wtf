@@ -1,8 +1,7 @@
-import "server-only"
+"use server"
 
 import { Badge } from "@/components/ui/badge"
 import { Currency } from "@/components/ui/currency"
-import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
@@ -11,8 +10,7 @@ import { TeamMemberLink } from "./team-member-link"
 export async function TeamMemberCard(props: { member: TeamMember; isAllocator: boolean }) {
   const { member, isAllocator } = props
 
-  const profile = await getUserProfile(member.recipient as `0x${string}`)
-  const { display_name, pfp_url, username } = profile
+  const { display_name, pfp_url, username } = member
 
   return (
     <div
