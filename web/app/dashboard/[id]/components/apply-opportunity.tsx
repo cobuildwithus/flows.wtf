@@ -3,6 +3,7 @@
 import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { Messages } from "@/app/chat/components/messages"
 import { MultimodalInput } from "@/app/chat/components/multimodal-input"
+import { AuthButton } from "@/components/ui/auth-button"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useLogin } from "@/lib/auth/use-login"
@@ -21,7 +22,7 @@ export function ApplyOpportunity(props: Props) {
 
   return (
     <>
-      <Button
+      <AuthButton
         size="sm"
         className="mt-3 py-0.5"
         type="button"
@@ -44,7 +45,7 @@ export function ApplyOpportunity(props: Props) {
         }}
       >
         Apply
-      </Button>
+      </AuthButton>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-screen-md pb-0 max-sm:px-0">
           <DialogHeader className="max-sm:px-4">
