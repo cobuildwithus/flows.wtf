@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { UserProfile } from "@/components/user-profile/user-profile"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"

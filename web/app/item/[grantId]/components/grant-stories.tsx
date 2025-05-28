@@ -2,7 +2,7 @@ import "server-only"
 
 import { StoryCard } from "@/app/components/story-card"
 import { FeaturedStoryCard } from "@/app/components/story-card-featured"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 interface Props {
   grantId: string
@@ -17,7 +17,6 @@ export async function GrantStories(props: Props) {
     where: { grant_ids: { has: grantId } },
     orderBy: { updated_at: "desc" },
     take: 11,
-
   })
 
   if (stories.length === 0) return null

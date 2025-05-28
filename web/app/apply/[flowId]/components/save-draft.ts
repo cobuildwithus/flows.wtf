@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { addDraftEmbedding } from "@/lib/embedding/embed-drafts"
 import { after } from "next/server"
 import { z } from "zod"

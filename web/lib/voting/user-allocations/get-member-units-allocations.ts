@@ -1,7 +1,7 @@
 "use server"
 
 import { PERCENTAGE_SCALE } from "@/lib/config"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function getMemberUnitsAllocations(flowId: string, address: `0x${string}` | null) {
   if (!address) return []

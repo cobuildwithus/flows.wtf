@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getDecryptedItem } from "@/lib/kv/kvStore"
 import { generateKVKey, SavedVote } from "@/lib/kv/disputeVote"
 import { getRevealVotesWalletClient } from "@/lib/viem/walletClient"

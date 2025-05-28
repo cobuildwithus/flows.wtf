@@ -1,7 +1,7 @@
 "use server"
 
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { isAdmin } from "@/lib/database/helpers"
 
 export async function deleteOpportunity(id: string) {

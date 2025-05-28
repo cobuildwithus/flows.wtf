@@ -1,6 +1,6 @@
 import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/voting/allocation-context"

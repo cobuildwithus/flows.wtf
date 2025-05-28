@@ -1,4 +1,4 @@
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getEthAddress } from "@/lib/utils"
 

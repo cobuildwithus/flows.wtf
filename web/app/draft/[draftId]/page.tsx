@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DateTime } from "@/components/ui/date-time"
 import { UserProfile } from "@/components/user-profile/user-profile"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getTcrCosts } from "@/lib/tcr/get-tcr-costs"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
 import type { Metadata } from "next"

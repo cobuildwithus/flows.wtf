@@ -1,7 +1,7 @@
 "use server"
 
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { Status } from "@/lib/enums"
 
 export async function countUserActiveGrants() {

@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { VotesTicker } from "@/app/components/dispute/votes-ticker"
 import { DisputeExecuteButton } from "@/app/components/dispute/dispute-execute"
 import { UserProfile } from "@/components/user-profile/user-profile"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getEthAddress } from "@/lib/utils"
 import type { Dispute, Grant, Evidence } from "@prisma/flows"
 import { DisputeDiscussionLink } from "@/app/item/[grantId]/components/dispute-discussion"

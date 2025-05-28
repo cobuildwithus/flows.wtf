@@ -1,6 +1,6 @@
 import "server-only"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function getVoters(contract: `0x${string}`, recipientId: string) {
   const voters = await database.$queryRaw<{ voter: `0x${string}`; votes_count: BigInt }[]>`

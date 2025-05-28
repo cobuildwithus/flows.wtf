@@ -1,6 +1,6 @@
 import "server-only"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { FlowSubmenu } from "../components/flow-submenu"

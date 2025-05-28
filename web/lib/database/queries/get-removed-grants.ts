@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getEthAddress } from "@/lib/utils"
 import { Status } from "@/lib/enums"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"

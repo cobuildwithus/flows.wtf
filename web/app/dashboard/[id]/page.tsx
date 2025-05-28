@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Currency } from "@/components/ui/currency"
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getStartup } from "@/lib/onchain-startup/startup"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import { getAllOrders } from "@/lib/shopify/orders"

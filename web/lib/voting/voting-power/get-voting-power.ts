@@ -7,7 +7,7 @@ import { getClient } from "@/lib/viem/client"
 import { getEthAddress } from "@/lib/utils"
 import { unstable_cache } from "next/cache"
 import { Address } from "viem"
-import database from "../../database/edge"
+import database from "../../database/flows-db"
 import { mainnet } from "viem/chains"
 
 export const getVotingPower = unstable_cache(

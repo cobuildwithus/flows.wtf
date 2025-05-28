@@ -1,7 +1,7 @@
 "use server"
 
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { canEditGrant } from "@/lib/database/helpers"
 import { postImpactSummaryRequest } from "@/lib/embedding/queue"
 

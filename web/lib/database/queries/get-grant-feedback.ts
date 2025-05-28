@@ -1,7 +1,7 @@
 "use server"
 
 import { MinimalCast } from "@/lib/types/cast"
-import { farcasterDb } from "../farcaster"
+import { farcasterDb } from "../farcaster-db"
 
 async function fetchFeedbackCasts(url: string): Promise<MinimalCast[]> {
   try {

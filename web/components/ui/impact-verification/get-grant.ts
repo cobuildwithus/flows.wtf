@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function getGrantById(grantId: string) {
   if (!grantId) return null
@@ -13,6 +13,5 @@ export async function getGrantById(grantId: string) {
       description: true,
       image: true,
     },
-
   })
 }

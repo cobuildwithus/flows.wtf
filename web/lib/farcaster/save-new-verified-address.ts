@@ -1,4 +1,4 @@
-import { farcasterDb } from "../database/farcaster"
+import { farcasterDb } from "../database/farcaster-db"
 import { fetchFarcasterUserFromApi } from "./fetch-user-from-api"
 import type { Profile } from "@prisma/farcaster"
 

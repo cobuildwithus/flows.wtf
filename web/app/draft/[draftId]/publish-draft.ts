@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function publishDraft(id: number, transactionHash: string) {
   try {

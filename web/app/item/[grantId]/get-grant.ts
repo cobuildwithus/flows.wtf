@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function getGrant(grantId: string) {
   return database.grant.findUniqueOrThrow({
@@ -25,6 +25,5 @@ export async function getGrant(grantId: string) {
         },
       },
     },
-
   })
 }

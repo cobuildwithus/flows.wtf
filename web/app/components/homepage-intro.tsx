@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { User } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import Link from "next/link"
 import { AgentChatProvider } from "../chat/components/agent-chat"
 import { GuidanceChat } from "./action-card/guidance-chat"

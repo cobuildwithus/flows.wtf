@@ -1,6 +1,6 @@
 "use server"
 
-import { farcasterDb } from "../farcaster"
+import { farcasterDb } from "../farcaster-db"
 
 export const getCastsByIds = async (castIds: number[]) => {
   if (castIds.length === 0) return []

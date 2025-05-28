@@ -1,7 +1,7 @@
 import "server-only"
 
 import { DisputeUserVote } from "@/app/components/dispute/dispute-user-vote"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import type { Grant } from "@prisma/flows"
 import { StatusDisputed } from "./status-disputed"
 import { StatusNotDisputed } from "./status-not-disputed"

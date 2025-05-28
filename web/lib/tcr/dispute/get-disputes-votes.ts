@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function getDisputeVote(disputeId: string, voter: string, arbitrator: string) {
   const disputeVote = await database.disputeVote.findFirst({

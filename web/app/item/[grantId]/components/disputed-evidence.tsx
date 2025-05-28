@@ -1,7 +1,7 @@
 import "server-only"
 
 import { UserProfile } from "@/components/user-profile/user-profile"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getEthAddress } from "@/lib/utils"
 import type { Dispute, Evidence, Grant } from "@prisma/flows"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"

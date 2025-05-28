@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { UserProfile } from "@/components/user-profile/user-profile"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { FlowSubmenu } from "../components/flow-submenu"
 import { GrantLogoCell } from "../../../../components/global/grant-logo-cell"
 import { GrantTitleCell } from "../components/grant-title-cell"

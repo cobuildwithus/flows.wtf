@@ -1,7 +1,7 @@
 "use server"
 
 import { unstable_cache } from "next/cache"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { NOUNS_FLOW } from "@/lib/config"
 
 export const getPool = unstable_cache(

@@ -1,5 +1,5 @@
 import { getUserProfile, Profile } from "@/components/user-profile/get-user-profile"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { getStartupBudgets } from "./budgets"
 
 export type TeamMember = {

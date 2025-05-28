@@ -1,7 +1,7 @@
 import { getUser } from "@/lib/auth/user"
 import { NextResponse } from "next/server"
 import { getItem, saveItem } from "@/lib/kv/kvStore"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { isAdmin } from "@/lib/database/helpers"
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID

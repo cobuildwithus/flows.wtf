@@ -1,7 +1,7 @@
 import { SwapTokenButton } from "@/app/token/swap-token-button"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"

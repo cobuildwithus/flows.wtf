@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { unstable_cache } from "next/cache"
 
 export const getFlowsForParent = unstable_cache(

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import { EmptyState } from "@/components/ui/empty-state"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { canEditGrant } from "@/lib/database/helpers"
 import { getGrantFeedbackCasts } from "@/lib/database/queries/get-grant-feedback"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"

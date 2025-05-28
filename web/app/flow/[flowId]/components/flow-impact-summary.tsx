@@ -1,6 +1,6 @@
 import { ImpactDialog } from "@/app/item/[grantId]/impact/impact-dialog"
 import { Submenu } from "@/components/global/submenu"
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { FlowImpactSummaryItem } from "./flow-impact-summary-item"
 import { FlowImpactSummaryMonth } from "./flow-impact-summary-month"
 import "./flow-impact-summary.css"

@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 
 export async function fetchDelegatedTokens(address: string, flowId: string) {
   const tokenRecord = await database.grant.findUnique({

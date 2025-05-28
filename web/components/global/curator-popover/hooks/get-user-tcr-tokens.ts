@@ -1,6 +1,6 @@
 "use server"
 
-import database from "@/lib/database/edge"
+import database from "@/lib/database/flows-db"
 import { cache } from "react"
 import { getVoterDisputeVotes } from "./get-voter-dispute-votes"
 
