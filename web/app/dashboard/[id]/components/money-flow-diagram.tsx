@@ -20,6 +20,7 @@ import { ShortTeam } from "./nodes/short-team"
 import { Treasury } from "./nodes/treasury"
 import { TokenRewards } from "./nodes/token-rewards"
 import { base } from "viem/chains"
+import { JoinStartupLink } from "./join-startup-link"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -73,14 +74,11 @@ export function MoneyFlowDiagram(props: Props) {
         col: 1,
         row: 2,
         title: (
-          <Link
-            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Join {startup.title}
-          </Link>
+          <JoinStartupLink
+            startupTitle={startup.title}
+            projectId={startup.revnetProjectIds.base}
+            chainId={base.id}
+          />
         ),
         id: "user_token",
         height: 280,

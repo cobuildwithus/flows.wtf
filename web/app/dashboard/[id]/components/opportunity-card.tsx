@@ -57,9 +57,11 @@ export function OpportunityCard(props: Props) {
             )}
           </div>
           <h3 className="mt-2.5 text-sm font-medium">{title}</h3>
-          <div className="mt-0.5 text-xs text-muted-foreground">
-            {pluralize("application", applicationsCount, true)}
-          </div>
+          {canManage && (
+            <div className="mt-0.5 text-xs text-muted-foreground">
+              {pluralize("application", applicationsCount, true)}
+            </div>
+          )}
         </div>
         {!canManage && <ApplyOpportunity opportunityId={id} position={title} />}
         {canManage && (
