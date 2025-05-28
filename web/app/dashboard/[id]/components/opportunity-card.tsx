@@ -61,7 +61,7 @@ export function OpportunityCard(props: Props) {
             {pluralize("application", applicationsCount, true)}
           </div>
         </div>
-        {!canManage && <ApplyOpportunity user={user} opportunityId={id} position={title} />}
+        {!canManage && <ApplyOpportunity opportunityId={id} position={title} />}
         {canManage && (
           <Button
             size="sm"

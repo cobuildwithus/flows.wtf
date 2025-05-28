@@ -4,21 +4,16 @@ import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { Messages } from "@/app/chat/components/messages"
 import { MultimodalInput } from "@/app/chat/components/multimodal-input"
 import { AuthButton } from "@/components/ui/auth-button"
-import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useLogin } from "@/lib/auth/use-login"
-import { User } from "@/lib/auth/user"
 
 interface Props {
-  user: User | undefined
   opportunityId: string
   position: string
 }
 
 export function ApplyOpportunity(props: Props) {
-  const { user, opportunityId, position } = props
-  const { messages, restart, isOpen, setIsOpen, appendData, setMessages, reload } = useAgentChat()
-  const { login } = useLogin()
+  const { opportunityId, position } = props
+  const { messages, isOpen, setIsOpen, appendData, setMessages, reload } = useAgentChat()
 
   return (
     <>
@@ -27,11 +22,6 @@ export function ApplyOpportunity(props: Props) {
         className="mt-3 py-0.5"
         type="button"
         onClick={() => {
-          if (!user) {
-            login()
-            return
-          }
-
           appendData({ opportunityId })
           setMessages([
             {
