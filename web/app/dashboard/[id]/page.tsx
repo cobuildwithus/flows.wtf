@@ -96,7 +96,7 @@ export default async function GrantPage(props: Props) {
       </div>
 
       <div className="container mt-3 grid grid-cols-12 gap-x-2 gap-y-4 lg:gap-x-4">
-        <div className="relative col-span-full lg:col-span-7">
+        <div className="relative col-span-full lg:col-span-8">
           <div className="relative h-full min-h-56 overflow-hidden rounded-xl">
             <Image
               src={getIpfsUrl(image, "pinata")}
@@ -115,12 +115,8 @@ export default async function GrantPage(props: Props) {
           </div>
         </div>
 
-        <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-5 lg:grid-cols-2 lg:gap-x-4">
+        <div className="col-span-full grid grid-cols-1 gap-x-3 gap-y-4 lg:col-span-4 lg:gap-x-4">
           {gradients && mission && <MissionCard gradient={gradients.mission} text={mission} />}
-
-          {deliverables && gradients && (
-            <DeliverablesCard gradient={gradients?.deliverables} deliverables={deliverables} />
-          )}
         </div>
       </div>
 

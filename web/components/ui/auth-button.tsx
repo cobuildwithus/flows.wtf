@@ -12,11 +12,13 @@ export const AuthButton = forwardRef(function AuthButton(
   { onConnect, onClick, ...props }: Props,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const { handleClick: authHandleClick } = useAuthClick(onConnect)
+  const { handleClick: authHandleClick, address } = useAuthClick(onConnect)
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     authHandleClick(e)
-    onClick?.(e)
+    if (address && onClick) {
+      onClick(e)
+    }
   }
 
   return <Button ref={ref} type="button" onClick={handleClick} {...props} />
