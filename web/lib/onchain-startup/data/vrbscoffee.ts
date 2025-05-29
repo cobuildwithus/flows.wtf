@@ -44,16 +44,6 @@ export const vrbscoffee = {
         "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/5e973b20-0817-4da4-2c35-2ca29e89d000/original",
     },
   ],
-  gradients: {
-    mission: {
-      light: { gradientStart: "#FFF6D5", gradientEnd: "#C2A878", text: "#2D1B00" },
-      dark: { gradientStart: "#4B2E05", gradientEnd: "#BFA76A", text: "#FFF6D5" },
-    },
-    deliverables: {
-      light: { gradientStart: "#B6E388", gradientEnd: "#FFF6D5", text: "#1A3A1A" },
-      dark: { gradientStart: "#295C2F", gradientEnd: "#BFA76A", text: "#FFFDEB" },
-    },
-  },
   diagram: {
     action: { name: "Order coffee" },
     receive: {
@@ -62,17 +52,9 @@ export const vrbscoffee = {
     },
   },
   splits: {
-    team: 0.4,
+    team: 0.8,
     support: 0.1,
     treasury: 0.1,
-    costs: [
-      {
-        name: "Farmers & Roasting",
-        amount: 0.4,
-        image:
-          "https://images.unsplash.com/photo-1746623691157-c4c7a3bad0c4?q=80&w=1750&auto=format&fit=crop",
-        description: "Plantation X in Peru",
-      },
-    ],
+    costs: [],
   },
-} satisfies StartupData
+} as StartupData

@@ -41,7 +41,7 @@ export async function ProductsTable(props: Props) {
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
-                <TableCell className="p-0">
+                <TableCell className="truncate p-0">
                   <a
                     href={product.url}
                     target="_blank"
@@ -53,10 +53,12 @@ export async function ProductsTable(props: Props) {
                       alt={product.name}
                       width={40}
                       height={40}
-                      className="rounded-md object-cover"
+                      className="rounded-md object-cover max-sm:size-8"
                     />
                     <div className="flex flex-col gap-1">
-                      <h3 className="text-sm font-medium leading-tight">{product.name}</h3>
+                      <h3 className="line-clamp-1 truncate text-xs font-medium leading-tight sm:text-sm">
+                        {product.name}
+                      </h3>
                       <p className="text-[10px] leading-tight text-muted-foreground">
                         {product.stock} in stock
                       </p>
