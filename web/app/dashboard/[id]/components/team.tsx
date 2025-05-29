@@ -10,7 +10,7 @@ import { isAdmin } from "@/lib/database/helpers"
 import { getBudgetsWithGrants } from "@/lib/onchain-startup/budgets-with-grants"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
-import { AddOpportunity } from "./add-opportunity"
+import { CreateOpportunity } from "./create-opportunity"
 import { AllocateBudgets } from "./allocate-budgets"
 import { OpportunityCard } from "./opportunity-card"
 import { TeamMemberCard } from "./team-member-card"
@@ -66,12 +66,13 @@ export async function Team(props: Props) {
               title={o.position}
               applicationsCount={o._count.drafts}
               canManage={canManage}
-              user={user}
               applications={o.applications}
+              expectedMonthlySalary={o.expectedMonthlySalary}
               flowContract={o.flowId as `0x${string}`}
+              user={user}
             />
           ))}
-          {canManage && <AddOpportunity budgets={budgets} startupId={startup.id} />}
+          {canManage && <CreateOpportunity budgets={budgets} startupId={startup.id} />}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
@@ -87,6 +88,7 @@ async function getOpportunitiesWithProfiles(startupId: string) {
       _count: { select: { drafts: true } },
       drafts: true,
       flowId: true,
+      expectedMonthlySalary: true,
     },
     where: { startupId, status: 1 },
   })

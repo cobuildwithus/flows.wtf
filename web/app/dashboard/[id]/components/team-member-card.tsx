@@ -30,7 +30,7 @@ export async function TeamMemberCard(props: { member: TeamMember; isAllocator: b
       />
       <div className="flex flex-col">
         <div>
-          <Badge>
+          <Badge variant="secondary">
             <Currency>{member.monthlyIncomingFlowRate.toString()}</Currency> /mo
           </Badge>
           <h3 className="mt-2.5 text-sm font-medium">

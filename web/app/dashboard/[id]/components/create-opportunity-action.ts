@@ -11,6 +11,7 @@ const schema = z.object({
   applicationRequirements: z.string().trim().min(1, "Application requirements are required"),
   flowId: z.string().trim().min(1, "Budget is required"),
   startupId: z.string().trim().min(1, "Startup ID is required"),
+  expectedMonthlySalary: z.string(),
 })
 
 export async function createOpportunity(formData: FormData) {
@@ -26,6 +27,9 @@ export async function createOpportunity(formData: FormData) {
       throw new Error(Object.values(errors).flat().join(", "))
     }
 
+    const expectedMonthlySalary = Number(validation.data.expectedMonthlySalary)
+    if (expectedMonthlySalary < 5) throw new Error("Expected monthly salary must be at least $5")
+
     const budget = await database.grant.findUnique({
       where: { id: validation.data.flowId },
       select: { allocator: true },
@@ -36,7 +40,12 @@ export async function createOpportunity(formData: FormData) {
     const canManage = user.address === budget.allocator || isAdmin(user.address)
     if (!canManage) throw new Error("Unauthorized")
 
-    await database.opportunity.create({ data: validation.data })
+    await database.opportunity.create({
+      data: {
+        ...validation.data,
+        expectedMonthlySalary: Number(validation.data.expectedMonthlySalary),
+      },
+    })
 
     return { error: false }
   } catch (error) {

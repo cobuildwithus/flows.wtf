@@ -19,8 +19,9 @@ export function ApplyOpportunity(props: Props) {
     <>
       <AuthButton
         size="sm"
-        className="mt-3 py-0.5"
+        className="w-full rounded-sm py-0.5"
         type="button"
+        variant="ai-primary"
         onClick={() => {
           appendData({ opportunityId })
           setMessages([
@@ -40,7 +41,7 @@ export function ApplyOpportunity(props: Props) {
         <DialogContent className="max-w-screen-md pb-0 max-sm:px-0">
           <DialogHeader className="max-sm:px-4">
             <DialogTitle className="flex items-center justify-between">
-              <span className="truncate py-1">Application</span>
+              <span className="truncate py-1">Join our team</span>
             </DialogTitle>
           </DialogHeader>
           <div className="flex h-[calc(100dvh-100px)] min-w-0 flex-col">

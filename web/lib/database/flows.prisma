@@ -357,6 +357,7 @@ model Opportunity {
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
   status                  Int      @default(1) // 0: closed, 1: open
+  expectedMonthlySalary   Int      @map("expected_monthly_salary")
 
   startup      Grant         @relation("StartupOpportunity", fields: [startupId], references: [id])
   budget       Grant         @relation("StartupBudgetOpportunity", fields: [flowId], references: [id])

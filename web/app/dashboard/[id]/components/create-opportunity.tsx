@@ -24,14 +24,16 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useFormStatus } from "react-dom"
 import { toast } from "sonner"
-import { createOpportunity } from "./create-opportunity"
+import { createOpportunity } from "./create-opportunity-action"
+import { TooltipContent } from "@/components/ui/tooltip"
+import { Tooltip, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Props {
   budgets: Array<{ id: string; title: string; monthlyIncomingFlowRate: string }>
   startupId: string
 }
 
-export function AddOpportunity(props: Props) {
+export function CreateOpportunity(props: Props) {
   const { budgets, startupId } = props
 
   const [open, setOpen] = useState(false)
@@ -58,8 +60,8 @@ export function AddOpportunity(props: Props) {
               <Badge variant="outline" className="py-0 text-[11px]">
                 Manage
               </Badge>
-              <h3 className="mt-2.5 text-sm font-medium">Add Opportunity</h3>
-              <div className="mt-0.5 text-xs text-muted-foreground">Create a new job posting</div>
+              <h3 className="mt-2.5 text-sm font-medium">Create Opportunity</h3>
+              <div className="mt-0.5 text-xs text-muted-foreground">Hire a new colleague</div>
             </div>
             <Button size="sm" className="mt-3 py-0.5" variant="secondary">
               + Add new
@@ -67,7 +69,7 @@ export function AddOpportunity(props: Props) {
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-lg">
+      <DialogContent className="w-full max-w-xl">
         <DialogHeader>
           <DialogTitle>Add New Opportunity</DialogTitle>
         </DialogHeader>
@@ -100,7 +102,7 @@ export function AddOpportunity(props: Props) {
             <Textarea
               id="applicationRequirements"
               name="applicationRequirements"
-              placeholder="What types of information you want to collect from the applicant? Examples: portfolio link, DAO memberships or involvements, social profiles, etc."
+              placeholder="Other questions or info you want to ask from the applicant..."
               className="min-h-[120px]"
               required
             />
@@ -122,6 +124,46 @@ export function AddOpportunity(props: Props) {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5">
+              <Label htmlFor="expectedMonthlySalary" className="text-xs">
+                Expected monthly salary
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-muted text-[10px] text-muted-foreground hover:bg-muted/80"
+                  >
+                    ?
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-sm font-medium">How much to pay this person monthly?</p>
+                  <p className="max-w-xs text-xs">
+                    Budgets may change but give your best guess based on current budget and how many
+                    people you plan to hire.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <div className="relative">
+              <Input
+                id="expectedMonthlySalary"
+                name="expectedMonthlySalary"
+                placeholder="250"
+                required
+                type="number"
+                min={5}
+                max={1e6}
+                className="pl-6"
+              />
+              <div className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+                $
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
