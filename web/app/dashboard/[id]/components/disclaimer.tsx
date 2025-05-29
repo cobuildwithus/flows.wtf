@@ -17,7 +17,7 @@ export function Disclaimer({ startupTitle }: Props) {
         onClick={() => setShowDisclaimer(!showDisclaimer)}
         className="flex w-full items-center justify-between text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
-        <span>Important information</span>
+        <span>Important info</span>
         {showDisclaimer ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </button>
 
