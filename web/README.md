@@ -26,7 +26,7 @@ You can find helpful scripts in the `package.json` for managing the database:
 - `pnpm db:push`: Apply changes to your local database schema
 - `pnpm db:generate`: Generate Prisma client based on your schema.
 
-The Prisma schema is located at `lib/database/schema.prisma`.
+The Prisma schema is located at `lib/database/flows.prisma`.
 
 ### Running the Development Server
 
@@ -71,6 +71,6 @@ This command will automatically run `prisma migrate deploy` before building, ens
 ## Additional Information
 
 - The project uses Next.js for server-side rendering and routing.
-- Prisma is used as an ORM for database operations. The schema file (`schema.prisma`) defines your data model and database structure.
+- Prisma is used as an ORM for database operations. The schema file (`flows.prisma`) defines your data model and database structure.
 - Tailwind CSS is used for styling. You can customize the configuration in the `tailwind.config.ts` file.
 - The project includes various other tools and libraries like `@tanstack/react-query`, `viem`, and `wagmi`
