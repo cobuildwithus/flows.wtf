@@ -42,7 +42,7 @@ export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
   const { width } = useWindowSize()
 
-  if (!width) return <Skeleton height={500} className="mt-4" />
+  if (!width) return <Skeleton height={614} className="mt-4" />
 
   const { splits, diagram } = startup
   const isMobile = checkMobile(width)

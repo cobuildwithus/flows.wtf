@@ -10,6 +10,7 @@ import { isAdmin } from "@/lib/database/helpers"
 import { BudgetWithProfiles, getBudgetsWithGrants } from "@/lib/onchain-startup/budgets-with-grants"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
+import { cn } from "@/lib/utils"
 import { CreateOpportunity } from "./create-opportunity"
 import { AllocateBudgets } from "./allocate-budgets"
 import { OpportunityCard } from "./opportunity-card"
@@ -41,32 +42,47 @@ export async function Team(props: Props) {
       data={{ startupId: startup.id }}
       identityToken={privyIdToken}
     >
-      <div className="relative h-full w-9 shrink-0">
-        <div className="absolute left-4 top-5 z-10 origin-right -translate-x-full -rotate-90 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground">
-          Meet the team
+      <div className="container flex p-0 max-sm:flex-col">
+        <div className="flex">
+          <SectionLabel label="Meet the team" />
+          <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
+            <div className="flex space-x-4">
+              <AllocateBudgets
+                isAllocator={canAllocate}
+                isManager={canManage}
+                flows={budgets}
+                grants={budgets.map((b) => b.subgrants)}
+              >
+                {members.map((m) => (
+                  <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
+                ))}
+              </AllocateBudgets>
+              <div className="hidden sm:block">
+                <OpportunitiesSection
+                  canManage={canManage}
+                  budgets={budgets}
+                  startupId={startup.id}
+                  user={user}
+                />
+              </div>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
+
+        <div className="flex sm:hidden">
+          <SectionLabel label="Join the team" />
+          <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
+            <OpportunitiesSection
+              canManage={canManage}
+              budgets={budgets}
+              startupId={startup.id}
+              user={user}
+            />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
-      <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
-        <div className="flex space-x-4">
-          <AllocateBudgets
-            isAllocator={canAllocate}
-            isManager={canManage}
-            flows={budgets}
-            grants={budgets.map((b) => b.subgrants)}
-          >
-            {members.map((m) => (
-              <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
-            ))}
-          </AllocateBudgets>
-          <OpportunitiesSection
-            canManage={canManage}
-            budgets={budgets}
-            startupId={startup.id}
-            user={user}
-          />
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
     </AgentChatProvider>
   )
 }
@@ -84,7 +100,7 @@ async function OpportunitiesSection({
 }) {
   const opportunitiesWithProfiles = await getOpportunitiesWithProfiles(startupId)
   return (
-    <>
+    <div className="flex space-x-4">
       {opportunitiesWithProfiles.map((o) => (
         <OpportunityCard
           key={o.id}
@@ -99,7 +115,7 @@ async function OpportunitiesSection({
         />
       ))}
       {canManage && <CreateOpportunity budgets={budgets} startupId={startupId} />}
-    </>
+    </div>
   )
 }
 
@@ -126,5 +142,25 @@ async function getOpportunitiesWithProfiles(startupId: string) {
       )
       return { ...opportunity, applications: applicationsWithProfiles }
     }),
+  )
+}
+
+interface SectionLabelProps {
+  label: string
+  topClassName?: string
+}
+
+function SectionLabel({ label, topClassName = "top-3 md:top-5" }: SectionLabelProps) {
+  return (
+    <div className="relative h-full w-9 shrink-0">
+      <div
+        className={cn(
+          "absolute left-4 z-10 origin-right -translate-x-full -rotate-90 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground",
+          topClassName,
+        )}
+      >
+        {label}
+      </div>
+    </div>
   )
 }
