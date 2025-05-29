@@ -1,8 +1,8 @@
 "use client"
 
-import { Currency } from "@/components/ui/currency"
 import { User } from "@/lib/auth/user"
 import { Grant } from "@/lib/database/types"
+import useWindowSize from "@/lib/hooks/use-window-size"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
@@ -11,16 +11,17 @@ import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/
 import "@xyflow/react/dist/style.css"
 import Image from "next/image"
 import Link from "next/link"
+import { base } from "viem/chains"
+import { JoinStartupLink } from "./join-startup-link"
 import { BuyRevnetToken } from "./nodes/buy-revnet-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { Products } from "./nodes/products"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
-import { Treasury } from "./nodes/treasury"
 import { TokenRewards } from "./nodes/token-rewards"
-import { base } from "viem/chains"
-import { JoinStartupLink } from "./join-startup-link"
+import { Treasury } from "./nodes/treasury"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -39,25 +40,64 @@ interface Props {
 
 export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
+  const { width } = useWindowSize()
+
+  if (!width) return <Skeleton height={500} className="mt-4" />
 
   const { splits, diagram } = startup
+  const isMobile = checkMobile(width)
 
   const { nodes, height } = generateDiagram(
     [
-      { col: 1, data: { label: "You support", image: user?.avatar } },
+      {
+        col: 1,
+        data: {
+          label: "You support",
+          image: user?.avatar,
+          handles: isMobile ? [{ type: "source", position: Position.Bottom }] : [],
+        },
+      },
       {
         col: 2,
         data: {
-          label: startup.title,
           handles: [
-            { type: "target", position: Position.Left },
-            { type: "source", position: Position.Right },
+            { type: "target", position: isMobile ? Position.Top : Position.Left },
+            { type: "source", position: isMobile ? Position.Bottom : Position.Right },
           ],
           className: "bg-accent dark:bg-accent/25 text-accent-foreground",
-          image: startup.image,
+          contentHeight: 200,
+          content: (
+            <div className="relative flex h-[200px] flex-col items-start justify-end p-5 text-left">
+              <Image
+                src={getIpfsUrl(startup.image, "pinata")}
+                alt={startup.title}
+                width={298}
+                height={200}
+                className="absolute inset-0 size-full object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/80 to-accent dark:from-transparent dark:via-black/60 dark:to-black/75" />
+
+              <div className="relative">
+                <h3 className="text-2xl font-bold tracking-tight text-accent-foreground dark:text-white sm:text-3xl">
+                  {startup.title}
+                </h3>
+                <div className="mt-1 text-sm text-accent-foreground/90 dark:text-white/90 sm:text-base">
+                  {startup.mission}
+                </div>
+              </div>
+            </div>
+          ),
         },
       },
-      { col: 3, data: { label: "You receive", image: user?.avatar } },
+      {
+        col: 3,
+        data: {
+          label: "You receive",
+          image: user?.avatar,
+          handles: isMobile ? [{ type: "target", position: Position.Top }] : [],
+        },
+      },
     ],
     [
       {
@@ -68,7 +108,7 @@ export function MoneyFlowDiagram(props: Props) {
         title: startup.diagram.action.name,
         className: "bg-background dark:bg-background/50 shadow",
         content: <Products products={products.slice(0, 10)} />,
-        handles: [{ type: "source", position: Position.Right }],
+        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
         col: 1,
@@ -83,7 +123,7 @@ export function MoneyFlowDiagram(props: Props) {
         id: "user_token",
         height: 280,
         content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
-        handles: [{ type: "source", position: Position.Right }],
+        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
         col: 2,
@@ -127,22 +167,11 @@ export function MoneyFlowDiagram(props: Props) {
       ...splits.costs.map((c, ci) => ({
         col: 2,
         row: 4 + ci,
-        height: c.image ? 260 : 92,
+        height: 92,
         id: `costs_${c.name}_${ci}`,
         title: [c.name, `${c.amount * 100}%`],
         content: (
-          <div>
-            {c.image && (
-              <Image
-                src={c.image}
-                alt={c.description}
-                className="aspect-video h-auto w-full rounded-md object-cover"
-                width={298}
-                height={168}
-              />
-            )}
-            <div className="mt-1.5 text-center text-xs text-muted-foreground">{c.description}</div>
-          </div>
+          <div className="mb-2.5 text-pretty text-sm text-muted-foreground">{c.description}</div>
         ),
       })),
       {
@@ -159,7 +188,7 @@ export function MoneyFlowDiagram(props: Props) {
             <Reviews reviews={startup.reviews} />
           </>
         ),
-        handles: [{ type: "target", position: Position.Left }],
+        handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
       },
       {
         col: 3,
@@ -187,14 +216,14 @@ export function MoneyFlowDiagram(props: Props) {
             ))}
           </div>
         ),
-        handles: [{ type: "target", position: Position.Left }],
+        handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
       },
       {
         col: 3,
         row: 3,
         id: "token",
         title: `Token rewards`,
-        handles: [{ type: "target", position: Position.Left }],
+        handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
         height: 95,
         content: (
           <TokenRewards
@@ -205,20 +234,28 @@ export function MoneyFlowDiagram(props: Props) {
         ),
       },
     ],
+    width - 34,
   )
 
   return (
-    <div style={{ width: "100%", height: height + 160 }}>
+    <div style={{ width: "100%", height }} className="max-sm:mt-4">
       <ReactFlow
         defaultNodes={nodes}
-        defaultEdges={[
-          { id: "c1_c2_1", source: "user_action", target: "column_2" },
-          { id: "c1_c2_5", source: "user_token", target: "column_2" },
-          { id: "c2_c3_1", source: "column_2", target: "product" },
-          { id: "c2_c3_2", source: "column_2", target: "impact" },
-          { id: "c2_c3_3", source: "column_2", target: "token" },
-        ]}
-        fitView
+        defaultEdges={
+          isMobile
+            ? [
+                { id: "c1_c2", source: "column_1", target: "column_2" },
+                { id: "c2_c3", source: "column_2", target: "column_3" },
+              ]
+            : [
+                { id: "c1_c2_1", source: "user_action", target: "column_2" },
+                { id: "c1_c2_5", source: "user_token", target: "column_2" },
+                { id: "c2_c3_1", source: "column_2", target: "product" },
+                { id: "c2_c3_2", source: "column_2", target: "impact" },
+                { id: "c2_c3_3", source: "column_2", target: "token" },
+              ]
+        }
+        fitView={width > 768}
         fitViewOptions={{ minZoom: 0.75 }}
         panOnDrag={false}
         nodesDraggable={false}
@@ -237,48 +274,57 @@ export function MoneyFlowDiagram(props: Props) {
           style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
         }}
       >
-        <Background gap={32} offset={-10} />
+        {!isMobile && <Background gap={32} />}
       </ReactFlow>
     </div>
   )
 }
 
-type ColumnProps = { col: number; data: IGroupNode["data"] }
+type ColumnProps = { col: number; data: IGroupNode["data"]; content?: React.ReactNode }
 type ItemProps = { col: number; row: number; id: string; height?: number } & IDashboardNode["data"]
 
 function generateDiagram(
   columns: ColumnProps[],
   items: ItemProps[],
+  width: number,
 ): { nodes: Node[]; height: number } {
   const colNodes: Node[] = []
   const itemsNodes: Node[] = []
 
   let height = 0
 
+  const isMobile = width < 768
+
   for (const c of columns) {
     const colItems = items.filter((i) => i.col === c.col)
     const itemsCount = colItems.length
+    const contentHeight = c.data.contentHeight || 32
     const itemsHeight = colItems.reduce((acc, item) => acc + (item.height ?? ROW_HEIGHT), 0)
-    colNodes.push(...group(c, itemsCount, itemsHeight))
 
-    if (itemsHeight > height) height = itemsHeight
+    colNodes.push(...group(c, itemsCount, itemsHeight, width, height))
 
-    let currentItemsHeight = 0
+    let y = contentHeight + GROUP_PADDING
+
     for (const item of colItems) {
       const { id, col, row, height = ROW_HEIGHT, ...data } = item
       itemsNodes.push({
         id,
         parentId: `column_${col}`,
         type: "dashboard",
-        position: {
-          x: getX(1) + GROUP_PADDING,
-          y: GROUP_PADDING + 32 + currentItemsHeight + Math.max(0, ROW_SPACING * (row - 1)),
-        },
+        position: { x: isMobile ? 8 : getX(1) + GROUP_PADDING, y },
         data,
-        width: COLUMN_WIDTH,
+        width: isMobile ? width - 16 : COLUMN_WIDTH,
         height,
       })
-      currentItemsHeight += height
+      y += height + ROW_SPACING
+    }
+
+    y += GROUP_PADDING
+
+    if (isMobile) {
+      height += y + 16
+    } else {
+      if (itemsHeight > height) height = y
     }
   }
 
@@ -293,25 +339,38 @@ function group(
   props: ColumnProps,
   itemsCount: number,
   itemsHeight: number,
+  screenWidth: number,
+  marginTop: number,
 ): [IGroupNode, IGroupAnchorNode] {
   const { col, data } = props
-  const width = COLUMN_WIDTH + GROUP_PADDING * 2
 
-  const height = itemsHeight + itemsCount * ROW_SPACING + GROUP_PADDING * 2 + 16
+  const contentHeight = data.contentHeight || 32
+  const isMobile = checkMobile(screenWidth)
+
+  const width = isMobile ? screenWidth : COLUMN_WIDTH + GROUP_PADDING * 2
+  const height = contentHeight + itemsHeight + itemsCount * ROW_SPACING + GROUP_PADDING
+
+  const x = isMobile ? 0 : getX(col)
+  const y = isMobile ? (col == 1 ? 0 : marginTop + (col - 1) * 16) : 0
+
   return [
     {
       id: `column_${col}_group`,
       type: "group",
       data,
-      position: { x: getX(col), y: 0 },
+      position: { x, y },
       style: { width, height, background: "transparent", border: "none", padding: 0 },
     },
     {
       id: `column_${col}`,
       type: "groupAnchor",
       data,
-      position: { x: getX(col), y: 0 },
+      position: { x, y },
       style: { width, height },
     },
   ]
+}
+
+function checkMobile(width: number) {
+  return width < 768
 }
