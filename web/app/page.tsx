@@ -15,7 +15,6 @@ import Footer from "@/components/global/footer"
 
 export default async function Home() {
   const pool = await getPool()
-
   const [activeFlows, user] = await Promise.all([
     database.grant.findMany({
       // just nouns flows for now
