@@ -9,9 +9,13 @@ import {
 } from "@/components/ui/chart"
 import { MonthlySales } from "@/lib/shopify/summary"
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { BringRevenueOnchain } from "./bring-revenue-onchain"
+import { base } from "viem/chains"
 
 interface Props {
   monthlySales: MonthlySales[]
+  startupTitle: string
+  projectId: bigint
 }
 
 const chartConfig = {
@@ -20,16 +24,21 @@ const chartConfig = {
 } as const
 
 export function SalesOverview(props: Props) {
-  const { monthlySales } = props
+  const { monthlySales, startupTitle, projectId } = props
 
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
+        <div className="flex w-full flex-row items-center justify-between">
           <div>
             <CardTitle className="text-base">Revenue</CardTitle>
             <CardDescription className="mt-1 text-xs">Monthly performance</CardDescription>
           </div>
+          <BringRevenueOnchain
+            startupTitle={startupTitle}
+            projectId={projectId}
+            chainId={base.id}
+          />
         </div>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-6 pb-4 pt-2 md:grid-cols-2">
