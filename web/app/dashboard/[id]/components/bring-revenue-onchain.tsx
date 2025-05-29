@@ -85,7 +85,18 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          setAmount("")
+          setBeneficiary("")
+          setResolvedAddress(null)
+          setMemo("")
+        }
+        setIsOpen(open)
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           type="button"
