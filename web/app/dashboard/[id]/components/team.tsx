@@ -7,7 +7,7 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { User } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { isAdmin } from "@/lib/database/helpers"
-import { getBudgetsWithGrants } from "@/lib/onchain-startup/budgets-with-grants"
+import { BudgetWithProfiles, getBudgetsWithGrants } from "@/lib/onchain-startup/budgets-with-grants"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { CreateOpportunity } from "./create-opportunity"
@@ -28,10 +28,9 @@ export async function Team(props: Props) {
   const canAllocate = user?.address === startup.allocator
   // const canManage = false
 
-  const [budgets, privyIdToken, opportunitiesWithProfiles] = await Promise.all([
+  const [budgets, privyIdToken] = await Promise.all([
     getBudgetsWithGrants(startup.id, startup.allocator),
     getPrivyIdToken(),
-    getOpportunitiesWithProfiles(startup.id),
   ])
 
   return (
@@ -59,24 +58,48 @@ export async function Team(props: Props) {
               <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
             ))}
           </AllocateBudgets>
-          {opportunitiesWithProfiles.map((o) => (
-            <OpportunityCard
-              key={o.id}
-              id={o.id}
-              title={o.position}
-              applicationsCount={o._count.drafts}
-              canManage={canManage}
-              applications={o.applications}
-              expectedMonthlySalary={o.expectedMonthlySalary}
-              flowContract={o.flowId as `0x${string}`}
-              user={user}
-            />
-          ))}
-          {canManage && <CreateOpportunity budgets={budgets} startupId={startup.id} />}
+          <OpportunitiesSection
+            canManage={canManage}
+            budgets={budgets}
+            startupId={startup.id}
+            user={user}
+          />
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </AgentChatProvider>
+  )
+}
+
+async function OpportunitiesSection({
+  canManage,
+  budgets,
+  startupId,
+  user,
+}: {
+  canManage: boolean
+  budgets: BudgetWithProfiles[]
+  startupId: string
+  user: User | undefined
+}) {
+  const opportunitiesWithProfiles = await getOpportunitiesWithProfiles(startupId)
+  return (
+    <>
+      {opportunitiesWithProfiles.map((o) => (
+        <OpportunityCard
+          key={o.id}
+          id={o.id}
+          title={o.position}
+          applicationsCount={o._count.drafts}
+          canManage={canManage}
+          applications={o.applications}
+          expectedMonthlySalary={o.expectedMonthlySalary}
+          flowContract={o.flowId as `0x${string}`}
+          user={user}
+        />
+      ))}
+      {canManage && <CreateOpportunity budgets={budgets} startupId={startupId} />}
+    </>
   )
 }
 

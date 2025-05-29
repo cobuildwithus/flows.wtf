@@ -36,3 +36,5 @@ export const getBudgetsWithGrants = async (id: string, allocator: string) => {
 
   return budgetsWithProfiles
 }
+
+export type BudgetWithProfiles = Awaited<ReturnType<typeof getBudgetsWithGrants>>[number]

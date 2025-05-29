@@ -15,7 +15,7 @@ export async function TeamMemberCard(props: { member: TeamMember; isAllocator: b
   return (
     <div
       className={cn(
-        "flex min-w-64 shrink-0 items-center space-x-4 rounded-lg border bg-accent/50 p-4 dark:bg-muted/30",
+        "flex min-h-32 min-w-64 shrink-0 items-center space-x-4 rounded-lg border bg-accent/50 p-4 dark:bg-muted/30",
         {
           "hover:border-dashed hover:border-primary": isAllocator,
         },
