@@ -1,6 +1,10 @@
+"use server"
+
 import { l1Client } from "@/lib/viem/client"
 import { unstable_cache } from "next/cache"
-import { getEnsName } from "viem/ens"
+import { getEnsName, normalize } from "viem/ens"
+import { getClient } from "@/lib/viem/client"
+import { mainnet } from "viem/chains"
 
 export const getEnsNameFromAddress = unstable_cache(
   async (address: `0x${string}`): Promise<string | null> => {
@@ -27,3 +31,23 @@ export const getEnsAvatar = unstable_cache(
   ["ens-avatar"],
   { revalidate: 259200 }, // 72 hours
 )
+
+// Simple client-side ENS resolution without server caching
+export async function resolveEnsToAddress(ensName: string): Promise<string | null> {
+  try {
+    const normalizedName = normalize(ensName)
+
+    const address = await getClient(mainnet.id).getEnsAddress({
+      name: normalizedName,
+    })
+
+    console.log("Resolved address:", address)
+    return address
+  } catch (error) {
+    console.error("Failed to resolve ENS name:", ensName, error)
+    if (error instanceof Error) {
+      console.error("Error details:", error.message)
+    }
+    return null
+  }
+}

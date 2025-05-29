@@ -1,4 +1,3 @@
-import Link from "next/link"
 import {
   Dialog,
   DialogContent,
@@ -6,9 +5,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
-import { Users, Coins, TrendingUp, Vote, ChevronDown, ChevronUp } from "lucide-react"
-import { useState } from "react"
+import { Users, Coins, TrendingUp, Vote } from "lucide-react"
+import { RevnetLinkBox } from "./revnet-link-box"
+import { Disclaimer } from "./disclaimer"
 
 interface Props {
   startupTitle: string
@@ -17,8 +16,6 @@ interface Props {
 }
 
 export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
-  const [showDisclaimer, setShowDisclaimer] = useState(false)
-
   const benefits = [
     {
       icon: Users,
@@ -77,54 +74,9 @@ export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
             )
           })}
         </div>
-        <Link
-          href={getRevnetUrl(chainId, Number(projectId))}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 block rounded-lg border bg-muted/50 p-4 transition-colors hover:border-foreground/20 hover:bg-muted"
-        >
-          <div className="space-y-1.5">
-            <p className="text-sm font-medium">{startupTitle} is a Revnet</p>
-            <p className="text-xs text-muted-foreground">
-              A lightweight DAO, or 'revenue network', aligned to maximize the growth of the
-              project.
-            </p>
-            <p className="text-xs font-medium text-primary">Learn more →</p>
-          </div>
-        </Link>
+        <RevnetLinkBox startupTitle={startupTitle} projectId={projectId} chainId={chainId} />
 
-        <div className="mt-4 border-t pt-4">
-          <button
-            type="button"
-            onClick={() => setShowDisclaimer(!showDisclaimer)}
-            className="flex w-full items-center justify-between text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <span>Important information</span>
-            {showDisclaimer ? (
-              <ChevronUp className="h-3 w-3" />
-            ) : (
-              <ChevronDown className="h-3 w-3" />
-            )}
-          </button>
-
-          {showDisclaimer && (
-            <div className="mt-3 space-y-2 text-xs text-muted-foreground">
-              <p className="leading-relaxed">
-                • Tokens do not represent equity or ownership in {startupTitle}
-              </p>
-              <p className="leading-relaxed">
-                • No financial returns, income, or yield are promised or implied
-              </p>
-              <p className="leading-relaxed">
-                • Tokens function as digital support for the project, not as securities or
-                investments
-              </p>
-              <p className="leading-relaxed">
-                • Standard trading laws apply - insider trading is illegal
-              </p>
-            </div>
-          )}
-        </div>
+        <Disclaimer startupTitle={startupTitle} />
       </DialogContent>
     </Dialog>
   )

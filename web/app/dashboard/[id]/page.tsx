@@ -179,7 +179,11 @@ export default async function GrantPage(props: Props) {
           </Suspense>
         </div>
 
-        <SalesOverview monthlySales={salesSummary.monthlySales} />
+        <SalesOverview
+          monthlySales={salesSummary.monthlySales}
+          startupTitle={title}
+          projectId={startup.revnetProjectIds.base}
+        />
 
         <OrdersTable orders={orders} products={products} />
       </div>
