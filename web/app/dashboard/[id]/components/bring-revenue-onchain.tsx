@@ -20,6 +20,7 @@ import { isAddress } from "viem"
 import { Button } from "@/components/ui/button"
 import { RevnetLinkBox } from "./revnet-link-box"
 import { Disclaimer } from "./disclaimer"
+import { EnsInput } from "@/components/ui/ens-input"
 
 interface Props {
   startupTitle: string
@@ -28,13 +29,13 @@ interface Props {
 }
 
 export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props) {
-  const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const { address } = useAccount()
   const { payRevnet, isLoading } = usePayRevnet(chainId, () => {
     // Reset form and close dialog on success
     setAmount("")
     setBeneficiary("")
+    setResolvedAddress(null)
     setMemo("")
     setIsOpen(false)
   })
@@ -42,26 +43,24 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
 
   const [amount, setAmount] = useState("")
   const [beneficiary, setBeneficiary] = useState("")
+  const [resolvedAddress, setResolvedAddress] = useState<string | null>(null)
   const [memo, setMemo] = useState("")
-  const [beneficiaryError, setBeneficiaryError] = useState("")
 
   const tokenSymbol = tokenDetails?.symbol || ""
-
-  const handleBeneficiaryChange = (value: string) => {
-    setBeneficiary(value)
-    if (value && !isAddress(value)) {
-      setBeneficiaryError("Invalid Ethereum address")
-    } else {
-      setBeneficiaryError("")
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!address || !amount) return
 
+    // Use resolved address if available and beneficiary is not empty, otherwise use the input if it's a valid address
+    const finalBeneficiary = beneficiary
+      ? resolvedAddress || (isAddress(beneficiary) ? beneficiary : null)
+      : null
+
     const recipient =
-      beneficiary && isAddress(beneficiary) ? (beneficiary as `0x${string}`) : address
+      finalBeneficiary && isAddress(finalBeneficiary)
+        ? (finalBeneficiary as `0x${string}`)
+        : address
 
     await payRevnet(
       {
@@ -99,8 +98,8 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
             </div>
             <div className="space-y-3 text-sm">
               <p className="font-medium leading-relaxed">
-                When you make sales offchain (Shopify, in-person etc), you can bring your revenue
-                into the {startupTitle} revnet.
+                Sell offchain (Shopify, in-person etc) and bring your revenue into the{" "}
+                {startupTitle} revnet.
               </p>
               <div>
                 <p className="mb-2 font-medium">This helps you:</p>
@@ -142,17 +141,14 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
             <Label htmlFor="beneficiary">
               Token Recipient <span className="text-muted-foreground">(optional)</span>
             </Label>
-            <Input
+            <EnsInput
               id="beneficiary"
-              type="text"
               value={beneficiary}
-              onChange={(e) => handleBeneficiaryChange(e.target.value)}
-              placeholder={address || "0x..."}
+              onChange={setBeneficiary}
+              onResolvedAddressChange={setResolvedAddress}
+              chainId={chainId}
+              helperText="Your customer's wallet, or empty to issue tokens to yourself"
             />
-            {beneficiaryError && <p className="text-xs text-destructive">{beneficiaryError}</p>}
-            <p className="text-xs text-muted-foreground">
-              Your customer's wallet, or empty to issue tokens to yourself
-            </p>
           </fieldset>
 
           <fieldset className="space-y-2">
@@ -163,16 +159,12 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
               id="memo"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              placeholder="e.g., Sale of product X to customer Y"
+              placeholder={`Revenue brought onchain for ${startupTitle}`}
               rows={2}
             />
           </fieldset>
 
-          <AuthButton
-            type="submit"
-            disabled={isLoading || !amount || !!beneficiaryError}
-            className="w-full"
-          >
+          <AuthButton type="submit" disabled={isLoading || !amount} className="w-full py-6">
             {isLoading ? "Processing..." : "Bring revenue onchain"}
           </AuthButton>
         </form>

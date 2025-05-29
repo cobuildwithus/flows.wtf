@@ -32,7 +32,7 @@ export function SalesOverview(props: Props) {
         <div className="flex w-full flex-row items-center justify-between">
           <div>
             <CardTitle className="text-base">Revenue</CardTitle>
-            <CardDescription className="mt-1 text-xs">Monthly performance</CardDescription>
+            <CardDescription className="mt-1 text-xs">Grows the network</CardDescription>
           </div>
           <BringRevenueOnchain
             startupTitle={startupTitle}
