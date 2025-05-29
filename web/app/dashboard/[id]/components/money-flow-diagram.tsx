@@ -42,7 +42,17 @@ export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
   const { width } = useWindowSize()
 
-  if (!width) return <Skeleton height={614} className="mt-4" />
+  if (!width)
+    return (
+      <>
+        <div className="block md:hidden">
+          <Skeleton height={1000} className="mt-4" />
+        </div>
+        <div className="hidden md:block">
+          <Skeleton height={614} className="mt-4" />
+        </div>
+      </>
+    )
 
   const { splits, diagram } = startup
   const isMobile = checkMobile(width)
@@ -351,7 +361,7 @@ function group(
   const height = contentHeight + itemsHeight + itemsCount * ROW_SPACING + GROUP_PADDING
 
   const x = isMobile ? 0 : getX(col)
-  const y = isMobile ? (col == 1 ? 0 : marginTop + (col - 1) * 16) : 0
+  const y = isMobile ? (col === 1 ? 0 : marginTop + (col - 1) * 16) : 0
 
   return [
     {
