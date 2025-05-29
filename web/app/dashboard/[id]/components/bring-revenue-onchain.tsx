@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
+import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { Info } from "lucide-react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
@@ -21,6 +22,8 @@ import { Button } from "@/components/ui/button"
 import { RevnetLinkBox } from "./revnet-link-box"
 import { Disclaimer } from "./disclaimer"
 import { EnsInput } from "@/components/ui/ens-input"
+import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Props {
   startupTitle: string
@@ -40,6 +43,10 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
     setIsOpen(false)
   })
   const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
+  const { isLoading: isPriceLoading, calculateTokensFromEth } = useRevnetTokenPrice(
+    projectId,
+    chainId,
+  )
 
   const [amount, setAmount] = useState("")
   const [beneficiary, setBeneficiary] = useState("")
@@ -47,6 +54,9 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
   const [memo, setMemo] = useState("")
 
   const tokenSymbol = tokenDetails?.symbol || ""
+
+  // Calculate tokens using the hook's helper function
+  const calculatedTokens = calculateTokensFromEth(amount)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,11 +116,7 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-                    <span>Track all revenue in one place</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-                    <span>Issue ${tokenSymbol} tokens to yourself or your customers</span>
+                    <span>Earn ${tokenSymbol} tokens for yourself or your customers</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
@@ -125,16 +131,39 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
         <form onSubmit={handleSubmit} className="space-y-4">
           <fieldset className="space-y-2">
             <Label htmlFor="amount">Revenue Amount (ETH)</Label>
-            <Input
-              id="amount"
-              type="number"
-              min={0.00001}
-              step={0.00001}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.1"
-              required
-            />
+            <div className="relative">
+              <Input
+                id="amount"
+                type="number"
+                min={0.00001}
+                step={0.00001}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.1"
+                className={cn(calculatedTokens && !isPriceLoading ? "pr-32" : "")}
+                required
+              />
+              {calculatedTokens && !isPriceLoading && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
+                      <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                      <span className="text-xs text-muted-foreground">
+                        {calculatedTokens} {tokenSymbol}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent align="end">
+                    <p>How many tokens you earn</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {isPriceLoading && (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                </div>
+              )}
+            </div>
           </fieldset>
 
           <fieldset className="space-y-2">
@@ -147,7 +176,7 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
               onChange={setBeneficiary}
               onResolvedAddressChange={setResolvedAddress}
               chainId={chainId}
-              helperText="Your customer's wallet, or empty to issue tokens to yourself"
+              helperText="Your customer's wallet (leave empty for your wallet)"
             />
           </fieldset>
 
