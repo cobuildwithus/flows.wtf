@@ -28,7 +28,7 @@ export async function ProductsTable(props: Props) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="py-0">
         <Table>
           <TableHeader>
             <TableRow>

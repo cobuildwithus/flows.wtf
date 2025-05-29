@@ -141,6 +141,12 @@ export default async function GrantPage(props: Props) {
           />
         </div>
 
+        <SalesOverview
+          monthlySales={salesSummary.monthlySales}
+          startupTitle={startup.title}
+          projectId={startup.revnetProjectIds.base}
+        />
+
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <ProductsTable products={products} />
 
@@ -148,12 +154,6 @@ export default async function GrantPage(props: Props) {
             <SocialProfiles usernames={startup.socialUsernames} />
           </Suspense>
         </div>
-
-        <SalesOverview
-          monthlySales={salesSummary.monthlySales}
-          startupTitle={startup.title}
-          projectId={startup.revnetProjectIds.base}
-        />
 
         <OrdersTable orders={orders} products={products} />
       </div>
