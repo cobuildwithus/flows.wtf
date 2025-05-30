@@ -167,7 +167,7 @@ export function MoneyFlowDiagram(props: Props) {
             rel="noopener noreferrer"
             className="hover:underline"
           >
-            Treasury
+            Community fund
           </Link>,
           `${splits.treasury * 100}%`,
         ],
