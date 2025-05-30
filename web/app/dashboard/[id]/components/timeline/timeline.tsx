@@ -20,7 +20,14 @@ interface Props {
 
 export type TokenEventData = Pick<
   JuiceboxPayEvent,
-  "txHash" | "timestamp" | "payer" | "amount" | "newlyIssuedTokenCount" | "beneficiary" | "chainId"
+  | "txHash"
+  | "timestamp"
+  | "payer"
+  | "amount"
+  | "newlyIssuedTokenCount"
+  | "beneficiary"
+  | "chainId"
+  | "memo"
 > & {
   project?: { erc20Symbol: string | null } | null
 }
@@ -77,7 +84,7 @@ export async function Timeline(props: Props) {
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardContent className="space-y-6">
         <ScrollArea className="h-[400px] pr-4">
-          <ul role="list" className="space-y-6">
+          <ul role="list" className="space-y-7">
             {events.slice(0, MAX_EVENTS).map((event, i) => (
               <li
                 key={event.type + event.date.getMilliseconds() + i}
@@ -113,6 +120,7 @@ const getTokenPayments = async (projectId: number) => {
       newlyIssuedTokenCount: true,
       beneficiary: true,
       chainId: true,
+      memo: true,
       project: { select: { erc20Symbol: true } },
     },
     where: { projectId, newlyIssuedTokenCount: { gt: 0 } },

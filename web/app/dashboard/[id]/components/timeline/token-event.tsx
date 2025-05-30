@@ -27,37 +27,40 @@ export async function TokenEvent({ payment, date }: Props) {
   return (
     <>
       <TimelineIndicator image={payerProfile?.pfp_url} />
-      <div className="flex w-full items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          <ProfileLink
-            address={payment.payer as `0x${string}`}
-            username={payerProfile.username}
-            className="font-medium text-foreground hover:text-primary"
+      <div className="flex w-full flex-col gap-1.5">
+        <div className="flex w-full items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            <ProfileLink
+              address={payment.payer as `0x${string}`}
+              username={payerProfile.username}
+              className="font-medium text-foreground hover:text-primary"
+            >
+              {payerProfile.display_name}
+            </ProfileLink>{" "}
+            bought {amount.toDecimalPlaces(4).toString()} {symbol}
+            {payer !== beneficiary && (
+              <>
+                {` for `}
+                <ProfileLink
+                  address={beneficiary as `0x${string}`}
+                  username={beneficiaryProfile.username}
+                  className="font-medium text-foreground hover:text-primary"
+                >
+                  {beneficiaryProfile.username}
+                </ProfileLink>
+              </>
+            )}
+          </p>
+          <Link
+            href={explorerUrl(payment.txHash || "", payment.chainId, "tx")}
+            className="text-xs text-muted-foreground hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            {payerProfile.display_name}
-          </ProfileLink>{" "}
-          bought {amount.toDecimalPlaces(4).toString()} ${symbol}
-          {payer !== beneficiary && (
-            <>
-              {` for `}
-              <ProfileLink
-                address={beneficiary as `0x${string}`}
-                username={beneficiaryProfile.username}
-                className="font-medium text-foreground hover:text-primary"
-              >
-                {beneficiaryProfile.username}
-              </ProfileLink>
-            </>
-          )}
-        </p>
-        <Link
-          href={explorerUrl(payment.txHash || "", payment.chainId, "tx")}
-          className="text-xs text-muted-foreground hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <DateTime date={date} relative short />
-        </Link>
+            <DateTime date={date} relative short />
+          </Link>
+        </div>
+        {payment.memo && <p className="text-xs italic text-muted-foreground">{payment.memo}</p>}
       </div>
     </>
   )
