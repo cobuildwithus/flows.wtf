@@ -37,7 +37,7 @@ export async function TokenEvent({ payment, date }: Props) {
             >
               {payerProfile.display_name}
             </ProfileLink>{" "}
-            bought {amount.toDecimalPlaces(4).toString()} {symbol}
+            got {amount.toDecimalPlaces(4).toString()} {symbol}
             {payer !== beneficiary && (
               <>
                 {` for `}
