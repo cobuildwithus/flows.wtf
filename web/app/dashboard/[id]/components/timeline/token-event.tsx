@@ -21,7 +21,7 @@ export async function TokenEvent({ payment, date }: Props) {
     getUserProfile(beneficiary as `0x${string}`),
   ])
 
-  const amount = payment.newlyIssuedTokenCount.div(10 ** 19)
+  const amount = payment.newlyIssuedTokenCount.div(10 ** 18)
   const symbol = payment.project?.erc20Symbol || "TOKEN"
 
   return (
