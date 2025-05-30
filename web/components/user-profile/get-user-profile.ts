@@ -10,6 +10,7 @@ export type Profile = {
   username?: string
   pfp_url?: string
   bio?: string
+  fid?: number
 }
 
 export const getUserProfile = unstable_cache(
@@ -17,7 +18,7 @@ export const getUserProfile = unstable_cache(
     const user = await getFarcasterUserByEthAddress(address)
     return transformUser(address, user)
   },
-  ["user-profile"],
+  ["user-profile-v2"],
   { revalidate: 1800 },
 )
 
@@ -28,5 +29,6 @@ function transformUser(address: string, profile: FarcasterProfile | null) {
     username: profile?.fname || undefined,
     pfp_url: profile?.avatar_url || undefined,
     bio: profile?.bio || undefined,
+    fid: profile?.fid ? Number(profile.fid) : undefined,
   }
 }

@@ -26,6 +26,7 @@ import { ProductsTable } from "./components/products-table"
 import { SalesOverview } from "./components/sales-overview"
 import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
+import { Timeline } from "./components/timeline/timeline"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -141,13 +142,15 @@ export default async function GrantPage(props: Props) {
           />
         </div>
 
-        <SalesOverview
-          monthlySales={salesSummary.monthlySales}
-          startupTitle={startup.title}
-          projectId={startup.revnetProjectIds.base}
-        />
-
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
+          <SalesOverview
+            monthlySales={salesSummary.monthlySales}
+            startupTitle={startup.title}
+            projectId={startup.revnetProjectIds.base}
+          />
+
+          <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
+
           <ProductsTable products={products} />
 
           <Suspense>

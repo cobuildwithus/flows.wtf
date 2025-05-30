@@ -3,6 +3,7 @@ import { SocialProfileUsernames } from "@/lib/social-metrics/social-profile"
 
 export interface StartupData {
   accelerator: string
+  revnetProjectId: number
   title: string
   tagline: string
   image: string
