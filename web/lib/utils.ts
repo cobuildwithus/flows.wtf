@@ -1,7 +1,7 @@
 import { imageDomains } from "@/image-domains"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { base, baseSepolia, mainnet } from "viem/chains"
+import { arbitrum, base, baseSepolia, mainnet, optimism } from "viem/chains"
 import { nounsTokenAddress } from "./abis"
 import { NOUNS_TOKEN } from "./config"
 
@@ -19,7 +19,9 @@ export function explorerUrl(address: string, chainId: number, type: "tx" | "addr
   const explorerDomain: Record<number, string> = {
     [mainnet.id]: "etherscan.io",
     [base.id]: "basescan.org",
-    [baseSepolia.id]: "sepolia.basescan.org/",
+    [baseSepolia.id]: "sepolia.basescan.org",
+    [optimism.id]: "optimistic.etherscan.io",
+    [arbitrum.id]: "arbiscan.io",
   }
 
   if (!(chainId in explorerDomain)) throw new Error("Unsupported chain")
