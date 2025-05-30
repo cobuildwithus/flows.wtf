@@ -113,11 +113,11 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 200,
+        height: 280,
         id: "user_action",
         title: startup.diagram.action.name,
         className: "bg-background dark:bg-background/50 shadow",
-        content: <Products products={products.slice(0, 10)} />,
+        content: <Products products={products.slice(0, 10)} startup={startup} />,
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
