@@ -15,7 +15,9 @@ export interface Product {
   launchDate: string
   url: string
   variantId?: string
+  description: string
   cartLink?: string
+  stats: { sales: number; orders: number }
 }
 
 export const getProducts = unstable_cache(
@@ -29,6 +31,7 @@ export const getProducts = unstable_cache(
           handle: string
           productType: string
           publishedAt: string
+          description: string
           images: { edges: Array<{ node: { src: string } }> }
           variants: {
             edges: Array<{ node: { id: string; price: string; inventoryQuantity: number } }>
@@ -47,6 +50,7 @@ export const getProducts = unstable_cache(
             handle
             productType
             publishedAt
+            description
             images(first: 1) {
               edges {
                 node {
@@ -118,6 +122,8 @@ export const getProducts = unstable_cache(
         url: `${storeUrl}/products/${p.handle}`,
         variantId: variantIdNumeric,
         cartLink,
+        description: p.description,
+        stats,
       }
     })
   },
