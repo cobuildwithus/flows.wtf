@@ -18,15 +18,20 @@ interface Props {
   teamMembers: TeamMember[]
 }
 
+export type TokenEventData = Pick<
+  JuiceboxPayEvent,
+  "txHash" | "timestamp" | "payer" | "amount" | "newlyIssuedTokenCount" | "beneficiary" | "chainId"
+> & {
+  project?: { erc20Symbol: string | null } | null
+}
+
 type TimelineEvent =
   | { type: "order"; date: Date; data: Order }
   | { type: "cast"; date: Date; data: MinimalCast }
   | {
       type: "token"
       date: Date
-      data: Partial<JuiceboxPayEvent> & {
-        project?: { erc20Symbol: string | null } | null
-      }
+      data: TokenEventData
     }
 
 const MAX_EVENTS = 50
@@ -106,9 +111,11 @@ const getTokenPayments = async (projectId: number) => {
       payer: true,
       amount: true,
       newlyIssuedTokenCount: true,
+      beneficiary: true,
+      chainId: true,
       project: { select: { erc20Symbol: true } },
     },
-    where: { projectId },
+    where: { projectId, newlyIssuedTokenCount: { gt: 0 } },
     orderBy: { timestamp: "desc" },
     take: 30,
   })
