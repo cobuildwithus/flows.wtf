@@ -46,7 +46,7 @@ export const vrbscoffee = {
     },
   ],
   diagram: {
-    action: { name: "Coffee" },
+    action: { name: "Order coffee" },
     receive: {
       name: "Fresh roasted coffee",
       description: "Beans ready for your cup of espresso or pour over",

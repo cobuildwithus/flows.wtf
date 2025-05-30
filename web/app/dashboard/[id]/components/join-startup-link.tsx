@@ -43,7 +43,7 @@ export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
     <Dialog>
       <DialogTrigger asChild>
         <div className="flex w-full items-center justify-between gap-1">
-          <div className="cursor-pointer hover:underline">Token</div>
+          <div className="cursor-pointer hover:underline">Buy token</div>
           <button
             type="button"
             className="ml-1 inline-flex size-4 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
