@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   ChartContainer,
   ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { MonthlySales } from "@/lib/shopify/summary"
-import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
-import { BringRevenueOnchain } from "./bring-revenue-onchain"
+import { Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts"
 import { base } from "viem/chains"
+import { BringRevenueOnchain } from "./bring-revenue-onchain"
 
 interface Props {
   monthlySales: MonthlySales[]
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const chartConfig = {
-  sales: { label: "Sales", color: "hsl(var(--chart-3))" },
+  sales: { label: "Sales ($)", color: "hsl(var(--chart-3))" },
   orders: { label: "Orders", color: "hsl(var(--chart-2))" },
 } as const
 
@@ -41,26 +42,39 @@ export function SalesOverview(props: Props) {
           />
         </div>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-6 pb-4 pt-2 md:grid-cols-2">
-        <ChartContainer config={chartConfig}>
-          <LineChart data={monthlySales} accessibilityLayer>
+      <CardContent className="pb-4 pt-2">
+        <ChartContainer config={chartConfig} className="mt-4 h-[320px] w-full">
+          <ComposedChart data={monthlySales} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
             <YAxis
+              yAxisId="sales"
+              orientation="left"
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 10 }}
               tickFormatter={(value) => `$${value}`}
+              width={40}
+            />
+            <YAxis
+              yAxisId="orders"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10 }}
               width={32}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
-
-            <ChartLegend
-              content={() => (
-                <div className="text-center text-xs text-muted-foreground">Sales Volume ($)</div>
-              )}
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar
+              yAxisId="orders"
+              dataKey="orders"
+              fill="var(--color-orders)"
+              fillOpacity={0.3}
+              radius={[8, 8, 0, 0]}
             />
             <Line
+              yAxisId="sales"
               type="monotone"
               dataKey="sales"
               strokeWidth={2}
@@ -68,21 +82,7 @@ export function SalesOverview(props: Props) {
               stroke="var(--color-sales)"
               activeDot={{ r: 6, strokeWidth: 2 }}
             />
-          </LineChart>
-        </ChartContainer>
-        <ChartContainer config={chartConfig}>
-          <BarChart data={monthlySales} accessibilityLayer>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} width={32} />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend
-              content={() => (
-                <div className="text-center text-xs text-muted-foreground">Number of Orders</div>
-              )}
-            />
-            <Bar dataKey="orders" fill="var(--color-orders)" radius={8} />
-          </BarChart>
+          </ComposedChart>
         </ChartContainer>
       </CardContent>
     </Card>

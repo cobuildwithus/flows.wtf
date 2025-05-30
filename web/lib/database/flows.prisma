@@ -31,7 +31,7 @@ model Draft {
   transactionHash String?
   opportunityId   String?  @map("opportunity_id")
 
-  flow        Grant         @relation(fields: [flowId], references: [id])
+  flow        Grant        @relation(fields: [flowId], references: [id])
   opportunity Opportunity? @relation(fields: [opportunityId], references: [id])
 
   @@index([isPrivate])
@@ -359,9 +359,9 @@ model Opportunity {
   status                  Int      @default(1) // 0: closed, 1: open
   expectedMonthlySalary   Int      @map("expected_monthly_salary")
 
-  startup      Grant         @relation("StartupOpportunity", fields: [startupId], references: [id])
-  budget       Grant         @relation("StartupBudgetOpportunity", fields: [flowId], references: [id])
-  drafts       Draft[]
+  startup Grant   @relation("StartupOpportunity", fields: [startupId], references: [id])
+  budget  Grant   @relation("StartupBudgetOpportunity", fields: [flowId], references: [id])
+  drafts  Draft[]
 
   @@index([flowId])
   @@index([startupId])
@@ -369,47 +369,47 @@ model Opportunity {
   @@schema("web")
 }
 
-
 /// Juicebox tables
 
 view JuiceboxProject {
-  chainId                   Int     @map("chain_id")
-  createdAt                 Int     @map("created_at")
-  projectId                 Int     @map("project_id")
-  paymentsCount             Int     @default(0) @map("payments_count")
-  balance                   Decimal  @default(0)
-  isRevnet                  Boolean @map("is_revnet")
-  deployer                  String  @db.VarChar(42)
-  owner                     String  @db.VarChar(42)
-  erc20                     String? @db.VarChar(42)
-  erc20Supply               Decimal  @default(0) @map("erc20_supply")
-  erc20Name                 String? @map("erc20_name")
-  erc20Symbol               String? @map("erc20_symbol")
-  cashoutA                  BigInt  @default(0) @map("cashout_a")
-  cashoutB                  BigInt  @default(0) @map("cashout_b")
-  currentRulesetId          BigInt  @default(0) @map("current_ruleset_id")
-  contributorsCount         Int     @default(0) @map("contributors_count")
-  redeemCount               Int     @default(0) @map("redeem_count")
-  redeemVolume              BigInt  @default(0) @map("redeem_volume")
-  pendingReservedTokens     BigInt  @default(0) @map("pending_reserved_tokens")
-  metadataUri               String? @map("metadata_uri")
-  metadata                  Json?
-  name                      String?
-  infoUri                   String? @map("info_uri")
-  logoUri                   String? @map("logo_uri")
-  coverImageUri             String? @map("cover_image_uri")
-  twitter                   String?
-  discord                   String?
-  telegram                  String?
-  tokens                    String[]
-  domain                    String?
-  description               String?
-  tags                      String[]
-  projectTagline            String? @map("project_tagline")
-  suckerGroupId             String? @map("sucker_group_id")
+  chainId               Int      @map("chain_id")
+  createdAt             Int      @map("created_at")
+  projectId             Int      @map("project_id")
+  paymentsCount         Int      @default(0) @map("payments_count")
+  balance               Decimal  @default(0)
+  isRevnet              Boolean  @map("is_revnet")
+  deployer              String   @db.VarChar(42)
+  owner                 String   @db.VarChar(42)
+  erc20                 String?  @db.VarChar(42)
+  erc20Supply           Decimal  @default(0) @map("erc20_supply")
+  erc20Name             String?  @map("erc20_name")
+  erc20Symbol           String?  @map("erc20_symbol")
+  cashoutA              BigInt   @default(0) @map("cashout_a")
+  cashoutB              BigInt   @default(0) @map("cashout_b")
+  currentRulesetId      BigInt   @default(0) @map("current_ruleset_id")
+  contributorsCount     Int      @default(0) @map("contributors_count")
+  redeemCount           Int      @default(0) @map("redeem_count")
+  redeemVolume          BigInt   @default(0) @map("redeem_volume")
+  pendingReservedTokens BigInt   @default(0) @map("pending_reserved_tokens")
+  metadataUri           String?  @map("metadata_uri")
+  metadata              Json?
+  name                  String?
+  infoUri               String?  @map("info_uri")
+  logoUri               String?  @map("logo_uri")
+  coverImageUri         String?  @map("cover_image_uri")
+  twitter               String?
+  discord               String?
+  telegram              String?
+  tokens                String[]
+  domain                String?
+  description           String?
+  tags                  String[]
+  projectTagline        String?  @map("project_tagline")
+  suckerGroupId         String?  @map("sucker_group_id")
 
   participants JuiceboxParticipant[]
   rulesets     JuiceboxRuleset[]
+  payEvents    JuiceboxPayEvent[]
 
   @@id([chainId, projectId])
   @@index([projectId])
@@ -428,14 +428,14 @@ view JuiceboxSuckerGroup {
 }
 
 view JuiceboxParticipant {
-  chainId      Int     @map("chain_id")
-  projectId    Int     @map("project_id")
-  createdAt    Int     @map("created_at")
+  chainId      Int      @map("chain_id")
+  projectId    Int      @map("project_id")
+  createdAt    Int      @map("created_at")
   balance      Decimal  @default(0)
   isRevnet     Boolean? @map("is_revnet")
-  address      String  @db.VarChar(42)
-  firstOwned   Int?    @map("first_owned")
-  cashOutValue BigInt  @default(0) @map("cash_out_value")
+  address      String   @db.VarChar(42)
+  firstOwned   Int?     @map("first_owned")
+  cashOutValue BigInt   @default(0) @map("cash_out_value")
 
   project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
 
@@ -447,41 +447,41 @@ view JuiceboxParticipant {
 }
 
 view JuiceboxRuleset {
-  chainId                        Int     @map("chain_id")
-  projectId                      Int     @map("project_id")
-  rulesetId                      BigInt  @map("ruleset_id")
-  createdAt                      Int     @map("created_at")
-  queuedAt                       Int     @map("queued_at")
-  cycleNumber                    Int     @map("cycle_number")
-  basedOnId                      BigInt  @map("based_on_id")
-  start                          BigInt
-  duration                       BigInt
-  weight                         Decimal
-  weightCutPercent               Int     @map("weight_cut_percent")
-  approvalHook                   String? @db.VarChar(42) @map("approval_hook")
-  reservedPercent                Int     @map("reserved_percent")
-  cashOutTaxRate                 Int     @map("cash_out_tax_rate")
-  baseCurrency                   Int     @map("base_currency")
-  pausePay                       Boolean @map("pause_pay")
-  pauseCreditTransfers           Boolean @map("pause_credit_transfers")
-  allowOwnerMinting              Boolean @map("allow_owner_minting")
-  allowSetCustomToken            Boolean @map("allow_set_custom_token")
-  allowTerminalMigration         Boolean @map("allow_terminal_migration")
-  allowSetTerminals              Boolean @map("allow_set_terminals")
-  allowSetController             Boolean @map("allow_set_controller")
-  allowAddAccountingContext      Boolean @map("allow_add_accounting_context")
-  allowAddPriceFeed              Boolean @map("allow_add_price_feed")
-  ownerMustSendPayouts           Boolean @map("owner_must_send_payouts")
-  holdFees                       Boolean @map("hold_fees")
-  useTotalSurplusForCashOuts     Boolean @map("use_total_surplus_for_cash_outs")
-  useDataHookForPay              Boolean @map("use_data_hook_for_pay")
-  useDataHookForCashOut          Boolean @map("use_data_hook_for_cash_out")
-  dataHook                       String? @db.VarChar(42) @map("data_hook")
-  metadata                       BigInt
-  metadataExtra                  Int?    @map("metadata_extra")
-  mustStartAtOrAfter             BigInt? @map("must_start_at_or_after")
-  caller                         String  @db.VarChar(42)
-  approvalStatus                 String? @map("approval_status")
+  chainId                    Int     @map("chain_id")
+  projectId                  Int     @map("project_id")
+  rulesetId                  BigInt  @map("ruleset_id")
+  createdAt                  Int     @map("created_at")
+  queuedAt                   Int     @map("queued_at")
+  cycleNumber                Int     @map("cycle_number")
+  basedOnId                  BigInt  @map("based_on_id")
+  start                      BigInt
+  duration                   BigInt
+  weight                     Decimal
+  weightCutPercent           Int     @map("weight_cut_percent")
+  approvalHook               String? @map("approval_hook") @db.VarChar(42)
+  reservedPercent            Int     @map("reserved_percent")
+  cashOutTaxRate             Int     @map("cash_out_tax_rate")
+  baseCurrency               Int     @map("base_currency")
+  pausePay                   Boolean @map("pause_pay")
+  pauseCreditTransfers       Boolean @map("pause_credit_transfers")
+  allowOwnerMinting          Boolean @map("allow_owner_minting")
+  allowSetCustomToken        Boolean @map("allow_set_custom_token")
+  allowTerminalMigration     Boolean @map("allow_terminal_migration")
+  allowSetTerminals          Boolean @map("allow_set_terminals")
+  allowSetController         Boolean @map("allow_set_controller")
+  allowAddAccountingContext  Boolean @map("allow_add_accounting_context")
+  allowAddPriceFeed          Boolean @map("allow_add_price_feed")
+  ownerMustSendPayouts       Boolean @map("owner_must_send_payouts")
+  holdFees                   Boolean @map("hold_fees")
+  useTotalSurplusForCashOuts Boolean @map("use_total_surplus_for_cash_outs")
+  useDataHookForPay          Boolean @map("use_data_hook_for_pay")
+  useDataHookForCashOut      Boolean @map("use_data_hook_for_cash_out")
+  dataHook                   String? @map("data_hook") @db.VarChar(42)
+  metadata                   BigInt
+  metadataExtra              Int?    @map("metadata_extra")
+  mustStartAtOrAfter         BigInt? @map("must_start_at_or_after")
+  caller                     String  @db.VarChar(42)
+  approvalStatus             String? @map("approval_status")
 
   project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
 
@@ -490,5 +490,34 @@ view JuiceboxRuleset {
   @@index([rulesetId])
   @@index([start])
   @@map("ruleset")
+  @@schema("juicebox")
+}
+
+view JuiceboxPayEvent {
+  id                    String  @id
+  chainId               Int     @map("chain_id")
+  projectId             Int     @map("project_id")
+  rulesetId             BigInt  @map("ruleset_id")
+  rulesetCycleNumber    BigInt  @map("ruleset_cycle_number")
+  txHash                String  @map("tx_hash") @db.VarChar(66)
+  timestamp             Int
+  caller                String  @db.VarChar(42)
+  from                  String  @db.VarChar(42)
+  logIndex              Int     @map("log_index")
+  payer                 String  @db.VarChar(42)
+  beneficiary           String  @db.VarChar(42)
+  amount                Decimal @db.Decimal(78, 0)
+  newlyIssuedTokenCount Decimal @map("newly_issued_token_count") @db.Decimal(78, 0)
+  memo                  String
+
+  metadata String @db.VarChar(66)
+
+  project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
+
+  @@index([projectId])
+  @@index([payer])
+  @@index([beneficiary])
+  @@index([timestamp])
+  @@map("pay_event")
   @@schema("juicebox")
 }

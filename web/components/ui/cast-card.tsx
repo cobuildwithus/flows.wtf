@@ -20,15 +20,6 @@ interface Props {
 export const CastCard = (props: Props) => {
   const { cast, showVerification = true } = props
 
-  const videos = getCastVideos(cast)
-  const images = getCastImages(cast)
-
-  const { text } = useCastsText({
-    text: cast.text || "",
-    mentionsPositions: cast.mentions_positions_array,
-    mentionedFids: cast.mentioned_fids,
-  })
-
   return (
     <>
       <Card
@@ -65,56 +56,81 @@ export const CastCard = (props: Props) => {
         </a>
 
         <CardContent className="!pt-4">
-          <div className="overflow-hidden text-ellipsis whitespace-pre-line text-sm">
-            {text || cast.text}
-          </div>
-          {((videos.length || 0) > 0 || (images.length || 0) > 0) && (
-            <div className="mt-4">
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {[...videos, ...images].map((media) => (
-                    <CarouselItem key={media}>
-                      {videos.includes(media) ? (
-                        <div
-                          className={cn(
-                            "relative h-0 w-full overflow-hidden rounded-lg pb-[350px] md:max-h-[400px]",
-                          )}
-                        >
-                          <VideoPlayer
-                            url={media}
-                            width="100%"
-                            height="100%"
-                            style={{ position: "absolute", top: 0, left: 0 }}
-                            controls
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center overflow-hidden">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={media}
-                            alt=""
-                            className="h-auto max-h-[350px] w-auto max-w-full rounded-md object-contain"
-                            loading="lazy"
-                          />
-                        </div>
-                      )}
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                {videos.length + images.length > 1 && (
-                  <>
-                    <CarouselPrevious className="left-2 top-2 z-10" />
-                    <CarouselNext className="right-2 top-2 z-10" />
-                  </>
-                )}
-              </Carousel>
-            </div>
-          )}
+          <CastText cast={cast} />
+          <CastMediaCarousel cast={cast} />
         </CardContent>
       </Card>
 
       {showVerification && <ImpactVerification cast={cast} />}
     </>
+  )
+}
+
+export const CastText = (props: Props & { className?: string }) => {
+  const { cast, className } = props
+
+  const { text } = useCastsText({
+    text: cast.text || "",
+    mentionsPositions: cast.mentions_positions_array,
+    mentionedFids: cast.mentioned_fids,
+  })
+
+  return (
+    <div className={cn("overflow-hidden text-ellipsis whitespace-pre-line text-sm", className)}>
+      {text || cast.text}
+    </div>
+  )
+}
+
+export const CastMediaCarousel = (props: Props) => {
+  const { cast } = props
+  const videos = getCastVideos(cast)
+  const images = getCastImages(cast)
+
+  if ((videos.length || 0) === 0 && (images.length || 0) === 0) {
+  }
+
+  return (
+    <div className="mt-4">
+      <Carousel className="w-full">
+        <CarouselContent>
+          {[...videos, ...images].map((media) => (
+            <CarouselItem key={media}>
+              {videos.includes(media) ? (
+                <div
+                  className={cn(
+                    "relative h-0 w-full overflow-hidden rounded-lg pb-[350px] md:max-h-[400px]",
+                  )}
+                >
+                  <VideoPlayer
+                    url={media}
+                    width="100%"
+                    height="100%"
+                    style={{ position: "absolute", top: 0, left: 0 }}
+                    controls
+                  />
+                </div>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={media}
+                    alt=""
+                    className="h-auto max-h-[350px] w-auto max-w-full rounded-md object-contain"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        {videos.length + images.length > 1 && (
+          <>
+            <CarouselPrevious className="left-2 top-2 z-10" />
+            <CarouselNext className="right-2 top-2 z-10" />
+          </>
+        )}
+      </Carousel>
+    </div>
   )
 }
