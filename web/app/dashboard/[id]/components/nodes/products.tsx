@@ -25,7 +25,6 @@ export function Products(props: Props) {
               height={80}
               className="aspect-square w-full rounded-md"
             />
-            <span className="mt-1.5 line-clamp-1 text-[11px] text-muted-foreground">{p.name}</span>
           </a>
         ))}
       </div>

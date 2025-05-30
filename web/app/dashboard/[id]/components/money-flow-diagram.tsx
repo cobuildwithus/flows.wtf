@@ -62,7 +62,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         data: {
-          label: "You support",
+          label: `Join ${startup.title} DAO`,
           image: user?.avatar,
           handles: isMobile ? [{ type: "source", position: Position.Bottom }] : [],
         },
@@ -113,7 +113,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 210,
+        height: 200,
         id: "user_action",
         title: startup.diagram.action.name,
         className: "bg-background dark:bg-background/50 shadow",
@@ -167,7 +167,7 @@ export function MoneyFlowDiagram(props: Props) {
             rel="noopener noreferrer"
             className="hover:underline"
           >
-            Community fund
+            Treasury
           </Link>,
           `${splits.treasury * 100}%`,
         ],
