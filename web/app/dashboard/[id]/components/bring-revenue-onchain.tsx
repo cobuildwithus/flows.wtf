@@ -93,7 +93,7 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
           aria-label="What does this mean?"
           tabIndex={0}
         >
-          <span className="text-xs font-bold">Add revenue +</span>
+          <span className="text-xs font-bold">Add +</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl">
@@ -172,8 +172,8 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
               </div>
 
               <div className="mt-6">
-                <AuthButton type="submit" disabled={isLoading || !amount} className="w-full py-6">
-                  {isLoading ? "Processing..." : "Bring revenue onchain"}
+                <AuthButton type="submit" disabled={isLoading || !amount} className="w-full py-5">
+                  {isLoading ? "Processing..." : "Add revenue"}
                 </AuthButton>
               </div>
             </form>

@@ -106,6 +106,16 @@ export default async function GrantPage(props: Props) {
       </div>
 
       <div className="container space-y-6 pb-12">
+        <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
+          <SalesOverview
+            monthlySales={salesSummary.monthlySales}
+            startupTitle={startup.title}
+            projectId={startup.revnetProjectIds.base}
+          />
+
+          <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Sales Volume"
@@ -143,14 +153,6 @@ export default async function GrantPage(props: Props) {
         </div>
 
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
-          <SalesOverview
-            monthlySales={salesSummary.monthlySales}
-            startupTitle={startup.title}
-            projectId={startup.revnetProjectIds.base}
-          />
-
-          <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
-
           <ProductsTable products={products} />
 
           <Suspense>
