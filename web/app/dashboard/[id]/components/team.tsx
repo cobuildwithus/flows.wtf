@@ -112,6 +112,7 @@ async function OpportunitiesSection({
           expectedMonthlySalary={o.expectedMonthlySalary}
           flowContract={o.flowId as `0x${string}`}
           user={user}
+          startupId={startupId}
         />
       ))}
       {canManage && <CreateOpportunity budgets={budgets} startupId={startupId} />}

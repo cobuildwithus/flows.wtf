@@ -17,4 +17,5 @@ export const imageDomains = [
   "vrbscoffee.com",
   "cdn.shopify.com",
   "images.unsplash.com",
+  "*.cdninstagram.com",
 ]

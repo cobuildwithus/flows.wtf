@@ -1,34 +1,49 @@
 import "server-only"
 
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { EthInUsd } from "@/components/global/eth-in-usd"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
-import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
-import { getFlowWithGrants } from "@/lib/database/queries/flow"
+import database from "@/lib/database/flows-db"
+import { getFlow } from "@/lib/database/queries/flow"
 import { getStartups } from "@/lib/onchain-startup/startup"
-import { getEthAddress } from "@/lib/utils"
+import { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
 const flowId = "0xca1d9e8a93f316ef7e6f880116a160333d085f92"
 
+export const metadata: Metadata = {
+  title: "Vrbs Accelerator",
+  description:
+    "Get paid every second to bring your best ideas to life with Vrbs and make positive impact in the world.",
+}
+
 export default async function VrbsPage() {
-  const { subgrants, ...flow } = await getFlowWithGrants(flowId)
+  const startups = getStartups("vrbs")
 
-  const user = await getUser()
-
-  const grants = await Promise.all(
-    subgrants
-      .filter((g) => g.isActive)
-      .map(async (g) => ({
-        ...g,
-        profile: await getUserProfile(getEthAddress(g.recipient)),
-      })),
-  )
-
-  const startups = getStartups()
+  const [flow, user, opportunitiesCount, balances, participants] = await Promise.all([
+    getFlow(flowId),
+    getUser(),
+    database.opportunity.count({
+      where: { status: 1, startupId: { in: startups.map((s) => s.id) } },
+    }),
+    database.juiceboxProject.groupBy({
+      by: ["projectId"],
+      where: { projectId: { in: startups.map((s) => s.revnetProjectId) } },
+      _sum: { balance: true },
+    }),
+    database.juiceboxParticipant.findMany({
+      where: {
+        projectId: { in: startups.map((s) => s.revnetProjectId) },
+        balance: { gt: 0 },
+      },
+      select: { projectId: true, address: true },
+      distinct: ["projectId", "address"],
+    }),
+  ])
 
   return (
     <AgentChatProvider
@@ -39,14 +54,14 @@ export default async function VrbsPage() {
       identityToken={await getPrivyIdToken()}
     >
       <div className="container">
-        <section className="relative isolate overflow-hidden rounded-2xl bg-primary/75 py-8 dark:bg-primary/25 lg:py-12">
+        <section className="relative isolate overflow-hidden rounded-2xl bg-green-500 py-8 lg:py-12">
           <Image
             src={"/vrbs-bg.jpg"}
             alt={flow.title}
             width="1500"
             height="500"
             priority
-            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-50 mix-blend-multiply dark:opacity-30"
+            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-50 mix-blend-multiply dark:opacity-50"
           />
 
           <div className="mx-auto max-w-7xl px-4 lg:px-6">
@@ -63,7 +78,7 @@ export default async function VrbsPage() {
             <div className="mt-8 lg:mt-10">
               <div className="flex flex-col max-md:gap-y-4 md:flex-row md:gap-x-12">
                 {[
-                  { name: "Check opportunities", href: `/vrbs/opportunities` },
+                  { name: "Check opportunities", href: `/opportunities` },
                   { name: `Apply for funding`, href: `/apply/${flowId}` },
                 ].map((link) => (
                   <Link
@@ -77,9 +92,8 @@ export default async function VrbsPage() {
               </div>
               <dl className="mt-12 grid grid-cols-2 items-start gap-8 lg:max-w-3xl lg:grid-cols-4">
                 {[
-                  { name: "Grants", value: grants.length },
-                  { name: "Builders", value: grants.length },
-                  { name: "Opportunities", value: 10 },
+                  { name: "Projects", value: startups.length },
+                  { name: "Opportunities", value: opportunitiesCount },
                   {
                     name: "Earned so far",
                     value: Intl.NumberFormat("en", {
@@ -106,15 +120,8 @@ export default async function VrbsPage() {
         <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
           <Submenu
             links={[
-              {
-                label: "Projects",
-                href: `/vrbs`,
-                isActive: true,
-              },
-              {
-                label: "Applications",
-                href: `/vrbs/applications`,
-              },
+              { label: "Projects", href: `/vrbs`, isActive: true },
+              { label: "Applications", href: `/vrbs/applications` },
             ]}
           />
 
@@ -125,28 +132,64 @@ export default async function VrbsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {startups.map((startup) => (
             <article
-              className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72"
+              className="group relative flex aspect-[3/4] w-full shrink-0 flex-col justify-end overflow-hidden rounded-xl border"
               key={`${startup.id}${startup.title}`}
             >
               <Image
                 alt={startup.title}
                 src={startup.image}
-                className="absolute inset-0 -z-10 size-full object-cover transition-transform duration-300 md:group-hover:scale-110"
-                width={256}
-                height={256}
+                className="absolute inset-x-0 top-0 aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                width={384}
+                height={384}
               />
-              <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-gray-900/70 from-25% via-transparent to-gray-900/80" />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 rounded-xl bg-gradient-to-t from-card from-25%"
+              />
 
               <Link
                 href={`/dashboard/${startup.id}`}
-                className="flex h-full flex-col justify-end overflow-hidden p-4"
+                className="relative flex h-full flex-col justify-end overflow-hidden p-5"
               >
-                <h3 className="line-clamp-3 text-balance text-sm font-medium leading-5 text-white md:text-base">
-                  {startup.title}
-                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-balance text-lg font-semibold tracking-tight text-card-foreground">
+                      {startup.title}
+                    </h3>
+                    <p className="mt-1 text-pretty text-sm leading-relaxed tracking-tight text-card-foreground/80">
+                      {startup.tagline}
+                    </p>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-card-foreground/80">Treasury</p>
+                        <p className="mt-1 text-sm font-semibold text-card-foreground">
+                          <EthInUsd
+                            amount={BigInt(
+                              balances
+                                .find((p) => p.projectId === startup.revnetProjectId)
+                                ?._sum.balance?.toNumber() ?? 0,
+                            )}
+                          />
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-card-foreground/80">Supporters</p>
+                        <p className="mt-1 text-sm font-semibold text-card-foreground">
+                          {
+                            participants.filter((p) => p.projectId === startup.revnetProjectId)
+                              .length
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </Link>
             </article>
           ))}

@@ -28,7 +28,8 @@ export function Submenu(props: Props) {
     >
       {links.map((link) => {
         const common = {
-          className: "group flex items-center space-x-1 text-base font-medium md:text-xl",
+          className:
+            "group flex items-center space-x-1 text-base font-medium md:text-xl tracking-tight",
           replace: link.replace,
           scroll: link.scroll,
         }
