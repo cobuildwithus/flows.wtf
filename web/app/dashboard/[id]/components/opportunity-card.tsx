@@ -2,16 +2,16 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { User as UserType } from "@/lib/auth/user"
 import { Trash, User } from "lucide-react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import pluralize from "pluralize"
-import { toast } from "sonner"
-import { deleteOpportunity } from "./delete-opportunity"
-import { ApplyOpportunity } from "./apply-opportunity"
-import { ApplicationWithProfile, ViewApplications } from "./view-applications"
-import { User as UserType } from "@/lib/auth/user"
 import { useState } from "react"
-import Image from "next/image"
+import { toast } from "sonner"
+import { ApplyOpportunity } from "./apply-opportunity"
+import { deleteOpportunity } from "./delete-opportunity"
+import { ApplicationWithProfile, ViewApplications } from "./view-applications"
 
 interface Props {
   id: string
@@ -22,6 +22,7 @@ interface Props {
   user: UserType | undefined
   flowContract: `0x${string}`
   expectedMonthlySalary: number
+  startupId: string
 }
 
 export function OpportunityCard(props: Props) {
@@ -34,6 +35,7 @@ export function OpportunityCard(props: Props) {
     flowContract,
     expectedMonthlySalary,
     user,
+    startupId,
   } = props
   const router = useRouter()
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
@@ -97,7 +99,12 @@ export function OpportunityCard(props: Props) {
             )}
             {!canManage && (
               <div className="mt-3">
-                <ApplyOpportunity opportunityId={id} position={title} />
+                <ApplyOpportunity
+                  size="sm"
+                  opportunityId={id}
+                  position={title}
+                  startupId={startupId}
+                />
               </div>
             )}
             {canManage && (

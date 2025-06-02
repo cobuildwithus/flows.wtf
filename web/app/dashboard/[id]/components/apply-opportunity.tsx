@@ -4,26 +4,29 @@ import { useAgentChat } from "@/app/chat/components/agent-chat"
 import { Messages } from "@/app/chat/components/messages"
 import { MultimodalInput } from "@/app/chat/components/multimodal-input"
 import { AuthButton } from "@/components/ui/auth-button"
+import { ButtonProps } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface Props {
+  startupId: string
   opportunityId: string
   position: string
+  size?: ButtonProps["size"]
 }
 
 export function ApplyOpportunity(props: Props) {
-  const { opportunityId, position } = props
+  const { opportunityId, position, startupId, size } = props
   const { messages, isOpen, setIsOpen, appendData, setMessages, reload } = useAgentChat()
 
   return (
     <>
       <AuthButton
-        size="sm"
+        size={size}
         className="w-full rounded-sm py-0.5"
         type="button"
         variant="ai-primary"
         onClick={() => {
-          appendData({ opportunityId })
+          appendData({ opportunityId, startupId })
           setMessages([
             {
               role: "user",

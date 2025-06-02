@@ -1,3 +1,4 @@
+"use client"
 import { formatUSDValue, useETHPrice } from "@/app/token/hooks/useETHPrice"
 
 interface Props {
