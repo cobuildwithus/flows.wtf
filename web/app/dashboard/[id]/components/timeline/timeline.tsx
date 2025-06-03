@@ -92,7 +92,7 @@ export async function Timeline(props: Props) {
               >
                 <div
                   className={cn(
-                    i === events.length - 1 ? "h-6" : "-bottom-6",
+                    i === events.length - 1 ? "h-6" : "-bottom-8",
                     "absolute left-0 top-0 flex w-6 justify-center",
                   )}
                 >

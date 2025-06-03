@@ -1,11 +1,10 @@
 import { Badge } from "@/components/ui/badge"
-import { EthInUsd } from "@/components/global/eth-in-usd"
 import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
 import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import { Startup } from "@/lib/onchain-startup/startup"
 import Link from "next/link"
 import { useEffect, useState, useRef, useMemo } from "react"
-import { formatUSDValue, useETHPrice } from "@/app/token/hooks/useETHPrice"
+import { useETHPrice } from "@/app/token/hooks/useETHPrice"
 import NumberFlow from "@number-flow/react"
 import { cn } from "@/lib/utils"
 

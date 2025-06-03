@@ -29,7 +29,7 @@ export async function SocialProfiles(props: Props) {
             return (
               <div
                 key={profile.url}
-                className="flex items-center gap-4 rounded-lg bg-accent/50 p-4 dark:bg-muted/30"
+                className="flex items-center gap-4 rounded-lg bg-accent/40 p-4"
               >
                 <SocialIcon url={profile.url} style={{ width: 40, height: 40 }} />
                 <div>
