@@ -7,15 +7,16 @@ import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { base } from "viem/chains"
 import { useAccount } from "wagmi"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AuthButton } from "@/components/ui/auth-button"
 import { ArrowDown } from "lucide-react"
 
 interface Props {
   projectId: bigint
+  changeTokenVolumeEth: (eth: number) => void
 }
 
-export function BuyRevnetToken({ projectId }: Props) {
+export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
   const { address } = useAccount()
   const { payRevnet, isLoading } = usePayRevnet(base.id)
   const {
@@ -29,6 +30,12 @@ export function BuyRevnetToken({ projectId }: Props) {
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
 
   const tokenSymbol = tokenDetails?.symbol || ""
+
+  useEffect(() => {
+    if (payAmount) {
+      changeTokenVolumeEth(parseFloat(payAmount))
+    }
+  }, [payAmount])
 
   const handlePayAmountChange = (value: string) => {
     setPayAmount(value)

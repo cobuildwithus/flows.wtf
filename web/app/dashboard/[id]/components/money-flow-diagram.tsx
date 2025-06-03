@@ -43,7 +43,8 @@ interface Props {
 export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
   const { width } = useWindowSize()
-  const [ethRaised, setEthRaised] = useState(0.001)
+  const [productsVolumeEth, setProductsVolumeEth] = useState(0.001)
+  const [tokenVolume, setTokenVolumeEth] = useState(0.01)
 
   if (!width)
     return (
@@ -122,8 +123,7 @@ export function MoneyFlowDiagram(props: Props) {
         className: "bg-background dark:bg-background/50 shadow",
         content: (
           <ProductsList
-            changeEthRaised={(eth) => setEthRaised(eth)}
-            otherEthRaised={0}
+            changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
             products={products.slice(0, 10)}
             startup={startup}
           />
@@ -142,7 +142,12 @@ export function MoneyFlowDiagram(props: Props) {
         ),
         id: "user_token",
         height: 250,
-        content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
+        content: (
+          <BuyRevnetToken
+            projectId={startup.revnetProjectIds.base}
+            changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
+          />
+        ),
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
@@ -169,7 +174,13 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 3,
         id: "treasury",
-        title: <TreasuryTitle startup={startup} chainId={base.id} ethRaised={ethRaised} />,
+        title: (
+          <TreasuryTitle
+            startup={startup}
+            chainId={base.id}
+            ethRaised={productsVolumeEth + tokenVolume}
+          />
+        ),
         height: 106,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },

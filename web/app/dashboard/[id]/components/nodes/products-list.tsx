@@ -10,14 +10,13 @@ import { useEffect, useState } from "react"
 import { Minus, Plus } from "lucide-react"
 
 interface Props {
-  changeEthRaised: (eth: number) => void
-  otherEthRaised: number
+  changeProductsVolumeEth: (eth: number) => void
   products: Array<{ name: string; image: string; url: string }>
   startup: Startup
 }
 
 export function ProductsList(props: Props) {
-  const { changeEthRaised, products, startup, otherEthRaised } = props
+  const { changeProductsVolumeEth, products, startup } = props
   const [quantity, setQuantity] = useState("1")
   const projectId = startup.revnetProjectId
   const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), base.id)
@@ -29,7 +28,7 @@ export function ProductsList(props: Props) {
   const tokenAmount = calculateTokensFromEth(ethAmount)
 
   useEffect(() => {
-    changeEthRaised(otherEthRaised + parseFloat(ethAmount))
+    changeProductsVolumeEth(parseFloat(ethAmount))
   }, [ethAmount])
 
   const handleIncrement = () => {
