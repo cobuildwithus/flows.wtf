@@ -22,6 +22,7 @@ import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ProductsTitle } from "./ProductsTitle"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -113,9 +114,9 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 280,
+        height: 320,
         id: "user_action",
-        title: startup.diagram.action.name,
+        title: <ProductsTitle startup={startup} chainId={base.id} />,
         className: "bg-background dark:bg-background/50 shadow",
         content: <Products products={products.slice(0, 10)} startup={startup} />,
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
@@ -131,7 +132,7 @@ export function MoneyFlowDiagram(props: Props) {
           />
         ),
         id: "user_token",
-        height: 280,
+        height: 250,
         content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
