@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
@@ -15,17 +16,37 @@ interface Props {
 
 export function Products(props: Props) {
   const { products, startup } = props
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState("1")
   const projectId = startup.revnetProjectId
   const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), base.id)
   const { data: tokenDetails } = useRevnetTokenDetails(BigInt(projectId), base.id)
 
   const tokenSymbol = tokenDetails?.symbol || ""
-  const ethAmount = (quantity * 0.001).toFixed(3)
+  const quantityNum = quantity === "" ? 0 : parseInt(quantity)
+  const ethAmount = (quantityNum * 0.001).toFixed(3)
   const tokenAmount = calculateTokensFromEth(ethAmount)
 
-  const handleIncrement = () => setQuantity((prev) => prev + 1)
-  const handleDecrement = () => setQuantity((prev) => Math.max(1, prev - 1))
+  const handleIncrement = () => {
+    const currentNum = quantity === "" ? 0 : parseInt(quantity)
+    setQuantity((currentNum + 1).toString())
+  }
+
+  const handleDecrement = () => {
+    const currentNum = quantity === "" ? 0 : parseInt(quantity)
+    setQuantity(Math.max(1, currentNum - 1).toString())
+  }
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (value === "") {
+      setQuantity("")
+    } else {
+      const numValue = parseInt(value)
+      if (!isNaN(numValue) && numValue >= 1) {
+        setQuantity(value)
+      }
+    }
+  }
 
   return (
     <div className="pointer-events-auto flex flex-col gap-1">
@@ -58,17 +79,24 @@ export function Products(props: Props) {
 
           <div className="px-1.5">
             <div className="flex h-10 items-center justify-between border-0 p-0 text-sm">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center">
                 <Button
                   size="icon"
                   variant="ghost"
                   onClick={handleDecrement}
-                  disabled={quantity <= 1}
+                  disabled={quantityNum <= 1}
                   className="h-8 w-8"
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
-                <span className="mx-1 min-w-[1.5rem] text-center">{quantity}</span>
+                <Input
+                  type="number"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  className="mx-1 h-8 w-12 border-0 bg-transparent p-0 text-center text-sm shadow-none focus-visible:ring-0"
+                  min="1"
+                  placeholder="0"
+                />
                 <Button size="icon" variant="ghost" onClick={handleIncrement} className="h-8 w-8">
                   <Plus className="h-3 w-3" />
                 </Button>
