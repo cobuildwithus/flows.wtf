@@ -3,8 +3,8 @@ import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { TimelineIndicator } from "./timeline-indicator"
 import { ProfileLink } from "@/components/user-profile/profile-link"
 import Link from "next/link"
-import { explorerUrl } from "@/lib/utils"
 import { TokenEventData } from "./timeline"
+import { explorerUrl } from "@/lib/utils"
 
 interface Props {
   payment: TokenEventData
