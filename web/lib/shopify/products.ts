@@ -14,10 +14,15 @@ export interface Product {
   stock: number
   launchDate: string
   url: string
+  variantId?: string
+  description: string
+  cartLink?: string
+  stats: { sales: number; orders: number }
 }
 
 export const getProducts = unstable_cache(
   async (store: StoreConfig, orders: Order[]): Promise<Product[]> => {
+    const storeUrl = store.url.startsWith("https://") ? store.url : `https://${store.url}`
     const data = await queryShopify<{
       products: {
         nodes: Array<{
@@ -26,8 +31,11 @@ export const getProducts = unstable_cache(
           handle: string
           productType: string
           publishedAt: string
+          description: string
           images: { edges: Array<{ node: { src: string } }> }
-          variants: { edges: Array<{ node: { price: string; inventoryQuantity: number } }> }
+          variants: {
+            edges: Array<{ node: { id: string; price: string; inventoryQuantity: number } }>
+          }
           status: string
         }>
       }
@@ -42,6 +50,7 @@ export const getProducts = unstable_cache(
             handle
             productType
             publishedAt
+            description
             images(first: 1) {
               edges {
                 node {
@@ -52,6 +61,7 @@ export const getProducts = unstable_cache(
             variants(first: 1) {
               edges {
                 node {
+                  id
                   price
                   inventoryQuantity
                 }
@@ -90,18 +100,30 @@ export const getProducts = unstable_cache(
     return products.map((p) => {
       const image = p.images.edges[0]?.node.src ?? "/placeholder.svg"
       const variant = p.variants.edges[0]?.node
+
+      /** `gid://shopify/ProductVariant/45779434701121` → `45779434701121` */
+      const variantIdNumeric = variant?.id?.split("/").pop() ?? undefined
+
+      /** Build the one-click "add & go to checkout" link */
+      const cartLink = variantIdNumeric ? `${storeUrl}/cart/${variantIdNumeric}:1` : undefined
+
       const stats = statsMap[p.id.replace("gid://shopify/Product/", "")]
+
       return {
         id: p.id,
         name: p.title,
         image,
-        category: p.productType ?? "Unknown",
+        category: p.productType || "Unknown",
         price: variant ? `$${variant.price}` : "$0.00",
         totalSales: stats ? `$${Number(stats.sales).toFixed(2)}` : "$0.00",
         orders: stats ? Number(stats.orders) : 0,
         stock: variant?.inventoryQuantity ?? 0,
         launchDate: p.publishedAt,
-        url: `https://vrbscoffee.com/products/${p.handle}`,
+        url: `${storeUrl}/products/${p.handle}`,
+        variantId: variantIdNumeric,
+        cartLink,
+        description: p.description,
+        stats,
       }
     })
   },

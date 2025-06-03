@@ -18,15 +18,27 @@ interface Props {
   teamMembers: TeamMember[]
 }
 
+export type TokenEventData = Pick<
+  JuiceboxPayEvent,
+  | "txHash"
+  | "timestamp"
+  | "payer"
+  | "amount"
+  | "newlyIssuedTokenCount"
+  | "beneficiary"
+  | "chainId"
+  | "memo"
+> & {
+  project?: { erc20Symbol: string | null } | null
+}
+
 type TimelineEvent =
   | { type: "order"; date: Date; data: Order }
   | { type: "cast"; date: Date; data: MinimalCast }
   | {
       type: "token"
       date: Date
-      data: Partial<JuiceboxPayEvent> & {
-        project?: { erc20Symbol: string | null } | null
-      }
+      data: TokenEventData
     }
 
 const MAX_EVENTS = 50
@@ -72,7 +84,7 @@ export async function Timeline(props: Props) {
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardContent className="space-y-6">
         <ScrollArea className="h-[400px] pr-4">
-          <ul role="list" className="space-y-6">
+          <ul role="list" className="space-y-7">
             {events.slice(0, MAX_EVENTS).map((event, i) => (
               <li
                 key={event.type + event.date.getMilliseconds() + i}
@@ -106,9 +118,12 @@ const getTokenPayments = async (projectId: number) => {
       payer: true,
       amount: true,
       newlyIssuedTokenCount: true,
+      beneficiary: true,
+      chainId: true,
+      memo: true,
       project: { select: { erc20Symbol: true } },
     },
-    where: { projectId },
+    where: { projectId, newlyIssuedTokenCount: { gt: 0 } },
     orderBy: { timestamp: "desc" },
     take: 30,
   })
