@@ -32,9 +32,15 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
   const tokenSymbol = tokenDetails?.symbol || ""
 
   useEffect(() => {
-    if (payAmount) {
-      changeTokenVolumeEth(parseFloat(payAmount))
-    }
+    const timer = setTimeout(() => {
+      if (payAmount) {
+        changeTokenVolumeEth(parseFloat(payAmount))
+      } else {
+        changeTokenVolumeEth(0)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
   }, [payAmount])
 
   const handlePayAmountChange = (value: string) => {

@@ -28,7 +28,11 @@ export function ProductsList(props: Props) {
   const tokenAmount = calculateTokensFromEth(ethAmount)
 
   useEffect(() => {
-    changeProductsVolumeEth(parseFloat(ethAmount))
+    const timer = setTimeout(() => {
+      changeProductsVolumeEth(parseFloat(ethAmount))
+    }, 500)
+
+    return () => clearTimeout(timer)
   }, [ethAmount])
 
   const handleIncrement = () => {
