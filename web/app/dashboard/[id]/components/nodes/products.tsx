@@ -7,7 +7,7 @@ import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { base } from "viem/chains"
 import { useState } from "react"
-import { Minus, Plus } from "lucide-react"
+import { Minus, Package, Plus } from "lucide-react"
 
 interface Props {
   products: Array<{ name: string; image: string; url: string }>
@@ -55,12 +55,12 @@ export function Products(props: Props) {
         <div className="rounded-lg bg-muted/30 p-2">
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex space-x-2.5">
-              {products.map((p) => (
+              {products.map((p, index) => (
                 <a
                   key={p.name}
                   href={p.url}
                   target="_blank"
-                  className="flex shrink-0 flex-col items-center transition-opacity hover:opacity-80"
+                  className="relative flex shrink-0 flex-col items-center transition-opacity hover:opacity-80"
                 >
                   <Image
                     src={p.image}
@@ -69,6 +69,19 @@ export function Products(props: Props) {
                     height={80}
                     className="aspect-square w-full rounded-md"
                   />
+                  {quantityNum > 0 &&
+                    (() => {
+                      const productQuantity = calculateProductQuantity(
+                        quantityNum,
+                        products.length,
+                        index,
+                      )
+                      return productQuantity > 0 ? (
+                        <div className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/40 text-[10px] font-medium text-primary-foreground">
+                          {productQuantity}
+                        </div>
+                      ) : null
+                    })()}
                 </a>
               ))}
             </div>
@@ -121,4 +134,31 @@ export function Products(props: Props) {
       </Button>
     </div>
   )
+}
+// Helper function to calculate product quantities
+// First product gets 70% of total, rest split evenly
+function calculateProductQuantity(
+  totalQuantity: number,
+  productCount: number,
+  productIndex: number,
+): number {
+  if (productCount === 0 || totalQuantity === 0) return 0
+
+  if (productIndex === 0) {
+    // First product gets 60% (rounded up)
+    return Math.ceil(totalQuantity * 0.6)
+  }
+
+  // Remaining products split the other 40%
+  const remainingQuantity = totalQuantity - Math.ceil(totalQuantity * 0.6)
+  const remainingProducts = productCount - 1
+
+  if (remainingProducts === 0) return 0
+
+  const baseQuantity = Math.floor(remainingQuantity / remainingProducts)
+  const remainder = remainingQuantity % remainingProducts
+
+  // Distribute remainder to products after the first one
+  const adjustedIndex = productIndex - 1
+  return baseQuantity + (adjustedIndex < remainder ? 1 : 0)
 }

@@ -18,7 +18,7 @@ export function Treasury({ projectId, chainId }: Props) {
   }
 
   const balance = data?.balance ? BigInt(data.balance) : BigInt(0)
-  const participantsCount = isLoading ? "..." : data?.participantsCount || 0
+  const participantsCount = isLoading ? " ... " : data?.participantsCount || 0
 
   return (
     <Link
@@ -27,16 +27,6 @@ export function Treasury({ projectId, chainId }: Props) {
       rel="noopener noreferrer"
       className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"
     >
-      <div>
-        {isLoading ? (
-          <span className="font-medium">...</span>
-        ) : (
-          <strong>
-            <EthInUsd amount={balance} />
-          </strong>
-        )}{" "}
-        balance
-      </div>
       <div>
         <strong className="font-medium">{participantsCount}</strong> owners
       </div>

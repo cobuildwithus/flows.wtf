@@ -42,11 +42,11 @@ export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex w-full items-center justify-between gap-1">
-          <div className="cursor-pointer hover:underline">{startupTitle} token</div>
+        <div className="flex w-full items-center justify-between gap-1 text-base">
+          <div className="cursor-pointer hover:underline">{startupTitle} DAO</div>
           <button
             type="button"
-            className="ml-1 inline-flex size-4 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="ml-1 inline-flex size-5 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label="What does joining mean?"
             tabIndex={0}
           >

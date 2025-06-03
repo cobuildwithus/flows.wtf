@@ -27,11 +27,13 @@ function DashboardNode(props: NodeProps<IDashboardNode>) {
       style={{ width, height }}
     >
       {title && (
-        <div className="flex justify-between text-[15px] font-medium">
+        <div className="flex justify-between text-base font-medium">
           {Array.isArray(title) ? (
             <>
               <span>{title[0]}</span>
-              <Badge variant="secondary">{title[1]}</Badge>
+              <Badge className="text-sm" variant="secondary">
+                {title[1]}
+              </Badge>
             </>
           ) : (
             title

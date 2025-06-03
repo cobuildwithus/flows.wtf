@@ -27,6 +27,7 @@ import { SalesOverview } from "./components/sales-overview"
 import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
+import { Mission } from "./components/mission"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -101,7 +102,11 @@ export default async function GrantPage(props: Props) {
         />
       </div>
 
-      <div className="container mb-8 mt-4 flex">
+      <div className="container mb-8 mt-20">
+        <Mission startup={startup} />
+      </div>
+
+      <div className="container mb-8 flex">
         <Team members={teamMembers} user={user} startup={startup} />
       </div>
 

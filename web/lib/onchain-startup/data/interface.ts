@@ -8,6 +8,7 @@ export interface StartupData {
   tagline: string
   image: string
   mission: string
+  longMission: string
   deliverables: string[]
   shopify: StoreConfig
   supports: `0x${string}`[]
@@ -21,10 +22,5 @@ export interface StartupData {
     team: number
     support: number
     treasury: number
-    costs: Array<{
-      name: string
-      amount: number
-      description: string
-    }>
   }
 }

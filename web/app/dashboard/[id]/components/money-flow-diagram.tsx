@@ -22,7 +22,9 @@ import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ProductsTitle } from "./ProductsTitle"
+import { ProductsTitle } from "./products-title"
+import { Badge } from "@/components/ui/badge"
+import { TreasuryTitle } from "./treasury-title"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -141,14 +143,14 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         id: "team",
         height: 96,
-        title: ["Team", `${splits.team * 100}%`],
+        title: ["Team", `$${splits.team * 100}/mo`],
         content: <ShortTeam members={members} />,
       },
       {
         col: 2,
         row: 2,
         id: "public_goods",
-        title: ["Public Good", `${splits.support * 100}%`],
+        title: ["Public Good", `$${splits.support * 100}/mo`],
         height: 106,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
@@ -160,45 +162,17 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 3,
         id: "treasury",
-        title: [
-          <Link
-            key="treasury-link"
-            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Treasury
-          </Link>,
-          `${splits.treasury * 100}%`,
-        ],
+        title: <TreasuryTitle startup={startup} chainId={base.id} />,
         height: 106,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
-      ...splits.costs.map((c, ci) => ({
-        col: 2,
-        row: 4 + ci,
-        height: 92,
-        id: `costs_${c.name}_${ci}`,
-        title: [c.name, `${c.amount * 100}%`],
-        content: (
-          <div className="mb-2.5 text-pretty text-sm text-muted-foreground">{c.description}</div>
-        ),
-      })),
       {
         col: 3,
         row: 1,
         id: "product",
         title: diagram.receive.name,
-        height: startup.reviews.length > 0 ? 256 : 106,
-        content: (
-          <>
-            <div className="mb-2.5 text-pretty text-sm text-muted-foreground">
-              {diagram.receive.description}
-            </div>
-            <Reviews reviews={startup.reviews} />
-          </>
-        ),
+        height: startup.reviews.length > 0 ? 200 : 106,
+        content: <Reviews reviews={startup.reviews} />,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
       },
       {
@@ -233,7 +207,7 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `Token rewards`,
+        title: `${startup.title} token`,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
         height: 95,
         content: (
