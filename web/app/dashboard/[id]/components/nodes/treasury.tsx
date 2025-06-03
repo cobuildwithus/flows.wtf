@@ -28,7 +28,7 @@ export function Treasury({ projectId, chainId }: Props) {
       className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"
     >
       <div>
-        <strong className="font-medium">{participantsCount}</strong> owners
+        <strong className="font-medium">{participantsCount}</strong> holders
       </div>
     </Link>
   )

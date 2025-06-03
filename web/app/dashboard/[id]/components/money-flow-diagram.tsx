@@ -163,7 +163,7 @@ export function MoneyFlowDiagram(props: Props) {
         row: 2,
         id: "public_goods",
         title: ["Public Good", `$${splits.support * 100}/mo`],
-        height: 106,
+        height: 90,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
             Profits support community impact
@@ -181,7 +181,7 @@ export function MoneyFlowDiagram(props: Props) {
             ethRaised={productsVolumeEth + tokenVolume}
           />
         ),
-        height: 106,
+        height: 90,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
       {
@@ -225,7 +225,7 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `${startup.title} token`,
+        title: `${startup.title} DAO`,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
         height: 95,
         content: (
