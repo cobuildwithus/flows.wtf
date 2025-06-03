@@ -106,17 +106,16 @@ export default async function GrantPage(props: Props) {
         <Team members={teamMembers} user={user} startup={startup} />
       </div>
 
-      <div className="container my-8">
-        <Mission startup={startup} />
-      </div>
-
-      <div className="container space-y-6 pb-12">
+      <div className="container mt-8 space-y-6 pb-12">
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
-          <SalesOverview
-            monthlySales={salesSummary.monthlySales}
-            startupTitle={startup.title}
-            projectId={startup.revnetProjectIds.base}
-          />
+          <div className="flex flex-col space-y-6">
+            <Mission startup={startup} />
+            <SalesOverview
+              monthlySales={salesSummary.monthlySales}
+              startupTitle={startup.title}
+              projectId={startup.revnetProjectIds.base}
+            />
+          </div>
 
           <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
         </div>
