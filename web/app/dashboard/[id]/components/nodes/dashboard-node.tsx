@@ -1,3 +1,5 @@
+"use client"
+
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Handle, HandleType, Node, NodeProps, Position } from "@xyflow/react"

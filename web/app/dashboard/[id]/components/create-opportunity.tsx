@@ -54,18 +54,25 @@ export function CreateOpportunity(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="flex shrink-0 flex-col items-center">
-          <div className="flex w-56 grow cursor-pointer flex-col justify-between rounded-lg border border-dashed border-muted-foreground/50 p-4 transition-colors hover:border-primary">
+        <div className="flex flex-col items-center">
+          <div className="flex min-w-64 shrink-0 cursor-pointer flex-col justify-between rounded-lg border border-dashed border-muted-foreground/50 p-4 transition-colors hover:border-primary">
             <div>
-              <Badge variant="outline" className="py-0 text-[11px]">
-                Manage
-              </Badge>
-              <h3 className="mt-2.5 text-sm font-medium">Create Opportunity</h3>
-              <div className="mt-0.5 text-xs text-muted-foreground">Hire a new colleague</div>
+              <div className="mt-2.5 flex flex-row justify-start gap-x-1.5">
+                <Badge variant="outline" className="py-0 text-[11px]">
+                  Manage
+                </Badge>
+              </div>
+
+              <h3 className="mt-2 text-sm font-medium">Create Opportunity</h3>
+
+              <div className="text-xs text-muted-foreground">Hire a new colleague</div>
+
+              <div className="mt-3">
+                <Button size="sm" className="py-0.5" variant="secondary">
+                  + Add new
+                </Button>
+              </div>
             </div>
-            <Button size="sm" className="mt-3 py-0.5" variant="secondary">
-              + Add new
-            </Button>
           </div>
         </div>
       </DialogTrigger>

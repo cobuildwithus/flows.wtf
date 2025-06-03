@@ -102,12 +102,12 @@ export default async function GrantPage(props: Props) {
         />
       </div>
 
-      <div className="container mb-8 mt-20">
-        <Mission startup={startup} />
+      <div className="container flex">
+        <Team members={teamMembers} user={user} startup={startup} />
       </div>
 
-      <div className="container mb-8 flex">
-        <Team members={teamMembers} user={user} startup={startup} />
+      <div className="container my-8">
+        <Mission startup={startup} />
       </div>
 
       <div className="container space-y-6 pb-12">

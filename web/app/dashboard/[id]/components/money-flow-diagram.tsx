@@ -5,7 +5,6 @@ import { Grant } from "@/lib/database/types"
 import useWindowSize from "@/lib/hooks/use-window-size"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
-import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import { getIpfsUrl } from "@/lib/utils"
 import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
@@ -16,15 +15,15 @@ import { JoinStartupLink } from "./join-startup-link"
 import { BuyRevnetToken } from "./nodes/buy-revnet-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
-import { Products } from "./nodes/products"
+import { ProductsList } from "./nodes/products-list"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ProductsTitle } from "./products-title"
-import { Badge } from "@/components/ui/badge"
 import { TreasuryTitle } from "./treasury-title"
+import { useState } from "react"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -44,6 +43,7 @@ interface Props {
 export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
   const { width } = useWindowSize()
+  const [ethRaised, setEthRaised] = useState(0.001)
 
   if (!width)
     return (
@@ -120,7 +120,14 @@ export function MoneyFlowDiagram(props: Props) {
         id: "user_action",
         title: <ProductsTitle startup={startup} chainId={base.id} />,
         className: "bg-background dark:bg-background/50 shadow",
-        content: <Products products={products.slice(0, 10)} startup={startup} />,
+        content: (
+          <ProductsList
+            changeEthRaised={(eth) => setEthRaised(eth)}
+            otherEthRaised={0}
+            products={products.slice(0, 10)}
+            startup={startup}
+          />
+        ),
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
@@ -162,7 +169,7 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 3,
         id: "treasury",
-        title: <TreasuryTitle startup={startup} chainId={base.id} />,
+        title: <TreasuryTitle startup={startup} chainId={base.id} ethRaised={ethRaised} />,
         height: 106,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
@@ -225,7 +232,7 @@ export function MoneyFlowDiagram(props: Props) {
   return (
     <div style={{ width: "100%", height }} className="max-sm:mt-4">
       <ReactFlow
-        defaultNodes={nodes}
+        nodes={nodes}
         defaultEdges={
           isMobile
             ? [

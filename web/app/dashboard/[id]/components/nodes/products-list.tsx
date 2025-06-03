@@ -6,16 +6,18 @@ import { Startup } from "@/lib/onchain-startup/startup"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { base } from "viem/chains"
-import { useState } from "react"
-import { Minus, Package, Plus } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Minus, Plus } from "lucide-react"
 
 interface Props {
+  changeEthRaised: (eth: number) => void
+  otherEthRaised: number
   products: Array<{ name: string; image: string; url: string }>
   startup: Startup
 }
 
-export function Products(props: Props) {
-  const { products, startup } = props
+export function ProductsList(props: Props) {
+  const { changeEthRaised, products, startup, otherEthRaised } = props
   const [quantity, setQuantity] = useState("1")
   const projectId = startup.revnetProjectId
   const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), base.id)
@@ -25,6 +27,10 @@ export function Products(props: Props) {
   const quantityNum = quantity === "" ? 0 : parseInt(quantity)
   const ethAmount = (quantityNum * 0.001).toFixed(3)
   const tokenAmount = calculateTokensFromEth(ethAmount)
+
+  useEffect(() => {
+    changeEthRaised(otherEthRaised + parseFloat(ethAmount))
+  }, [ethAmount])
 
   const handleIncrement = () => {
     const currentNum = quantity === "" ? 0 : parseInt(quantity)
