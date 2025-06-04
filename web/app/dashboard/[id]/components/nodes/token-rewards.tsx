@@ -4,24 +4,44 @@ import { Currency } from "@/components/ui/currency"
 import { useUserRevnetBalance } from "@/lib/revnet/hooks/use-user-revnet-balance"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import Link from "next/link"
+import { useEffect, useState, useRef, useMemo } from "react"
+import NumberFlow from "@number-flow/react"
+import { cn } from "@/lib/utils"
 
 interface Props {
   projectId: bigint
   chainId: number
   userAddress: string | undefined
+  extraRevnetTokens: string
 }
 
-export function TokenRewards({ projectId, chainId, userAddress }: Props) {
+export function TokenRewards({ projectId, chainId, userAddress, extraRevnetTokens }: Props) {
   const { data, isLoading } = useUserRevnetBalance(projectId, chainId, userAddress)
   const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
 
+  const [isFlashing, setIsFlashing] = useState(false)
+  const prevExtraTokensRef = useRef(extraRevnetTokens)
+
   const tokenSymbol = tokenDetails?.symbol || ""
+
+  const balance = data?.balance || "0"
+  const totalTokens = useMemo(() => {
+    return Number(balance) / 1e18 + Number(extraRevnetTokens)
+  }, [balance, extraRevnetTokens])
+
+  useEffect(() => {
+    // Detect if extraRevnetTokens increased
+    if (Number(extraRevnetTokens) > Number(prevExtraTokensRef.current)) {
+      setIsFlashing(true)
+      setTimeout(() => setIsFlashing(false), 1000)
+    }
+    prevExtraTokensRef.current = extraRevnetTokens
+  }, [extraRevnetTokens])
 
   if (!userAddress) {
     return <div className="text-pretty text-sm text-muted-foreground">Earn on every order</div>
   }
 
-  const balance = data?.balance || "0"
   return (
     <Link
       href={`https://revda.sh/account/${userAddress}`}
@@ -33,9 +53,22 @@ export function TokenRewards({ projectId, chainId, userAddress }: Props) {
         You hold{" "}
         {isLoading ? (
           <span className="font-medium">...</span>
-        ) : Number(balance) > 0 ? (
-          <strong>
-            <Currency currency="ERC20">{balance}</Currency> {tokenSymbol}
+        ) : totalTokens > 0 ? (
+          <strong
+            className={cn(
+              "transition-all duration-500 ease-in-out",
+              isFlashing && "text-green-600 dark:text-green-400",
+            )}
+          >
+            <NumberFlow
+              value={totalTokens}
+              format={{
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }}
+              trend={isFlashing ? 1 : 0}
+            />{" "}
+            {tokenSymbol}
           </strong>
         ) : (
           <span className="font-medium">0 {tokenSymbol}</span>

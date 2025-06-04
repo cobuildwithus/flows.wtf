@@ -28,11 +28,13 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
+  const [touched, setTouched] = useState(false)
 
   const tokenSymbol = tokenDetails?.symbol || ""
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      if (!touched) return
       if (payAmount) {
         changeTokenVolumeEth(parseFloat(payAmount))
       } else {
@@ -41,9 +43,10 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [payAmount])
+  }, [payAmount, touched])
 
   const handlePayAmountChange = (value: string) => {
+    setTouched(true)
     setPayAmount(value)
     setLastEdited("pay")
     if (value === "") {
@@ -54,6 +57,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
   }
 
   const handleTokenAmountChange = (value: string) => {
+    setTouched(true)
     setTokenAmount(value)
     setLastEdited("token")
     if (value === "") {
@@ -88,6 +92,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
           <div className="flex items-center justify-between">
             <Input
               id="pay"
+              onFocus={() => setTouched(true)}
               className="h-12 border-0 border-transparent bg-transparent p-0 text-xl shadow-none focus-visible:ring-0"
               type="number"
               min={0.000001}
@@ -121,6 +126,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
               type="number"
               min={0}
               step={0.01}
+              onFocus={() => setTouched(true)}
               value={
                 isPriceLoading
                   ? ""

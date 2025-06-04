@@ -18,6 +18,7 @@ interface Props {
 export function ProductsList(props: Props) {
   const { changeProductsVolumeEth, products, startup } = props
   const [quantity, setQuantity] = useState("1")
+  const [touched, setTouched] = useState(false)
   const projectId = startup.revnetProjectId
   const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), base.id)
   const { data: tokenDetails } = useRevnetTokenDetails(BigInt(projectId), base.id)
@@ -29,23 +30,28 @@ export function ProductsList(props: Props) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      changeProductsVolumeEth(parseFloat(ethAmount))
+      if (touched) {
+        changeProductsVolumeEth(parseFloat(ethAmount))
+      }
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [ethAmount])
+  }, [ethAmount, touched])
 
   const handleIncrement = () => {
     const currentNum = quantity === "" ? 0 : parseInt(quantity)
     setQuantity((currentNum + 1).toString())
+    setTouched(true)
   }
 
   const handleDecrement = () => {
     const currentNum = quantity === "" ? 0 : parseInt(quantity)
     setQuantity(Math.max(1, currentNum - 1).toString())
+    setTouched(true)
   }
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTouched(true)
     const value = e.target.value
     if (value === "") {
       setQuantity("")
@@ -113,6 +119,7 @@ export function ProductsList(props: Props) {
                 </Button>
                 <Input
                   type="number"
+                  onFocus={() => setTouched(true)}
                   value={quantity}
                   onChange={handleQuantityChange}
                   className="mx-1 h-8 w-12 border-0 bg-transparent p-0 text-center text-sm shadow-none focus-visible:ring-0"

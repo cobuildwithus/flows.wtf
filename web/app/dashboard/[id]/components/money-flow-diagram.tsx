@@ -20,10 +20,10 @@ import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ProductsTitle } from "./products-title"
 import { TreasuryTitle } from "./treasury-title"
-import { useState } from "react"
+import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
+import { MoneyFlowSkeleton } from "./money-flow-skeleton"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -43,19 +43,20 @@ interface Props {
 export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
   const { width } = useWindowSize()
-  const [productsVolumeEth, setProductsVolumeEth] = useState(0.001)
-  const [tokenVolume, setTokenVolumeEth] = useState(0.01)
+  const {
+    productsVolumeEth,
+    setProductsVolumeEth,
+    tokenVolume,
+    setTokenVolumeEth,
+    totalRevnetTokens,
+  } = useFundraiseIllustration(startup.revnetProjectIds.base)
 
+  // return <MoneyFlowSkeleton />
   if (!width)
     return (
-      <>
-        <div className="block md:hidden">
-          <Skeleton height={1000} className="mt-4" />
-        </div>
-        <div className="hidden md:block">
-          <Skeleton height={614} className="mt-4" />
-        </div>
-      </>
+      <div className="mb-6 mt-1.5 px-2">
+        <MoneyFlowSkeleton />
+      </div>
     )
 
   const { splits, diagram } = startup
@@ -233,6 +234,7 @@ export function MoneyFlowDiagram(props: Props) {
             projectId={startup.revnetProjectIds.base}
             chainId={base.id}
             userAddress={user?.address}
+            extraRevnetTokens={totalRevnetTokens}
           />
         ),
       },
