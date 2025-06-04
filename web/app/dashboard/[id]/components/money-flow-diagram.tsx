@@ -5,7 +5,6 @@ import { Grant } from "@/lib/database/types"
 import useWindowSize from "@/lib/hooks/use-window-size"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
-import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import { getIpfsUrl } from "@/lib/utils"
 import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
@@ -16,13 +15,15 @@ import { JoinStartupLink } from "./join-startup-link"
 import { BuyRevnetToken } from "./nodes/buy-revnet-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
-import { Products } from "./nodes/products"
+import { ProductsList } from "./nodes/products-list"
 import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ProductsTitle } from "./ProductsTitle"
+import { ProductsTitle } from "./products-title"
+import { TreasuryTitle } from "./treasury-title"
+import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
+import { MoneyFlowSkeleton } from "./money-flow-skeleton"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -42,17 +43,20 @@ interface Props {
 export function MoneyFlowDiagram(props: Props) {
   const { products, members, user, startup, supports } = props
   const { width } = useWindowSize()
+  const {
+    productsVolumeEth,
+    setProductsVolumeEth,
+    tokenVolume,
+    setTokenVolumeEth,
+    totalRevnetTokens,
+  } = useFundraiseIllustration(startup.revnetProjectIds.base)
 
+  // return <MoneyFlowSkeleton />
   if (!width)
     return (
-      <>
-        <div className="block md:hidden">
-          <Skeleton height={1000} className="mt-4" />
-        </div>
-        <div className="hidden md:block">
-          <Skeleton height={614} className="mt-4" />
-        </div>
-      </>
+      <div className="mb-6 mt-1.5 px-2">
+        <MoneyFlowSkeleton />
+      </div>
     )
 
   const { splits, diagram } = startup
@@ -118,7 +122,13 @@ export function MoneyFlowDiagram(props: Props) {
         id: "user_action",
         title: <ProductsTitle startup={startup} chainId={base.id} />,
         className: "bg-background dark:bg-background/50 shadow",
-        content: <Products products={products.slice(0, 10)} startup={startup} />,
+        content: (
+          <ProductsList
+            changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
+            products={products.slice(0, 10)}
+            startup={startup}
+          />
+        ),
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
@@ -133,7 +143,12 @@ export function MoneyFlowDiagram(props: Props) {
         ),
         id: "user_token",
         height: 250,
-        content: <BuyRevnetToken projectId={startup.revnetProjectIds.base} />,
+        content: (
+          <BuyRevnetToken
+            projectId={startup.revnetProjectIds.base}
+            changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
+          />
+        ),
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
       },
       {
@@ -141,15 +156,15 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         id: "team",
         height: 96,
-        title: ["Team", `${splits.team * 100}%`],
+        title: ["Team", `$${splits.team * 100}/mo`],
         content: <ShortTeam members={members} />,
       },
       {
         col: 2,
         row: 2,
         id: "public_goods",
-        title: ["Public Good", `${splits.support * 100}%`],
-        height: 106,
+        title: ["Public Good", `$${splits.support * 100}/mo`],
+        height: 90,
         content: (
           <div className="text-pretty text-sm text-muted-foreground">
             Profits support community impact
@@ -160,45 +175,23 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 3,
         id: "treasury",
-        title: [
-          <Link
-            key="treasury-link"
-            href={getRevnetUrl(base.id, Number(startup.revnetProjectIds.base))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Treasury
-          </Link>,
-          `${splits.treasury * 100}%`,
-        ],
-        height: 106,
+        title: (
+          <TreasuryTitle
+            startup={startup}
+            chainId={base.id}
+            ethRaised={productsVolumeEth + tokenVolume}
+          />
+        ),
+        height: 90,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
       },
-      ...splits.costs.map((c, ci) => ({
-        col: 2,
-        row: 4 + ci,
-        height: 92,
-        id: `costs_${c.name}_${ci}`,
-        title: [c.name, `${c.amount * 100}%`],
-        content: (
-          <div className="mb-2.5 text-pretty text-sm text-muted-foreground">{c.description}</div>
-        ),
-      })),
       {
         col: 3,
         row: 1,
         id: "product",
         title: diagram.receive.name,
-        height: startup.reviews.length > 0 ? 256 : 106,
-        content: (
-          <>
-            <div className="mb-2.5 text-pretty text-sm text-muted-foreground">
-              {diagram.receive.description}
-            </div>
-            <Reviews reviews={startup.reviews} />
-          </>
-        ),
+        height: startup.reviews.length > 0 ? 200 : 106,
+        content: <Reviews reviews={startup.reviews} />,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
       },
       {
@@ -233,7 +226,7 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `Token rewards`,
+        title: `${startup.title} DAO`,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
         height: 95,
         content: (
@@ -241,6 +234,7 @@ export function MoneyFlowDiagram(props: Props) {
             projectId={startup.revnetProjectIds.base}
             chainId={base.id}
             userAddress={user?.address}
+            extraRevnetTokens={totalRevnetTokens}
           />
         ),
       },
@@ -251,7 +245,7 @@ export function MoneyFlowDiagram(props: Props) {
   return (
     <div style={{ width: "100%", height }} className="max-sm:mt-4">
       <ReactFlow
-        defaultNodes={nodes}
+        nodes={nodes}
         defaultEdges={
           isMobile
             ? [

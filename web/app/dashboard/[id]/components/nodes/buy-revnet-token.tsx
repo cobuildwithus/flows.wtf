@@ -7,15 +7,16 @@ import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { base } from "viem/chains"
 import { useAccount } from "wagmi"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AuthButton } from "@/components/ui/auth-button"
 import { ArrowDown } from "lucide-react"
 
 interface Props {
   projectId: bigint
+  changeTokenVolumeEth: (eth: number) => void
 }
 
-export function BuyRevnetToken({ projectId }: Props) {
+export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
   const { address } = useAccount()
   const { payRevnet, isLoading } = usePayRevnet(base.id)
   const {
@@ -27,10 +28,25 @@ export function BuyRevnetToken({ projectId }: Props) {
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
+  const [touched, setTouched] = useState(false)
 
   const tokenSymbol = tokenDetails?.symbol || ""
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!touched) return
+      if (payAmount) {
+        changeTokenVolumeEth(parseFloat(payAmount))
+      } else {
+        changeTokenVolumeEth(0)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [payAmount, touched])
+
   const handlePayAmountChange = (value: string) => {
+    setTouched(true)
     setPayAmount(value)
     setLastEdited("pay")
     if (value === "") {
@@ -41,6 +57,7 @@ export function BuyRevnetToken({ projectId }: Props) {
   }
 
   const handleTokenAmountChange = (value: string) => {
+    setTouched(true)
     setTokenAmount(value)
     setLastEdited("token")
     if (value === "") {
@@ -75,6 +92,7 @@ export function BuyRevnetToken({ projectId }: Props) {
           <div className="flex items-center justify-between">
             <Input
               id="pay"
+              onFocus={() => setTouched(true)}
               className="h-12 border-0 border-transparent bg-transparent p-0 text-xl shadow-none focus-visible:ring-0"
               type="number"
               min={0.000001}
@@ -108,6 +126,7 @@ export function BuyRevnetToken({ projectId }: Props) {
               type="number"
               min={0}
               step={0.01}
+              onFocus={() => setTouched(true)}
               value={
                 isPriceLoading
                   ? ""

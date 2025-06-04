@@ -15,7 +15,7 @@ export function ProductsTitle({ startup, chainId }: Props) {
   const tokenSymbol = tokenDetails?.symbol || "TOKEN"
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 text-base">
       <span>{startup.diagram.action.name},</span>
       <span>earn {isLoading ? "..." : tokenSymbol}</span>
     </div>

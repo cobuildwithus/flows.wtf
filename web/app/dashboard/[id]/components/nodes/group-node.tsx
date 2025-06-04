@@ -38,7 +38,7 @@ function GroupNode(props: NodeProps<IGroupNode>) {
               height={28}
             />
           )}
-          <span className="text-[15px] font-medium">{label}</span>
+          <span className="text-base font-medium">{label}</span>
         </div>
       )}
       {content}

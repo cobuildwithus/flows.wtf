@@ -6,17 +6,19 @@ import { Startup } from "@/lib/onchain-startup/startup"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { base } from "viem/chains"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Minus, Plus } from "lucide-react"
 
 interface Props {
+  changeProductsVolumeEth: (eth: number) => void
   products: Array<{ name: string; image: string; url: string }>
   startup: Startup
 }
 
-export function Products(props: Props) {
-  const { products, startup } = props
+export function ProductsList(props: Props) {
+  const { changeProductsVolumeEth, products, startup } = props
   const [quantity, setQuantity] = useState("1")
+  const [touched, setTouched] = useState(false)
   const projectId = startup.revnetProjectId
   const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), base.id)
   const { data: tokenDetails } = useRevnetTokenDetails(BigInt(projectId), base.id)
@@ -26,17 +28,30 @@ export function Products(props: Props) {
   const ethAmount = (quantityNum * 0.001).toFixed(3)
   const tokenAmount = calculateTokensFromEth(ethAmount)
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (touched) {
+        changeProductsVolumeEth(parseFloat(ethAmount))
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [ethAmount, touched])
+
   const handleIncrement = () => {
     const currentNum = quantity === "" ? 0 : parseInt(quantity)
     setQuantity((currentNum + 1).toString())
+    setTouched(true)
   }
 
   const handleDecrement = () => {
     const currentNum = quantity === "" ? 0 : parseInt(quantity)
     setQuantity(Math.max(1, currentNum - 1).toString())
+    setTouched(true)
   }
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTouched(true)
     const value = e.target.value
     if (value === "") {
       setQuantity("")
@@ -55,12 +70,12 @@ export function Products(props: Props) {
         <div className="rounded-lg bg-muted/30 p-2">
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex space-x-2.5">
-              {products.map((p) => (
+              {products.map((p, index) => (
                 <a
                   key={p.name}
                   href={p.url}
                   target="_blank"
-                  className="flex shrink-0 flex-col items-center transition-opacity hover:opacity-80"
+                  className="relative flex shrink-0 flex-col items-center transition-opacity hover:opacity-80"
                 >
                   <Image
                     src={p.image}
@@ -69,6 +84,19 @@ export function Products(props: Props) {
                     height={80}
                     className="aspect-square w-full rounded-md"
                   />
+                  {quantityNum > 0 &&
+                    (() => {
+                      const productQuantity = calculateProductQuantity(
+                        quantityNum,
+                        products.length,
+                        index,
+                      )
+                      return productQuantity > 0 ? (
+                        <div className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/40 text-[10px] font-medium text-primary-foreground">
+                          {productQuantity}
+                        </div>
+                      ) : null
+                    })()}
                 </a>
               ))}
             </div>
@@ -91,6 +119,7 @@ export function Products(props: Props) {
                 </Button>
                 <Input
                   type="number"
+                  onFocus={() => setTouched(true)}
                   value={quantity}
                   onChange={handleQuantityChange}
                   className="mx-1 h-8 w-12 border-0 bg-transparent p-0 text-center text-sm shadow-none focus-visible:ring-0"
@@ -121,4 +150,31 @@ export function Products(props: Props) {
       </Button>
     </div>
   )
+}
+// Helper function to calculate product quantities
+// First product gets 70% of total, rest split evenly
+function calculateProductQuantity(
+  totalQuantity: number,
+  productCount: number,
+  productIndex: number,
+): number {
+  if (productCount === 0 || totalQuantity === 0) return 0
+
+  if (productIndex === 0) {
+    // First product gets 60% (rounded up)
+    return Math.ceil(totalQuantity * 0.6)
+  }
+
+  // Remaining products split the other 40%
+  const remainingQuantity = totalQuantity - Math.ceil(totalQuantity * 0.6)
+  const remainingProducts = productCount - 1
+
+  if (remainingProducts === 0) return 0
+
+  const baseQuantity = Math.floor(remainingQuantity / remainingProducts)
+  const remainder = remainingQuantity % remainingProducts
+
+  // Distribute remainder to products after the first one
+  const adjustedIndex = productIndex - 1
+  return baseQuantity + (adjustedIndex < remainder ? 1 : 0)
 }

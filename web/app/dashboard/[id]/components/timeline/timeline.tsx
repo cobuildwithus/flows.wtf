@@ -83,7 +83,7 @@ export async function Timeline(props: Props) {
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardContent className="space-y-6">
-        <ScrollArea className="h-[400px] pr-4">
+        <ScrollArea className="h-[630px] pr-4">
           <ul role="list" className="space-y-7">
             {events.slice(0, MAX_EVENTS).map((event, i) => (
               <li
@@ -92,7 +92,7 @@ export async function Timeline(props: Props) {
               >
                 <div
                   className={cn(
-                    i === events.length - 1 ? "h-6" : "-bottom-6",
+                    i === events.length - 1 ? "h-6" : "-bottom-8",
                     "absolute left-0 top-0 flex w-6 justify-center",
                   )}
                 >

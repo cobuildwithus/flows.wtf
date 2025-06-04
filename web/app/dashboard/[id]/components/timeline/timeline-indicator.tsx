@@ -4,7 +4,7 @@ interface Props {
 
 export function TimelineIndicator({ image }: Props) {
   return (
-    <div className="relative flex size-6 flex-none items-center justify-center bg-background">
+    <div className="relative flex size-6 flex-none items-center justify-center">
       {!image && <div className="size-1.5 rounded-full bg-muted-foreground ring-1 ring-border" />}
       {image && (
         <img
