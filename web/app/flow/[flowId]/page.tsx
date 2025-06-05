@@ -6,13 +6,12 @@ import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
-import { Status } from "@/lib/enums"
 import { getEthAddress } from "@/lib/utils"
-import type { Grant } from "@prisma/flows"
 import { FlowImpactSummary } from "./components/flow-impact-summary"
 import { FlowSubmenu } from "./components/flow-submenu"
 import GrantsList from "./components/grants-list"
 import { AllocationBar } from "@/components/global/allocation-bar"
+import { sortGrants } from "@/lib/grant-utils"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -69,17 +68,4 @@ export default async function FlowPage(props: Props) {
       <AllocationBar />
     </AgentChatProvider>
   )
-}
-
-function sortGrants(a: Omit<Grant, "description">, b: Omit<Grant, "description">) {
-  const aIsClearingRequested = a.status === Status.ClearingRequested
-  const bIsClearingRequested = b.status === Status.ClearingRequested
-
-  if (aIsClearingRequested && !bIsClearingRequested) {
-    return -1
-  }
-  if (!aIsClearingRequested && bIsClearingRequested) {
-    return 1
-  }
-  return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
 }
