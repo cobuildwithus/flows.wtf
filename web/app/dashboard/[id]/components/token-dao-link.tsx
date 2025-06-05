@@ -32,7 +32,7 @@ export function TokenDAOLink({ startupTitle, projectId, chainId, tokenAmount }: 
             }}
             locales="en-US"
           />{" "}
-          {tokenDetails?.symbol} tokens
+          {tokenDetails?.symbol}
         </div>
         <button
           type="button"

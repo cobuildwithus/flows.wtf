@@ -236,13 +236,14 @@ export function MoneyFlowDiagram(props: Props) {
           />
         ),
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-        height: 95,
+        height: Number(totalRevnetTokens) > 0 ? 145 : 95,
         content: (
           <TokenRewards
             projectId={startup.revnetProjectIds.base}
             chainId={base.id}
             userAddress={user?.address}
             extraRevnetTokens={totalRevnetTokens}
+            startupTitle={startup.title}
           />
         ),
       },
