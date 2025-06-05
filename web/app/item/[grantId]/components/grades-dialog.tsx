@@ -1,6 +1,6 @@
 "use client"
 
-import { isGrantNew } from "@/app/flow/[flowId]/components/is-new"
+import { isGrantNew } from "@/lib/grant-utils"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import type { User } from "@/lib/auth/user"
 import type { DerivedData, Grant } from "@prisma/flows"

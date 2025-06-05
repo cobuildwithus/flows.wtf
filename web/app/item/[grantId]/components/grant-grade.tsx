@@ -1,4 +1,4 @@
-import { isGrantNew } from "@/app/flow/[flowId]/components/is-new"
+import { isGrantNew } from "@/lib/grant-utils"
 import type { DerivedData, Grant } from "@prisma/flows"
 import { CircularProgress } from "./circular-progress"
 import { ImpactDialog } from "./grades-dialog"

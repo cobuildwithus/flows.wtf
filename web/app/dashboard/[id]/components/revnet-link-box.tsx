@@ -20,8 +20,7 @@ export function RevnetLinkBox({ startupTitle, projectId, chainId }: Props) {
       <div className="space-y-1.5">
         <p className="text-sm font-medium">{startupTitle} is a Revnet</p>
         <p className="text-xs text-muted-foreground">
-          A lightweight DAO, or 'revenue network', aligning contributors to maximize growth of the
-          project.
+          A lightweight DAO, or 'revenue network', aligning contributors to maximize success.
         </p>
         <p className="text-xs font-medium text-primary">Learn more →</p>
       </div>
