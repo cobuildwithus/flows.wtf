@@ -200,7 +200,7 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-                        <span>Maximize growth of the {startupTitle} network</span>
+                        <span>Maximize success of the {startupTitle} network</span>
                       </li>
                     </ul>
                   </div>

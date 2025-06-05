@@ -12,6 +12,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { base } from "viem/chains"
 import { JoinStartupLink } from "./join-startup-link"
+import { TokenDAOLink } from "./token-dao-link"
 import { BuyRevnetToken } from "./nodes/buy-revnet-token"
 import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
@@ -226,7 +227,14 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 3,
         id: "token",
-        title: `${startup.title} DAO`,
+        title: (
+          <TokenDAOLink
+            startupTitle={startup.title}
+            projectId={startup.revnetProjectIds.base}
+            chainId={base.id}
+            tokenAmount={Number(totalRevnetTokens)}
+          />
+        ),
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
         height: 95,
         content: (

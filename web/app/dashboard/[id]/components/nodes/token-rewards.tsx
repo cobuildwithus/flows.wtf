@@ -1,6 +1,5 @@
 "use client"
 
-import { Currency } from "@/components/ui/currency"
 import { useUserRevnetBalance } from "@/lib/revnet/hooks/use-user-revnet-balance"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import Link from "next/link"
@@ -50,7 +49,7 @@ export function TokenRewards({ projectId, chainId, userAddress, extraRevnetToken
       className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"
     >
       <div>
-        You hold{" "}
+        Your {Number(extraRevnetTokens) > 0 ? "new" : ""} holdings{" "}
         {isLoading ? (
           <span className="font-medium">...</span>
         ) : totalTokens > 0 ? (
