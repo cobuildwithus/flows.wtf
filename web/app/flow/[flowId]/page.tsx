@@ -9,9 +9,9 @@ import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getEthAddress } from "@/lib/utils"
 import { FlowImpactSummary } from "./components/flow-impact-summary"
 import { FlowSubmenu } from "./components/flow-submenu"
-import GrantsList from "./components/grants-list"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import { sortGrants } from "@/lib/grant-utils"
+import GrantsList from "@/components/global/grants-list"
 
 interface Props {
   params: Promise<{ flowId: string }>
