@@ -3,7 +3,7 @@ import "server-only"
 import { getFlow } from "@/lib/database/queries/flow"
 import { getAccelerator } from "@/lib/onchain-startup/data/accelerators"
 import { Metadata } from "next"
-import { AcceleratorPage } from "../page"
+import { AcceleratorPage } from "../accelerator-page"
 
 const accelerator = getAccelerator("gnars")
 
