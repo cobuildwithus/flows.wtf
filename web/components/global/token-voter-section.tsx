@@ -10,7 +10,7 @@ export function TokenVoter(props: { tokenContract: string; tokenIds: number[] })
   return (
     <>
       <div className="text-sm text-muted-foreground">
-        Help flow money to builders by voting with your {tokenIds.length}{" "}
+        Flow money to builders by voting with your {tokenIds.length}{" "}
         {pluralize(ERC721Name({ tokenContract }), tokenIds.length)}.
       </div>
     </>

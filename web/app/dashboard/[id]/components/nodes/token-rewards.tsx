@@ -58,7 +58,7 @@ export function TokenRewards({
         className="pointer-events-auto text-sm text-muted-foreground transition-opacity hover:opacity-80"
       >
         <div>
-          You {Number(extraRevnetTokens) > 0 ? "will" : ""} hold{" "}
+          You {Number(extraRevnetTokens) > 0 ? "will" : ""} own{" "}
           {isLoading ? (
             <span className="font-medium">...</span>
           ) : totalTokens > 0 ? (
