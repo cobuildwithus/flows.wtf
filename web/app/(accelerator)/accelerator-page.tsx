@@ -125,7 +125,9 @@ export async function AcceleratorPage(props: Props) {
 
           <div className="max-sm:hidden">
             <Link href={`/apply/${accelerator.flowId}`}>
-              <Button>Apply for funding</Button>
+              <Button style={{ backgroundColor: accelerator.color }} className="text-white">
+                Apply for funding
+              </Button>
             </Link>
           </div>
         </div>

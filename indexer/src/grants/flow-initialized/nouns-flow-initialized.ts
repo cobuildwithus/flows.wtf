@@ -14,6 +14,7 @@ import {
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { mainnet } from "viem/chains"
+import { isAccelerator } from "../recipients/helpers"
 
 ponder.on("NounsFlow:FlowInitialized", handleFlowInitialized)
 
@@ -70,6 +71,7 @@ async function handleFlowInitialized(params: {
     monthlyRewardPoolFlowRate: "0",
     monthlyBaselinePoolFlowRate: "0",
     isOnchainStartup: false,
+    isAccelerator: isAccelerator(contract),
     monthlyBonusPoolFlowRate: "0",
     bonusMemberUnits: "0",
     baselineMemberUnits: "0",

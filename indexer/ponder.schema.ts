@@ -56,6 +56,7 @@ export const grants = onchainTable(
     bonusPoolQuorum: t.integer().notNull(),
     totalVoteWeightCastOnFlow: t.text().notNull(),
     isOnchainStartup: t.boolean().notNull(),
+    isAccelerator: t.boolean().notNull(),
     allocator: t.text(),
     erc721VotingToken: t.text(),
     votingTokenChainId: t.integer(),
@@ -82,6 +83,8 @@ export const grants = onchainTable(
       table.isActive,
       table.isRemoved
     ),
+    isAcceleratorIdx: index().on(table.isAccelerator),
+    isOnchainStartupIdx: index().on(table.isOnchainStartup),
   })
 )
 

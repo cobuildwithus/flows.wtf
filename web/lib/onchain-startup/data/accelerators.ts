@@ -1,4 +1,6 @@
-export type AcceleratorId = "vrbs" | "grounds" | "gnars"
+import { accelerators as acceleratorAddresses } from "@/addresses"
+
+export type AcceleratorId = keyof typeof acceleratorAddresses
 
 export type Accelerator = {
   id: AcceleratorId
@@ -12,21 +14,21 @@ const accelerators: Accelerator[] = [
   {
     id: "vrbs",
     name: "Vrbs",
-    flowId: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+    flowId: acceleratorAddresses.vrbs,
     coverImage: "/vrbs-bg.jpg",
     color: "#22c55e",
   },
   {
     id: "grounds",
     name: "Grounds",
-    flowId: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+    flowId: acceleratorAddresses.grounds,
     coverImage: "/grounds-bg.png",
     color: "#991b1b",
   },
   {
     id: "gnars",
     name: "Gnars",
-    flowId: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+    flowId: acceleratorAddresses.gnars,
     coverImage: "/vrbs-bg.jpg", // TODO
     color: "#000000", // TODO
   },

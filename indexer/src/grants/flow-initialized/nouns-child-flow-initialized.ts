@@ -1,15 +1,16 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import { zeroAddress } from "viem"
-import { Status } from "../../enums"
 import {
   baselinePoolToGrantId,
   bonusPoolToGrantId,
   grants,
   parentFlowToChildren,
 } from "ponder:schema"
-import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { mainnet as mainnetContracts } from "../../../addresses"
+import { zeroAddress } from "viem"
 import { mainnet } from "viem/chains"
+import { mainnet as mainnetContracts } from "../../../addresses"
+import { Status } from "../../enums"
+import { isAccelerator } from "../recipients/helpers"
+import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
@@ -76,6 +77,7 @@ async function handleFlowInitialized(params: {
     tcr: null,
     erc20: null,
     isOnchainStartup: false,
+    isAccelerator: isAccelerator(contract),
     arbitrator: null,
     tokenEmitter: null,
     manager: manager.toLowerCase(),

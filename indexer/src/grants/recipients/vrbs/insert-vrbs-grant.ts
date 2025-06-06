@@ -69,6 +69,7 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     isRemoved: false,
     votesCount: "0",
     isOnchainStartup,
+    isAccelerator: false,
     bonusPoolQuorum: 0,
     totalVoteWeightCastOnFlow: "0",
     monthlyIncomingFlowRate: "0",

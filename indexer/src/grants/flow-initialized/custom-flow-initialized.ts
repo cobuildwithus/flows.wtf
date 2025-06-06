@@ -9,6 +9,7 @@ import {
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { base } from "../../../addresses"
+import { isAccelerator } from "../recipients/helpers"
 
 ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
 
@@ -32,7 +33,7 @@ async function handleFlowInitialized(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const parentContract = parent.toLowerCase() as `0x${string}`
 
-  const parentFlow = await context.db.find(grants, { id: parentContract })
+  // const parentFlow = await context.db.find(grants, { id: parentContract })
 
   const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
     context,
@@ -79,6 +80,7 @@ async function handleFlowInitialized(params: {
     tcr: null,
     erc20: null,
     isOnchainStartup: false,
+    isAccelerator: isAccelerator(contract),
     arbitrator: null,
     manager: manager.toLowerCase(),
     tokenEmitter: null,

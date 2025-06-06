@@ -2,7 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { grants, parentFlowToChildren, recipientAndParentToGrantId } from "ponder:schema"
 import { updateTcrAndItemId } from "../../tcr/tcr-helpers"
 import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
-import { isOnchainStartup } from "./helpers"
+import { isAccelerator, isOnchainStartup } from "./helpers"
 
 ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
@@ -36,6 +36,7 @@ async function handleFlowRecipientCreated(params: {
     submitter,
     recipientId,
     isOnchainStartup: isOnchainStartup(parentFlowContract),
+    isAccelerator: isAccelerator(flowContract),
   })
 
   await createRecipientMappings(context.db, flowContract, recipientId, parentFlowContract)

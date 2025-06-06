@@ -53,6 +53,7 @@ async function handleItemSubmitted(params: {
     manager: "",
     isActive: false,
     isOnchainStartup: false,
+    isAccelerator: false,
     recipient: recipient.toLowerCase(),
     recipientId: _itemID,
     flowId: flow.id,
