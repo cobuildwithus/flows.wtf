@@ -1,6 +1,6 @@
 import { cache } from "react"
 import database from "../database/flows-db"
-import { StartupData } from "./data/interface"
+import { Accelerator, getAccelerator } from "./data/accelerators"
 import { vrbscoffee } from "./data/vrbscoffee"
 
 const startups = {
@@ -27,9 +27,12 @@ export async function getStartup(id: string) {
 
   if (!grant.allocator) throw new Error("Incorrect startup data - missing allocator")
 
+  const accelerator = getAccelerator(startup.acceleratorId)
+
   return {
     ...grant,
     ...startup,
+    accelerator,
     allocator: grant.allocator as `0x${string}`,
     id,
   }
@@ -37,10 +40,10 @@ export async function getStartup(id: string) {
 
 export type Startup = Awaited<ReturnType<typeof getStartup>>
 
-export function getStartups(accelerator: StartupData["accelerator"]) {
+export function getStartups(accelerator: Accelerator) {
   return Object.entries(startups)
-    .map(([id, startup]) => ({ ...startup, id }))
-    .filter((s) => s.accelerator === accelerator)
+    .map(([id, startup]) => ({ ...startup, id, accelerator }))
+    .filter((s) => s.acceleratorId === accelerator.id)
 }
 
 export const getStartupData = cache((id: string) => {

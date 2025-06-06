@@ -1,8 +1,9 @@
 import { StoreConfig } from "@/lib/shopify/stores"
 import { SocialProfileUsernames } from "@/lib/social-metrics/social-profile"
+import { AcceleratorId } from "./accelerators"
 
 export interface StartupData {
-  accelerator: "vrbs"
+  acceleratorId: AcceleratorId
   revnetProjectId: number
   title: string
   tagline: string

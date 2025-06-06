@@ -20,6 +20,7 @@ import { Banknote, DollarSign, Repeat, ShoppingBag } from "lucide-react"
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { MetricCard } from "./components/metric-card"
+import { Mission } from "./components/mission"
 import { MoneyFlowDiagram } from "./components/money-flow-diagram"
 import { OrdersTable } from "./components/orders-table"
 import { ProductsTable } from "./components/products-table"
@@ -27,7 +28,6 @@ import { SalesOverview } from "./components/sales-overview"
 import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
-import { Mission } from "./components/mission"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -82,7 +82,9 @@ export default async function GrantPage(props: Props) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${startup.accelerator}`}>{startup.flow.title}</BreadcrumbLink>
+              <BreadcrumbLink href={`/${startup.acceleratorId}`}>
+                {startup.flow.title}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="max-sm:hidden" />
             <BreadcrumbItem className="max-sm:hidden">
@@ -145,7 +147,7 @@ export default async function GrantPage(props: Props) {
           />
 
           <MetricCard
-            title="Funding from Vrbs"
+            title={`Funding from ${startup.accelerator.name}`}
             value={
               <AnimatedSalary
                 value={startup.totalEarned}

@@ -1,5 +1,3 @@
-import "server-only"
-
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { EthInUsd } from "@/components/global/eth-in-usd"
 import { Submenu } from "@/components/global/submenu"
@@ -8,24 +6,22 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { getFlow } from "@/lib/database/queries/flow"
+import { Accelerator } from "@/lib/onchain-startup/data/accelerators"
 import { getStartups } from "@/lib/onchain-startup/startup"
-import { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
-const flowId = "0xca1d9e8a93f316ef7e6f880116a160333d085f92"
-
-export const metadata: Metadata = {
-  title: "Vrbs Accelerator",
-  description:
-    "Get paid every second to bring your best ideas to life with Vrbs and make positive impact in the world.",
+interface Props {
+  accelerator: Accelerator
 }
 
-export default async function VrbsPage() {
-  const startups = getStartups("vrbs")
+export async function AcceleratorPage(props: Props) {
+  const { accelerator } = props
+
+  const startups = getStartups(accelerator)
 
   const [flow, user, opportunitiesCount, balances, participants] = await Promise.all([
-    getFlow(flowId),
+    getFlow(accelerator.flowId),
     getUser(),
     database.opportunity.count({
       where: { status: 1, startupId: { in: startups.map((s) => s.id) } },
@@ -54,24 +50,26 @@ export default async function VrbsPage() {
       identityToken={await getPrivyIdToken()}
     >
       <div className="container">
-        <section className="relative isolate overflow-hidden rounded-2xl bg-green-500 py-8 lg:py-12">
+        <section
+          style={{ backgroundColor: accelerator.color }}
+          className="relative isolate overflow-hidden rounded-2xl py-8 lg:py-12"
+        >
           <Image
-            src={"/vrbs-bg.jpg"}
+            src={accelerator.coverImage}
             alt={flow.title}
             width="1500"
             height="500"
             priority
-            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-50 mix-blend-multiply dark:opacity-50"
+            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-70 mix-blend-multiply grayscale"
           />
 
           <div className="mx-auto max-w-7xl px-4 lg:px-6">
-            <div className="max-w-2xl">
-              <h2 className="text-4xl font-bold tracking-tighter text-white lg:text-5xl">
-                Vrbs Accelerator
+            <div className="max-w-3xl">
+              <h2 className="text-balance text-4xl font-bold tracking-tighter text-white lg:text-5xl">
+                {flow.title}
               </h2>
-              <p className="mt-6 leading-7 text-white/80 lg:text-xl lg:leading-8">
-                Get paid <strong>every second</strong> to bring your best ideas to life with Vrbs
-                and make positive impact in the world.
+              <p className="mt-6 text-pretty leading-7 text-white/80 lg:text-xl lg:leading-8">
+                {flow.description}
               </p>
             </div>
 
@@ -79,7 +77,7 @@ export default async function VrbsPage() {
               <div className="flex flex-col max-md:gap-y-4 md:flex-row md:gap-x-12">
                 {[
                   { name: "Check opportunities", href: `/opportunities` },
-                  { name: `Apply for funding`, href: `/apply/${flowId}` },
+                  { name: `Apply for funding`, href: `/apply/${accelerator.flowId}` },
                 ].map((link) => (
                   <Link
                     key={link.name}
@@ -120,13 +118,13 @@ export default async function VrbsPage() {
         <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
           <Submenu
             links={[
-              { label: "Projects", href: `/vrbs`, isActive: true },
-              { label: "Applications", href: `/vrbs/applications` },
+              { label: "Projects", href: `/${accelerator.id}`, isActive: true },
+              { label: "Applications", href: `/${accelerator.id}/applications` },
             ]}
           />
 
           <div className="max-sm:hidden">
-            <Link href={`/apply/${flowId}`}>
+            <Link href={`/apply/${accelerator.flowId}`}>
               <Button>Apply for funding</Button>
             </Link>
           </div>
