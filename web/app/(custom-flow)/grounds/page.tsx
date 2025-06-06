@@ -1,14 +1,14 @@
 import "server-only"
 
 import { getFlow } from "@/lib/database/queries/flow"
-import { getAccelerator } from "@/lib/onchain-startup/data/accelerators"
 import { Metadata } from "next"
-import { AcceleratorPage } from "../accelerator-page"
+import { CustomFlowPage } from "../custom-flow-page"
+import { getCustomFlow } from "../custom-flows"
 
-const accelerator = getAccelerator("grounds")
+const customFlow = getCustomFlow("grounds")
 
 export async function generateMetadata(): Promise<Metadata> {
-  const flow = await getFlow(accelerator.flowId)
+  const flow = await getFlow(customFlow.flowId)
   return {
     title: flow.title,
     description:
@@ -17,5 +17,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GroundsPage() {
-  return <AcceleratorPage accelerator={accelerator} />
+  return <CustomFlowPage customFlow={customFlow} />
 }

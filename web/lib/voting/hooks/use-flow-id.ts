@@ -1,5 +1,6 @@
 "use client"
 
+import { customFlows } from "@/addresses"
 import { NOUNS_FLOW } from "@/lib/config"
 import { AcceleratorId, getAccelerator } from "@/lib/onchain-startup/data/accelerators"
 import { useParams, usePathname } from "next/navigation"
@@ -12,10 +13,14 @@ export function useFlowId() {
 }
 
 function getFlowIdFromPath(pathname: string, paramsFlowId?: string): string {
+  const name = pathname.substring(1) as string
   try {
-    const acceleratorId = pathname.substring(1) as AcceleratorId
-    return getAccelerator(acceleratorId).flowId
+    return getAccelerator(name as AcceleratorId).flowId
   } catch (error) {
+    if (name in customFlows) {
+      return customFlows[name as keyof typeof customFlows]
+    }
+
     return paramsFlowId || NOUNS_FLOW
   }
 }

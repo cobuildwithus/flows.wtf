@@ -34,8 +34,11 @@ export const base = {
   JBMultiTerminal: "0xdb9644369c79c3633cde70d2df50d827d7dc7dbc",
 } as const
 
-export const accelerators = {
-  vrbs: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+export const customFlows = {
   grounds: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
   gnars: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+} as const
+
+export const accelerators = {
+  vrbs: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
 } as const

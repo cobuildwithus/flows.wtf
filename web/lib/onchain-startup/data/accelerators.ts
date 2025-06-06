@@ -18,20 +18,6 @@ const accelerators: Accelerator[] = [
     coverImage: "/vrbs-bg.jpg",
     color: "#22c55e",
   },
-  {
-    id: "grounds",
-    name: "Grounds",
-    flowId: acceleratorAddresses.grounds,
-    coverImage: "/grounds-bg.png",
-    color: "#991b1b",
-  },
-  {
-    id: "gnars",
-    name: "Gnars",
-    flowId: acceleratorAddresses.gnars,
-    coverImage: "/vrbs-bg.jpg", // TODO
-    color: "#000000", // TODO
-  },
 ] as const
 
 export function getAccelerator(id: AcceleratorId) {
