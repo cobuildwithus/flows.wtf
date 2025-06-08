@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { DAOInfoDialog } from "./dao-info-dialog"
+import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 
 interface Props {
   startupTitle: string
@@ -12,11 +13,13 @@ interface Props {
 export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  const { data: tokenDetails, isLoading } = useRevnetTokenDetails(BigInt(projectId), chainId)
+
   return (
     <>
       <div className="flex w-full items-center justify-between gap-1 text-base">
         <div onClick={() => setIsDialogOpen(true)} className="cursor-pointer hover:underline">
-          {startupTitle} DAO
+          Buy {isLoading ? "..." : tokenDetails?.symbol}
         </div>
         <button
           type="button"
