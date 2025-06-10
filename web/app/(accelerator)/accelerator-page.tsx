@@ -119,7 +119,7 @@ export async function AcceleratorPage(props: Props) {
           <Submenu
             links={[
               { label: "Projects", href: `/${accelerator.id}`, isActive: true },
-              { label: "Applications", href: `/${accelerator.id}/applications` },
+              // { label: "Applications", href: `/flow/${accelerator.flowId}/applications` },
             ]}
           />
 

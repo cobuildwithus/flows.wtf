@@ -3,10 +3,10 @@
 import useSWR from "swr"
 import { useAccount } from "wagmi"
 import { getVotingPower } from "../voting-power/get-voting-power"
-import { useFlowId } from "./use-flow-id"
+import { useFlow } from "./use-flow"
 
 export function useVotingPower() {
-  const flowId = useFlowId()
+  const { flowId } = useFlow()
 
   const { address } = useAccount()
 

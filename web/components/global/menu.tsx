@@ -1,5 +1,6 @@
 "use client"
 
+import { useCustomStyles } from "@/app/(custom-flow)/useCustomStyles"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
@@ -64,6 +65,7 @@ export function MenuMobile() {
 
 export function MenuDesktop() {
   const menu = useMenu()
+  useCustomStyles()
 
   return (
     <nav className="hidden lg:flex lg:grow lg:flex-row lg:justify-center lg:space-x-8">

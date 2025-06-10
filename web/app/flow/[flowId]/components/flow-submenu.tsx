@@ -9,6 +9,7 @@ import Link from "next/link"
 import { AllocationToggle } from "./allocation-toggle"
 import { getEthAddress } from "@/lib/utils"
 import { getUser } from "@/lib/auth/user"
+import { getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 
 interface Props {
   flowId: string
@@ -26,6 +27,9 @@ export const FlowSubmenu = async (props: Props) => {
     getUser(),
   ])
 
+  const customFlow = getCustomFlowById(flowId)
+  const flowUrl = customFlow ? `/${customFlow.id}` : `/flow/${flowId}`
+
   const isApproved = segment === "approved"
   const isCurate = segment === "curate"
   const isDrafts = segment === "drafts"
@@ -40,7 +44,7 @@ export const FlowSubmenu = async (props: Props) => {
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
       label: flow.isTopLevel ? "Flows" : "Projects",
-      href: `/flow/${flowId}`,
+      href: flowUrl,
       isActive: isApproved,
     },
   ]

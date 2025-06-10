@@ -1,11 +1,11 @@
 "use client"
 
 import useSWR from "swr"
-import { useFlowId } from "../hooks/use-flow-id"
+import { useFlow } from "../hooks/use-flow"
 import { fetchDelegatedTokens } from "./get-delegated-tokens"
 
 export function useDelegatedTokens(address: `0x${string}` | undefined) {
-  const flowId = useFlowId()
+  const { flowId } = useFlow()
 
   const { data, ...rest } = useSWR(
     address && flowId ? [address, flowId] : null,
