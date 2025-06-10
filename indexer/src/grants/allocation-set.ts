@@ -1,6 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { votes, grants, votesByAllocationKeyAndContract } from "ponder:schema"
+import { allocations, grants, allocationsByAllocationKeyAndContract } from "ponder:schema"
 import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("CustomFlow:AllocationSet", handleAllocationSet)
@@ -15,12 +15,12 @@ async function handleAllocationSet(params: {
   const blockNumber = event.block.number.toString()
   const blockTimestamp = Number(event.block.timestamp)
   const transactionHash = event.transaction.hash
-  const voter = event.transaction.from.toLowerCase()
+  const allocator = event.transaction.from.toLowerCase()
   const contract = event.log.address.toLowerCase() as `0x${string}`
-  const votesCount = bps / (totalWeight / BigInt(1e18))
+  const allocationsCount = bps / (totalWeight / BigInt(1e18))
 
   const affectedRecipientIds = new Map<string, bigint>()
-  affectedRecipientIds.set(recipientId.toString(), votesCount)
+  affectedRecipientIds.set(recipientId.toString(), allocationsCount)
 
   let hasPreviousVotes = false
 
@@ -33,37 +33,38 @@ async function handleAllocationSet(params: {
 
   for (const oldVote of oldVotes) {
     const existingVotes = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
-    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.votesCount))
+    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.allocationsCount))
     hasPreviousVotes = true
   }
 
-  const voteId = `${contract}_${recipientId}_${voter}_${blockNumber}_${strategy}_${allocationKey}`
+  const voteId = `${contract}_${recipientId}_${allocator}_${blockNumber}_${strategy}_${allocationKey}`
 
   // Create the new vote
-  await context.db.insert(votes).values({
+  await context.db.insert(allocations).values({
     id: voteId,
     contract,
     recipientId: recipientId.toString(),
     allocationKey: allocationKey.toString(),
+    strategy: strategy.toLowerCase(),
     bps: Number(bps),
-    voter,
+    allocator,
     blockNumber,
     blockTimestamp,
     transactionHash,
-    votesCount: votesCount.toString(),
+    allocationsCount: allocationsCount.toString(),
   })
 
   await context.db
-    .insert(votesByAllocationKeyAndContract)
+    .insert(allocationsByAllocationKeyAndContract)
     .values({
       contractAllocationKey: `${contract}_${allocationKey}`,
-      voteIds: [voteId],
+      allocationIds: [voteId],
     })
     .onConflictDoUpdate((row) => ({
-      voteIds: Array.from(new Set([...row.voteIds, voteId])),
+      allocationIds: Array.from(new Set([...row.allocationIds, voteId])),
     }))
 
-  for (const [recipientId, votesDelta] of affectedRecipientIds) {
+  for (const [recipientId, allocationsDelta] of affectedRecipientIds) {
     const grantId = await getGrantIdFromFlowContractAndRecipientId(
       context.db,
       contract,
@@ -71,7 +72,7 @@ async function handleAllocationSet(params: {
     )
 
     await context.db.update(grants, { id: grantId }).set((row) => ({
-      votesCount: (BigInt(row.votesCount) + votesDelta).toString(),
+      allocationsCount: (BigInt(row.allocationsCount) + allocationsDelta).toString(),
     }))
   }
 
@@ -90,12 +91,14 @@ async function updateTotalVoteWeightCastOnFlow(
 ) {
   const grantId = contract
   if (grantId) {
-    const existingVoteIds = await db.find(votesByAllocationKeyAndContract, {
+    const existingVoteIds = await db.find(allocationsByAllocationKeyAndContract, {
       contractAllocationKey: `${contract}_${allocationKey}`,
     })
-    if (!existingVoteIds || existingVoteIds.voteIds.length === 0) {
+    if (!existingVoteIds || existingVoteIds.allocationIds.length === 0) {
       await db.update(grants, { id: grantId }).set((row) => ({
-        totalVoteWeightCastOnFlow: (BigInt(row.totalVoteWeightCastOnFlow) + totalWeight).toString(),
+        totalAllocationWeightOnFlow: (
+          BigInt(row.totalAllocationWeightOnFlow) + totalWeight
+        ).toString(),
       }))
     }
   }
@@ -107,14 +110,14 @@ async function getOldVotes(
   allocationKey: bigint,
   blockNumber: string
 ) {
-  const existingVoteIds = await db.find(votesByAllocationKeyAndContract, {
+  const existingVoteIds = await db.find(allocationsByAllocationKeyAndContract, {
     contractAllocationKey: `${contract}_${allocationKey}`,
   })
 
   if (!existingVoteIds) return []
 
   const existingVotesRaw = await Promise.all(
-    existingVoteIds.voteIds.map((voteId) => db.find(votes, { id: voteId }))
+    existingVoteIds.allocationIds.map((allocationId) => db.find(allocations, { id: allocationId }))
   )
 
   // filter out nulls
@@ -127,14 +130,16 @@ async function getOldVotes(
   const oldVotes = existingVotesNotNull.filter((vote) => vote.blockNumber !== blockNumber)
 
   // delete all old votes
-  await Promise.all(oldVotes.map((vote) => db.delete(votes, { id: vote.id })))
+  await Promise.all(oldVotes.map((vote) => db.delete(allocations, { id: vote.id })))
 
   await db
-    .update(votesByAllocationKeyAndContract, {
+    .update(allocationsByAllocationKeyAndContract, {
       contractAllocationKey: `${contract}_${allocationKey}`,
     })
     .set((row) => ({
-      voteIds: row.voteIds.filter((voteId) => !oldVotes.some((oldVote) => oldVote.id === voteId)),
+      allocationIds: row.allocationIds.filter(
+        (allocationId) => !oldVotes.some((oldVote) => oldVote.id === allocationId)
+      ),
     }))
 
   return oldVotes
