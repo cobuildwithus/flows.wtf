@@ -21,9 +21,11 @@ const baseContracts = [
 
   { name: "tokenVerifier", address: base.TokenVerifier },
 
-  { name: "selfManagedFlowImpl", address: base.SelfManagedFlowImpl },
+  { name: "customFlowImpl", address: base.CustomFlowImpl },
 
-  { name: "revolutionFlowImpl", address: base.RevolutionFlowImpl },
+  { name: "erc721VotingStrategyImpl", address: base.ERC721VotingStrategyImpl },
+
+  { name: "singleAllocatorStrategyImpl", address: base.SingleAllocatorStrategyImpl },
 
   { name: "jbMultiTerminal", address: base.JBMultiTerminal },
 
