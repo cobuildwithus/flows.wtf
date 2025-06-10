@@ -1,6 +1,5 @@
-import { createConfig, factory, rateLimit } from "ponder"
-import { getAbiItem, http } from "viem"
-import { base, mainnet } from "viem/chains"
+import { createConfig, factory } from "ponder"
+import { getAbiItem } from "viem"
 import {
   erc20VotesArbitratorImplAbi,
   erc20VotesMintableImplAbi,
@@ -17,12 +16,10 @@ import {
 import { base as baseContracts, mainnet as mainnetContracts } from "./addresses"
 import { getChainsAndRpcUrls } from "./src/utils"
 
-const isDev = process.env.NODE_ENV === "development"
-
 const blockStarts = {
   base: {
     FLOWS: 21519031,
-    VRBS_FLOWS: 30459340,
+    CUSTOM_FLOWS: 31403050,
     GNARS: 11194740,
   },
   mainnet: {
@@ -171,7 +168,7 @@ export default createConfig({
         },
       },
       chain: "base",
-      startBlock: blockStarts.base.VRBS_FLOWS,
+      startBlock: blockStarts.base.CUSTOM_FLOWS,
     },
     ERC721TokenMainnet: {
       abi: nounsTokenAbi,
