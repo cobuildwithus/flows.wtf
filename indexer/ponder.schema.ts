@@ -94,7 +94,7 @@ export const votes = onchainTable(
     id: t.text().primaryKey(),
     contract: t.text().notNull(),
     recipientId: t.text().notNull(),
-    tokenId: t.text().notNull(),
+    allocationKey: t.text().notNull(),
     bps: t.integer().notNull(),
     voter: t.text().notNull(),
     blockNumber: t.text().notNull(),
@@ -320,10 +320,10 @@ export const parentFlowToChildren = onchainTable(
   (table) => ({})
 )
 
-export const votesByTokenIdAndContract = onchainTable(
-  "_kv_VotesByTokenIdAndContract",
+export const votesByAllocationKeyAndContract = onchainTable(
+  "_kv_VotesByAllocationKeyAndContract",
   (t) => ({
-    contractTokenId: t.text().primaryKey(),
+    contractAllocationKey: t.text().primaryKey(),
     voteIds: t.text().array().notNull(),
   }),
   (table) => ({})

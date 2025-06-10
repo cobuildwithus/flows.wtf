@@ -1,18 +1,16 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { votes, grants, votesByTokenIdAndContract } from "ponder:schema"
+import { votes, grants, votesByAllocationKeyAndContract } from "ponder:schema"
 import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
-ponder.on("NounsFlow:VoteCast", handleVoteCast)
-ponder.on("NounsFlowChildren:VoteCast", handleVoteCast)
-ponder.on("CustomFlow:VoteCast", handleVoteCast)
+ponder.on("CustomFlow:AllocationSet", handleAllocationSet)
 
-async function handleVoteCast(params: {
-  event: Event<"NounsFlow:VoteCast">
-  context: Context<"NounsFlow:VoteCast">
+async function handleAllocationSet(params: {
+  event: Event<"CustomFlow:AllocationSet">
+  context: Context<"CustomFlow:AllocationSet">
 }) {
   const { event, context } = params
-  const { recipientId, tokenId, bps, totalWeight } = event.args
+  const { recipientId, strategy, allocationKey, bps, totalWeight } = event.args
 
   const blockNumber = event.block.number.toString()
   const blockTimestamp = Number(event.block.timestamp)
@@ -26,12 +24,12 @@ async function handleVoteCast(params: {
 
   let hasPreviousVotes = false
 
-  await updateTotalVoteWeightCastOnFlow(context.db, contract, tokenId, totalWeight)
+  await updateTotalVoteWeightCastOnFlow(context.db, contract, allocationKey, totalWeight)
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
 
   // Mark old votes for this token as stale
-  const oldVotes = await getOldVotes(context.db, contract, tokenId, blockNumber)
+  const oldVotes = await getOldVotes(context.db, contract, allocationKey, blockNumber)
 
   for (const oldVote of oldVotes) {
     const existingVotes = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
@@ -39,14 +37,14 @@ async function handleVoteCast(params: {
     hasPreviousVotes = true
   }
 
-  const voteId = `${contract}_${recipientId}_${voter}_${blockNumber}_${tokenId}`
+  const voteId = `${contract}_${recipientId}_${voter}_${blockNumber}_${strategy}_${allocationKey}`
 
   // Create the new vote
   await context.db.insert(votes).values({
     id: voteId,
     contract,
     recipientId: recipientId.toString(),
-    tokenId: tokenId.toString(),
+    allocationKey: allocationKey.toString(),
     bps: Number(bps),
     voter,
     blockNumber,
@@ -56,9 +54,9 @@ async function handleVoteCast(params: {
   })
 
   await context.db
-    .insert(votesByTokenIdAndContract)
+    .insert(votesByAllocationKeyAndContract)
     .values({
-      contractTokenId: `${contract}_${tokenId}`,
+      contractAllocationKey: `${contract}_${allocationKey}`,
       voteIds: [voteId],
     })
     .onConflictDoUpdate((row) => ({
@@ -87,13 +85,13 @@ async function handleVoteCast(params: {
 async function updateTotalVoteWeightCastOnFlow(
   db: Context["db"],
   contract: `0x${string}`,
-  tokenId: bigint,
+  allocationKey: bigint,
   totalWeight: bigint
 ) {
   const grantId = contract
   if (grantId) {
-    const existingVoteIds = await db.find(votesByTokenIdAndContract, {
-      contractTokenId: `${contract}_${tokenId}`,
+    const existingVoteIds = await db.find(votesByAllocationKeyAndContract, {
+      contractAllocationKey: `${contract}_${allocationKey}`,
     })
     if (!existingVoteIds || existingVoteIds.voteIds.length === 0) {
       await db.update(grants, { id: grantId }).set((row) => ({
@@ -106,11 +104,11 @@ async function updateTotalVoteWeightCastOnFlow(
 async function getOldVotes(
   db: Context["db"],
   contract: `0x${string}`,
-  tokenId: bigint,
+  allocationKey: bigint,
   blockNumber: string
 ) {
-  const existingVoteIds = await db.find(votesByTokenIdAndContract, {
-    contractTokenId: `${contract}_${tokenId}`,
+  const existingVoteIds = await db.find(votesByAllocationKeyAndContract, {
+    contractAllocationKey: `${contract}_${allocationKey}`,
   })
 
   if (!existingVoteIds) return []
@@ -132,7 +130,9 @@ async function getOldVotes(
   await Promise.all(oldVotes.map((vote) => db.delete(votes, { id: vote.id })))
 
   await db
-    .update(votesByTokenIdAndContract, { contractTokenId: `${contract}_${tokenId}` })
+    .update(votesByAllocationKeyAndContract, {
+      contractAllocationKey: `${contract}_${allocationKey}`,
+    })
     .set((row) => ({
       voteIds: row.voteIds.filter((voteId) => !oldVotes.some((oldVote) => oldVote.id === voteId)),
     }))

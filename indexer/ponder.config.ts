@@ -11,9 +11,8 @@ import {
   gdav1Address,
   gdav1ImplAbi,
   tokenEmitterImplAbi,
-  selfManagedFlowImplAbi,
+  customFlowImplAbi,
   nounsTokenAbi,
-  revolutionFlowImplAbi,
 } from "./abis"
 import { base as baseContracts, mainnet as mainnetContracts } from "./addresses"
 import { getChainsAndRpcUrls } from "./src/utils"
@@ -164,25 +163,12 @@ export default createConfig({
       },
     },
     CustomFlow: {
-      abi: revolutionFlowImplAbi,
+      abi: customFlowImplAbi,
       filter: {
         event: "FlowInitialized",
         args: {
-          flowImpl: [
-            baseContracts.RevolutionFlowImpl,
-            baseContracts.SelfManagedFlowImpl,
-            baseContracts.SelfManagedFlowImplV00,
-          ],
+          flowImpl: [baseContracts.CustomFlowImpl],
         },
-      },
-      chain: "base",
-      startBlock: blockStarts.base.VRBS_FLOWS,
-    },
-    SelfManagedFlow: {
-      abi: selfManagedFlowImplAbi,
-      filter: {
-        event: "AllocatorChanged",
-        args: {},
       },
       chain: "base",
       startBlock: blockStarts.base.VRBS_FLOWS,
