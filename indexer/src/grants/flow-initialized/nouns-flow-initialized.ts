@@ -98,6 +98,7 @@ async function handleFlowInitialized(params: {
     isActive: true,
     erc721VotingToken: mainnetContracts.NounsToken,
     votingTokenChainId: mainnet.id,
+    allocationStrategies: [],
   })
 
   await createMappings(

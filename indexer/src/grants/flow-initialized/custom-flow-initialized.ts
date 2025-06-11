@@ -8,7 +8,7 @@ import {
   parentFlowToChildren,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { base } from "../../../addresses"
+import { accelerators, customFlows } from "../../../addresses"
 import { isAccelerator } from "../recipients/helpers"
 
 ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
@@ -28,6 +28,7 @@ async function handleFlowInitialized(params: {
     bonusPool,
     manager,
     managerRewardPoolFlowRatePercent,
+    strategies,
   } = event.args
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
@@ -44,13 +45,14 @@ async function handleFlowInitialized(params: {
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
-  const isTopLevel = contract === base.VrbsFlow
+  const isTopLevel = isTopLevelFlow(contract)
 
   await context.db.insert(grants).values({
     id: grantId,
     ...metadata,
     recipient: contract,
     recipientId: "",
+    allocationStrategies: strategies.map((strategy) => strategy.toLowerCase()),
     isTopLevel,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
@@ -128,4 +130,12 @@ async function createMappings(
       childGrantIds: [],
     }),
   ])
+}
+
+const isTopLevelFlow = (contract: string) => {
+  return (
+    contract === customFlows.gnars ||
+    contract === customFlows.grounds ||
+    contract === accelerators.vrbs
+  )
 }

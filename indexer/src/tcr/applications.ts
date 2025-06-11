@@ -96,6 +96,7 @@ async function handleItemSubmitted(params: {
     evidenceGroupID: _evidenceGroupID.toString(),
     createdAt: Number(event.block.timestamp),
     updatedAt: Number(event.block.timestamp),
+    allocationStrategies: [],
   })
 
   await addGrantIdToTcrAndItemId(context.db, tcr, _itemID, grant.id)
