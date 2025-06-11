@@ -147,7 +147,7 @@ model Grant {
   url                              String?
   isRemoved                        Boolean @map("is_removed")
   isActive                         Boolean @map("is_active")
-  votesCount                       String  @map("votes_count")
+  allocationsCount                 String  @map("allocations_count")
   monthlyIncomingFlowRate          String  @map("monthly_incoming_flow_rate")
   monthlyIncomingBaselineFlowRate  String  @map("monthly_incoming_baseline_flow_rate")
   monthlyIncomingBonusFlowRate     String  @map("monthly_incoming_bonus_flow_rate")
@@ -183,7 +183,7 @@ model Grant {
   managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")
   baselinePoolFlowRatePercent      Int     @map("baseline_pool_flow_rate_percent")
   bonusPoolQuorum                  Int     @map("bonus_pool_quorum")
-  totalVoteWeightCastOnFlow        String  @map("total_vote_weight_cast_on_flow")
+  totalAllocationWeightOnFlow      String  @map("total_allocation_weight_on_flow")
   isOnchainStartup                 Boolean @map("is_onchain_startup")
   isAccelerator                    Boolean @map("is_accelerator")
   erc721VotingToken                String? @map("erc721_voting_token")
@@ -198,7 +198,7 @@ model Grant {
   tokenHolders         TokenHolder[]
   evidences            Evidence[]
   derivedData          DerivedData?
-  votes                Vote[]
+  allocations          Allocation[]
   impacts              Impact[]
   opportunities        Opportunity[] @relation("StartupOpportunity")
   opportunitiesBudgets Opportunity[] @relation("StartupBudgetOpportunity") // not needed, just required by Prisma
@@ -212,18 +212,22 @@ model Grant {
   @@schema("onchain")
 }
 
-view Vote {
-  id          String @id
-  contract    String
-  recipientId String @map("recipient_id")
-  tokenId     String @map("token_id")
-  bps         Int
-  voter       String
-  blockNumber String @map("block_number")
-  votesCount  String @map("votes_count")
+view Allocation {
+  id               String @id
+  contract         String
+  recipientId      String @map("recipient_id")
+  allocationKey    String @map("allocation_key")
+  strategy         String
+  bps              Int
+  allocator        String
+  blockNumber      String @map("block_number")
+  blockTimestamp   Int    @map("block_timestamp")
+  transactionHash  String @map("transaction_hash")
+  allocationsCount String @map("allocations_count")
 
   grant Grant @relation(fields: [recipientId], references: [recipientId])
 
+  @@index([allocator])
   @@index([contract])
   @@index([recipientId])
   @@schema("onchain")

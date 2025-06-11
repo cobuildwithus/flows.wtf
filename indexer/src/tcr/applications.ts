@@ -62,9 +62,9 @@ async function handleItemSubmitted(params: {
     isTopLevel: false,
     isFlow: recipientType === RecipientType.FlowContract,
     isRemoved: false,
-    votesCount: "0",
+    allocationsCount: "0",
     bonusPoolQuorum: 0,
-    totalVoteWeightCastOnFlow: "0",
+    totalAllocationWeightOnFlow: "0",
     monthlyIncomingFlowRate: "0",
     monthlyIncomingBaselineFlowRate: "0",
     monthlyIncomingBonusFlowRate: "0",
@@ -96,6 +96,7 @@ async function handleItemSubmitted(params: {
     evidenceGroupID: _evidenceGroupID.toString(),
     createdAt: Number(event.block.timestamp),
     updatedAt: Number(event.block.timestamp),
+    allocationStrategies: [],
   })
 
   await addGrantIdToTcrAndItemId(context.db, tcr, _itemID, grant.id)

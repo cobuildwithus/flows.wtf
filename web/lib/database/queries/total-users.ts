@@ -29,14 +29,14 @@ const countFlowTotalUsers = unstable_cache(
           holder: true,
         },
       }),
-      database.vote.findMany({
+      database.allocation.findMany({
         where: {
           grant: {
             flowId,
           },
         },
         select: {
-          voter: true,
+          allocator: true,
         },
       }),
       database.grant.findMany({
@@ -50,7 +50,7 @@ const countFlowTotalUsers = unstable_cache(
     ])
 
     const curatorAddresses = extractValues(curators, "holder")
-    const voterAddresses = extractValues(voters, "voter")
+    const voterAddresses = extractValues(voters, "allocator")
     const recipientAddresses = extractValues(recipients, "recipient")
 
     const numCurators = countUnique(curatorAddresses)
@@ -80,9 +80,9 @@ const countTotalUsers = unstable_cache(
           holder: true,
         },
       }),
-      database.vote.findMany({
+      database.allocation.findMany({
         select: {
-          voter: true,
+          allocator: true,
         },
       }),
       database.grant.findMany({
@@ -96,7 +96,7 @@ const countTotalUsers = unstable_cache(
     ])
 
     const curatorAddresses = extractValues(curators, "holder")
-    const voterAddresses = extractValues(voters, "voter")
+    const voterAddresses = extractValues(voters, "allocator")
     const recipientAddresses = extractValues(recipients, "recipient")
 
     const numCurators = countUnique(curatorAddresses)

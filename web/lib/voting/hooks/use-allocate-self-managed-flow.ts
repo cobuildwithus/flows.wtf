@@ -8,7 +8,7 @@ import {
   gdav1ForwarderAbi,
   rewardPoolImplAbi,
   superfluidPoolAbi,
-  selfManagedFlowImplAbi,
+  customFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
 import { UserAllocation } from "../vote-types"
@@ -36,20 +36,23 @@ export function useAllocateSelfManagedFlow(
           (allocation) => allocation.recipientId as `0x${string}`,
         )
 
+        // single array of allocation data
+        const allocationData = [[]]
+
         writeContract({
           account,
           abi: [
-            ...selfManagedFlowImplAbi,
+            ...customFlowImplAbi,
             ...rewardPoolImplAbi,
             ...erc20VotesMintableImplAbi,
             ...superfluidPoolAbi,
             ...gdav1ForwarderAbi,
             ...cfav1ForwarderAbi,
           ],
-          functionName: "setManualAllocations",
+          functionName: "allocate",
           address: contract,
           chainId,
-          args: [recipientIds, percentAllocations],
+          args: [allocationData, recipientIds, percentAllocations],
         })
       } catch (e) {
         console.error(e)

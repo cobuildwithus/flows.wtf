@@ -37,7 +37,7 @@ export const BudgetDialog = (props: Props) => {
   const bonusPercent = (Number(flow.monthlyBonusPoolFlowRate ?? 0) / totalFlowRate) * 100
   const managerPercent = (Number(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
 
-  const currentVotes = Number(flow.totalVoteWeightCastOnFlow) / 1e18
+  const currentVotes = Number(flow.totalAllocationWeightOnFlow) / 1e18
   const requiredVotes = (votingTokenSupply * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6
 
   const quorumData = {

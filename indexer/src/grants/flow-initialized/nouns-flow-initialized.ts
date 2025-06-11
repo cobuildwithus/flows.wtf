@@ -62,8 +62,8 @@ async function handleFlowInitialized(params: {
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
     submitter: zeroAddress,
-    votesCount: "0",
-    totalVoteWeightCastOnFlow: "0",
+    allocationsCount: "0",
+    totalAllocationWeightOnFlow: "0",
     monthlyIncomingFlowRate: "0",
     monthlyIncomingBaselineFlowRate: "0",
     monthlyIncomingBonusFlowRate: "0",
@@ -98,6 +98,7 @@ async function handleFlowInitialized(params: {
     isActive: true,
     erc721VotingToken: mainnetContracts.NounsToken,
     votingTokenChainId: mainnet.id,
+    allocationStrategies: [],
   })
 
   await createMappings(

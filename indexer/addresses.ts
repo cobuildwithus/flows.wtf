@@ -21,11 +21,10 @@ export const base = {
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
   // Flow Extensions
-  SelfManagedFlowImpl: "0xbb4b2ca98289a80037ba499a4856d4870fe7e40e",
-  SelfManagedFlowImplV00: "0xe950d10f7f41e985fe14efd3044bb234b7af10a3",
-  RevolutionFlowImpl: "0x0a13b8756164c78827e9e425886d01ed042b2f66",
-  // Revolution Flows
-  VrbsFlow: "0xc8e385198e2ac1b8130cc010f8e6b59151974a1d",
+  CustomFlowImpl: "0xc553b212fd2c0ee683f909e90437d35e60d824ce",
+  // Allocation Strategies
+  ERC721VotingStrategyImpl: "0xbf2b746296e734071e009c21705f52f65f37f0a3",
+  SingleAllocatorStrategyImpl: "0x4664b7c6ee89b6f74414b15487d94e6554cb6eef",
   // ERC721Tokens
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
@@ -35,10 +34,10 @@ export const base = {
 } as const
 
 export const customFlows = {
-  grounds: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
-  gnars: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+  grounds: "0x6047116e18a3453a815f5fe7f04fb99721bc984e",
+  gnars: "0x6047116e18a3453a815f5fe7f04fb99721bc984e",
 } as const
 
 export const accelerators = {
-  vrbs: "0xca1d9e8a93f316ef7e6f880116a160333d085f92",
+  vrbs: "0x9e6114a390db354739ba543614b620dd0111c70a",
 } as const

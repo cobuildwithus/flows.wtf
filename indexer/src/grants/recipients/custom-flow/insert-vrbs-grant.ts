@@ -67,11 +67,11 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     isTopLevel: false,
     isFlow,
     isRemoved: false,
-    votesCount: "0",
+    allocationsCount: "0",
     isOnchainStartup,
     isAccelerator: false,
     bonusPoolQuorum: 0,
-    totalVoteWeightCastOnFlow: "0",
+    totalAllocationWeightOnFlow: "0",
     monthlyIncomingFlowRate: "0",
     monthlyIncomingBaselineFlowRate: "0",
     monthlyIncomingBonusFlowRate: "0",
@@ -100,5 +100,6 @@ export async function insertGrant(db: Context["db"], params: GrantInsertParams) 
     isActive: true,
     createdAt,
     updatedAt,
+    allocationStrategies: [],
   })
 }

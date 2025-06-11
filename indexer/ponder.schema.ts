@@ -18,7 +18,7 @@ export const grants = onchainTable(
     url: t.text(),
     isRemoved: t.boolean().notNull(),
     isActive: t.boolean().notNull(),
-    votesCount: t.text().notNull(),
+    allocationsCount: t.text().notNull(),
     monthlyIncomingFlowRate: t.text().notNull(),
     monthlyIncomingBaselineFlowRate: t.text().notNull(),
     monthlyIncomingBonusFlowRate: t.text().notNull(),
@@ -54,12 +54,13 @@ export const grants = onchainTable(
     managerRewardPoolFlowRatePercent: t.integer().notNull(),
     baselinePoolFlowRatePercent: t.integer().notNull(),
     bonusPoolQuorum: t.integer().notNull(),
-    totalVoteWeightCastOnFlow: t.text().notNull(),
+    totalAllocationWeightOnFlow: t.text().notNull(),
     isOnchainStartup: t.boolean().notNull(),
     isAccelerator: t.boolean().notNull(),
     allocator: t.text(),
     erc721VotingToken: t.text(),
     votingTokenChainId: t.integer(),
+    allocationStrategies: t.text().array().notNull(),
   }),
   (table) => ({
     isTopLevelIdx: index().on(table.isTopLevel),
@@ -88,22 +89,23 @@ export const grants = onchainTable(
   })
 )
 
-export const votes = onchainTable(
-  "Vote",
+export const allocations = onchainTable(
+  "Allocation",
   (t) => ({
     id: t.text().primaryKey(),
     contract: t.text().notNull(),
     recipientId: t.text().notNull(),
-    tokenId: t.text().notNull(),
+    allocationKey: t.text().notNull(),
+    strategy: t.text().notNull(),
     bps: t.integer().notNull(),
-    voter: t.text().notNull(),
+    allocator: t.text().notNull(),
     blockNumber: t.text().notNull(),
     blockTimestamp: t.integer().notNull(),
     transactionHash: t.text().notNull(),
-    votesCount: t.text().notNull(),
+    allocationsCount: t.text().notNull(),
   }),
   (table) => ({
-    voterIdx: index().on(table.voter),
+    allocatorIdx: index().on(table.allocator),
     contractIdx: index().on(table.contract),
     recipientIdIdx: index().on(table.recipientId),
   })
@@ -320,11 +322,11 @@ export const parentFlowToChildren = onchainTable(
   (table) => ({})
 )
 
-export const votesByTokenIdAndContract = onchainTable(
-  "_kv_VotesByTokenIdAndContract",
+export const allocationsByAllocationKeyAndContract = onchainTable(
+  "_kv_AllocationsByAllocationKeyAndContract",
   (t) => ({
-    contractTokenId: t.text().primaryKey(),
-    voteIds: t.text().array().notNull(),
+    contractAllocationKey: t.text().primaryKey(),
+    allocationIds: t.text().array().notNull(),
   }),
   (table) => ({})
 )

@@ -1,14 +1,13 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
-ponder.on("SelfManagedFlow:ManagerUpdated", handleManagerUpdated)
 ponder.on("CustomFlow:ManagerUpdated", handleManagerUpdated)
 ponder.on("NounsFlow:ManagerUpdated", handleManagerUpdated)
 ponder.on("NounsFlowChildren:ManagerUpdated", handleManagerUpdated)
 
 async function handleManagerUpdated(params: {
-  event: Event<"SelfManagedFlow:ManagerUpdated">
-  context: Context<"SelfManagedFlow:ManagerUpdated">
+  event: Event<"CustomFlow:ManagerUpdated">
+  context: Context<"CustomFlow:ManagerUpdated">
 }) {
   const { event, context } = params
   const { newManager } = event.args
