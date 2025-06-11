@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useVotingPower } from "@/lib/allocation/hooks/use-voting-power"
+import { useAllocationPower } from "@/lib/allocation/hooks/use-allocation-power"
 import { useAllocate } from "@/lib/allocation/allocation-context"
 import Link from "next/link"
 import { useAccount } from "wagmi"
@@ -9,10 +9,10 @@ import { AllocationToggle } from "./allocation-toggle"
 
 export function CTAButtons() {
   const { isConnected } = useAccount()
-  const { votingPower } = useVotingPower()
+  const { allocationPower } = useAllocationPower()
   const { isActive } = useAllocate()
 
-  const showAllocationToggle = isConnected && votingPower > 0
+  const showAllocationToggle = isConnected && allocationPower > 0
 
   return (
     <div className="flex items-center space-x-4">

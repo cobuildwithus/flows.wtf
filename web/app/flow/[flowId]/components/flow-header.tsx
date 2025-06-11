@@ -11,7 +11,7 @@ import { getVotingTokenSupply } from "./get-voting-token-supply"
 
 interface Props {
   flow: FlowWithGrants
-  votingPower: number
+
   erc721VotingToken: string | null
 }
 

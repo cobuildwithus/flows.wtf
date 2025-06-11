@@ -4,7 +4,6 @@ import { getUser } from "@/lib/auth/user"
 import { getFlow, getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
-import { getVotingPower } from "@/lib/allocation/voting-power/get-voting-power"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import type { Metadata } from "next"
 import type { PropsWithChildren } from "react"
@@ -29,8 +28,6 @@ export default async function FlowLayout(props: PropsWithChildren<Props>) {
 
   const [flow, user] = await Promise.all([getFlowWithGrants(flowId), getUser()])
 
-  const votingPower = await getVotingPower(user?.address, flowId)
-
   return (
     <AllocationProvider
       chainId={base.id}
@@ -40,11 +37,7 @@ export default async function FlowLayout(props: PropsWithChildren<Props>) {
       strategies={flow.allocationStrategies}
     >
       <div className="container mt-4 max-w-6xl md:mt-8">
-        <FlowHeader
-          flow={flow}
-          votingPower={Number(votingPower)}
-          erc721VotingToken={flow.erc721VotingToken}
-        />
+        <FlowHeader flow={flow} erc721VotingToken={flow.erc721VotingToken} />
       </div>
 
       {children}
