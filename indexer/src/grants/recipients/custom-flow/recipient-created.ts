@@ -3,7 +3,7 @@ import { addGrantEmbedding } from "../../embeddings/embed-grants"
 import { isBlockRecent } from "../../../utils"
 import { getFlow, isOnchainStartup } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
-import { insertGrant } from "./insert-vrbs-grant"
+import { insertGrant } from "./insert-grants"
 import { RecipientType } from "../../../enums"
 import { addGrantIdToFlowContractAndRecipientId } from "../../grant-helpers"
 

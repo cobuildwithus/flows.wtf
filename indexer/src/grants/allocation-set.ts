@@ -24,7 +24,7 @@ async function handleAllocationSet(params: {
 
   let hasPreviousVotes = false
 
-  await updateTotalVoteWeightCastOnFlow(context.db, contract, allocationKey, totalWeight)
+  await updateAllocationWeightOnFlow(context.db, contract, allocationKey, totalWeight)
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
 
@@ -83,7 +83,7 @@ async function handleAllocationSet(params: {
   }
 }
 
-async function updateTotalVoteWeightCastOnFlow(
+async function updateAllocationWeightOnFlow(
   db: Context["db"],
   contract: `0x${string}`,
   allocationKey: bigint,

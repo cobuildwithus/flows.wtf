@@ -207,7 +207,7 @@ export const cfav1ForwarderConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xc553b212fd2c0ee683f909e90437d35e60d824ce)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x428a3c428a4623af8b21e69b25b760e3f2ccf930)
  */
 export const customFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -309,6 +309,26 @@ export const customFlowImplAbi = [
       },
     ],
     name: 'AllocationSet',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'flow', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'strategy',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'strategyKey',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'AllocationStrategyRegistered',
   },
   {
     type: 'event',
@@ -1439,14 +1459,14 @@ export const customFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xc553b212fd2c0ee683f909e90437d35e60d824ce)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x428a3c428a4623af8b21e69b25b760e3f2ccf930)
  */
 export const customFlowImplAddress = {
-  8453: '0xC553B212fd2C0EE683F909e90437D35e60d824cE',
+  8453: '0x428a3C428A4623aF8b21e69b25B760E3F2CCF930',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xc553b212fd2c0ee683f909e90437d35e60d824ce)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x428a3c428a4623af8b21e69b25b760e3f2ccf930)
  */
 export const customFlowImplConfig = {
   address: customFlowImplAddress,
@@ -2996,11 +3016,13 @@ export const erc20VotesMintableImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xbf2b746296e734071e009c21705f52f65f37f0a3)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x49259d920cf78905e20e7717a43784f7373f0b46)
  */
 export const erc721VotingStrategyImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
   { type: 'error', inputs: [], name: 'ADDRESS_ZERO' },
+  { type: 'error', inputs: [], name: 'NOT_ARRAY' },
+  { type: 'error', inputs: [], name: 'NOT_OBJECT' },
   {
     type: 'event',
     anonymous: false,
@@ -3133,6 +3155,13 @@ export const erc721VotingStrategyImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'STRATEGY_KEY',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'acceptOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -3145,6 +3174,16 @@ export const erc721VotingStrategyImplAbi = [
     ],
     name: 'allocationKey',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: 'json', internalType: 'string', type: 'string' },
+    ],
+    name: 'buildAllocationData',
+    outputs: [{ name: '', internalType: 'bytes[]', type: 'bytes[]' }],
     stateMutability: 'pure',
   },
   {
@@ -3210,6 +3249,13 @@ export const erc721VotingStrategyImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'strategyKey',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'token',
     outputs: [
       {
@@ -3263,14 +3309,14 @@ export const erc721VotingStrategyImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xbf2b746296e734071e009c21705f52f65f37f0a3)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x49259d920cf78905e20e7717a43784f7373f0b46)
  */
 export const erc721VotingStrategyImplAddress = {
-  8453: '0xBF2B746296E734071E009c21705F52f65f37f0A3',
+  8453: '0x49259D920cF78905E20e7717A43784F7373f0B46',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xbf2b746296e734071e009c21705f52f65f37f0a3)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x49259d920cf78905e20e7717a43784f7373f0b46)
  */
 export const erc721VotingStrategyImplConfig = {
   address: erc721VotingStrategyImplAddress,
@@ -9423,7 +9469,7 @@ export const rewardPoolImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x4664b7c6ee89b6f74414b15487d94e6554cb6eef)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x5bf64518ccd8edf4b32c717f8cd1f63fd730a935)
  */
 export const singleAllocatorStrategyImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
@@ -9541,6 +9587,13 @@ export const singleAllocatorStrategyImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'STRATEGY_KEY',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'VIRTUAL_WEIGHT',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
@@ -9568,6 +9621,16 @@ export const singleAllocatorStrategyImplAbi = [
     name: 'allocator',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'string', type: 'string' },
+    ],
+    name: 'buildAllocationData',
+    outputs: [{ name: '', internalType: 'bytes[]', type: 'bytes[]' }],
+    stateMutability: 'pure',
   },
   {
     type: 'function',
@@ -9636,6 +9699,13 @@ export const singleAllocatorStrategyImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'strategyKey',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'totalAllocationWeight',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
@@ -9669,14 +9739,14 @@ export const singleAllocatorStrategyImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x4664b7c6ee89b6f74414b15487d94e6554cb6eef)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x5bf64518ccd8edf4b32c717f8cd1f63fd730a935)
  */
 export const singleAllocatorStrategyImplAddress = {
-  8453: '0x4664b7C6EE89b6F74414b15487d94E6554cB6eEF',
+  8453: '0x5Bf64518Ccd8eDf4b32C717F8Cd1f63FD730a935',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x4664b7c6ee89b6f74414b15487d94e6554cb6eef)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x5bf64518ccd8edf4b32c717f8cd1f63fd730a935)
  */
 export const singleAllocatorStrategyImplConfig = {
   address: singleAllocatorStrategyImplAddress,
