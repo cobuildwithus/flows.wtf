@@ -3016,7 +3016,7 @@ export const erc20VotesMintableImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x754ba8018e3688bd3a713edea4effb3f281978af)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x2dde32748dec78caf0752766d4f9ecb169d802c6)
  */
 export const erc721VotesStrategyImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
@@ -3166,6 +3166,13 @@ export const erc721VotesStrategyImplAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'accountAllocationWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '', internalType: 'address', type: 'address' },
       { name: 'aux', internalType: 'bytes', type: 'bytes' },
@@ -3300,14 +3307,14 @@ export const erc721VotesStrategyImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x754ba8018e3688bd3a713edea4effb3f281978af)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x2dde32748dec78caf0752766d4f9ecb169d802c6)
  */
 export const erc721VotesStrategyImplAddress = {
-  8453: '0x754ba8018e3688BD3A713edea4effb3F281978AF',
+  8453: '0x2Dde32748dEc78Caf0752766D4F9ECb169d802c6',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x754ba8018e3688bd3a713edea4effb3f281978af)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x2dde32748dec78caf0752766d4f9ecb169d802c6)
  */
 export const erc721VotesStrategyImplConfig = {
   address: erc721VotesStrategyImplAddress,
@@ -9460,7 +9467,7 @@ export const rewardPoolImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x860b5987e874377cdc6345d3a72408677c6df897)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6)
  */
 export const singleAllocatorStrategyImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
@@ -9598,6 +9605,13 @@ export const singleAllocatorStrategyImplAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'accountAllocationWeight',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '', internalType: 'address', type: 'address' },
       { name: '', internalType: 'bytes', type: 'bytes' },
@@ -9727,14 +9741,14 @@ export const singleAllocatorStrategyImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x860b5987e874377cdc6345d3a72408677c6df897)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6)
  */
 export const singleAllocatorStrategyImplAddress = {
-  8453: '0x860B5987E874377cDC6345d3a72408677c6dF897',
+  8453: '0x810F466F79f4cA0287B5D627a3b511b0EB44e9d6',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x860b5987e874377cdc6345d3a72408677c6df897)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6)
  */
 export const singleAllocatorStrategyImplConfig = {
   address: singleAllocatorStrategyImplAddress,

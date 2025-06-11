@@ -5,7 +5,7 @@ export const getStrategies = unstable_cache(
   async (addresses: string[], chainId: number) => {
     const strategies = await database.allocationStrategy.findMany({
       where: {
-        address: { in: addresses },
+        address: { in: addresses.map((a) => a.toLowerCase()) },
         chainId,
       },
     })

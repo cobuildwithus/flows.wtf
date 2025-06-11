@@ -23,8 +23,8 @@ export const base = {
   // Flow Extensions
   CustomFlowImpl: "0x428a3c428a4623af8b21e69b25b760e3f2ccf930",
   // Allocation Strategies
-  ERC721VotesStrategyImpl: "0x754ba8018e3688bd3a713edea4effb3f281978af",
-  SingleAllocatorStrategyImpl: "0x860b5987e874377cdc6345d3a72408677c6df897",
+  ERC721VotesStrategyImpl: "0x2dde32748dec78caf0752766d4f9ecb169d802c6",
+  SingleAllocatorStrategyImpl: "0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6",
   // ERC721Tokens
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
@@ -34,8 +34,8 @@ export const base = {
 } as const
 
 export const customFlows = {
-  grounds: "0x308f710aa5c04a02cf8862c0a61edabf29f9dfd7",
-  gnars: "0x308f710aa5c04a02cf8862c0a61edabf29f9dfd7",
+  grounds: "0x4238821c7211c045aeba86b027be9e8f422f7070",
+  gnars: "0x4238821c7211c045aeba86b027be9e8f422f7070",
 } as const
 
 export const accelerators = {
