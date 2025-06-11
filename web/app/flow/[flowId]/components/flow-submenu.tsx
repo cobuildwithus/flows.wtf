@@ -1,15 +1,16 @@
+import { getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 import { SwapTokenButton } from "@/app/token/swap-token-button"
+import { DonationModal } from "@/components/donation-modal"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
-import database from "@/lib/database/flows-db"
+import { getUser } from "@/lib/auth/user"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
+import database from "@/lib/database/flows-db"
 import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
+import { getEthAddress } from "@/lib/utils"
 import Link from "next/link"
 import { AllocationToggle } from "./allocation-toggle"
-import { getEthAddress } from "@/lib/utils"
-import { getUser } from "@/lib/auth/user"
-import { getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 
 interface Props {
   flowId: string
@@ -88,6 +89,7 @@ export const FlowSubmenu = async (props: Props) => {
                 <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
               </Link>
             )}
+          <DonationModal id={flowId} name={flow.title} />
         </div>
       </div>
     </div>

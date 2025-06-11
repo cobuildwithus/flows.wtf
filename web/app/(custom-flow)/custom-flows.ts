@@ -23,7 +23,7 @@ const customFlows: CustomFlow[] = [
     styles: {
       light: {
         "--muted": "0 93.3% 94.1%",
-        "--muted-foreground": "0 74.7% 15.5%",
+        "--muted-foreground": "0 74.7% 12.5%",
         "--primary": "0 84.2% 60.2%",
       },
     },
