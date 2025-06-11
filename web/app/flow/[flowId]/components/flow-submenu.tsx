@@ -3,7 +3,6 @@ import { SwapTokenButton } from "@/app/token/swap-token-button"
 import { DonationModal } from "@/components/donation-modal"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
-import { getUser } from "@/lib/auth/user"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
 import database from "@/lib/database/flows-db"
 import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
@@ -20,12 +19,11 @@ interface Props {
 export const FlowSubmenu = async (props: Props) => {
   const { flowId, segment } = props
 
-  const [flow, draftsCount, user] = await Promise.all([
+  const [flow, draftsCount] = await Promise.all([
     getFlowWithGrants(flowId),
     database.draft.count({
       where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
     }),
-    getUser(),
   ])
 
   const customFlow = getCustomFlowById(flowId)
@@ -40,7 +38,6 @@ export const FlowSubmenu = async (props: Props) => {
   const isFlowRemoved = flow.isRemoved
 
   const canSuggestFlow = !!flow.tcr || !!flow.allocator
-  const canAllocate = !!flow.erc721VotingToken || flow.allocator === user?.address
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
@@ -81,7 +78,7 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {isApproved && approvedCount > 0 && canAllocate && <AllocationToggle />}
+          {isApproved && approvedCount > 0 && <AllocationToggle />}
           {(isDrafts || isCurate || (isApproved && approvedCount === 0)) &&
             !isFlowRemoved &&
             canSuggestFlow && (

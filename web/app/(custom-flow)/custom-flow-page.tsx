@@ -60,6 +60,7 @@ export async function CustomFlowPage(props: Props) {
       votingToken={flow.erc721VotingToken}
       allocator={flow.allocator}
       strategies={flow.allocationStrategies}
+      user={user?.address ?? null}
     >
       <AgentChatProvider
         id={`flow-${flow.id}-${user?.address}`}

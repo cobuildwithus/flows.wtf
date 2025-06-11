@@ -12,6 +12,7 @@ import { useAllocationContextActive } from "./hooks/use-context-active"
 import { useExistingAllocations } from "./hooks/use-existing-allocations"
 import { useRouter } from "next/navigation"
 import { useAllocateFlow } from "./hooks/use-allocate-flow"
+import { useCanAccountAllocate } from "./hooks/use-can-account-allocate"
 
 interface AllocationContextType {
   activate: () => void
@@ -33,6 +34,11 @@ interface AllocationContextType {
   allocator: string | null
   strategies: string[]
   isAllocator: boolean
+  chainId: number
+
+  user: string | null
+
+  canAllocate: boolean
 }
 
 const AllocationContext = createContext<AllocationContextType | null>(null)
@@ -43,6 +49,7 @@ export const AllocationProvider = (
     chainId: number
     votingToken: string | null
     allocator: string | null
+    user: string | null
     strategies: string[]
     defaultActive?: boolean
   }>,
@@ -54,6 +61,7 @@ export const AllocationProvider = (
     votingToken,
     allocator,
     strategies,
+    user,
     defaultActive = false,
   } = props
   const { address } = useAccount()
@@ -65,6 +73,7 @@ export const AllocationProvider = (
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
   const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, votingToken)
+  const { canAccountAllocate } = useCanAccountAllocate(strategies, chainId, user)
 
   const onSuccess = async () => {
     // If there are more batches to process, simply advance the index and let the
@@ -150,6 +159,9 @@ export const AllocationProvider = (
         allocator,
         isAllocator: allocator === address,
         strategies,
+        chainId,
+        user,
+        canAllocate: canAccountAllocate,
       }}
     >
       {children}

@@ -326,10 +326,10 @@ view Evidence {
 }
 
 view AllocationStrategy {
-  address   String
-  strategyKey  String
-  chainId   Int
-  registeredAt Int @map("registered_at")
+  address      String
+  strategyKey  String @map("strategy_key")
+  chainId      Int    @map("chain_id")
+  registeredAt Int    @map("registered_at")
 
   @@index([address])
   @@index([strategyKey])

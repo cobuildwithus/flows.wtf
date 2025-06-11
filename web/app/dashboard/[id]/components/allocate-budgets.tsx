@@ -32,11 +32,12 @@ interface Props {
   >[]
   isAllocator: boolean
   isManager: boolean
+  user: string | null
   children?: React.ReactNode
 }
 
 export function AllocateBudgets(props: Props) {
-  const { flows, grants, children, isAllocator, isManager } = props
+  const { flows, grants, children, isAllocator, isManager, user } = props
   const [open, setOpen] = useState(false)
   const [selectedFlowIndex, setSelectedFlowIndex] = useState(0)
 
@@ -94,6 +95,7 @@ export function AllocateBudgets(props: Props) {
                 votingToken={selectedFlow.erc721VotingToken}
                 allocator={selectedFlow.allocator}
                 strategies={selectedFlow.allocationStrategies}
+                user={user}
                 defaultActive
               >
                 <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />

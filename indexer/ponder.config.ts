@@ -19,7 +19,7 @@ import { getChainsAndRpcUrls } from "./src/utils"
 const blockStarts = {
   base: {
     FLOWS: 21519031,
-    CUSTOM_FLOWS: 31443309,
+    CUSTOM_FLOWS: 31447015,
     GNARS: 11194740,
   },
   mainnet: {

@@ -52,6 +52,7 @@ export async function Team(props: Props) {
                 isManager={canManage}
                 flows={budgets}
                 grants={budgets.map((b) => b.subgrants)}
+                user={user?.address ?? null}
               >
                 {members.map((m) => (
                   <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />

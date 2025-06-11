@@ -1,3 +1,5 @@
+"use server"
+
 import { getClient } from "@/lib/viem/client"
 import { getEthAddress } from "@/lib/utils"
 import { Address } from "viem"
@@ -7,8 +9,9 @@ import { singleAllocatorStrategyImplAbi } from "@/lib/abis"
 export const canAllocate = async (
   allocationStrategies: string[],
   chainId: number,
-  account: string | undefined,
+  account: string | null,
 ) => {
+  console.log("canAllocate", allocationStrategies, chainId, account)
   if (!account) return false
 
   const strategies = await getStrategies(allocationStrategies, chainId)

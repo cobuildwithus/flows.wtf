@@ -7,9 +7,11 @@ import { toast } from "sonner"
 import { useAccount } from "wagmi"
 
 export const AllocationToggle = () => {
-  const { isLoading, isActive, activate, allocator, votingToken } = useAllocate()
+  const { isLoading, isActive, activate, allocator, votingToken, canAllocate } = useAllocate()
   const { address } = useAccount()
   const { tokens } = useDelegatedTokens(address)
+
+  if (!canAllocate) return null
 
   return (
     <AuthButton

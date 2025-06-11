@@ -35,6 +35,7 @@ export default async function FlowLayout(props: PropsWithChildren<Props>) {
       votingToken={flow.erc721VotingToken}
       allocator={flow.allocator}
       strategies={flow.allocationStrategies}
+      user={user?.address ?? null}
     >
       <div className="container mt-4 max-w-6xl md:mt-8">
         <FlowHeader flow={flow} erc721VotingToken={flow.erc721VotingToken} />
