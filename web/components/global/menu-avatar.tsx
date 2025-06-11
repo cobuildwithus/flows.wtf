@@ -50,7 +50,7 @@ export const MenuAvatar = (props: Props) => {
                 <AvatarImage src={user.avatar} alt={user.username} />
               </Avatar>
               <span className="hidden text-xs font-semibold text-secondary-foreground md:block md:min-w-2 md:py-0.5 md:text-sm">
-                {allocationPower?.toString()}
+                {((allocationPower || 0) / 1e18)?.toString()}
               </span>
             </div>
           </PopoverTrigger>

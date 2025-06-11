@@ -3,9 +3,9 @@ import { addGrantEmbedding } from "../../embeddings/embed-grants"
 import { isBlockRecent } from "../../../utils"
 import { getFlow, isOnchainStartup } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
-import { insertGrant } from "./insert-grants"
-import { RecipientType } from "../../../enums"
+import { RecipientType, Status } from "../../../enums"
 import { addGrantIdToFlowContractAndRecipientId } from "../../grant-helpers"
+import { grants } from "ponder:schema"
 
 ponder.on("CustomFlow:RecipientCreated", handleRecipientCreated)
 
@@ -31,19 +31,63 @@ async function handleRecipientCreated(params: {
 
   const flow = await getFlow(context.db, flowAddress)
 
-  const grant = await insertGrant(context.db, {
+  const grant = await context.db.insert(grants).values({
     id: grantId,
-    ...metadata,
+    chainId: context.chain.id,
+    title: metadata.title,
+    recipientId: grantId,
+    description: metadata.description,
+    manager: "",
+    image: metadata.image,
+    tagline: metadata.tagline,
+    url: metadata.url,
     recipient,
     flowId: flow.id,
-    isFlow: false,
     submitter: approvedBy.toLowerCase(),
     parentContract: flowAddress,
+    baselinePool: "",
+    bonusPool: "",
+    managerRewardPoolFlowRatePercent: 0,
+    baselinePoolFlowRatePercent: 0,
+    isTopLevel: false,
+    isFlow: false,
+    isRemoved: false,
+    allocationsCount: "0",
+    isOnchainStartup: isOnchainStartup(flowAddress),
+    isAccelerator: false,
+    bonusPoolQuorum: 0,
+    totalAllocationWeightOnFlow: "0",
+    monthlyIncomingFlowRate: "0",
+    monthlyIncomingBaselineFlowRate: "0",
+    monthlyIncomingBonusFlowRate: "0",
+    monthlyOutgoingFlowRate: "0",
+    monthlyRewardPoolFlowRate: "0",
+    challengePeriodEndsAt: 0,
+    monthlyBaselinePoolFlowRate: "0",
+    monthlyBonusPoolFlowRate: "0",
+    bonusMemberUnits: "0",
+    baselineMemberUnits: "0",
+    totalEarned: "0",
+    activeRecipientCount: 0,
+    awaitingRecipientCount: 0,
+    challengedRecipientCount: 0,
+    tcr: null,
+    erc20: null,
+    arbitrator: null,
+    tokenEmitter: null,
+    superToken: "",
+    managerRewardPool: "",
+    managerRewardSuperfluidPool: "",
+    status: Status.Registered,
+    isDisputed: false,
+    isResolved: false,
+    evidenceGroupID: "",
+    isActive: true,
     createdAt: timestamp,
     updatedAt: timestamp,
-    isOnchainStartup: isOnchainStartup(flowAddress),
-    recipientId: grantId,
+    allocationStrategies: [],
   })
+
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
   await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
 

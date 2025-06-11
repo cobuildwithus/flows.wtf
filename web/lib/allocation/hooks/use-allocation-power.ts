@@ -17,7 +17,7 @@ export function useAllocationPower() {
   )
 
   return {
-    allocationPower: BigInt(allocationPower ?? "0"),
+    allocationPower,
     isLoading,
   }
 }

@@ -1,27 +1,16 @@
 "use client"
 
 import { AuthButton } from "@/components/ui/auth-button"
-import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delegated-tokens"
 import { useAllocate } from "@/lib/allocation/allocation-context"
-import { toast } from "sonner"
-import { useAccount } from "wagmi"
 
 export const AllocationToggle = () => {
   const { isLoading, isActive, activate, allocator, votingToken, canAllocate } = useAllocate()
-  const { address } = useAccount()
-  const { tokens } = useDelegatedTokens(address)
 
   if (!canAllocate) return null
 
   return (
     <AuthButton
-      onClick={() => {
-        if (tokens.length === 0 && !allocator) {
-          return toast.error("You don't have any voting power.")
-        }
-
-        activate()
-      }}
+      onClick={activate}
       disabled={isLoading || isActive}
       loading={isLoading}
       type="button"

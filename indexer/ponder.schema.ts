@@ -61,6 +61,7 @@ export const grants = onchainTable(
     erc721VotingToken: t.text(),
     votingTokenChainId: t.integer(),
     allocationStrategies: t.text().array().notNull(),
+    chainId: t.integer().notNull(),
   }),
   (table) => ({
     isTopLevelIdx: index().on(table.isTopLevel),

@@ -132,7 +132,7 @@ model Story {
   @@schema("web")
 }
 
-model Grant {
+view Grant {
   id                               String  @id
   recipient                        String
   flowId                           String  @map("flow_id")
@@ -191,6 +191,7 @@ model Grant {
   allocator                        String? @map("allocator")
   recipientId                      String  @map("recipient_id")
   allocationStrategies             String[] @map("allocation_strategies")
+  chainId                          Int     @map("chain_id")
 
   flow                 Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants            Grant[]       @relation("Subgrants")

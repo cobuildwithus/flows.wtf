@@ -49,6 +49,7 @@ async function handleFlowInitialized(params: {
 
   await context.db.insert(grants).values({
     id: grantId,
+    chainId: context.chain.id,
     ...metadata,
     recipient: contract,
     recipientId: "",
