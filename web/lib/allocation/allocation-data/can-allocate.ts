@@ -1,9 +1,7 @@
 "use server"
 
 import { getClient } from "@/lib/viem/client"
-import { getEthAddress } from "@/lib/utils"
-import { Address } from "viem"
-import { getStrategies } from "./get-strategies"
+import { getAddress } from "viem"
 import { singleAllocatorStrategyImplAbi } from "@/lib/abis"
 
 export const canAllocate = async (
@@ -11,20 +9,18 @@ export const canAllocate = async (
   chainId: number,
   account: string | null,
 ) => {
-  console.log("canAllocate", allocationStrategies, chainId, account)
   if (!account) return false
 
-  const strategies = await getStrategies(allocationStrategies, chainId)
   const client = getClient(chainId)
 
   try {
     // Check each strategy to see if the account can allocate
-    for (const strategy of strategies) {
+    for (const strategy of allocationStrategies) {
       const canAccountAllocate = await client.readContract({
-        address: getEthAddress(strategy.address) as Address,
+        address: getAddress(strategy),
         abi: singleAllocatorStrategyImplAbi,
         functionName: "canAccountAllocate",
-        args: [getEthAddress(account) as Address],
+        args: [getAddress(account)],
       })
 
       // If any strategy allows allocation, return true
