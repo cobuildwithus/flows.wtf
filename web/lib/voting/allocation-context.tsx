@@ -3,16 +3,15 @@
 import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
 import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
-import { useBatchVoting } from "./hooks/use-batch-voting"
+import { useBatchVoting } from "./hooks/legacy/use-batch-voting"
 import { isValidVotingContract, UserAllocation } from "./vote-types"
-import { useVoteNouns } from "./hooks/use-vote-nouns"
-import { base, mainnet } from "@/addresses"
+import { useVoteNouns } from "./hooks/legacy/use-vote-nouns"
+import { mainnet } from "@/addresses"
 import { toast } from "sonner"
 import { useAllocationContextActive } from "./hooks/use-context-active"
 import { useExistingAllocations } from "./hooks/use-existing-allocations"
-import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
-import { useAllocateSelfManagedFlow } from "./hooks/use-allocate-self-managed-flow"
+import { useAllocateFlow } from "./hooks/use-allocate-flow"
 
 interface AllocationContextType {
   activate: () => void
@@ -93,14 +92,12 @@ export const AllocationProvider = (
     onSuccess,
   )
 
-  const { saveVotes: saveVotesRevolution, isLoading: isLoadingRevolution } = useVoteRevolution(
+  const { allocateFunds, isLoading: isLoadingSelfManaged } = useAllocateFlow(
     contract,
+    strategies,
     chainId,
     onSuccess,
   )
-
-  const { allocateFunds: allocateFundsSelfManaged, isLoading: isLoadingSelfManaged } =
-    useAllocateSelfManagedFlow(contract, chainId, onSuccess)
 
   return (
     <AllocationContext.Provider
@@ -119,7 +116,11 @@ export const AllocationProvider = (
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
 
           if (allocator) {
-            return await allocateFundsSelfManaged(existingAllocations, address)
+            return await allocateFunds(
+              existingAllocations,
+              address,
+              tokens.map((t) => t.tokenId),
+            )
           }
 
           if (!tokens.length) return toast.error("No delegated tokens found")
@@ -131,10 +132,6 @@ export const AllocationProvider = (
           if (isNounsFlow(votingToken)) {
             return await saveVotesNouns(existingAllocations, address, tokenBatch)
           }
-
-          if (isRevolutionFlow(votingToken)) {
-            return await saveVotesRevolution(existingAllocations, address, tokenBatch)
-          }
         },
         updateAllocation: (allocation: UserAllocation) => {
           const { recipientId, bps } = allocation
@@ -144,7 +141,7 @@ export const AllocationProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading: isLoadingNouns || isLoadingRevolution || isLoadingSelfManaged,
+        isLoading: isLoadingNouns || isLoadingSelfManaged,
         allocatedBps: allocations?.reduce((acc, a) => acc + a.bps, 0) || 0,
         votedCount: allocations?.filter((a) => a.bps > 0).length || 0,
         batchIndex,
@@ -160,7 +157,7 @@ export const AllocationProvider = (
   )
 }
 
-export const useAllocateFlow = (): AllocationContextType => {
+export const useAllocate = (): AllocationContextType => {
   const context = useContext(AllocationContext)
   if (context === null) {
     throw new Error("useAllocateFlow must be used within a AllocationProvider")
@@ -170,8 +167,4 @@ export const useAllocateFlow = (): AllocationContextType => {
 
 function isNounsFlow(votingToken: string | null) {
   return votingToken === mainnet.NounsToken
-}
-
-function isRevolutionFlow(votingToken: string | null) {
-  return votingToken === base.VrbsToken
 }

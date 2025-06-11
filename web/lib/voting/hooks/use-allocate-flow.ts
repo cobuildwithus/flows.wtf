@@ -11,10 +11,15 @@ import {
   customFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
-import { ERC721VotingToken, UserAllocation } from "../vote-types"
-import { encodeAbiParameters } from "viem"
+import { UserAllocation } from "../vote-types"
+import { buildAllocationData } from "../allocation-data/build-allocation-data"
 
-export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
+export function useAllocateFlow(
+  contract: `0x${string}`,
+  strategies: string[],
+  chainId: number,
+  onSuccess: () => void,
+) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess,
@@ -22,15 +27,14 @@ export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSu
 
   return {
     isLoading,
-    saveVotes: async (
+    allocateFunds: async (
       allocations: UserAllocation[],
       account: `0x${string}`,
-      tokenBatch: ERC721VotingToken[],
+      tokenIds?: number[],
     ) => {
       try {
         await prepareWallet()
 
-        const tokenIds: bigint[] = tokenBatch.map((token) => BigInt(token.tokenId))
         const percentAllocations = allocations.map(
           (allocation) => (allocation.bps / 10000) * PERCENTAGE_SCALE,
         )
@@ -38,10 +42,8 @@ export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSu
           (allocation) => allocation.recipientId as `0x${string}`,
         )
 
-        // single array of tokenIds converted to bytes
-        const allocationData = [
-          tokenIds.map((id) => encodeAbiParameters([{ type: "uint256" }], [id])),
-        ]
+        // Build allocation data using the strategies
+        const allocationData = await buildAllocationData(strategies, account, chainId, tokenIds)
 
         writeContract({
           account,

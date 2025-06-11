@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useVotingPower } from "@/lib/voting/hooks/use-voting-power"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/voting/allocation-context"
 import Link from "next/link"
 import { useAccount } from "wagmi"
 import { AllocationToggle } from "./allocation-toggle"
@@ -10,7 +10,7 @@ import { AllocationToggle } from "./allocation-toggle"
 export function CTAButtons() {
   const { isConnected } = useAccount()
   const { votingPower } = useVotingPower()
-  const { isActive } = useAllocateFlow()
+  const { isActive } = useAllocate()
 
   const showAllocationToggle = isConnected && votingPower > 0
 

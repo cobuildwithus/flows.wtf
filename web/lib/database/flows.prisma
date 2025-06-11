@@ -325,6 +325,19 @@ view Evidence {
   @@schema("onchain")
 }
 
+view AllocationStrategy {
+  address   String
+  strategyKey  String
+  chainId   Int
+  registeredAt Int @map("registered_at")
+
+  @@index([address])
+  @@index([strategyKey])
+  @@index([chainId])
+  @@unique([address, chainId])
+  @@schema("onchain")
+}
+
 model Impact {
   id             String    @id
   name           String

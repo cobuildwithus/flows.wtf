@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import type { Profile } from "@/components/user-profile/get-user-profile"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/voting/allocation-context"
 import type { DerivedData } from "@prisma/flows"
 import { GrantCard } from "@/components/global/grant-card"
 import { GrantsTable } from "@/components/global/grants-table"
@@ -23,7 +23,7 @@ interface Props {
 
 export default function GrantsList(props: Props) {
   const { flow, grants } = props
-  const { isActive } = useAllocateFlow()
+  const { isActive } = useAllocate()
 
   if (isActive) {
     return (

@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/voting/allocation-context"
 
 interface Props {
   recipientId: string
@@ -10,7 +10,7 @@ interface Props {
 
 export const AllocationInput = (props: Props) => {
   const { recipientId } = props
-  const { allocations, updateAllocation, isActive, activate } = useAllocateFlow()
+  const { allocations, updateAllocation, isActive, activate } = useAllocate()
 
   const currentAllocation = allocations.find((a) => a.recipientId === recipientId)
 

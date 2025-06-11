@@ -2,12 +2,12 @@
 
 import { AuthButton } from "@/components/ui/auth-button"
 import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/voting/allocation-context"
 import { toast } from "sonner"
 import { useAccount } from "wagmi"
 
 export const AllocationToggle = () => {
-  const { isLoading, isActive, activate, allocator, votingToken } = useAllocateFlow()
+  const { isLoading, isActive, activate, allocator, votingToken } = useAllocate()
   const { address } = useAccount()
   const { tokens } = useDelegatedTokens(address)
 
