@@ -2,7 +2,7 @@
 
 import { toast } from "sonner"
 import { useContractTransaction } from "../wagmi/use-contract-transaction"
-import { selfManagedFlowImplAbi } from "../abis"
+import { customFlowImplAbi } from "../abis"
 import { useAccount } from "wagmi"
 
 interface PayRevnetArgs {
@@ -31,7 +31,7 @@ export function useRemoveRecipient(chainId: number, onSuccess?: () => void) {
         writeContract({
           account,
           address: contract,
-          abi: selfManagedFlowImplAbi,
+          abi: customFlowImplAbi,
           functionName: "removeRecipient",
           chainId,
           args: [recipientId as `0x${string}`],

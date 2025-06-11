@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { selfManagedFlowImplAbi } from "@/lib/abis"
+import { customFlowImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import type { Draft } from "@prisma/flows"
@@ -48,7 +48,7 @@ export function AddRecipientToFlowButton(props: Props) {
 
           writeContract({
             account: address,
-            abi: selfManagedFlowImplAbi,
+            abi: customFlowImplAbi,
             functionName: "addRecipient",
             address: contract,
             chainId,

@@ -8,10 +8,11 @@ import {
   gdav1ForwarderAbi,
   rewardPoolImplAbi,
   superfluidPoolAbi,
-  revolutionFlowImplAbi,
+  customFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
 import { ERC721VotingToken, UserAllocation } from "../vote-types"
+import { encodeAbiParameters } from "viem"
 
 export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
@@ -37,20 +38,25 @@ export function useVoteRevolution(contract: `0x${string}`, chainId: number, onSu
           (allocation) => allocation.recipientId as `0x${string}`,
         )
 
+        // single array of tokenIds converted to bytes
+        const allocationData = [
+          tokenIds.map((id) => encodeAbiParameters([{ type: "uint256" }], [id])),
+        ]
+
         writeContract({
           account,
           abi: [
-            ...revolutionFlowImplAbi,
+            ...customFlowImplAbi,
             ...rewardPoolImplAbi,
             ...erc20VotesMintableImplAbi,
             ...superfluidPoolAbi,
             ...gdav1ForwarderAbi,
             ...cfav1ForwarderAbi,
           ],
-          functionName: "castVotes",
+          functionName: "allocate",
           address: contract,
           chainId,
-          args: [tokenIds, recipientIds, percentAllocations],
+          args: [allocationData, recipientIds, percentAllocations],
         })
       } catch (e) {
         console.error(e)
