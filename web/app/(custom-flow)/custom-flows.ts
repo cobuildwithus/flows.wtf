@@ -17,7 +17,8 @@ const customFlows: CustomFlow[] = [
   {
     id: "grounds",
     name: "Grounds",
-    flowId: customFlowAddresses.grounds,
+    // flowId: customFlowAddresses.grounds,
+    flowId: "0xa35ea72bc5bd27f459d89d136f09775170aa78d7",
     coverImage: "/grounds-bg.jpg",
     styles: {
       light: {

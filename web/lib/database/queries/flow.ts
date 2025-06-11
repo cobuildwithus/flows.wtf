@@ -3,9 +3,9 @@
 import database from "@/lib/database/flows-db"
 import { cache } from "react"
 
-export const getFlowWithGrants = cache(async (flowId: string) => {
+export const getFlowWithGrants = cache(async (id: string) => {
   return await database.grant.findFirstOrThrow({
-    where: { id: flowId },
+    where: { id },
     include: {
       subgrants: {
         omit: { description: true },
@@ -21,9 +21,9 @@ export const getFlowWithGrants = cache(async (flowId: string) => {
   })
 })
 
-export const getFlow = cache(async (flowId: string) => {
+export const getFlow = cache(async (id: string) => {
   return await database.grant.findFirstOrThrow({
-    where: { id: flowId, isFlow: true },
+    where: { id, isFlow: true },
   })
 })
 
