@@ -93,6 +93,7 @@ export function AllocateBudgets(props: Props) {
                 contract={getEthAddress(selectedFlow.recipient)}
                 votingToken={selectedFlow.erc721VotingToken}
                 allocator={selectedFlow.allocator}
+                strategies={selectedFlow.allocationStrategies}
                 defaultActive
               >
                 <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />

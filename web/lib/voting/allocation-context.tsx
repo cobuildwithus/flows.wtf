@@ -32,6 +32,7 @@ interface AllocationContextType {
 
   votingToken: string | null
   allocator: string | null
+  strategies: string[]
   isAllocator: boolean
 }
 
@@ -43,10 +44,19 @@ export const AllocationProvider = (
     chainId: number
     votingToken: string | null
     allocator: string | null
+    strategies: string[]
     defaultActive?: boolean
   }>,
 ) => {
-  const { children, contract, chainId, votingToken, allocator, defaultActive = false } = props
+  const {
+    children,
+    contract,
+    chainId,
+    votingToken,
+    allocator,
+    strategies,
+    defaultActive = false,
+  } = props
   const { address } = useAccount()
   const router = useRouter()
   const { isActive, setIsActive } = useAllocationContextActive(defaultActive)
@@ -142,6 +152,7 @@ export const AllocationProvider = (
         votingToken,
         allocator,
         isAllocator: allocator === address,
+        strategies,
       }}
     >
       {children}

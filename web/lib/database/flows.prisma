@@ -190,6 +190,7 @@ model Grant {
   votingTokenChainId               Int?    @map("voting_token_chain_id")
   allocator                        String? @map("allocator")
   recipientId                      String  @map("recipient_id")
+  allocationStrategies             String[] @map("allocation_strategies")
 
   flow                 Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants            Grant[]       @relation("Subgrants")
