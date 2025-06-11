@@ -2,7 +2,6 @@
 
 import { encodeAbiParameters } from "viem"
 import { getStrategies } from "./get-strategies"
-import { AllocationStrategy } from "@prisma/flows"
 
 export interface ERC721VotesData {
   tokenIds: number[]
@@ -16,21 +15,21 @@ export interface AllocationJSON {
 /**
  * Builds the JSON payload required by allocation strategies.
  *
- * @param addresses - Array of strategy addresses to build JSON for
+ * @param allocationStrategies - Array of strategy addresses to build JSON for
  * @param chainId - Chain ID where the strategies are deployed
  * @param tokenIds - Array of ERC721 token IDs for ERC721Votes strategy (optional)
  * @returns JSON string containing strategy-specific data
  */
 export const buildAllocationData = async (
-  addresses: string[],
+  allocationStrategies: string[],
   chainId: number,
   tokenIds?: number[],
 ): Promise<{
   allocationData: `0x${string}`[][]
 }> => {
-  if (!addresses.length) return { allocationData: [] }
+  if (!allocationStrategies.length) return { allocationData: [] }
 
-  const strategies = await getStrategies(addresses, chainId)
+  const strategies = await getStrategies(allocationStrategies, chainId)
 
   if (!strategies.length) return { allocationData: [] }
 
