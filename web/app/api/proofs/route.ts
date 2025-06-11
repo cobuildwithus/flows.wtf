@@ -1,6 +1,6 @@
 import { getUserAddressFromCookie } from "@/lib/auth/get-user-from-cookie"
 import { serialize } from "@/lib/serialize"
-import { generateOwnerProofs } from "@/lib/voting/owner-proofs/proofs"
+import { generateOwnerProofs } from "@/lib/allocation/owner-proofs/proofs"
 import { NextResponse } from "next/server"
 import { Address } from "viem"
 

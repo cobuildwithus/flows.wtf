@@ -11,7 +11,7 @@ import {
   customFlowImplAbi,
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
-import { UserAllocation } from "../vote-types"
+import { UserAllocation } from "../allocation-types"
 import { buildAllocationData } from "../allocation-data/build-data"
 
 export function useAllocateFlow(

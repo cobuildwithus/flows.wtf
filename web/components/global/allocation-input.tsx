@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useAllocate } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 
 interface Props {
   recipientId: string

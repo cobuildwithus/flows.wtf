@@ -2,7 +2,7 @@
 
 import { useUserAllocations } from "../user-allocations/use-user-allocations"
 import { useEffect, useState, useRef } from "react"
-import { UserAllocation } from "../vote-types"
+import { UserAllocation } from "../allocation-types"
 
 export function useExistingAllocations(contract: `0x${string}`) {
   const [allocations, setAllocations] = useState<UserAllocation[]>()

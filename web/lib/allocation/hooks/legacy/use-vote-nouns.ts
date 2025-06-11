@@ -14,7 +14,7 @@ import {
 import { serialize } from "@/lib/serialize"
 import { PERCENTAGE_SCALE } from "@/lib/config"
 import { nounsFlowImplAbi } from "@/lib/abis"
-import { ERC721VotingToken, UserAllocation } from "@/lib/voting/vote-types"
+import { ERC721VotingToken, UserAllocation } from "@/lib/allocation/allocation-types"
 
 export function useVoteNouns(contract: `0x${string}`, chainId: number, onSuccess: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({

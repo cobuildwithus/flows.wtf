@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { useAllocate } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 import { FlowsTable, type LimitedFlow } from "./flows-table"
 import { FlowCard } from "./flow-card"
 

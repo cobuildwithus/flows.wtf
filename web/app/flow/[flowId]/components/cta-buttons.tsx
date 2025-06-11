@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useVotingPower } from "@/lib/voting/hooks/use-voting-power"
-import { useAllocate } from "@/lib/voting/allocation-context"
+import { useVotingPower } from "@/lib/allocation/hooks/use-voting-power"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 import Link from "next/link"
 import { useAccount } from "wagmi"
 import { AllocationToggle } from "./allocation-toggle"

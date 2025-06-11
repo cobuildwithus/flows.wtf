@@ -1,5 +1,5 @@
 import { mainnet } from "@/addresses"
-import { ERC721VotingToken } from "../../vote-types"
+import { ERC721VotingToken } from "../../allocation-types"
 import { useState } from "react"
 
 export function useBatchVoting(tokens: ERC721VotingToken[], votingToken: string | null) {

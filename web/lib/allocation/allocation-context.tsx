@@ -1,10 +1,10 @@
 "use client"
 
-import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
+import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delegated-tokens"
 import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
 import { useBatchVoting } from "./hooks/legacy/use-batch-voting"
-import { isValidVotingContract, UserAllocation } from "./vote-types"
+import { isValidVotingContract, UserAllocation } from "./allocation-types"
 import { useVoteNouns } from "./hooks/legacy/use-vote-nouns"
 import { mainnet } from "@/addresses"
 import { toast } from "sonner"

@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import type { Profile } from "@/components/user-profile/get-user-profile"
-import { useAllocate } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 import type { DerivedData } from "@prisma/flows"
 import { GrantCard } from "@/components/global/grant-card"
 import { GrantsTable } from "@/components/global/grants-table"

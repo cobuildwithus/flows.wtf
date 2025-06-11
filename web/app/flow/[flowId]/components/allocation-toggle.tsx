@@ -1,8 +1,8 @@
 "use client"
 
 import { AuthButton } from "@/components/ui/auth-button"
-import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
-import { useAllocate } from "@/lib/voting/allocation-context"
+import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delegated-tokens"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 import { toast } from "sonner"
 import { useAccount } from "wagmi"
 
