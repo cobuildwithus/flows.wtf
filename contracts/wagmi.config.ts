@@ -23,7 +23,7 @@ const baseContracts = [
 
   { name: "customFlowImpl", address: base.CustomFlowImpl },
 
-  { name: "erc721VotingStrategyImpl", address: base.ERC721VotingStrategyImpl },
+  { name: "erc721VotesStrategyImpl", address: base.ERC721VotesStrategyImpl },
 
   { name: "singleAllocatorStrategyImpl", address: base.SingleAllocatorStrategyImpl },
 

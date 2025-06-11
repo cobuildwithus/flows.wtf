@@ -23,8 +23,8 @@ export const base = {
   // Flow Extensions
   CustomFlowImpl: "0x428a3c428a4623af8b21e69b25b760e3f2ccf930",
   // Allocation Strategies
-  ERC721VotingStrategyImpl: "0x49259d920cf78905e20e7717a43784f7373f0b46",
-  SingleAllocatorStrategyImpl: "0x5bf64518ccd8edf4b32c717f8cd1f63fd730a935",
+  ERC721VotesStrategyImpl: "0x754ba8018e3688bd3a713edea4effb3f281978af",
+  SingleAllocatorStrategyImpl: "0x860b5987e874377cdc6345d3a72408677c6df897",
   // ERC721Tokens
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",

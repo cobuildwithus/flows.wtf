@@ -12,7 +12,7 @@ import {
 } from "../../abis"
 import { PERCENTAGE_SCALE } from "../../config"
 import { UserAllocation } from "../vote-types"
-import { buildAllocationData } from "../allocation-data/build-allocation-data"
+import { buildAllocationData } from "../allocation-data/build-data"
 
 export function useAllocateFlow(
   contract: `0x${string}`,
@@ -43,7 +43,7 @@ export function useAllocateFlow(
         )
 
         // Build allocation data using the strategies
-        const allocationData = await buildAllocationData(strategies, account, chainId, tokenIds)
+        const { allocationData } = await buildAllocationData(strategies, chainId, tokenIds)
 
         writeContract({
           account,

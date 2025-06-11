@@ -1,14 +1,15 @@
 "use server"
 
+import { encodeAbiParameters } from "viem"
 import { getStrategies } from "./get-strategies"
 import { AllocationStrategy } from "@prisma/flows"
 
-export interface ERC721VotingData {
+export interface ERC721VotesData {
   tokenIds: number[]
 }
 
 export interface AllocationJSON {
-  ERC721Voting?: ERC721VotingData
+  ERC721Votes?: ERC721VotesData
   SingleAllocator?: Record<string, never> // empty object or undefined
 }
 
@@ -17,37 +18,42 @@ export interface AllocationJSON {
  *
  * @param addresses - Array of strategy addresses to build JSON for
  * @param chainId - Chain ID where the strategies are deployed
- * @param tokenIds - Array of ERC721 token IDs for ERC721Voting strategy (optional)
+ * @param tokenIds - Array of ERC721 token IDs for ERC721Votes strategy (optional)
  * @returns JSON string containing strategy-specific data
  */
-export const buildAllocationJSON = async (
+export const buildAllocationData = async (
   addresses: string[],
   chainId: number,
   tokenIds?: number[],
-): Promise<{ json: string; strategies: AllocationStrategy[] }> => {
-  if (!addresses.length) return { json: "{}", strategies: [] }
+): Promise<{
+  allocationData: `0x${string}`[][]
+}> => {
+  if (!addresses.length) return { allocationData: [] }
 
   const strategies = await getStrategies(addresses, chainId)
 
-  if (!strategies.length) return { json: "{}", strategies: [] }
+  if (!strategies.length) return { allocationData: [] }
 
-  const json: AllocationJSON = {}
+  const allocationData: `0x${string}`[][] = []
 
   for (const strategy of strategies) {
     switch (strategy.strategyKey) {
-      case "ERC721Voting":
-        json.ERC721Voting = {
-          tokenIds: tokenIds || [],
-        }
+      case "ERC721Votes":
+        allocationData.push(
+          tokenIds?.map((id) => encodeAbiParameters([{ type: "uint256" }], [BigInt(id)])) || [],
+        )
         break
       case "SingleAllocator":
         // SingleAllocator doesn't require any data in the JSON
-        json.SingleAllocator = {}
+        allocationData.push([])
         break
       default:
+        allocationData.push([])
         console.warn(`Unknown strategy key: ${strategy.strategyKey}`)
     }
   }
 
-  return { json: JSON.stringify(json), strategies }
+  return {
+    allocationData,
+  }
 }
