@@ -49,6 +49,7 @@ async function handleItemSubmitted(params: {
 
   const grant = await context.db.insert(grants).values({
     id: _itemID,
+    chainId: context.chain.id,
     ...metadata,
     manager: "",
     isActive: false,

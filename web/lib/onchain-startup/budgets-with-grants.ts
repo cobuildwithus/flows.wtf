@@ -2,10 +2,10 @@ import database from "@/lib/database/flows-db"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getEthAddress } from "@/lib/utils"
 
-export const getBudgetsWithGrants = async (id: string, allocator: string) => {
+export const getBudgetsWithGrants = async (id: string) => {
   const budgets = await database.grant.findMany({
     omit: { description: true },
-    where: { allocator, isFlow: true, isActive: true },
+    where: { flowId: id, isFlow: true, isActive: true },
     orderBy: { createdAt: "asc" },
     include: {
       subgrants: {
@@ -19,9 +19,7 @@ export const getBudgetsWithGrants = async (id: string, allocator: string) => {
     budgets.map(async (budget) => {
       const subgrantsWithProfiles = await Promise.all(
         budget.subgrants.map(async (subgrant) => {
-          const profile = await getUserProfile(
-            getEthAddress(subgrant.allocator || subgrant.recipient),
-          )
+          const profile = await getUserProfile(getEthAddress(subgrant.recipient))
           return { ...subgrant, profile }
         }),
       )

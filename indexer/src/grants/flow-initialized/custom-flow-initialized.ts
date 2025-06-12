@@ -49,6 +49,7 @@ async function handleFlowInitialized(params: {
 
   await context.db.insert(grants).values({
     id: grantId,
+    chainId: context.chain.id,
     ...metadata,
     recipient: contract,
     recipientId: "",
@@ -97,7 +98,6 @@ async function handleFlowInitialized(params: {
     isResolved: false,
     evidenceGroupID: "",
     isActive: true,
-    votingTokenChainId: context.chain.id, // assumes all these flows are voting on the same network they're deployed on
   })
 
   await createMappings(

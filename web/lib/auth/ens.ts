@@ -41,7 +41,6 @@ export async function resolveEnsToAddress(ensName: string): Promise<string | nul
       name: normalizedName,
     })
 
-    console.log("Resolved address:", address)
     return address
   } catch (error) {
     console.error("Failed to resolve ENS name:", ensName, error)

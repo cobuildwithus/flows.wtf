@@ -1,37 +1,26 @@
 "use client"
 
 import { AuthButton } from "@/components/ui/auth-button"
-import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
-import { toast } from "sonner"
-import { useAccount } from "wagmi"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 
 export const AllocationToggle = () => {
-  const { isLoading, isActive, activate, allocator, votingToken } = useAllocateFlow()
-  const { address } = useAccount()
-  const { tokens } = useDelegatedTokens(address)
+  const { isLoading, isActive, activate, canAllocate } = useAllocate()
+
+  if (!canAllocate) return null
 
   return (
     <AuthButton
-      onClick={() => {
-        if (tokens.length === 0 && !allocator) {
-          return toast.error("You don't have any voting power.")
-        }
-
-        activate()
-      }}
+      onClick={activate}
       disabled={isLoading || isActive}
       loading={isLoading}
       type="button"
     >
-      {getButtonText(isActive, allocator, votingToken)}
+      {getButtonText(isActive)}
     </AuthButton>
   )
 }
 
-function getButtonText(isActive: boolean, allocator: string | null, votingToken: string | null) {
+function getButtonText(isActive: boolean) {
   if (isActive) return "In progress..."
-  if (allocator) return "Split funds"
-  if (votingToken) return "Vote"
   return "Allocate"
 }

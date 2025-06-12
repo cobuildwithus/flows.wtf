@@ -2,10 +2,10 @@ import database from "@/lib/database/flows-db"
 import { unstable_cache } from "next/cache"
 
 export const getStartupBudgets = unstable_cache(
-  async (id: string, allocator: string) => {
+  async (id: string) => {
     const budgets = await database.grant.findMany({
       select: { id: true, title: true, monthlyIncomingFlowRate: true },
-      where: { allocator, isFlow: true, isActive: true },
+      where: { flowId: id, isFlow: true, isActive: true },
       orderBy: { createdAt: "asc" },
     })
 

@@ -10,7 +10,7 @@ declare global {
     erc20: `0x${string}`
     tokenEmitter: `0x${string}`
     arbitrator: `0x${string}`
-    erc721VotingToken: `0x${string}`
+    allocationStrategies: `0x${string}`[]
   }
 
   namespace PrismaJson {

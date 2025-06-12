@@ -3,6 +3,7 @@
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { isAdmin } from "@/lib/database/helpers"
+import { canAllocate } from "@/lib/allocation/can-allocate"
 import { z } from "zod"
 
 const schema = z.object({
@@ -30,14 +31,22 @@ export async function createOpportunity(formData: FormData) {
     const expectedMonthlySalary = Number(validation.data.expectedMonthlySalary)
     if (expectedMonthlySalary < 5) throw new Error("Expected monthly salary must be at least $5")
 
+    // Fetch allocationStrategies and chainId for canAllocate
     const budget = await database.grant.findUnique({
       where: { id: validation.data.flowId },
-      select: { allocator: true },
+      select: { allocationStrategies: true, chainId: true },
     })
 
     if (!budget) throw new Error("Budget not found")
 
-    const canManage = user.address === budget.allocator || isAdmin(user.address)
+    // Use canAllocate to check if user can manage this opportunity
+    const canUserAllocate = await canAllocate(
+      budget.allocationStrategies,
+      budget.chainId,
+      user.address,
+    )
+
+    const canManage = canUserAllocate || isAdmin(user.address)
     if (!canManage) throw new Error("Unauthorized")
 
     await database.opportunity.create({

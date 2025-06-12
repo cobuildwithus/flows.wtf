@@ -52,7 +52,7 @@ export function ManagedFlowDraftPublishButton(props: Props) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            {user && <SignInWithNeynar variant="secondary" user={user} />}
+            {user && <SignInWithNeynar variant="default" user={user} />}
             <AlertDialogCancel>Cancel</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>

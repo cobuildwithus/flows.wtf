@@ -49,6 +49,7 @@ async function handleFlowInitialized(params: {
 
   await context.db.insert(grants).values({
     id: grantId,
+    chainId: context.chain.id,
     ...metadata,
     recipient: contract,
     isTopLevel: true,
@@ -96,8 +97,6 @@ async function handleFlowInitialized(params: {
     isResolved: false,
     evidenceGroupID: "",
     isActive: true,
-    erc721VotingToken: mainnetContracts.NounsToken,
-    votingTokenChainId: mainnet.id,
     allocationStrategies: [],
   })
 

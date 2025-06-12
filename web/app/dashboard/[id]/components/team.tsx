@@ -30,7 +30,7 @@ export async function Team(props: Props) {
   // const canManage = false
 
   const [budgets, privyIdToken] = await Promise.all([
-    getBudgetsWithGrants(startup.id, startup.allocator),
+    getBudgetsWithGrants(startup.id),
     getPrivyIdToken(),
   ])
 
@@ -52,6 +52,7 @@ export async function Team(props: Props) {
                 isManager={canManage}
                 flows={budgets}
                 grants={budgets.map((b) => b.subgrants)}
+                user={user?.address ?? null}
               >
                 {members.map((m) => (
                   <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />

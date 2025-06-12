@@ -3,7 +3,7 @@ import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
-import { AllocationProvider } from "@/lib/voting/allocation-context"
+import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import Link from "next/link"
 import { base } from "viem/chains"
 import FlowsList from "./components/flows-list"
@@ -33,8 +33,8 @@ export default async function Home() {
     <AllocationProvider
       chainId={base.id}
       contract={getEthAddress(pool.recipient)}
-      votingToken={pool.erc721VotingToken}
-      allocator={pool.allocator}
+      strategies={pool.allocationStrategies}
+      user={user?.address ?? null}
     >
       <main>
         <div className="container mt-6">

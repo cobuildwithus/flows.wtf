@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 import { FlowsTable, type LimitedFlow } from "./flows-table"
 import { FlowCard } from "./flow-card"
 
@@ -11,7 +11,7 @@ interface Props {
 
 export default function FlowsList(props: Props) {
   const { flows } = props
-  const { isActive } = useAllocateFlow()
+  const { isActive } = useAllocate()
 
   if (isActive) {
     return (

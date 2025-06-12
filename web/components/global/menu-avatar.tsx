@@ -6,8 +6,8 @@ import { useIsGuest } from "@/lib/auth/use-is-guest"
 import { useLogin } from "@/lib/auth/use-login"
 import { useRunUserJobs } from "@/lib/auth/use-run-user-jobs"
 import type { User } from "@/lib/auth/user"
-import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
-import { useVotingPower } from "@/lib/voting/hooks/use-voting-power"
+import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delegated-tokens"
+import { useAllocationPower } from "@/lib/allocation/hooks/use-allocation-power"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
 import Link from "next/dist/client/link"
 import { useRouter } from "next/navigation"
@@ -26,7 +26,7 @@ interface Props {
 
 export const MenuAvatar = (props: Props) => {
   const { user, hasSession } = props
-  const { votingPower } = useVotingPower()
+  const { allocationPower } = useAllocationPower()
   const closeRef = useRef<HTMLButtonElement>(null)
   const { tokens } = useDelegatedTokens(user?.address)
   const { logout } = useLogin()
@@ -50,7 +50,7 @@ export const MenuAvatar = (props: Props) => {
                 <AvatarImage src={user.avatar} alt={user.username} />
               </Avatar>
               <span className="hidden text-xs font-semibold text-secondary-foreground md:block md:min-w-2 md:py-0.5 md:text-sm">
-                {votingPower?.toString()}
+                {((allocationPower || 0) / 1e18)?.toString()}
               </span>
             </div>
           </PopoverTrigger>

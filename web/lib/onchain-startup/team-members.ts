@@ -9,8 +9,8 @@ export type TeamMember = {
   tagline: string
 } & Profile
 
-export async function getTeamMembers(id: string, allocator: string): Promise<TeamMember[]> {
-  const budgets = await getStartupBudgets(id, allocator)
+export async function getTeamMembers(id: string): Promise<TeamMember[]> {
+  const budgets = await getStartupBudgets(id)
 
   const [recipients, founder] = await Promise.all([
     database.grant.findMany({
@@ -48,12 +48,6 @@ export async function getTeamMembers(id: string, allocator: string): Promise<Tea
       return { ...member, ...profile }
     }),
   )
-  members.push({
-    recipient: allocator,
-    monthlyIncomingFlowRate: 0,
-    totalEarned: 0,
-    tagline: "Founder",
-    ...(founder || {}),
-  })
+
   return members
 }

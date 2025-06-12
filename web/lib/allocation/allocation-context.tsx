@@ -1,18 +1,16 @@
 "use client"
 
-import { useDelegatedTokens } from "@/lib/voting/delegated-tokens/use-delegated-tokens"
+import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delegated-tokens"
 import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
-import { useBatchVoting } from "./hooks/use-batch-voting"
-import { isValidVotingContract, UserAllocation } from "./vote-types"
-import { useVoteNouns } from "./hooks/use-vote-nouns"
-import { base, mainnet } from "@/addresses"
+import { useBatchVoting } from "./hooks/legacy/use-batch-voting"
+import { UserAllocation } from "./allocation-types"
 import { toast } from "sonner"
 import { useAllocationContextActive } from "./hooks/use-context-active"
 import { useExistingAllocations } from "./hooks/use-existing-allocations"
-import { useVoteRevolution } from "./hooks/use-vote-revolution"
 import { useRouter } from "next/navigation"
-import { useAllocateSelfManagedFlow } from "./hooks/use-allocate-self-managed-flow"
+import { useAllocateFlow } from "./hooks/use-allocate-flow"
+import { useCanAccountAllocate } from "./hooks/use-can-account-allocate"
 
 interface AllocationContextType {
   activate: () => void
@@ -30,9 +28,12 @@ interface AllocationContextType {
   batchIndex: number
   batchTotal: number
 
-  votingToken: string | null
-  allocator: string | null
-  isAllocator: boolean
+  strategies: string[]
+  chainId: number
+
+  user: string | null
+
+  canAllocate: boolean
 }
 
 const AllocationContext = createContext<AllocationContextType | null>(null)
@@ -41,12 +42,12 @@ export const AllocationProvider = (
   props: PropsWithChildren<{
     contract: `0x${string}`
     chainId: number
-    votingToken: string | null
-    allocator: string | null
+    user: string | null
+    strategies: string[]
     defaultActive?: boolean
   }>,
 ) => {
-  const { children, contract, chainId, votingToken, allocator, defaultActive = false } = props
+  const { children, contract, chainId, strategies, user, defaultActive = false } = props
   const { address } = useAccount()
   const router = useRouter()
   const { isActive, setIsActive } = useAllocationContextActive(defaultActive)
@@ -55,7 +56,8 @@ export const AllocationProvider = (
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
-  const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, votingToken)
+  const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, null)
+  const { canAccountAllocate } = useCanAccountAllocate(strategies, chainId, user)
 
   const onSuccess = async () => {
     // If there are more batches to process, simply advance the index and let the
@@ -77,20 +79,7 @@ export const AllocationProvider = (
     })
   }
 
-  const { saveVotes: saveVotesNouns, isLoading: isLoadingNouns } = useVoteNouns(
-    contract,
-    chainId,
-    onSuccess,
-  )
-
-  const { saveVotes: saveVotesRevolution, isLoading: isLoadingRevolution } = useVoteRevolution(
-    contract,
-    chainId,
-    onSuccess,
-  )
-
-  const { allocateFunds: allocateFundsSelfManaged, isLoading: isLoadingSelfManaged } =
-    useAllocateSelfManagedFlow(contract, chainId, onSuccess)
+  const { allocateFunds, isLoading } = useAllocateFlow(contract, strategies, chainId, onSuccess)
 
   return (
     <AllocationContext.Provider
@@ -108,22 +97,16 @@ export const AllocationProvider = (
           if (!address)
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
 
-          if (allocator) {
-            return await allocateFundsSelfManaged(existingAllocations, address)
-          }
-
-          if (!tokens.length) return toast.error("No delegated tokens found")
-
-          if (!isValidVotingContract(votingToken) && !allocator) {
-            return toast.error("Voting is not supported for this token")
-          }
-
-          if (isNounsFlow(votingToken)) {
-            return await saveVotesNouns(existingAllocations, address, tokenBatch)
-          }
-
-          if (isRevolutionFlow(votingToken)) {
-            return await saveVotesRevolution(existingAllocations, address, tokenBatch)
+          if (canAccountAllocate) {
+            return await allocateFunds(
+              existingAllocations,
+              address,
+              tokens.map((t) => t.tokenId),
+            )
+          } else {
+            return toast.error(
+              "You are not authorized to allocate funds. Try reconnecting your wallet if you believe this is an error.",
+            )
           }
         },
         updateAllocation: (allocation: UserAllocation) => {
@@ -134,14 +117,15 @@ export const AllocationProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading: isLoadingNouns || isLoadingRevolution || isLoadingSelfManaged,
+        isLoading,
         allocatedBps: allocations?.reduce((acc, a) => acc + a.bps, 0) || 0,
         votedCount: allocations?.filter((a) => a.bps > 0).length || 0,
         batchIndex,
         batchTotal,
-        votingToken,
-        allocator,
-        isAllocator: allocator === address,
+        strategies,
+        chainId,
+        user,
+        canAllocate: canAccountAllocate,
       }}
     >
       {children}
@@ -149,18 +133,10 @@ export const AllocationProvider = (
   )
 }
 
-export const useAllocateFlow = (): AllocationContextType => {
+export const useAllocate = (): AllocationContextType => {
   const context = useContext(AllocationContext)
   if (context === null) {
     throw new Error("useAllocateFlow must be used within a AllocationProvider")
   }
   return context
-}
-
-function isNounsFlow(votingToken: string | null) {
-  return votingToken === mainnet.NounsToken
-}
-
-function isRevolutionFlow(votingToken: string | null) {
-  return votingToken === base.VrbsToken
 }

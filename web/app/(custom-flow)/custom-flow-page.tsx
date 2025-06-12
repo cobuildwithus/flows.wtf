@@ -7,11 +7,12 @@ import { getUser } from "@/lib/auth/user"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { sortGrants } from "@/lib/grant-utils"
 import { getEthAddress } from "@/lib/utils"
-import { AllocationProvider } from "@/lib/voting/allocation-context"
+import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import Image from "next/image"
 import { base } from "viem/chains"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
+import { AllocationBar } from "@/components/global/allocation-bar"
 
 interface Props {
   customFlow: CustomFlow
@@ -29,7 +30,7 @@ export async function CustomFlowPage(props: Props) {
       .filter((g) => g.isActive)
       .map(async (g) => ({
         ...g,
-        profile: await getUserProfile(getEthAddress(g.allocator || g.recipient)),
+        profile: await getUserProfile(getEthAddress(g.recipient)),
       })),
   )
 
@@ -57,8 +58,8 @@ export async function CustomFlowPage(props: Props) {
     <AllocationProvider
       chainId={base.id}
       contract={getEthAddress(flow.recipient)}
-      votingToken={flow.erc721VotingToken}
-      allocator={flow.allocator}
+      strategies={flow.allocationStrategies}
+      user={user?.address ?? null}
     >
       <AgentChatProvider
         id={`flow-${flow.id}-${user?.address}`}
@@ -126,6 +127,7 @@ export async function CustomFlowPage(props: Props) {
             <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
           )}
         </div>
+        <AllocationBar />
       </AgentChatProvider>
     </AllocationProvider>
   )

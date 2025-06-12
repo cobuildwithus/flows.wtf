@@ -1,6 +1,6 @@
 "use client"
 
-import { useUserAllocations } from "@/lib/voting/user-allocations/use-user-allocations"
+import { useUserAllocations } from "@/lib/allocation/user-allocations/use-user-allocations"
 
 interface Props {
   contract: `0x${string}`

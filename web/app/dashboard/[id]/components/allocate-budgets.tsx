@@ -12,7 +12,7 @@ import type { Profile } from "@/components/user-profile/get-user-profile"
 import type { DerivedData } from "@prisma/flows"
 import { useState } from "react"
 import { getEthAddress } from "@/lib/utils"
-import { AllocationProvider } from "@/lib/voting/allocation-context"
+import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import { base } from "viem/chains"
 import { GrantsTable } from "@/components/global/grants-table"
 import { AllocationBar } from "@/components/global/allocation-bar"
@@ -32,11 +32,12 @@ interface Props {
   >[]
   isAllocator: boolean
   isManager: boolean
+  user: string | null
   children?: React.ReactNode
 }
 
 export function AllocateBudgets(props: Props) {
-  const { flows, grants, children, isAllocator, isManager } = props
+  const { flows, grants, children, isAllocator, isManager, user } = props
   const [open, setOpen] = useState(false)
   const [selectedFlowIndex, setSelectedFlowIndex] = useState(0)
 
@@ -91,8 +92,8 @@ export function AllocateBudgets(props: Props) {
               <AllocationProvider
                 chainId={base.id}
                 contract={getEthAddress(selectedFlow.recipient)}
-                votingToken={selectedFlow.erc721VotingToken}
-                allocator={selectedFlow.allocator}
+                strategies={selectedFlow.allocationStrategies}
+                user={user}
                 defaultActive
               >
                 <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />

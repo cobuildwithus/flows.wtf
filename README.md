@@ -1,4 +1,4 @@
-# Nouns Flows
+# Flows
 
 ## Project Structure
 

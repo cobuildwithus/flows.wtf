@@ -21,10 +21,10 @@ export const base = {
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
   // Flow Extensions
-  CustomFlowImpl: "0xc553b212fd2c0ee683f909e90437d35e60d824ce",
+  CustomFlowImpl: "0x428a3c428a4623af8b21e69b25b760e3f2ccf930",
   // Allocation Strategies
-  ERC721VotingStrategyImpl: "0xbf2b746296e734071e009c21705f52f65f37f0a3",
-  SingleAllocatorStrategyImpl: "0x4664b7c6ee89b6f74414b15487d94e6554cb6eef",
+  ERC721VotesStrategyImpl: "0x2dde32748dec78caf0752766d4f9ecb169d802c6",
+  SingleAllocatorStrategyImpl: "0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6",
   // ERC721Tokens
   VrbsToken: "0x9ea7fd1b8823a271bec99b205b6c0c56d7c3eae9",
   GnarsToken: "0x880fb3cf5c6cc2d7dfc13a993e839a9411200c17",
@@ -34,8 +34,8 @@ export const base = {
 } as const
 
 export const customFlows = {
-  grounds: "0x6047116e18a3453a815f5fe7f04fb99721bc984e",
-  gnars: "0x6047116e18a3453a815f5fe7f04fb99721bc984e",
+  grounds: "0x4238821c7211c045aeba86b027be9e8f422f7070",
+  gnars: "0x4238821c7211c045aeba86b027be9e8f422f7070",
 } as const
 
 export const accelerators = {

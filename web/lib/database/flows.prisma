@@ -132,7 +132,7 @@ model Story {
   @@schema("web")
 }
 
-model Grant {
+view Grant {
   id                               String  @id
   recipient                        String
   flowId                           String  @map("flow_id")
@@ -186,10 +186,9 @@ model Grant {
   totalAllocationWeightOnFlow      String  @map("total_allocation_weight_on_flow")
   isOnchainStartup                 Boolean @map("is_onchain_startup")
   isAccelerator                    Boolean @map("is_accelerator")
-  erc721VotingToken                String? @map("erc721_voting_token")
-  votingTokenChainId               Int?    @map("voting_token_chain_id")
-  allocator                        String? @map("allocator")
   recipientId                      String  @map("recipient_id")
+  allocationStrategies             String[] @map("allocation_strategies")
+  chainId                          Int     @map("chain_id")
 
   flow                 Grant         @relation("Subgrants", fields: [flowId], references: [id])
   subgrants            Grant[]       @relation("Subgrants")
@@ -321,6 +320,19 @@ view Evidence {
   grant   Grant   @relation(fields: [evidenceGroupID], references: [evidenceGroupID])
 
   @@index([evidenceGroupID])
+  @@schema("onchain")
+}
+
+view AllocationStrategy {
+  address      String
+  strategyKey  String @map("strategy_key")
+  chainId      Int    @map("chain_id")
+  registeredAt Int    @map("registered_at")
+
+  @@index([address])
+  @@index([strategyKey])
+  @@index([chainId])
+  @@unique([address, chainId])
   @@schema("onchain")
 }
 

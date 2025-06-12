@@ -11,14 +11,12 @@ import { getVotingTokenSupply } from "./get-voting-token-supply"
 
 interface Props {
   flow: FlowWithGrants
-  votingPower: number
-  erc721VotingToken: string | null
 }
 
 export const FlowHeader = async (props: Props) => {
-  const { flow, erc721VotingToken } = props
+  const { flow } = props
 
-  const votingTokenSupply = getVotingTokenSupply(erc721VotingToken, flow.votingTokenChainId)
+  const votingTokenSupply = await getVotingTokenSupply(flow.allocationStrategies, flow.chainId)
 
   return (
     <div className="flex flex-col items-start justify-between space-y-6 md:flex-row md:items-center md:space-x-4 md:space-y-0">

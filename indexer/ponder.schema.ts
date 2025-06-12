@@ -1,4 +1,4 @@
-import { onchainTable, index } from "ponder"
+import { onchainTable, index, primaryKey } from "ponder"
 
 export const grants = onchainTable(
   "Grant",
@@ -57,10 +57,8 @@ export const grants = onchainTable(
     totalAllocationWeightOnFlow: t.text().notNull(),
     isOnchainStartup: t.boolean().notNull(),
     isAccelerator: t.boolean().notNull(),
-    allocator: t.text(),
-    erc721VotingToken: t.text(),
-    votingTokenChainId: t.integer(),
     allocationStrategies: t.text().array().notNull(),
+    chainId: t.integer().notNull(),
   }),
   (table) => ({
     isTopLevelIdx: index().on(table.isTopLevel),
@@ -212,6 +210,23 @@ export const evidence = onchainTable(
   (table) => ({
     arbitratorIdx: index().on(table.arbitrator),
     evidenceGroupIDIdx: index().on(table.evidenceGroupID),
+  })
+)
+
+/**
+ * Each allocation strategy that a grant contract is configured with.
+ */
+export const allocationStrategies = onchainTable(
+  "AllocationStrategy",
+  (t) => ({
+    address: t.text().notNull(), // lower-cased address
+    strategyKey: t.text().notNull(), // e.g. "SingleAllocator"
+    registeredAt: t.integer().notNull(), // block.timestamp
+    chainId: t.integer().notNull(),
+  }),
+  (tbl) => ({
+    strategyAddrChainIdIdx: primaryKey({ columns: [tbl.address, tbl.chainId] }),
+    strategyKeyIdx: index().on(tbl.strategyKey),
   })
 )
 

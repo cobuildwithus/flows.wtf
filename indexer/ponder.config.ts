@@ -19,8 +19,9 @@ import { getChainsAndRpcUrls } from "./src/utils"
 const blockStarts = {
   base: {
     FLOWS: 21519031,
-    CUSTOM_FLOWS: 31403050,
+    CUSTOM_FLOWS: 31447438,
     GNARS: 11194740,
+    GROUNDS: 12698633,
   },
   mainnet: {
     NOUNS_TOKEN: 12985438,
@@ -179,8 +180,12 @@ export default createConfig({
     ERC721TokenBase: {
       abi: nounsTokenAbi,
       chain: "base",
-      startBlock: blockStarts.base.GNARS,
-      address: [baseContracts.VrbsToken, baseContracts.GroundsToken],
+      startBlock: Math.min(
+        blockStarts.base.GNARS,
+        blockStarts.base.GROUNDS,
+        blockStarts.base.CUSTOM_FLOWS
+      ),
+      address: [baseContracts.VrbsToken, baseContracts.GroundsToken, baseContracts.GnarsToken],
     },
   },
   blocks: {

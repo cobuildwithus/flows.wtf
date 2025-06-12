@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { useAllocateFlow } from "@/lib/voting/allocation-context"
+import { useAllocate } from "@/lib/allocation/allocation-context"
 
 export const AllocationBar = () => {
   const { isActive, cancel, saveAllocations, allocatedBps, isLoading, batchIndex, batchTotal } =
-    useAllocateFlow()
+    useAllocate()
 
   if (!isActive) return null
 
