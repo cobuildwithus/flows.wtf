@@ -12,6 +12,7 @@ import Image from "next/image"
 import { base } from "viem/chains"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
+import { AllocationBar } from "@/components/global/allocation-bar"
 
 interface Props {
   customFlow: CustomFlow
@@ -128,6 +129,7 @@ export async function CustomFlowPage(props: Props) {
             <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
           )}
         </div>
+        <AllocationBar />
       </AgentChatProvider>
     </AllocationProvider>
   )
