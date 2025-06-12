@@ -8,8 +8,6 @@ export const useCanAccountAllocate = (
   chainId: number,
   account: string | null,
 ) => {
-  console.log("useCanAccountAllocate", strategies, chainId, account)
-
   const {
     data: canAccountAllocate,
     isLoading,

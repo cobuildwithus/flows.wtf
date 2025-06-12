@@ -5,8 +5,6 @@ import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
 import { useBatchVoting } from "./hooks/legacy/use-batch-voting"
 import { isValidVotingContract, UserAllocation } from "./allocation-types"
-import { useVoteNouns } from "./hooks/legacy/use-vote-nouns"
-import { mainnet } from "@/addresses"
 import { toast } from "sonner"
 import { useAllocationContextActive } from "./hooks/use-context-active"
 import { useExistingAllocations } from "./hooks/use-existing-allocations"
@@ -95,18 +93,7 @@ export const AllocationProvider = (
     })
   }
 
-  const { saveVotes: saveVotesNouns, isLoading: isLoadingNouns } = useVoteNouns(
-    contract,
-    chainId,
-    onSuccess,
-  )
-
-  const { allocateFunds, isLoading: isLoadingSelfManaged } = useAllocateFlow(
-    contract,
-    strategies,
-    chainId,
-    onSuccess,
-  )
+  const { allocateFunds, isLoading } = useAllocateFlow(contract, strategies, chainId, onSuccess)
 
   return (
     <AllocationContext.Provider
@@ -124,7 +111,7 @@ export const AllocationProvider = (
           if (!address)
             return toast.error("Please connect your wallet again. (Try logging out and back in)")
 
-          if (allocator) {
+          if (canAccountAllocate) {
             return await allocateFunds(
               existingAllocations,
               address,
@@ -132,14 +119,8 @@ export const AllocationProvider = (
             )
           }
 
-          if (!tokens.length) return toast.error("No delegated tokens found")
-
           if (!isValidVotingContract(votingToken) && !allocator) {
             return toast.error("Voting is not supported for this token")
-          }
-
-          if (isNounsFlow(votingToken)) {
-            return await saveVotesNouns(existingAllocations, address, tokenBatch)
           }
         },
         updateAllocation: (allocation: UserAllocation) => {
@@ -150,7 +131,7 @@ export const AllocationProvider = (
             ...(bps > 0 ? [{ recipientId, bps }] : []),
           ])
         },
-        isLoading: isLoadingNouns || isLoadingSelfManaged,
+        isLoading,
         allocatedBps: allocations?.reduce((acc, a) => acc + a.bps, 0) || 0,
         votedCount: allocations?.filter((a) => a.bps > 0).length || 0,
         batchIndex,
@@ -175,8 +156,4 @@ export const useAllocate = (): AllocationContextType => {
     throw new Error("useAllocateFlow must be used within a AllocationProvider")
   }
   return context
-}
-
-function isNounsFlow(votingToken: string | null) {
-  return votingToken === mainnet.NounsToken
 }
