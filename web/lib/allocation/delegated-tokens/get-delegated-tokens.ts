@@ -5,7 +5,7 @@ import { getStrategies } from "../allocation-data/get-strategies"
 import { getClient } from "@/lib/viem/client"
 import { erc721VotesStrategyImplAbi } from "@/lib/abis"
 import { getAddress } from "viem"
-import { StrategyKey } from "../allocation-data/build-data"
+import { StrategyKey } from "../strategy-key"
 
 export async function fetchDelegatedTokens(address: string, flowId: string) {
   const tokenRecord = await database.grant.findUnique({

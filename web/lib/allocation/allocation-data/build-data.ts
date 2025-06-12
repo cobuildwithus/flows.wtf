@@ -2,6 +2,7 @@
 
 import { encodeAbiParameters } from "viem"
 import { getStrategies } from "./get-strategies"
+import { StrategyKey } from "../strategy-key"
 
 export interface ERC721VotesData {
   tokenIds: number[]
@@ -10,11 +11,6 @@ export interface ERC721VotesData {
 export interface AllocationJSON {
   ERC721Votes?: ERC721VotesData
   SingleAllocator?: Record<string, never> // empty object or undefined
-}
-
-export enum StrategyKey {
-  ERC721Votes = "ERC721Votes",
-  SingleAllocator = "SingleAllocator",
 }
 
 /**

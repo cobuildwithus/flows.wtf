@@ -5,7 +5,7 @@ import { getAddress } from "viem"
 import { singleAllocatorStrategyImplAbi } from "@/lib/abis"
 import { base, mainnet } from "viem/chains"
 import { getStrategies } from "@/lib/allocation/allocation-data/get-strategies"
-import { StrategyKey } from "@/lib/allocation/allocation-data/build-data"
+import { StrategyKey } from "@/lib/allocation/strategy-key"
 
 /**
  * Gets the total allocation weight from all ERC721Votes allocation strategy contracts
