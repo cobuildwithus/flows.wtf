@@ -9,8 +9,8 @@ export async function getFlow(db: Context["db"], id: string) {
   return flow
 }
 
-export function isOnchainStartup(flowContract: string) {
-  return !isAccelerator(flowContract)
+export function isOnchainStartup(parentFlow: string) {
+  return isAccelerator(parentFlow)
 }
 
 export function isAccelerator(id: string) {

@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function GrantCard({ grant }: Props) {
-  const { status, isDisputed, derivedData, isOnchainStartup } = grant
+  const { status, isDisputed, derivedData, isOnchainStartup, isFlow } = grant
   const grade = derivedData?.overallGrade || null
 
   const isChallenged = status === Status.ClearingRequested
@@ -30,7 +30,11 @@ export function GrantCard({ grant }: Props) {
   const isNew = isGrantNew(grant)
   const image = getIpfsUrl(coverImage || grant.image, "pinata")
 
-  const url = isOnchainStartup ? `/dashboard/${grant.id}` : `/item/${grant.id}`
+  const url = isOnchainStartup
+    ? `/dashboard/${grant.id}`
+    : isFlow
+      ? `/flow/${grant.id}`
+      : `/item/${grant.id}`
 
   return (
     <article className="group relative isolate overflow-hidden rounded-2xl bg-primary shadow-sm md:min-h-72">
