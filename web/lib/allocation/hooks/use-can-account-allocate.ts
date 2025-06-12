@@ -1,7 +1,7 @@
 "use client"
 
 import useSWR from "swr"
-import { canAllocate } from "../allocation-data/can-allocate"
+import { canAllocate } from "../can-allocate"
 
 export const useCanAccountAllocate = (
   strategies: string[],
