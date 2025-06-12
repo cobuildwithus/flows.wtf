@@ -4,7 +4,7 @@ import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delega
 import { PropsWithChildren, createContext, useContext } from "react"
 import { useAccount } from "wagmi"
 import { useBatchVoting } from "./hooks/legacy/use-batch-voting"
-import { isValidVotingContract, UserAllocation } from "./allocation-types"
+import { UserAllocation } from "./allocation-types"
 import { toast } from "sonner"
 import { useAllocationContextActive } from "./hooks/use-context-active"
 import { useExistingAllocations } from "./hooks/use-existing-allocations"
@@ -28,10 +28,7 @@ interface AllocationContextType {
   batchIndex: number
   batchTotal: number
 
-  votingToken: string | null
-  allocator: string | null
   strategies: string[]
-  isAllocator: boolean
   chainId: number
 
   user: string | null
@@ -45,23 +42,12 @@ export const AllocationProvider = (
   props: PropsWithChildren<{
     contract: `0x${string}`
     chainId: number
-    votingToken: string | null
-    allocator: string | null
     user: string | null
     strategies: string[]
     defaultActive?: boolean
   }>,
 ) => {
-  const {
-    children,
-    contract,
-    chainId,
-    votingToken,
-    allocator,
-    strategies,
-    user,
-    defaultActive = false,
-  } = props
+  const { children, contract, chainId, strategies, user, defaultActive = false } = props
   const { address } = useAccount()
   const router = useRouter()
   const { isActive, setIsActive } = useAllocationContextActive(defaultActive)
@@ -70,7 +56,7 @@ export const AllocationProvider = (
   const { tokens } = useDelegatedTokens(
     address ? (address?.toLocaleLowerCase() as `0x${string}`) : undefined,
   )
-  const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, votingToken)
+  const { batchIndex, batchTotal, setBatchIndex, tokenBatch } = useBatchVoting(tokens, null)
   const { canAccountAllocate } = useCanAccountAllocate(strategies, chainId, user)
 
   const onSuccess = async () => {
@@ -117,10 +103,10 @@ export const AllocationProvider = (
               address,
               tokens.map((t) => t.tokenId),
             )
-          }
-
-          if (!isValidVotingContract(votingToken) && !allocator) {
-            return toast.error("Voting is not supported for this token")
+          } else {
+            return toast.error(
+              "You are not authorized to allocate funds. Try reconnecting your wallet if you believe this is an error.",
+            )
           }
         },
         updateAllocation: (allocation: UserAllocation) => {
@@ -136,9 +122,6 @@ export const AllocationProvider = (
         votedCount: allocations?.filter((a) => a.bps > 0).length || 0,
         batchIndex,
         batchTotal,
-        votingToken,
-        allocator,
-        isAllocator: allocator === address,
         strategies,
         chainId,
         user,

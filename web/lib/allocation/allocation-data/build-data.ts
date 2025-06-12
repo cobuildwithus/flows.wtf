@@ -12,6 +12,11 @@ export interface AllocationJSON {
   SingleAllocator?: Record<string, never> // empty object or undefined
 }
 
+export enum StrategyKey {
+  ERC721Votes = "ERC721Votes",
+  SingleAllocator = "SingleAllocator",
+}
+
 /**
  * Builds the JSON payload required by allocation strategies.
  *
@@ -37,12 +42,12 @@ export const buildAllocationData = async (
 
   for (const strategy of strategies) {
     switch (strategy.strategyKey) {
-      case "ERC721Votes":
+      case StrategyKey.ERC721Votes:
         allocationData.push(
           tokenIds?.map((id) => encodeAbiParameters([{ type: "uint256" }], [BigInt(id)])) || [],
         )
         break
-      case "SingleAllocator":
+      case StrategyKey.SingleAllocator:
         // SingleAllocator doesn't require any data in the JSON
         allocationData.push([])
         break

@@ -16,8 +16,6 @@ export const getAllocationPower = async (address: string | undefined, flowId: st
     ? await database.grant.findUnique({
         where: { id: flowId },
         select: {
-          erc721VotingToken: true,
-          votingTokenChainId: true,
           allocationStrategies: true,
           chainId: true,
         },
@@ -35,17 +33,17 @@ export const getAllocationPower = async (address: string | undefined, flowId: st
   }
 
   // default to nouns token voting on homepage
-  const erc721VotingToken = tokenRecord?.erc721VotingToken ?? NOUNS_TOKEN
-  const votingTokenChainId = tokenRecord?.votingTokenChainId ?? mainnet.id
+  const votingToken = NOUNS_TOKEN
+  const chainId = mainnet.id
 
-  const client = getClient(votingTokenChainId)
-  const isNounsToken = erc721VotingToken === NOUNS_TOKEN
+  const client = getClient(chainId)
+  const isNounsToken = votingToken === NOUNS_TOKEN
 
   try {
     if (isNounsToken) {
       // Nouns token pathway
       const votingPower = await client.readContract({
-        address: getEthAddress(erc721VotingToken) as Address,
+        address: getEthAddress(votingToken) as Address,
         abi: nounsTokenAbi,
         functionName: "getCurrentVotes",
         args: [getEthAddress(address) as Address],

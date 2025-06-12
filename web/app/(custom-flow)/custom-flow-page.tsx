@@ -30,7 +30,7 @@ export async function CustomFlowPage(props: Props) {
       .filter((g) => g.isActive)
       .map(async (g) => ({
         ...g,
-        profile: await getUserProfile(getEthAddress(g.allocator || g.recipient)),
+        profile: await getUserProfile(getEthAddress(g.recipient)),
       })),
   )
 
@@ -58,8 +58,6 @@ export async function CustomFlowPage(props: Props) {
     <AllocationProvider
       chainId={base.id}
       contract={getEthAddress(flow.recipient)}
-      votingToken={flow.erc721VotingToken}
-      allocator={flow.allocator}
       strategies={flow.allocationStrategies}
       user={user?.address ?? null}
     >

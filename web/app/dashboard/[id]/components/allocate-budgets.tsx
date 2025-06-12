@@ -92,8 +92,6 @@ export function AllocateBudgets(props: Props) {
               <AllocationProvider
                 chainId={base.id}
                 contract={getEthAddress(selectedFlow.recipient)}
-                votingToken={selectedFlow.erc721VotingToken}
-                allocator={selectedFlow.allocator}
                 strategies={selectedFlow.allocationStrategies}
                 user={user}
                 defaultActive

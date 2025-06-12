@@ -31,7 +31,7 @@ export default async function FlowPage(props: Props) {
       .filter((g) => g.isActive)
       .map(async (g) => ({
         ...g,
-        profile: await getUserProfile(getEthAddress(g.allocator || g.recipient)),
+        profile: await getUserProfile(getEthAddress(g.recipient)),
       })),
   )
 

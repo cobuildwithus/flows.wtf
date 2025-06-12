@@ -30,7 +30,7 @@ export async function Team(props: Props) {
   // const canManage = false
 
   const [budgets, privyIdToken] = await Promise.all([
-    getBudgetsWithGrants(startup.id, startup.allocator),
+    getBudgetsWithGrants(startup.id),
     getPrivyIdToken(),
   ])
 

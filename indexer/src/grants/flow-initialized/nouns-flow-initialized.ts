@@ -97,8 +97,6 @@ async function handleFlowInitialized(params: {
     isResolved: false,
     evidenceGroupID: "",
     isActive: true,
-    erc721VotingToken: mainnetContracts.NounsToken,
-    votingTokenChainId: mainnet.id,
     allocationStrategies: [],
   })
 

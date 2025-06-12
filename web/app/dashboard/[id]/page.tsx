@@ -52,7 +52,7 @@ export default async function GrantPage(props: Props) {
   if (!startup) throw new Error("Startup not found")
 
   const [teamMembers, user, supports, orders] = await Promise.all([
-    getTeamMembers(startup.id, startup.allocator),
+    getTeamMembers(startup.id),
     getUser(),
     database.grant.findMany({
       where: { isActive: true, id: { in: startup.supports } },

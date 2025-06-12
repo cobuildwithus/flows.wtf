@@ -5,13 +5,12 @@ import { getStrategies } from "../allocation-data/get-strategies"
 import { getClient } from "@/lib/viem/client"
 import { erc721VotesStrategyImplAbi } from "@/lib/abis"
 import { getAddress } from "viem"
+import { StrategyKey } from "../allocation-data/build-data"
 
 export async function fetchDelegatedTokens(address: string, flowId: string) {
   const tokenRecord = await database.grant.findUnique({
     where: { id: flowId },
     select: {
-      erc721VotingToken: true,
-      votingTokenChainId: true,
       allocationStrategies: true,
       chainId: true,
     },
@@ -23,7 +22,9 @@ export async function fetchDelegatedTokens(address: string, flowId: string) {
 
   // assume support for just one ERC721 voting token for now
   // filter where strategyKey is ERC721Votes
-  const erc721VotesStrategy = strategies.find((strategy) => strategy.strategyKey === "ERC721Votes")
+  const erc721VotesStrategy = strategies.find(
+    (strategy) => strategy.strategyKey === StrategyKey.ERC721Votes,
+  )
 
   if (!erc721VotesStrategy) return []
 

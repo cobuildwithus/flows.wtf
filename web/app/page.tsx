@@ -33,8 +33,6 @@ export default async function Home() {
     <AllocationProvider
       chainId={base.id}
       contract={getEthAddress(pool.recipient)}
-      votingToken={pool.erc721VotingToken}
-      allocator={pool.allocator}
       strategies={pool.allocationStrategies}
       user={user?.address ?? null}
     >

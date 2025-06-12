@@ -41,7 +41,7 @@ export function GrantsTable(props: Props) {
           {!flow.isTopLevel && <TableHead>Builder</TableHead>}
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
-          {!flow.allocator && <TableHead className="text-center">Votes</TableHead>}
+          <TableHead className="text-center">Votes</TableHead>
           <TableHead className="text-right">{canManage ? "Manage payout" : "Your Vote"}</TableHead>
         </TableRow>
       </TableHeader>
@@ -126,9 +126,7 @@ export function GrantsTable(props: Props) {
                 <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />
               </TableCell>
 
-              {!flow.allocator && (
-                <TableCell className="text-center">{grant.allocationsCount}</TableCell>
-              )}
+              <TableCell className="text-center">{grant.allocationsCount}</TableCell>
 
               <TableCell className="w-[120px] max-w-[120px] text-center">
                 <div className="flex items-center gap-1 px-0.5">
