@@ -34,8 +34,8 @@ export const base = {
 } as const
 
 export const customFlows = {
-  grounds: "0x4238821c7211c045aeba86b027be9e8f422f7070",
-  gnars: "0x4238821c7211c045aeba86b027be9e8f422f7070",
+  grounds: "0x7c7d420296bbef425e39b65d1d325d3072f3be50",
+  gnars: "0x7c7d420296bbef425e39b65d1d325d3072f3be50",
 } as const
 
 export const accelerators = {
