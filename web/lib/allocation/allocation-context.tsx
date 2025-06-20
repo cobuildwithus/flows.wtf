@@ -64,6 +64,7 @@ export const AllocationProvider = (
     // user click the button again. Otherwise finish up as before.
     setTimeout(() => {
       mutateUserAllocations()
+      router.refresh()
     }, 3000)
 
     setBatchIndex((prev) => {
@@ -74,7 +75,6 @@ export const AllocationProvider = (
 
       // All batches submitted – close the voting bar and reset.
       setIsActive(false)
-      router.refresh()
       return 0
     })
   }
