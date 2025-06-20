@@ -22,8 +22,7 @@ export async function CustomFlowPage(props: Props) {
   const { customFlow } = props
   const { flowId } = customFlow
 
-  const user = await getUser()
-  const { subgrants, ...flow } = await getFlowWithGrants(flowId)
+  const [user, { subgrants, ...flow }] = await Promise.all([getUser(), getFlowWithGrants(flowId)])
 
   const grants = await Promise.all(
     subgrants
@@ -37,7 +36,7 @@ export async function CustomFlowPage(props: Props) {
   const stats = [
     { name: "Projects", value: grants.length },
     {
-      name: "Distributed so far",
+      name: "Paid out",
       value: Intl.NumberFormat("en", {
         style: "currency",
         currency: "USD",
@@ -86,7 +85,7 @@ export async function CustomFlowPage(props: Props) {
                     {flow.title}
                   </h1>
                   <p className="mt-6 text-balance text-base text-muted-foreground sm:text-lg/7">
-                    {flow.description}
+                    {flow.tagline}
                   </p>
 
                   <dl className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">

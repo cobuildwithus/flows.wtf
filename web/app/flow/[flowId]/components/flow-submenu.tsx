@@ -82,7 +82,7 @@ export const FlowSubmenu = async (props: Props) => {
               <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
             </Link>
           )}
-          <DonationModal id={flowId} name={flow.title} />
+          {/* <DonationModal id={flowId} name={flow.title} /> */}
         </div>
       </div>
     </div>

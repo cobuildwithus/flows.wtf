@@ -96,9 +96,9 @@ export function TCRDraftPublishButton(props: Props) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button type="button" ref={ref} size={size}>
+          <AuthButton type="button" ref={ref} size={size}>
             {action}
-          </Button>
+          </AuthButton>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -121,9 +121,9 @@ export function TCRDraftPublishButton(props: Props) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button type="button" ref={ref} size={size}>
+          <AuthButton type="button" ref={ref} size={size}>
             {action}
-          </Button>
+          </AuthButton>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -145,9 +145,9 @@ export function TCRDraftPublishButton(props: Props) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button type="button" ref={ref} size={size}>
+          <AuthButton type="button" ref={ref} size={size}>
             {action}
-          </Button>
+          </AuthButton>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
