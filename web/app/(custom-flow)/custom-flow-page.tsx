@@ -22,8 +22,7 @@ export async function CustomFlowPage(props: Props) {
   const { customFlow } = props
   const { flowId } = customFlow
 
-  const user = await getUser()
-  const { subgrants, ...flow } = await getFlowWithGrants(flowId)
+  const [user, { subgrants, ...flow }] = await Promise.all([getUser(), getFlowWithGrants(flowId)])
 
   const grants = await Promise.all(
     subgrants

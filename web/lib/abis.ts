@@ -207,7 +207,7 @@ export const cfav1ForwarderConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x428a3c428a4623af8b21e69b25b760e3f2ccf930)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x793767fc568a223b3f52887efb07eb64cc7557a4)
  */
 export const customFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -215,10 +215,12 @@ export const customFlowImplAbi = [
   { type: 'error', inputs: [], name: 'ALLOCATION_LENGTH_MISMATCH' },
   { type: 'error', inputs: [], name: 'ALLOCATION_MUST_BE_POSITIVE' },
   { type: 'error', inputs: [], name: 'ARRAY_LENGTH_MISMATCH' },
+  { type: 'error', inputs: [], name: 'DUPLICATE_RECIPIENT_ID' },
   { type: 'error', inputs: [], name: 'FLOW_RATE_NEGATIVE' },
   { type: 'error', inputs: [], name: 'FLOW_RATE_TOO_HIGH' },
   { type: 'error', inputs: [], name: 'INVALID_BPS' },
   { type: 'error', inputs: [], name: 'INVALID_BPS_SUM' },
+  { type: 'error', inputs: [], name: 'INVALID_BUFFER_MULTIPLIER' },
   { type: 'error', inputs: [], name: 'INVALID_ERC20_VOTING_WEIGHT' },
   { type: 'error', inputs: [], name: 'INVALID_ERC721_VOTING_WEIGHT' },
   { type: 'error', inputs: [], name: 'INVALID_METADATA' },
@@ -229,6 +231,7 @@ export const customFlowImplAbi = [
   { type: 'error', inputs: [], name: 'INVALID_STRATEGIES' },
   { type: 'error', inputs: [], name: 'INVALID_VOTE_WEIGHT' },
   { type: 'error', inputs: [], name: 'NOT_ABLE_TO_ALLOCATE' },
+  { type: 'error', inputs: [], name: 'NOT_AN_INCREASE' },
   { type: 'error', inputs: [], name: 'NOT_APPROVED_RECIPIENT' },
   { type: 'error', inputs: [], name: 'NOT_A_VALID_CHILD_FLOW' },
   { type: 'error', inputs: [], name: 'NOT_MANAGER' },
@@ -386,6 +389,25 @@ export const customFlowImplAbi = [
     anonymous: false,
     inputs: [
       {
+        name: 'oldBufferMultiplier',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'newBufferMultiplier',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'BufferMultiplierUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
         name: 'flowImpl',
         internalType: 'address',
         type: 'address',
@@ -466,6 +488,42 @@ export const customFlowImplAbi = [
       },
     ],
     name: 'FlowInitialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'oldRate', internalType: 'int96', type: 'int96', indexed: false },
+      { name: 'newRate', internalType: 'int96', type: 'int96', indexed: false },
+    ],
+    name: 'FlowRateDecreased',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'caller',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'oldRate', internalType: 'int96', type: 'int96', indexed: false },
+      { name: 'newRate', internalType: 'int96', type: 'int96', indexed: false },
+      {
+        name: 'amountPulled',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'FlowRateIncreased',
   },
   {
     type: 'event',
@@ -740,64 +798,6 @@ export const customFlowImplAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '_initialOwner', internalType: 'address', type: 'address' },
-      { name: '_superToken', internalType: 'address', type: 'address' },
-      { name: '_flowImpl', internalType: 'address', type: 'address' },
-      { name: '_manager', internalType: 'address', type: 'address' },
-      { name: '_managerRewardPool', internalType: 'address', type: 'address' },
-      { name: '_parent', internalType: 'address', type: 'address' },
-      {
-        name: '_flowParams',
-        internalType: 'struct IFlow.FlowParams',
-        type: 'tuple',
-        components: [
-          {
-            name: 'baselinePoolFlowRatePercent',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-          {
-            name: 'managerRewardPoolFlowRatePercent',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-          {
-            name: 'bonusPoolQuorumBps',
-            internalType: 'uint32',
-            type: 'uint32',
-          },
-        ],
-      },
-      {
-        name: '_metadata',
-        internalType: 'struct FlowTypes.RecipientMetadata',
-        type: 'tuple',
-        components: [
-          { name: 'title', internalType: 'string', type: 'string' },
-          { name: 'description', internalType: 'string', type: 'string' },
-          { name: 'image', internalType: 'string', type: 'string' },
-          { name: 'tagline', internalType: 'string', type: 'string' },
-          { name: 'url', internalType: 'string', type: 'string' },
-        ],
-      },
-      {
-        name: '_sanctionsOracle',
-        internalType: 'contract IChainalysisSanctionsList',
-        type: 'address',
-      },
-      {
-        name: '_strategies',
-        internalType: 'contract IAllocationStrategy[]',
-        type: 'address[]',
-      },
-    ],
-    name: '__Flow_init',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     inputs: [],
     name: 'acceptOwnership',
     outputs: [],
@@ -929,6 +929,13 @@ export const customFlowImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'decreaseFlowRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'flowImpl',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
@@ -1016,6 +1023,13 @@ export const customFlowImplAbi = [
         internalType: 'contract IChainalysisSanctionsList',
         type: 'address',
       },
+      {
+        name: 'defaultBufferMultiplier',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+      { name: 'outflowCapPct', internalType: 'uint32', type: 'uint32' },
+      { name: 'PERCENTAGE_SCALE', internalType: 'uint32', type: 'uint32' },
     ],
     stateMutability: 'view',
   },
@@ -1055,6 +1069,13 @@ export const customFlowImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'getBufferMultiplier',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'getChildFlows',
     outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
     stateMutability: 'view',
@@ -1075,8 +1096,22 @@ export const customFlowImplAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'getMaxSafeFlowRate',
+    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'memberAddr', internalType: 'address', type: 'address' }],
     name: 'getMemberTotalFlowRate',
+    outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getNetFlowRate',
     outputs: [{ name: '', internalType: 'int96', type: 'int96' }],
     stateMutability: 'view',
   },
@@ -1116,6 +1151,13 @@ export const customFlowImplAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'amount', internalType: 'int96', type: 'int96' }],
+    name: 'getRequiredBufferAmount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'getSuperToken',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
@@ -1141,6 +1183,13 @@ export const customFlowImplAbi = [
     name: 'getTotalReceivedByMember',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'amount', internalType: 'int96', type: 'int96' }],
+    name: 'increaseFlowRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -1199,6 +1248,13 @@ export const customFlowImplAbi = [
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'isFlowRateTooHigh',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -1294,6 +1350,15 @@ export const customFlowImplAbi = [
     type: 'function',
     inputs: [{ name: '_quorumBps', internalType: 'uint32', type: 'uint32' }],
     name: 'setBonusPoolQuorum',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_bufferMultiplier', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'setDefaultBufferMultiplier',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -1459,14 +1524,14 @@ export const customFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x428a3c428a4623af8b21e69b25b760e3f2ccf930)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x793767fc568a223b3f52887efb07eb64cc7557a4)
  */
 export const customFlowImplAddress = {
-  8453: '0x428a3C428A4623aF8b21e69b25B760E3F2CCF930',
+  8453: '0x793767fC568a223b3f52887efB07eB64cc7557A4',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x428a3c428a4623af8b21e69b25b760e3f2ccf930)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x793767fc568a223b3f52887efb07eb64cc7557a4)
  */
 export const customFlowImplConfig = {
   address: customFlowImplAddress,
@@ -3016,7 +3081,7 @@ export const erc20VotesMintableImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x2dde32748dec78caf0752766d4f9ecb169d802c6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xb90aced3a46ee8a323ece70efa1c5d3d8c8a5b9e)
  */
 export const erc721VotesStrategyImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
@@ -3307,14 +3372,14 @@ export const erc721VotesStrategyImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x2dde32748dec78caf0752766d4f9ecb169d802c6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xb90aced3a46ee8a323ece70efa1c5d3d8c8a5b9e)
  */
 export const erc721VotesStrategyImplAddress = {
-  8453: '0x2Dde32748dEc78Caf0752766D4F9ECb169d802c6',
+  8453: '0xB90ACED3a46EE8a323ECe70Efa1C5D3D8c8A5B9e',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x2dde32748dec78caf0752766d4f9ecb169d802c6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xb90aced3a46ee8a323ece70efa1c5d3d8c8a5b9e)
  */
 export const erc721VotesStrategyImplConfig = {
   address: erc721VotesStrategyImplAddress,
@@ -9467,7 +9532,7 @@ export const rewardPoolImplConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x785daf3ddf565c652e3489d33ff7d57b81554dfc)
  */
 export const singleAllocatorStrategyImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
@@ -9741,14 +9806,14 @@ export const singleAllocatorStrategyImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x785daf3ddf565c652e3489d33ff7d57b81554dfc)
  */
 export const singleAllocatorStrategyImplAddress = {
-  8453: '0x810F466F79f4cA0287B5D627a3b511b0EB44e9d6',
+  8453: '0x785dAf3dDf565C652E3489D33FF7D57B81554dFC',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x810f466f79f4ca0287b5d627a3b511b0eb44e9d6)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x785daf3ddf565c652e3489d33ff7d57b81554dfc)
  */
 export const singleAllocatorStrategyImplConfig = {
   address: singleAllocatorStrategyImplAddress,
