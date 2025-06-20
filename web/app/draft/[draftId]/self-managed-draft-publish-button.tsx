@@ -10,7 +10,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -40,9 +39,9 @@ export function ManagedFlowDraftPublishButton(props: Props) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button type="button" ref={ref} size={size}>
+          <AuthButton type="button" ref={ref} size={size}>
             Add to flow
-          </Button>
+          </AuthButton>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
