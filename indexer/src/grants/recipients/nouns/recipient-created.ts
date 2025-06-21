@@ -39,6 +39,11 @@ async function handleRecipientCreated(params: {
     isActive: true,
     recipientId: recipientId.toString(),
   })
+
+  await context.db.update(grants, { id: parentFlow.id }).set({
+    activeRecipientCount: parentFlow.activeRecipientCount + 1,
+  })
+
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
   await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
 

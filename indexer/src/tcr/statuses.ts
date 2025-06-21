@@ -58,7 +58,6 @@ async function handleItemStatusChange(params: {
   if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Registered) {
     await context.db.update(grants, { id: parent.grantId }).set((row) => ({
       awaitingRecipientCount: row.awaitingRecipientCount - 1,
-      activeRecipientCount: row.activeRecipientCount + 1,
     }))
   }
 

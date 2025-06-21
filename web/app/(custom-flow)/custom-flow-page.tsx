@@ -14,6 +14,7 @@ import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import FlowsList from "../components/flows-list"
+import { Grant } from "@prisma/flows"
 
 interface Props {
   customFlow: CustomFlow
@@ -35,7 +36,7 @@ export async function CustomFlowPage(props: Props) {
   )
 
   const stats = [
-    { name: "Projects", value: grants.length },
+    { name: "Projects", value: getSum(grants) },
     {
       name: "Paid out",
       value: Intl.NumberFormat("en", {
@@ -131,4 +132,8 @@ export async function CustomFlowPage(props: Props) {
       </AgentChatProvider>
     </AllocationProvider>
   )
+}
+
+function getSum(flows: Pick<Grant, "activeRecipientCount">[]): number {
+  return flows.reduce((sum, flow) => sum + flow.activeRecipientCount, 0)
 }

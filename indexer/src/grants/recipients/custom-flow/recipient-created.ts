@@ -24,12 +24,15 @@ async function handleRecipientCreated(params: {
   const flowAddress = event.log.address.toLowerCase()
   const grantId = recipientId.toString()
   const timestamp = Number(event.block.timestamp)
+  const flow = await getFlow(context.db, flowAddress)
+
+  await context.db.update(grants, { id: flow.id }).set((row) => ({
+    activeRecipientCount: row.activeRecipientCount + 1,
+  }))
 
   if (recipientType === RecipientType.FlowContract) {
     return
   }
-
-  const flow = await getFlow(context.db, flowAddress)
 
   const grant = await context.db.insert(grants).values({
     id: grantId,
