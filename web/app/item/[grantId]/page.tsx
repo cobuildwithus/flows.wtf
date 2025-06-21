@@ -36,6 +36,7 @@ import { GrantFeedback } from "./components/grant-feedback"
 import { GrantGrade } from "./components/grant-grade"
 import { GrantStatus } from "./components/grant-status"
 import { getGrant } from "./get-grant"
+import { GrantGenerating } from "./components/grant-generating"
 import { ImpactChain } from "./impact/impact-chain"
 import { getImpactSummaryType, ImpactSummary } from "./impact/impact-summary"
 
@@ -48,7 +49,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { grantId } = await props.params
 
   const grant = await getGrant(grantId)
-  if (!grant.derivedData) notFound()
+
+  if (!grant.derivedData) return {}
 
   const { title, tagline, coverImage } = grant.derivedData
 
@@ -66,7 +68,9 @@ export default async function GrantPage(props: Props) {
   const [user, { flow, ...grant }] = await Promise.all([getUser(), getGrant(grantId)])
 
   if (grant.isFlow) return redirect(`/flow/${grant.id}/about`)
-  if (!grant.derivedData) notFound()
+  if (!grant.derivedData) {
+    return <GrantGenerating />
+  }
 
   const { mission, builder, title, beneficiaries, tagline, coverImage, gradients, deliverables } =
     grant.derivedData
