@@ -34,7 +34,7 @@ export function FlowCard({ flow }: Props) {
       </div>
 
       <div>
-        <h3 className="mt-28 text-xl font-semibold text-white">
+        <h3 className="mt-40 text-xl font-semibold text-white">
           <Link href={`/flow/${flow.id}`}>
             <span className="absolute inset-0" />
             {flow.title}

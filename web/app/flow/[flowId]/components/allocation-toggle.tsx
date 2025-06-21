@@ -22,5 +22,5 @@ export const AllocationToggle = () => {
 
 function getButtonText(isActive: boolean) {
   if (isActive) return "In progress..."
-  return "Allocate"
+  return "Flow"
 }

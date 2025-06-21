@@ -13,6 +13,7 @@ import { base } from "viem/chains"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
 import { AllocationBar } from "@/components/global/allocation-bar"
+import FlowsList from "../components/flows-list"
 
 interface Props {
   customFlow: CustomFlow
@@ -68,7 +69,7 @@ export async function CustomFlowPage(props: Props) {
         identityToken={await getPrivyIdToken()}
       >
         <div className="relative flex flex-col bg-muted md:max-h-[420px] md:flex-row">
-          <div className="container max-w-6xl">
+          <div className="container max-w-7xl">
             <div className="relative z-10 lg:max-w-2xl">
               <svg
                 viewBox="0 0 100 100"
@@ -115,7 +116,7 @@ export async function CustomFlowPage(props: Props) {
           </div>
         </div>
 
-        <div className="container max-w-6xl pb-24">
+        <div className="container max-w-7xl pb-24">
           <FlowSubmenu flowId={flowId} segment="approved" />
           {!subgrants || subgrants.length === 0 ? (
             <EmptyState
@@ -123,7 +124,7 @@ export async function CustomFlowPage(props: Props) {
               description="There are no approved projects yet"
             />
           ) : (
-            <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
+            <FlowsList flows={grants.sort(sortGrants)} />
           )}
         </div>
         <AllocationBar />
