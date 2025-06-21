@@ -5,6 +5,7 @@ import database from "@/lib/database/flows-db"
 import Link from "next/link"
 import { AgentChatProvider } from "../chat/components/agent-chat"
 import { GuidanceChat } from "./action-card/guidance-chat"
+import { AnimatedSalary } from "@/components/global/animated-salary"
 
 interface Props {
   user: User | undefined
@@ -20,8 +21,13 @@ export async function HomepageIntro(props: Props) {
 
   const [grantsCount, grants] = await Promise.all([
     database.grant.count({ where: { isActive: true, isFlow: false, flow: { isRemoved: false } } }),
-    database.grant.findMany({ where: { isFlow: true }, select: { totalEarned: true } }),
+    database.grant.findMany({
+      where: { isFlow: true },
+      select: { totalEarned: true, monthlyOutgoingFlowRate: true, flowId: true, id: true },
+    }),
   ])
+
+  const totalMonthlyFlowRate = calculateTotalOutgoingFlowRate(grants)
 
   const totalEarned =
     grants.reduce((acc, grant) => acc + Number(grant.totalEarned), 0) +
@@ -72,15 +78,22 @@ export async function HomepageIntro(props: Props) {
         </dl>
         <dl>
           <dd className="text-2xl font-medium md:text-[28px]">
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              maximumFractionDigits: 0,
-            }).format(totalEarned)}
+            <AnimatedSalary value={totalEarned} monthlyRate={totalMonthlyFlowRate} />
           </dd>
           <dt className="mt-1 tracking-tight opacity-75 max-md:text-sm">Paid out</dt>
         </dl>
       </div>
     </div>
   )
+}
+
+function calculateTotalOutgoingFlowRate(
+  flows: Array<{ id: string; monthlyOutgoingFlowRate: string; flowId?: string }>,
+): number {
+  return flows
+    .filter((flow) => !flows.some((otherFlow) => otherFlow.flowId === flow.id))
+    .reduce((total, flow) => {
+      const flowRate = parseFloat(flow.monthlyOutgoingFlowRate)
+      return total + (isNaN(flowRate) ? 0 : flowRate)
+    }, 0)
 }
