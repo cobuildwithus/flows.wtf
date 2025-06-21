@@ -3,8 +3,8 @@
 import { PERCENTAGE_SCALE } from "@/lib/config"
 import database from "@/lib/database/flows-db"
 
-export async function getTokenVotes(contract: `0x${string}`, tokenIds: string[]) {
-  if (!tokenIds.length) return []
+export async function getAllocationsByKey(contract: `0x${string}`, keys: string[]) {
+  if (!keys.length) return []
 
   const allocations = await database.allocation.findMany({
     select: {
@@ -15,7 +15,7 @@ export async function getTokenVotes(contract: `0x${string}`, tokenIds: string[])
     },
     where: {
       contract,
-      allocationKey: { in: tokenIds },
+      allocationKey: { in: keys },
     },
     distinct: ["recipientId"],
   })

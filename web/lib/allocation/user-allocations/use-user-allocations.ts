@@ -3,7 +3,7 @@
 import useSWR from "swr"
 import { useAccount } from "wagmi"
 import { useDelegatedTokens } from "../delegated-tokens/use-delegated-tokens"
-import { getTokenVotes } from "./get-token-votes"
+import { getAllocationsByKey } from "./get-allocations-by-key"
 
 export function useUserAllocations(contract: `0x${string}`) {
   const { address } = useAccount()
@@ -16,11 +16,11 @@ export function useUserAllocations(contract: `0x${string}`) {
     mutate,
     isLoading,
   } = useSWR(tokens.length > 0 ? `${contract}_${tokenIds}` : null, () =>
-    getTokenVotes(contract, tokenIds),
+    getAllocationsByKey(contract, tokenIds),
   )
 
   return {
-    allocations: tokenVotes || [],
+    allocations: tokenVotes,
     mutate,
     isLoading,
   }
