@@ -36,14 +36,14 @@ export async function CustomFlowPage(props: Props) {
   )
 
   const stats = [
-    { name: "Projects", value: getSum(grants) },
+    { name: "Projects", value: getSum(grants, "projects") },
     {
       name: "Paid out",
       value: Intl.NumberFormat("en", {
         style: "currency",
         currency: "USD",
         maximumFractionDigits: 0,
-      }).format(Number(flow.totalEarned)),
+      }).format(getSum(grants, "earned")),
     },
     {
       name: "Monthly support",
@@ -51,7 +51,7 @@ export async function CustomFlowPage(props: Props) {
         style: "currency",
         currency: "USD",
         maximumFractionDigits: 0,
-      }).format(Number(flow.monthlyOutgoingFlowRate)),
+      }).format(getSum(grants, "monthly")),
     },
   ]
 
@@ -134,6 +134,20 @@ export async function CustomFlowPage(props: Props) {
   )
 }
 
-function getSum(flows: Pick<Grant, "activeRecipientCount">[]): number {
-  return flows.reduce((sum, flow) => sum + flow.activeRecipientCount, 0)
+function getSum(
+  flows: Pick<Grant, "activeRecipientCount" | "totalEarned" | "monthlyOutgoingFlowRate">[],
+  key: "earned" | "projects" | "monthly",
+): number {
+  return flows.reduce((sum, flow) => {
+    switch (key) {
+      case "earned":
+        return sum + Number(flow.totalEarned)
+      case "projects":
+        return sum + flow.activeRecipientCount
+      case "monthly":
+        return sum + Number(flow.monthlyOutgoingFlowRate)
+      default:
+        return sum
+    }
+  }, 0)
 }
