@@ -37,7 +37,7 @@ function getCurrencyFractionDigits(amount: number) {
   if (amount < 0.001) return 5
   if (amount < 0.01) return 4
   if (amount < 0.1) return 3
-  if (amount < 99) return 2
+  if (amount < 10) return 2
   return 0
 }
 
