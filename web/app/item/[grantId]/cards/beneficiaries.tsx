@@ -17,7 +17,7 @@ export function BeneficiariesCard(props: Props) {
   return (
     <GradientCard
       gradient={gradient}
-      className="overflow-hidden overflow-y-auto p-5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-foreground/25 lg:h-2/5"
+      className="flex-1 overflow-hidden overflow-y-auto p-5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-foreground/25"
     >
       <div className="flex flex-col items-start">
         <div className="items-top flex w-full justify-between gap-2">
