@@ -11,7 +11,7 @@ export const FlowHeaderUserVotes = (props: Props) => {
   const { parent, recipientId } = props
   const { allocations } = useUserAllocations(parent)
 
-  const votesCount = allocations.find((v) => v.recipientId === recipientId)?.bps || 0
+  const votesCount = (allocations || []).find((v) => v.recipientId === recipientId)?.bps || 0
 
   return (
     <div className="md:text-center">

@@ -12,6 +12,6 @@ export const UserVotes = (props: Props) => {
 
   const { allocations } = useUserAllocations(contract)
 
-  const votesCount = allocations.find((v) => v.recipientId === recipientId)?.bps || 0
+  const votesCount = (allocations || []).find((v) => v.recipientId === recipientId)?.bps || 0
   return votesCount.toString()
 }
