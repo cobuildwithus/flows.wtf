@@ -45,14 +45,16 @@ export const getAllocationPower = async (
   try {
     if (isNounsToken) {
       // Nouns token pathway
-        const votingPower = await client.readContract({
-          address: getEthAddress(votingToken) as Address,
-          abi: nounsTokenAbi,
-          functionName: "getCurrentVotes",
-          args: [getEthAddress(address) as Address],
-        })
-        return (votingPower ?? BigInt(0)) * VOTING_POWER_SCALE
-      }
+      const votingPower = await client.readContract({
+        address: getEthAddress(votingToken) as Address,
+        abi: nounsTokenAbi,
+        functionName: "getCurrentVotes",
+        args: [getEthAddress(address) as Address],
+      })
+      return (votingPower ?? BigInt(0)) * VOTING_POWER_SCALE
+    }
+
+    return BigInt(0)
   } catch (error) {
     console.error("Error getting voting power:", error)
     return BigInt(0)
