@@ -13,8 +13,8 @@ import { base } from "viem/chains"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
 import { AllocationBar } from "@/components/global/allocation-bar"
-import FlowsList from "../components/flows-list"
 import { Grant } from "@prisma/flows"
+import { zeroAddress } from "viem"
 
 interface Props {
   customFlow: CustomFlow
@@ -35,15 +35,19 @@ export async function CustomFlowPage(props: Props) {
       })),
   )
 
+  const isTopLevel = flow.parentContract === zeroAddress
+
+  const relevantGrants = isTopLevel ? grants : [flow]
+
   const stats = [
-    { name: "Projects", value: getSum(grants, "projects") },
+    { name: "Projects", value: getSum(relevantGrants, "projects") },
     {
       name: "Paid out",
       value: Intl.NumberFormat("en", {
         style: "currency",
         currency: "USD",
         maximumFractionDigits: 0,
-      }).format(getSum(grants, "earned")),
+      }).format(getSum(relevantGrants, "earned")),
     },
     {
       name: "Monthly support",
@@ -51,7 +55,7 @@ export async function CustomFlowPage(props: Props) {
         style: "currency",
         currency: "USD",
         maximumFractionDigits: 0,
-      }).format(getSum(grants, "monthly")),
+      }).format(getSum(relevantGrants, "monthly")),
     },
   ]
 
@@ -125,7 +129,7 @@ export async function CustomFlowPage(props: Props) {
               description="There are no approved projects yet"
             />
           ) : (
-            <FlowsList flows={grants.sort(sortGrants)} />
+            <GrantsList grants={grants.sort(sortGrants)} flow={flow} />
           )}
         </div>
         <AllocationBar />

@@ -1,5 +1,5 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import { formatEther, getAddress } from "viem"
+import { formatEther, getAddress, zeroAddress } from "viem"
 import { grants } from "ponder:schema"
 
 const BATCH_SIZE = 20
@@ -29,10 +29,10 @@ async function handleTotalEarned(params: {
     // Process batch in parallel
     const updates = await Promise.all(
       batch.map(async (grant) => {
-        const { parentContract, recipient, isTopLevel, id } = grant
+        const { parentContract, recipient, id } = grant
 
         let totalEarned = "0"
-        if (!isTopLevel) {
+        if (parentContract !== zeroAddress) {
           const total = await context.client.readContract({
             address: getAddress(parentContract),
             abi: [

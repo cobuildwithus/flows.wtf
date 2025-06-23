@@ -76,10 +76,10 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {isApproved && approvedCount > 0 && <AllocationToggle />}
-          {(isDrafts || isCurate || (isApproved && approvedCount === 0)) && !isFlowRemoved && (
+          {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
+          {!isFlowRemoved && (
             <Link href={`/apply/${flowId}`}>
-              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply for funding"}</Button>
+              <Button>{flow.isTopLevel ? "Suggest flow" : "Apply"}</Button>
             </Link>
           )}
           {/* <DonationModal id={flowId} name={flow.title} /> */}

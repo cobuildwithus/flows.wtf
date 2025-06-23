@@ -45,7 +45,7 @@ async function handleFlowInitialized(params: {
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
-  const isTopLevel = isTopLevelFlow(contract)
+  const isTopLevel = parentContract === zeroAddress
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -130,12 +130,4 @@ async function createMappings(
       childGrantIds: [],
     }),
   ])
-}
-
-const isTopLevelFlow = (contract: string) => {
-  return (
-    contract === customFlows.gnars ||
-    contract === customFlows.grounds ||
-    contract === accelerators.vrbs
-  )
 }

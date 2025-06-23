@@ -1,9 +1,10 @@
 "use client"
 
 import { AuthButton } from "@/components/ui/auth-button"
+import { ButtonProps } from "@/components/ui/button"
 import { useAllocate } from "@/lib/allocation/allocation-context"
 
-export const AllocationToggle = () => {
+export const AllocationToggle = ({ variant = "default" }: { variant?: ButtonProps["variant"] }) => {
   const { isLoading, isActive, activate, canAllocate } = useAllocate()
 
   if (!canAllocate) return null
@@ -14,6 +15,7 @@ export const AllocationToggle = () => {
       disabled={isLoading || isActive}
       loading={isLoading}
       type="button"
+      variant={variant}
     >
       {getButtonText(isActive)}
     </AuthButton>
