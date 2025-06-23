@@ -1,4 +1,3 @@
-import { GrantStatusCountBadges } from "@/components/ui/grant-status-count-badges"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { getPool } from "@/lib/database/queries/pool"
@@ -48,16 +47,6 @@ export default async function Home() {
                   Explore Flows
                 </Link>
               </h3>
-              <GrantStatusCountBadges
-                id={pool.id}
-                flow={{
-                  activeRecipientCount: getSum(activeFlows, "activeRecipientCount"),
-                  awaitingRecipientCount: getSum(activeFlows, "awaitingRecipientCount"),
-                  challengedRecipientCount: getSum(activeFlows, "challengedRecipientCount"),
-                }}
-                alwaysShowAll
-                showLabel
-              />
             </div>
           </div>
 
