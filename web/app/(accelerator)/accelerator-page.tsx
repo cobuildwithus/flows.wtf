@@ -2,6 +2,7 @@ import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { EthInUsd } from "@/components/global/eth-in-usd"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
@@ -69,14 +70,14 @@ export async function AcceleratorPage(props: Props) {
                 {flow.title}
               </h2>
               <p className="mt-6 text-pretty leading-7 text-white/80 lg:text-xl lg:leading-8">
-                {flow.description}
+                {flow.tagline}
               </p>
             </div>
 
             <div className="mt-8 lg:mt-10">
               <div className="flex flex-col max-md:gap-y-4 md:flex-row md:gap-x-12">
                 {[
-                  { name: "Check opportunities", href: `/opportunities` },
+                  // { name: "Get hired", href: `/opportunities` },
                   { name: `Apply for funding`, href: `/apply/${accelerator.flowId}` },
                 ].map((link) => (
                   <Link
@@ -119,7 +120,7 @@ export async function AcceleratorPage(props: Props) {
           <Submenu
             links={[
               { label: "Projects", href: `/${accelerator.id}`, isActive: true },
-              // { label: "Applications", href: `/flow/${accelerator.flowId}/applications` },
+              { label: "Applications", href: `/flow/${accelerator.flowId}/drafts` },
             ]}
           />
 
@@ -132,7 +133,12 @@ export async function AcceleratorPage(props: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-32">
+          <EmptyState title="No projects yet" description="Check back later" />
+        </div>
+
+        {/* <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          
           {startups.map((startup) => (
             <article
               className="group relative flex aspect-[3/4] w-full shrink-0 flex-col justify-end overflow-hidden rounded-xl border"
@@ -193,7 +199,7 @@ export async function AcceleratorPage(props: Props) {
               </Link>
             </article>
           ))}
-        </div>
+        </div> */}
       </div>
     </AgentChatProvider>
   )

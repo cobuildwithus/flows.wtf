@@ -39,5 +39,5 @@ export const customFlows = {
 } as const
 
 export const accelerators = {
-  vrbs: "0x9e6114a390db354739ba543614b620dd0111c70a",
+  vrbs: "0x70d69869ed285d24eee28af10b16fb166ee67135",
 } as const
