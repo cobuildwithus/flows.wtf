@@ -11,9 +11,11 @@ async function handleTotalEarned(params: {
   context: Context<"TotalEarned:block">
 }) {
   const { context } = params
+  const chainId = context.chain.id
 
   // Get active grants
   const activeGrants = await context.db.sql.query.grants.findMany({
+    where: (table, { eq }) => eq(table.chainId, chainId),
     columns: {
       id: true,
       parentContract: true,

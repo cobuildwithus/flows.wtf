@@ -33,10 +33,15 @@ export const base = {
   JBMultiTerminal: "0xdb9644369c79c3633cde70d2df50d827d7dc7dbc",
 } as const
 
+export const optimism = {
+  CustomFlowImpl: "0x9a6032569e50d6864106911884510c2aa6fa033d",
+  GdaV1: "0x68Ae17fa7a31b86F306c383277552fd4813b0d35",
+} as const
+
 export const customFlows = {
   grounds: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
-  gardens: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
   gnars: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
+  gardens: "0x329a322e591d5b7b71d45d956607998d8d71c819",
 } as const
 
 export const accelerators = {

@@ -1,10 +1,11 @@
 import { Context } from "ponder:registry"
 import { formatEther, getAddress } from "viem"
+import { customFlowImplAbi } from "../../../abis"
 
 export async function getClaimableBalance(context: Context, contract: string, recipient: string) {
   const claimableBalance = await context.client.readContract({
     address: getAddress(contract),
-    abi: context.contracts.NounsFlow.abi,
+    abi: customFlowImplAbi,
     functionName: "getClaimableBalance",
     args: [getAddress(recipient)],
   })
