@@ -1,4 +1,4 @@
-import { getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
+import { getAcceleratorFlow, getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 import { SwapTokenButton } from "@/app/token/swap-token-button"
 import { DonationModal } from "@/components/donation-modal"
 import { Submenu } from "@/components/global/submenu"
@@ -27,7 +27,12 @@ export const FlowSubmenu = async (props: Props) => {
   ])
 
   const customFlow = getCustomFlowById(flowId)
-  const flowUrl = customFlow ? `/${customFlow.id}` : `/flow/${flowId}`
+  const acceleratorFlow = getAcceleratorFlow(flowId)
+  const flowUrl = customFlow
+    ? `/${customFlow.id}`
+    : acceleratorFlow
+      ? `/${acceleratorFlow}`
+      : `/flow/${flowId}`
 
   const isApproved = segment === "approved"
   const isCurate = segment === "curate"

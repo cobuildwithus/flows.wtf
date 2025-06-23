@@ -1,4 +1,4 @@
-import { customFlows as customFlowAddresses } from "@/addresses"
+import { accelerators, customFlows as customFlowAddresses } from "@/addresses"
 
 export type CustomFlowId = keyof typeof customFlowAddresses
 
@@ -49,6 +49,10 @@ export function getCustomFlow(id: CustomFlowId) {
 
 export function getCustomFlowById(flowId: string) {
   return customFlows.find((a) => a.flowId === flowId)
+}
+
+export function getAcceleratorFlow(flowId: string) {
+  return Object.entries(accelerators).find(([key, address]) => address === flowId)?.[0]
 }
 
 export function getCustomVariables() {
