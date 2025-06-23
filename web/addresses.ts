@@ -35,6 +35,7 @@ export const base = {
 
 export const customFlows = {
   grounds: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
+  gardens: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
   gnars: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
 } as const
 
