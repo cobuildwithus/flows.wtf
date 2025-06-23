@@ -3,7 +3,7 @@
 import { getClient } from "@/lib/viem/client"
 import { getAddress } from "viem"
 import { singleAllocatorStrategyImplAbi } from "@/lib/abis"
-import { base, mainnet } from "viem/chains"
+import { base, mainnet, optimism } from "viem/chains"
 import { getStrategies } from "@/lib/allocation/allocation-data/get-strategies"
 import { StrategyKey } from "@/lib/allocation/strategy-key"
 
@@ -18,7 +18,7 @@ export async function getVotingTokenSupply(allocationStrategies: string[], chain
   }
 
   // Only support base and mainnet for now
-  if (chainId !== base.id && chainId !== mainnet.id) {
+  if (chainId !== base.id && chainId !== mainnet.id && chainId !== optimism.id) {
     throw new Error("Voting token chain id is not supported")
   }
 
