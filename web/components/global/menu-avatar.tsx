@@ -8,6 +8,7 @@ import { useRunUserJobs } from "@/lib/auth/use-run-user-jobs"
 import type { User } from "@/lib/auth/user"
 import { useDelegatedTokens } from "@/lib/allocation/delegated-tokens/use-delegated-tokens"
 import { useAllocationPower } from "@/lib/allocation/hooks/use-allocation-power"
+import { formatEther } from "viem"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
 import Link from "next/dist/client/link"
 import { useRouter } from "next/navigation"
@@ -50,7 +51,9 @@ export const MenuAvatar = (props: Props) => {
                 <AvatarImage src={user.avatar} alt={user.username} />
               </Avatar>
               <span className="hidden text-xs font-semibold text-secondary-foreground md:block md:min-w-2 md:py-0.5 md:text-sm">
-                {((allocationPower || 0) / 1e18)?.toString()}
+                {allocationPower !== undefined
+                  ? Math.round(Number(formatEther(allocationPower))).toString()
+                  : "0"}
               </span>
             </div>
           </PopoverTrigger>

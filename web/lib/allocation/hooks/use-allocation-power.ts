@@ -11,7 +11,7 @@ export function useAllocationPower() {
 
   const { address } = useAccount()
 
-  const { data: allocationPower, isLoading } = useSWR(
+  const { data: allocationPower, isLoading } = useSWR<bigint>(
     address ? ["allocation-power", address] : null,
     () => getAllocationPower(address, flowId),
   )
