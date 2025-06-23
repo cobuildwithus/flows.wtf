@@ -9,8 +9,11 @@ import database from "../../database/flows-db"
 import { mainnet } from "viem/chains"
 import { getAccountAllocationWeight } from "./account-allocation-weight"
 
-export const getAllocationPower = async (address: string | undefined, flowId: string | null) => {
-  if (!address) return 0
+export const getAllocationPower = async (
+  address: string | undefined,
+  flowId: string | null,
+): Promise<bigint> => {
+  if (!address) return BigInt(0)
 
   const tokenRecord = flowId
     ? await database.grant.findUnique({
@@ -42,16 +45,16 @@ export const getAllocationPower = async (address: string | undefined, flowId: st
   try {
     if (isNounsToken) {
       // Nouns token pathway
-      const votingPower = await client.readContract({
-        address: getEthAddress(votingToken) as Address,
-        abi: nounsTokenAbi,
-        functionName: "getCurrentVotes",
-        args: [getEthAddress(address) as Address],
-      })
-      return Number(votingPower ?? 0) * Number(VOTING_POWER_SCALE)
-    }
+        const votingPower = await client.readContract({
+          address: getEthAddress(votingToken) as Address,
+          abi: nounsTokenAbi,
+          functionName: "getCurrentVotes",
+          args: [getEthAddress(address) as Address],
+        })
+        return (votingPower ?? BigInt(0)) * VOTING_POWER_SCALE
+      }
   } catch (error) {
     console.error("Error getting voting power:", error)
-    return 0
+    return BigInt(0)
   }
 }

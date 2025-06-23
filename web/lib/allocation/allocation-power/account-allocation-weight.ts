@@ -8,13 +8,13 @@ export const getAccountAllocationWeight = async (
   allocationStrategies: string[],
   chainId: number,
   account: string | null,
-) => {
-  if (!account) return 0
+): Promise<bigint> => {
+  if (!account) return BigInt(0)
 
   const client = getClient(chainId)
 
   try {
-    let totalWeight = 0
+    let totalWeight = BigInt(0)
 
     // Check each strategy to get the account's allocation weight
     for (const strategy of allocationStrategies) {
@@ -24,14 +24,13 @@ export const getAccountAllocationWeight = async (
         functionName: "accountAllocationWeight",
         args: [getAddress(account)],
       })
-
       // Sum up the allocation weights
-      totalWeight += Number(accountAllocationWeight)
+      totalWeight += BigInt(accountAllocationWeight)
     }
 
     return totalWeight
   } catch (error) {
     console.error("Error checking allocation eligibility:", error)
-    return 0
+    return BigInt(0)
   }
 }
