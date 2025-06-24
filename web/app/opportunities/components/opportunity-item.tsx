@@ -1,4 +1,4 @@
-import { ApplyOpportunity } from "@/app/dashboard/[id]/components/apply-opportunity"
+import { ApplyOpportunity } from "@/app/startup/[id]/components/apply-opportunity"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Currency } from "@/components/ui/currency"
@@ -34,7 +34,7 @@ export function OpportunityItem(props: Props) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Link
-              href={`/dashboard/${startupId}`}
+              href={`/startup/${startupId}`}
               className="font-semibold transition-colors hover:text-primary"
             >
               {startup.title}

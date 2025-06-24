@@ -69,7 +69,7 @@ export default async function DraftPage(props: Props) {
 
   const edit = searchParams.edit === "true"
 
-  const flowLink = flow.isOnchainStartup ? `/dashboard/${flow.id}` : `/flow/${flow.id}/drafts`
+  const flowLink = flow.isOnchainStartup ? `/startup/${flow.id}` : `/flow/${flow.id}/drafts`
 
   return (
     <div className="container mt-2.5 flex grow flex-col pb-12 md:mt-6">

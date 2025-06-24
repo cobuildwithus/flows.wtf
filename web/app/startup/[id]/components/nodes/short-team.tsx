@@ -21,9 +21,9 @@ export function ShortTeam(props: Props) {
           <Image
             src={member.pfp_url || ""}
             alt={member.display_name}
-            width={28}
-            height={28}
-            className="size-7 rounded-full shadow"
+            width={32}
+            height={32}
+            className="size-8 rounded-full shadow"
           />
         </a>
       ))}

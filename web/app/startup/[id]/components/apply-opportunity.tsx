@@ -22,9 +22,9 @@ export function ApplyOpportunity(props: Props) {
     <>
       <AuthButton
         size={size}
-        className="w-full rounded-sm py-0.5"
+        className="w-full"
         type="button"
-        variant="ai-primary"
+        variant="outline"
         onClick={() => {
           appendData({ opportunityId, startupId })
           setMessages([

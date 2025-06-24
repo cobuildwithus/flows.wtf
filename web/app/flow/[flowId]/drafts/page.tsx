@@ -55,6 +55,8 @@ export default async function FlowDraftsPage(props: Props) {
     )
   }
 
+  const hasActions = flow.tcr && flow.erc20 && flow.tokenEmitter
+
   return (
     <div className="container max-w-6xl pb-24">
       <FlowSubmenu flowId={flowId} segment="drafts" />
@@ -64,7 +66,7 @@ export default async function FlowDraftsPage(props: Props) {
             <TableHead colSpan={2}>Name</TableHead>
             <TableHead className="max-sm:hidden">{isTopLevel ? "Proposer" : "Builders"}</TableHead>
             <TableHead className="text-center">Created</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+            {hasActions && <TableHead className="text-right">Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -96,8 +98,8 @@ export default async function FlowDraftsPage(props: Props) {
                 <DateTime date={draft.createdAt} relative short />
               </TableCell>
 
-              <TableCell className="w-[100px] max-w-[100px]">
-                {flow.tcr && flow.erc20 && flow.tokenEmitter && (
+              {flow.tcr && flow.erc20 && flow.tokenEmitter && (
+                <TableCell className="w-[100px] max-w-[100px]">
                   <div className="flex justify-end">
                     <TCRDraftPublishButton
                       grantsCount={existingGrants[draft.users[0]] || 0}
@@ -110,8 +112,8 @@ export default async function FlowDraftsPage(props: Props) {
                       user={user}
                     />
                   </div>
-                )}
-              </TableCell>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

@@ -21,12 +21,9 @@ export async function AcceleratorPage(props: Props) {
 
   const startups = getStartups(accelerator)
 
-  const [flow, user, opportunitiesCount, balances, participants] = await Promise.all([
+  const [flow, user, balances, participants] = await Promise.all([
     getFlow(accelerator.flowId),
     getUser(),
-    database.opportunity.count({
-      where: { status: 1, startupId: { in: startups.map((s) => s.id) } },
-    }),
     database.juiceboxProject.groupBy({
       by: ["projectId"],
       where: { projectId: { in: startups.map((s) => s.revnetProjectId) } },
@@ -38,7 +35,6 @@ export async function AcceleratorPage(props: Props) {
         balance: { gt: 0 },
       },
       select: { projectId: true, address: true },
-      distinct: ["projectId", "address"],
     }),
   ])
 
@@ -92,7 +88,7 @@ export async function AcceleratorPage(props: Props) {
               <dl className="mt-12 grid grid-cols-2 items-start gap-8 lg:max-w-3xl lg:grid-cols-4">
                 {[
                   { name: "Projects", value: startups.length },
-                  { name: "Opportunities", value: opportunitiesCount },
+                  { name: "Supporters", value: participants.length },
                   {
                     name: "Earned so far",
                     value: Intl.NumberFormat("en", {
@@ -133,12 +129,7 @@ export async function AcceleratorPage(props: Props) {
           </div>
         </div>
 
-        <div className="mt-32">
-          <EmptyState title="No projects yet" description="Check back later" />
-        </div>
-
-        {/* <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {startups.map((startup) => (
             <article
               className="group relative flex aspect-[3/4] w-full shrink-0 flex-col justify-end overflow-hidden rounded-xl border"
@@ -157,7 +148,7 @@ export async function AcceleratorPage(props: Props) {
               />
 
               <Link
-                href={`/dashboard/${startup.id}`}
+                href={`/startup/${startup.id}`}
                 className="relative flex h-full flex-col justify-end overflow-hidden p-5"
               >
                 <div className="space-y-4">
@@ -199,7 +190,7 @@ export async function AcceleratorPage(props: Props) {
               </Link>
             </article>
           ))}
-        </div> */}
+        </div>
       </div>
     </AgentChatProvider>
   )

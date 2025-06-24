@@ -1,22 +1,35 @@
+"use server"
+
 import database from "@/lib/database/flows-db"
-import { unstable_cache } from "next/cache"
 
-export const getStartupBudgets = unstable_cache(
-  async (id: string) => {
-    const budgets = await database.grant.findMany({
-      select: { id: true, title: true, monthlyIncomingFlowRate: true },
-      where: { flowId: id, isFlow: true, isActive: true },
-      orderBy: { createdAt: "asc" },
-    })
+export async function getStartupBudgets(id: string) {
+  const mainFlow = await database.grant.findFirstOrThrow({
+    select: { manager: true, parentContract: true, rootContract: true },
+    where: { id, isFlow: true, isActive: true },
+    orderBy: { createdAt: "asc" },
+  })
 
-    return budgets.map((budget) => ({
-      ...budget,
-      title: budget.id === id ? "Main Budget" : budget.title,
-    }))
-  },
-  ["startup-budget"],
-  {
-    tags: ["startup-budget"],
-    revalidate: 60 * 60 * 3, // 3 hours
-  },
-)
+  const budgets = await database.grant.findMany({
+    omit: { description: true },
+    where: {
+      manager: mainFlow.manager,
+      isFlow: true,
+      isActive: true,
+      rootContract: mainFlow.rootContract,
+      parentContract: { not: mainFlow.rootContract },
+      isTopLevel: false,
+    },
+    orderBy: { createdAt: "asc" },
+    include: {
+      subgrants: {
+        where: { isActive: true },
+        include: { derivedData: true },
+      },
+    },
+  })
+
+  return budgets.map((budget) => ({
+    ...budget,
+    title: budget.id === id ? "Main Budget" : budget.title,
+  }))
+}

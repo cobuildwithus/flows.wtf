@@ -38,8 +38,9 @@ export async function TeamMemberCard(props: { member: TeamMember; isAllocator: b
               {display_name}
             </TeamMemberLink>
           </h3>
-
-          <div className="mb-3 mt-1 text-xs text-muted-foreground">{member.tagline}</div>
+          <div className="mb-3 mt-1 max-w-40 truncate text-xs text-muted-foreground">
+            {member.tagline}
+          </div>
         </div>
       </div>
     </div>
