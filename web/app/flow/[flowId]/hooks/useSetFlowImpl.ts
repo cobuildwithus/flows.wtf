@@ -2,12 +2,11 @@
 
 import { nounsFlowImplAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { base } from "viem/chains"
 import { toast } from "sonner"
 
-export function useSetFlowImpl(address: `0x${string}`) {
+export function useSetFlowImpl(address: `0x${string}`, chainId: number) {
   const { prepareWallet, writeContract, toastId } = useContractTransaction({
-    chainId: base.id,
+    chainId,
     success: "Flow implementation set",
   })
 
@@ -20,7 +19,7 @@ export function useSetFlowImpl(address: `0x${string}`) {
         abi: nounsFlowImplAbi,
         functionName: "setFlowImpl",
         args: [newImplementation],
-        chainId: base.id,
+        chainId,
       })
     } catch (e: any) {
       toast.error(e.message, { id: toastId })

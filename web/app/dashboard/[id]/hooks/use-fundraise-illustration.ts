@@ -2,13 +2,11 @@
 
 import { useState, useMemo } from "react"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
-import { base } from "viem/chains"
-
-export function useFundraiseIllustration(projectId: bigint) {
+export function useFundraiseIllustration(projectId: bigint, chainId: number) {
   const [productsVolumeEth, setProductsVolumeEth] = useState(0)
   const [tokenVolume, setTokenVolumeEth] = useState(0)
 
-  const { calculateTokensFromEth } = useRevnetTokenPrice(projectId, base.id)
+  const { calculateTokensFromEth } = useRevnetTokenPrice(projectId, chainId)
 
   const totalRevnetTokens = useMemo(() => {
     if (!projectId) return "0"

@@ -11,7 +11,6 @@ import { canDisputeBeExecuted } from "@/app/components/dispute/helpers"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { Dispute } from "@prisma/flows"
 import { useRouter } from "next/navigation"
-import { base } from "viem/chains"
 
 interface Props {
   arbitrator: `0x${string}`
@@ -54,7 +53,7 @@ export function DisputeExecuteButton(props: Props) {
           ],
           functionName: "executeRuling",
           args: [BigInt(dispute.disputeId)],
-          chainId: base.id,
+          chainId,
         })
       }}
     >

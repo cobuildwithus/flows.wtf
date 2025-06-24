@@ -2,12 +2,11 @@
 
 import { cfav1ForwarderAbi, nounsFlowImplAbi, superfluidPoolAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { base } from "viem/chains"
 import { toast } from "sonner"
 
-export function useSetBaselinePoolPercent(address: `0x${string}`) {
+export function useSetBaselinePoolPercent(address: `0x${string}`, chainId: number) {
   const { prepareWallet, writeContract, toastId } = useContractTransaction({
-    chainId: base.id,
+    chainId,
     success: "Baseline pool percent updated successfully",
   })
 
@@ -20,7 +19,7 @@ export function useSetBaselinePoolPercent(address: `0x${string}`) {
         abi: [...nounsFlowImplAbi, ...superfluidPoolAbi, ...cfav1ForwarderAbi],
         functionName: "setBaselineFlowRatePercent",
         args: [newPercent],
-        chainId: base.id,
+        chainId,
       })
     } catch (e: any) {
       toast.error(e.message, { id: toastId })

@@ -2,12 +2,14 @@
 
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { tokenEmitterImplAbi } from "@/lib/abis"
-import { base } from "viem/chains"
 import { toast } from "sonner"
 
-export const useUpgradeTokenEmitter = (tokenEmitterAddress?: `0x${string}`) => {
+export const useUpgradeTokenEmitter = (
+  tokenEmitterAddress?: `0x${string}`,
+  chainId?: number,
+) => {
   const { prepareWallet, writeContract, toastId } = useContractTransaction({
-    chainId: base.id,
+    chainId,
     success: "Token emitter changed successfully",
   })
 
@@ -22,7 +24,7 @@ export const useUpgradeTokenEmitter = (tokenEmitterAddress?: `0x${string}`) => {
         abi: tokenEmitterImplAbi,
         functionName: "upgradeTo",
         args: [tokenEmitter],
-        chainId: base.id,
+        chainId,
       })
     } catch (e: any) {
       toast.error(e.message, { id: toastId })

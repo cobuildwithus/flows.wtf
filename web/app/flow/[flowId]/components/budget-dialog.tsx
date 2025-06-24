@@ -10,7 +10,6 @@ import { Currency } from "@/components/ui/currency"
 import type { FlowWithGrants } from "@/lib/database/queries/flow"
 import { explorerUrl } from "@/lib/utils"
 import Link from "next/link"
-import { base } from "viem/chains"
 import { Separator } from "@radix-ui/react-select"
 
 interface Props {
@@ -203,7 +202,7 @@ export const BudgetDialog = (props: Props) => {
 
         <Link
           className="text-base underline"
-          href={explorerUrl(flow.recipient, base.id, "address")}
+          href={explorerUrl(flow.recipient, flow.chainId, "address")}
           target="_blank"
         >
           View on Explorer

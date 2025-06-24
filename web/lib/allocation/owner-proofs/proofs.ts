@@ -1,12 +1,15 @@
 import { NOUNS_TOKEN } from "@/lib/config"
 import { getClient } from "@/lib/viem/client"
-import { base, mainnet } from "viem/chains"
+import { mainnet } from "viem/chains"
 import { encodeAbiParameters, keccak256, PublicClient, toHex, type Address } from "viem"
 import { getBeaconBlock } from "./get-beacon-block"
 import { getBeaconRootAndL2Timestamp } from "./get-beacon-root-and-l2-timestamp"
 import { getExecutionStateRootProof } from "./get-execution-state-root-proof"
 
-export async function generateOwnerProofs(tokens: { id: bigint; owner: Address }[]) {
+export async function generateOwnerProofs(
+  tokens: { id: bigint; owner: Address }[],
+  chainId: number,
+) {
   try {
     const delegators = Array.from(new Set(tokens.map((token) => token.owner)))
     const tokenIdsByOwner = delegators.map((owner) =>
@@ -21,7 +24,7 @@ export async function generateOwnerProofs(tokens: { id: bigint; owner: Address }
     // Step 1: Get the latest beacon root and L2 timestamp
     // This function retrieves the parentBeaconBlockRoot and timestamp from the latest L2 block
     const beaconInfo = await getBeaconRootAndL2Timestamp(
-      getClient(base.id) as PublicClient,
+      getClient(chainId) as PublicClient,
     )
 
     // Step 2: Fetch the beacon block using the beacon root
