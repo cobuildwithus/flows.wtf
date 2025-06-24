@@ -51,6 +51,10 @@ export function CreateOpportunity(props: Props) {
     }
   }
 
+  if (budgets.length === 0) {
+    return null
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

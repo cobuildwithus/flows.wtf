@@ -5,16 +5,10 @@ import { vrbscoffee } from "./data/vrbscoffee"
 import { getAllocator } from "../allocation/allocation-data/get-allocator"
 
 const startups = {
-  "0x802d57b225d84da0403f7d72c16bead63e21d16f": {
+  "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
     ...vrbscoffee,
     title: "Vrbs Coffee",
     revnetProjectIds: { base: 3n },
-  },
-  "0xa1add56e8308175688c2366d69e8fd1bb8567e72": {
-    ...vrbscoffee,
-    title: "Real Madrid Coffee",
-    revnetProjectId: 4,
-    revnetProjectIds: { base: 4n },
   },
 } as const
 

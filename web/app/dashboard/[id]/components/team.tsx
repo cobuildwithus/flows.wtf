@@ -27,6 +27,10 @@ export async function Team(props: Props) {
 
   const canManage = user?.address === startup.manager || isAdmin(user?.address)
   const canAllocate = user?.address === startup.allocator
+
+  if (members.length === 0) {
+    return null
+  }
   // const canManage = false
 
   const [budgets, privyIdToken] = await Promise.all([

@@ -23,6 +23,7 @@ import { useRef } from "react"
 import type { User } from "@/lib/auth/user"
 import SignInWithNeynar from "@/components/global/signin-with-neynar"
 import { AuthButton } from "@/components/ui/auth-button"
+import { AddFlowToFlowButton } from "@/components/global/add-flow-to-flow-button"
 
 interface Props {
   draft: Draft
@@ -79,14 +80,25 @@ export function ManagedFlowDraftPublishButton(props: Props) {
           </p>
         </div>
         <div className="flex justify-end space-x-2">
-          <AddRecipientToFlowButton
-            draft={draft}
-            contract={flow.recipient as `0x${string}`}
-            chainId={flow.chainId}
-            onSuccess={() => {
-              ref.current?.click() // close dialog
-            }}
-          />
+          {flow.isAccelerator ? (
+            <AddFlowToFlowButton
+              draft={draft}
+              contract={flow.recipient as `0x${string}`}
+              chainId={flow.chainId}
+              onSuccess={() => {
+                ref.current?.click() // close dialog
+              }}
+            />
+          ) : (
+            <AddRecipientToFlowButton
+              draft={draft}
+              contract={flow.recipient as `0x${string}`}
+              chainId={flow.chainId}
+              onSuccess={() => {
+                ref.current?.click() // close dialog
+              }}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>
