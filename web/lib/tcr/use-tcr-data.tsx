@@ -1,11 +1,10 @@
 "use client"
 
 import { Address } from "viem"
-import { base } from "viem/chains"
 import { useReadContracts } from "wagmi"
 import { flowTcrImplAbi } from "../abis"
 
-export function useTcrData(contract: Address | undefined, chainId = base.id) {
+export function useTcrData(contract: Address | undefined, chainId: number) {
   const tcr = { abi: flowTcrImplAbi, address: contract, chainId }
 
   const { data } = useReadContracts({

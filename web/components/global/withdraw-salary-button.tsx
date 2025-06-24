@@ -23,7 +23,7 @@ export const WithdrawSalaryButton = ({
   onSuccess?: () => void
   chainId: number
 }) => {
-  const { withdraw } = useBulkPoolWithdrawMacro(pools, onSuccess)
+  const { withdraw } = useBulkPoolWithdrawMacro(pools, chainId, onSuccess)
 
   const { balance, isLoading } = useClaimableFlowsBalance(flow, builder, chainId)
 

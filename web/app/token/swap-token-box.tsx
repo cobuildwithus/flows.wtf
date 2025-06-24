@@ -50,6 +50,7 @@ export function SwapTokenBox(props: Props) {
             onSuccess={onSuccess}
             parentFlowContract={parentFlowContract}
             defaultTokenAmount={defaultTokenAmount}
+            chainId={flow.chainId}
             switchSwapBox={() => setSwapState("sell")}
             setTokenAndEmitter={(token, tokenEmitter) => {
               setToken(token)
@@ -63,6 +64,7 @@ export function SwapTokenBox(props: Props) {
             onSuccess={onSuccess}
             parentFlowContract={parentFlowContract}
             defaultTokenAmount={defaultTokenAmount}
+            chainId={flow.chainId}
             switchSwapBox={() => setSwapState("buy")}
             setTokenAndEmitter={(token, tokenEmitter) => {
               setToken(token)

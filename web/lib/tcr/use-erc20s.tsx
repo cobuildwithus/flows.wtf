@@ -1,8 +1,7 @@
 import { type Address, erc20Abi } from "viem"
-import { base } from "viem/chains"
 import { useReadContracts } from "wagmi"
 
-export function useERC20Tokens(tokens: Address[], chainId = base.id) {
+export function useERC20Tokens(tokens: Address[], chainId: number) {
   const erc20s = tokens.map((token) => ({
     abi: erc20Abi,
     address: token as Address,

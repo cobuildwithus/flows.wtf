@@ -5,10 +5,12 @@ import { type Address, formatEther } from "viem"
 import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
 import { formatUSDValue, useETHPrice } from "./hooks/useETHPrice"
 import { useSellTokenQuote } from "./hooks/use-sell-token-quote"
-import { base } from "viem/chains"
 
-const chainId = base.id
-
+interface Props {
+  chainId: number
+  tokens: TokenData[] | undefined
+  switchToken: (token: Address, tokenEmitter: Address) => void
+}
 interface TokenData {
   address: string | undefined
   name: string | undefined
@@ -18,16 +20,12 @@ interface TokenData {
   tokenEmitter: string | undefined
 }
 
-interface TokenListProps {
-  tokens: TokenData[] | undefined
-  switchToken: (token: Address, tokenEmitter: Address) => void
-}
-
-export const TokenList = ({ tokens, switchToken }: TokenListProps) => {
+export const TokenList = ({ tokens, switchToken, chainId }: Props) => {
   const { address: owner } = useAccount()
   const { balances } = useERC20Balances(
     tokens?.map((token) => getEthAddress(token.address as Address)) || [],
     owner,
+    chainId,
   )
   const { ethPrice } = useETHPrice()
 
@@ -58,6 +56,7 @@ export const TokenList = ({ tokens, switchToken }: TokenListProps) => {
           }
           balance={balance}
           ethPrice={ethPrice || 0}
+          chainId={chainId}
         />
       ))}
     </ul>
@@ -70,12 +69,14 @@ const TokenListItem = ({
   ethPrice,
   onClick,
   currentTokenEmitter,
+  chainId,
 }: {
   token: TokenData
   balance: bigint
   ethPrice: number
   onClick: () => void
   currentTokenEmitter: Address | undefined
+  chainId: number
 }) => {
   const { payment } = useSellTokenQuote(getEthAddress(currentTokenEmitter || ""), balance, chainId)
 

@@ -7,11 +7,9 @@ import { useWaitForTransactions } from "@/lib/wagmi/use-wait-for-transactions"
 import type { ComponentProps, PropsWithChildren } from "react"
 import { toast } from "sonner"
 import { type Address, zeroAddress } from "viem"
-import { base } from "viem/chains"
 import { useAccount, useBalance } from "wagmi"
 import { useBuyTokenRelay } from "./hooks/use-buy-token-relay"
 
-const toChainId = base.id
 
 interface Props extends ComponentProps<typeof Button> {
   onSuccess: (hash: string) => void
@@ -76,7 +74,7 @@ export const BuyTokenButton = ({
             },
           ]
 
-          const useRelay = chainId !== toChainId
+          const useRelay = selectedChain.id !== chainId
 
           if (useRelay) {
             executeBuyTokenRelay({
