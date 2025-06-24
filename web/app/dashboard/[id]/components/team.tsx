@@ -114,6 +114,7 @@ async function OpportunitiesSection({
           flowContract={o.flowId as `0x${string}`}
           user={user}
           startupId={startupId}
+          chainId={o.budget.chainId}
         />
       ))}
       {canManage && <CreateOpportunity budgets={budgets} startupId={startupId} />}
@@ -129,6 +130,11 @@ async function getOpportunitiesWithProfiles(startupId: string) {
       _count: { select: { drafts: true } },
       drafts: true,
       flowId: true,
+      budget: {
+        select: {
+          chainId: true,
+        },
+      },
       expectedMonthlySalary: true,
     },
     where: { startupId, status: 1 },

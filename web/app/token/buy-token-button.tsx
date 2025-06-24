@@ -10,7 +10,6 @@ import { type Address, zeroAddress } from "viem"
 import { useAccount, useBalance } from "wagmi"
 import { useBuyTokenRelay } from "./hooks/use-buy-token-relay"
 
-
 interface Props extends ComponentProps<typeof Button> {
   onSuccess: (hash: string) => void
   tokenEmitter: Address
@@ -18,6 +17,7 @@ interface Props extends ComponentProps<typeof Button> {
   tokenAmountBigInt: bigint
   isReady: boolean
   chainId: number
+  toChainId: number
   successMessage?: string
 }
 
@@ -28,6 +28,7 @@ export const BuyTokenButton = ({
   tokenAmountBigInt,
   isReady,
   chainId,
+  toChainId,
   children = "Buy",
   successMessage = "Tokens bought successfully!",
   ...buttonProps
@@ -74,7 +75,7 @@ export const BuyTokenButton = ({
             },
           ]
 
-          const useRelay = selectedChain.id !== chainId
+          const useRelay = toChainId !== chainId
 
           if (useRelay) {
             executeBuyTokenRelay({

@@ -7,7 +7,7 @@ import { getEthAddress } from "@/lib/utils"
 import { base } from "viem/chains"
 
 interface Props {
-  flow: Pick<FlowWithTcr, "tokenEmitter" | "erc20">
+  flow: Pick<FlowWithTcr, "tokenEmitter" | "erc20" | "chainId">
   amount: bigint
   onSuccess: (hash: string) => void
 }
@@ -28,6 +28,7 @@ export function BuyApplicationFee(props: Props) {
   return (
     <BuyTokenButton
       chainId={preferredFor(BigInt(totalCost)).chainId}
+      toChainId={flow.chainId}
       tokenEmitter={getEthAddress(flow.tokenEmitter)}
       costWithRewardsFee={totalCost}
       tokenAmountBigInt={amount}

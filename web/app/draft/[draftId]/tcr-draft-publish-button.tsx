@@ -60,6 +60,7 @@ export function TCRDraftPublishButton(props: Props) {
     erc20Address,
     tokenEmitterAddress,
     user,
+    chainId,
   } = props
   const { address } = useAccount()
   const router = useRouter()
@@ -182,7 +183,9 @@ export function TCRDraftPublishButton(props: Props) {
               1
             </span>
             <p className="text-muted-foreground">
-              Deposit <TcrInUsd tokenEmitter={tokenEmitterAddress} amount={addItemCost} />.
+              Deposit{" "}
+              <TcrInUsd tokenEmitter={tokenEmitterAddress} amount={addItemCost} chainId={chainId} />
+              .
             </p>
           </li>
           <li className="flex items-start space-x-4">

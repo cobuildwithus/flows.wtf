@@ -1,11 +1,10 @@
 "use client"
 
 import type { Address } from "viem"
-import { base } from "viem/chains"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
 import { getSellTokenQuote } from "./sell-token-quotes"
 
-export function useSellTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
+export function useSellTokenQuote(contract: Address, amount: bigint, chainId: number) {
   const { data, error, isLoading } = useServerFunction(
     getSellTokenQuote,
     "sell-token-quote",

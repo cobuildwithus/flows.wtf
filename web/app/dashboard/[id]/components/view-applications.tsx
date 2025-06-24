@@ -27,6 +27,7 @@ interface Props {
   opportunityTitle: string
   applications: ApplicationWithProfile[]
   flowContract: `0x${string}`
+  chainId: number
 }
 
 function getStatusBadge(status: number) {
@@ -43,7 +44,7 @@ function getStatusBadge(status: number) {
 }
 
 export function ViewApplications(props: Props) {
-  const { isOpen, onOpenChange, opportunityTitle, applications, flowContract } = props
+  const { isOpen, onOpenChange, opportunityTitle, applications, flowContract, chainId } = props
 
   return (
     <>
@@ -112,7 +113,7 @@ export function ViewApplications(props: Props) {
                           <AddRecipientToFlowButton
                             draft={application}
                             contract={flowContract}
-                            chainId={startup.chainId}
+                            chainId={chainId}
                             size="sm"
                           />
                         )}

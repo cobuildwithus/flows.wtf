@@ -30,13 +30,13 @@ interface Props {
   setTokenAndEmitter: (token: Address, tokenEmitter: Address) => void
 }
 
-
 export function BuyTokenBox({
   defaultTokenAmount,
   token,
   tokenEmitter,
   parentFlowContract,
   switchSwapBox,
+  chainId,
   onSuccess,
   setTokenAndEmitter,
 }: Props) {
@@ -49,11 +49,7 @@ export function BuyTokenBox({
   const [tokenAmount, _setTokenAmount] = useState((Number(defaultTokenAmount) / 1e18).toString())
   const [tokenAmountBigInt, _setTokenAmountBigInt] = useState(defaultTokenAmount)
 
-  const { balances, refetch } = useERC20Balances(
-    [getEthAddress(token)],
-    address,
-    chainId,
-  )
+  const { balances, refetch } = useERC20Balances([getEthAddress(token)], address, chainId)
   const tokenBalance = balances?.[0]
 
   const {
@@ -137,6 +133,7 @@ export function BuyTokenBox({
       <BuyTokenButton
         className="w-full rounded-2xl py-7 text-lg font-medium tracking-wide"
         chainId={selectedChain.id}
+        toChainId={chainId}
         tokenEmitter={tokenEmitter}
         costWithRewardsFee={costWithRewardsFee}
         tokenAmountBigInt={tokenAmountBigInt}

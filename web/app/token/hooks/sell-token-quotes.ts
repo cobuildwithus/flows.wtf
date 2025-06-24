@@ -3,9 +3,8 @@
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { getClient } from "@/lib/viem/client"
 import type { Address } from "viem"
-import { base } from "viem/chains"
 
-export async function getSellTokenQuote(contract: Address, amount: number, chainId = base.id) {
+export async function getSellTokenQuote(contract: Address, amount: number, chainId: number) {
   try {
     const data = await getClient(chainId).readContract({
       abi: tokenEmitterImplAbi,

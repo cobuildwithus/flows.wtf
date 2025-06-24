@@ -23,6 +23,7 @@ interface Props {
   flowContract: `0x${string}`
   expectedMonthlySalary: number
   startupId: string
+  chainId: number
 }
 
 export function OpportunityCard(props: Props) {
@@ -36,6 +37,7 @@ export function OpportunityCard(props: Props) {
     expectedMonthlySalary,
     user,
     startupId,
+    chainId,
   } = props
   const router = useRouter()
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
@@ -132,6 +134,7 @@ export function OpportunityCard(props: Props) {
         opportunityTitle={title}
         applications={applications}
         flowContract={flowContract}
+        chainId={chainId}
       />
     </div>
   )
