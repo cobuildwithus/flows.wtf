@@ -58,11 +58,9 @@ export async function Team(props: Props) {
                 grants={budgets.map((b) => b.subgrants)}
                 user={user?.address ?? null}
               >
-                <div className="flex space-x-4">
-                  {members.map((m) => (
-                    <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
-                  ))}
-                </div>
+                {members.map((m) => (
+                  <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
+                ))}
               </AllocateBudgets>
               <div className="hidden sm:block">
                 <OpportunitiesSection

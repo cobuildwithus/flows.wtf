@@ -4,7 +4,7 @@ import database from "@/lib/database/flows-db"
 
 export async function getStartupBudgets(id: string) {
   const mainFlow = await database.grant.findFirstOrThrow({
-    select: { manager: true, parentContract: true },
+    select: { manager: true, parentContract: true, rootContract: true },
     where: { id, isFlow: true, isActive: true },
     orderBy: { createdAt: "asc" },
   })
@@ -15,7 +15,9 @@ export async function getStartupBudgets(id: string) {
       manager: mainFlow.manager,
       isFlow: true,
       isActive: true,
-      parentContract: mainFlow.parentContract,
+      rootContract: mainFlow.rootContract,
+      parentContract: { not: mainFlow.rootContract },
+      isTopLevel: false,
     },
     orderBy: { createdAt: "asc" },
     include: {
