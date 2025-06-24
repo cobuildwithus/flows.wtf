@@ -2,15 +2,14 @@
 
 import { type Address, erc20Abi } from "viem"
 import { getClient } from "@/lib/viem/client"
-import { base } from "viem/chains"
 
-export async function getERC20Supply(contract: Address | undefined) {
+export async function getERC20Supply(contract: Address | undefined, chainId: number) {
   if (!contract) {
     return 0
   }
 
   try {
-    const totalSupply = await getClient(base.id).readContract({
+    const totalSupply = await getClient(chainId).readContract({
       abi: erc20Abi,
       address: contract,
       functionName: "totalSupply",

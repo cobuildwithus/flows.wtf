@@ -22,6 +22,7 @@ interface Props {
     | "awaitingRecipientCount"
     | "challengedRecipientCount"
     | "tokenEmitter"
+    | "chainId"
   >
   closePopover: () => void
   ethPrice: number
@@ -56,12 +57,14 @@ export function TokenRow(props: Props) {
         monthlyRewardPoolRate={flow.monthlyRewardPoolFlowRate}
         ethPrice={ethPrice || 0}
         holderInfo={holderInfo}
+        chainId={flow.chainId}
       />
 
       <div className="pr-2 text-right text-sm font-medium">
         <WithdrawCuratorSalaryButton
           user={getEthAddress(holderInfo.holder)}
           pool={getEthAddress(flow.managerRewardSuperfluidPool)}
+          chainId={flow.chainId}
         />
       </div>
     </div>

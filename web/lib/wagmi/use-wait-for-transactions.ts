@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { getChain, getClient } from "../viem/client"
 import { explorerUrl } from "../utils"
 import { waitForTransactionReceipt } from "viem/actions"
+import { Chain, Client, Transport } from "viem"
 
 export const useWaitForTransactions = (
   txHashes: { txHash: string; chainId: number; confirmed: boolean }[],
@@ -31,7 +32,8 @@ export const useWaitForTransactions = (
           onClick: () => window.open(explorerUrl(tx.txHash, tx.chainId)),
         },
       })
-      await waitForTransactionReceipt(getClient(chainId), {
+      const client = getClient(chainId) as Client<Transport, Chain>
+      await waitForTransactionReceipt(client, {
         hash: tx.txHash as `0x${string}`,
       })
 

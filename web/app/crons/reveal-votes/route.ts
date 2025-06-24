@@ -3,7 +3,6 @@ import database from "@/lib/database/flows-db"
 import { getDecryptedItem } from "@/lib/kv/kvStore"
 import { generateKVKey, SavedVote } from "@/lib/kv/disputeVote"
 import { getRevealVotesWalletClient } from "@/lib/viem/walletClient"
-import { base } from "viem/chains"
 import { erc20VotesArbitratorImplAbi } from "@/lib/abis"
 import { getClient } from "@/lib/viem/client"
 import { waitForTransactionReceipt } from "viem/actions"
@@ -14,8 +13,6 @@ export const maxDuration = 300
 
 export async function GET() {
   try {
-    const client = getRevealVotesWalletClient(base.id)
-
     const disputes = await database.dispute.findMany({
       where: {
         isExecuted: false,
@@ -27,7 +24,9 @@ export async function GET() {
     let nUpdated = 0
 
     for (const dispute of disputes) {
-      const { arbitrator, disputeId } = dispute
+      const { arbitrator, disputeId, chainId } = dispute
+      const viemClient = getClient(chainId)
+      const client = getRevealVotesWalletClient(chainId)
 
       const votes = await database.disputeVote.findMany({
         where: { disputeId: dispute.disputeId, arbitrator, choice: null }, // only pull unrevealed votes
@@ -45,7 +44,7 @@ export async function GET() {
         }
 
         // Check if vote is already revealed
-        const receipt = await getClient(base.id).readContract({
+        const receipt = await viemClient.readContract({
           address: arbitrator as `0x${string}`,
           abi: erc20VotesArbitratorImplAbi,
           functionName: "getReceipt",
@@ -58,7 +57,7 @@ export async function GET() {
         }
 
         // Get the latest nonce for the account
-        const nonce = await getClient(base.id).getTransactionCount({
+        const nonce = await viemClient.getTransactionCount({
           address: client.account.address,
         })
 

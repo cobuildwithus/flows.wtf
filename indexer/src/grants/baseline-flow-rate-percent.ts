@@ -6,8 +6,8 @@ ponder.on("NounsFlowChildren:BaselineFlowRatePercentUpdated", handleBaselineFlow
 ponder.on("CustomFlow:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
 
 async function handleBaselineFlowRatePercentUpdated(params: {
-  event: Event<"NounsFlow:BaselineFlowRatePercentUpdated">
-  context: Context<"NounsFlow:BaselineFlowRatePercentUpdated">
+  event: Event<"CustomFlow:BaselineFlowRatePercentUpdated">
+  context: Context<"CustomFlow:BaselineFlowRatePercentUpdated">
 }) {
   const { event, context } = params
   const { newBaselineFlowRatePercent } = event.args

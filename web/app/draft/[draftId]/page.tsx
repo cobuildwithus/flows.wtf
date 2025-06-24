@@ -60,7 +60,7 @@ export default async function DraftPage(props: Props) {
       },
     }),
     getUser(),
-    getTcrCosts(draft.flow.tcr, draft.flow.erc20),
+    getTcrCosts(draft.flow.tcr, draft.flow.erc20, draft.flow.chainId),
   ])
 
   const { title, flow, isOnchain, createdAt, users, description, opportunity } = draft

@@ -13,6 +13,7 @@ export const maxDuration = 300
 
 export async function GET() {
   try {
+    // hardcoded to base because this is only for Nouns Flow
     const client = getBalanceFlowRatesWalletClient(base.id)
 
     let nUpdated = 0

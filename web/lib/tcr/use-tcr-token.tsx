@@ -13,6 +13,7 @@ export function useTcrToken(contract: Address, spender: Address, chainId = base.
 
   const { data, mutate } = useServerFunction(getTokenData, skip ? undefined : "token-data", [
     contract,
+    chainId,
     owner,
     spender,
   ])

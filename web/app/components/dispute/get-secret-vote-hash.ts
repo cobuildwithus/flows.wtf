@@ -24,12 +24,14 @@ export async function generateVoteHash(
   arbitrator: string,
   disputeId: string,
   address: string,
+  chainId: number,
 ) {
   try {
     const { commitHash, salt } = generateCommitment(party)
 
     const key = generateKVKey(arbitrator, disputeId, address, commitHash)
     const data: SavedVote = {
+      chainId,
       choice: party,
       reason: "",
       disputeId: parseInt(disputeId),

@@ -2,10 +2,14 @@
 
 import type { Address } from "viem"
 import { getClient } from "@/lib/viem/client"
-import { base } from "viem/chains"
 import { erc20VotesArbitratorImplAbi } from "../abis"
 
-export async function getVotingPower(contract: Address, disputeId: string, address?: Address) {
+export async function getVotingPower(
+  contract: Address,
+  disputeId: string,
+  chainId: number,
+  address?: Address,
+) {
   if (!contract || !address) {
     return {
       votingPower: BigInt(0),
@@ -14,7 +18,7 @@ export async function getVotingPower(contract: Address, disputeId: string, addre
   }
 
   try {
-    const votingPower = await getClient(base.id).readContract({
+    const votingPower = await getClient(chainId).readContract({
       abi: erc20VotesArbitratorImplAbi,
       address: contract,
       functionName: "votingPowerInCurrentRound",

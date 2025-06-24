@@ -14,16 +14,18 @@ export const WithdrawSalaryButton = ({
   builder,
   size = "sm",
   onSuccess,
+  chainId,
 }: {
   pools: `0x${string}`[]
   flow: `0x${string}`
   builder: `0x${string}`
   size?: ButtonProps["size"]
   onSuccess?: () => void
+  chainId: number
 }) => {
   const { withdraw } = useBulkPoolWithdrawMacro(pools, onSuccess)
 
-  const { balance, isLoading } = useClaimableFlowsBalance(flow, builder)
+  const { balance, isLoading } = useClaimableFlowsBalance(flow, builder, chainId)
 
   const getTextSize = (size: ButtonProps["size"]) => {
     switch (size) {

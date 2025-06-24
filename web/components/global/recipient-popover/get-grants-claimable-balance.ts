@@ -3,16 +3,15 @@
 import { Address } from "viem"
 import { nounsFlowImplAbi } from "@/lib/abis"
 import { getClient } from "@/lib/viem/client"
-import { base } from "viem/chains"
 import { unstable_cache } from "next/cache"
 
 export const getGrantsClaimableBalance = unstable_cache(
-  async (contracts: string[], address: string) => {
+  async (contracts: { address: string; chainId: number }[], address: string) => {
     try {
       const balances = await Promise.all(
         contracts.map((contract) =>
-          getClient(base.id).readContract({
-            address: contract as Address,
+          getClient(contract.chainId).readContract({
+            address: contract.address as Address,
             abi: nounsFlowImplAbi,
             functionName: "getClaimableBalance",
             args: [address as Address],

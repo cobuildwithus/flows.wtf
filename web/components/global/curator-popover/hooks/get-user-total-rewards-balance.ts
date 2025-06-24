@@ -3,16 +3,19 @@
 import { Address } from "viem"
 import { rewardPoolImplAbi } from "@/lib/abis"
 import { getClient } from "@/lib/viem/client"
-import { base } from "viem/chains"
 import { unstable_cache } from "next/cache"
 import { getEthAddress } from "@/lib/utils"
 
 export const getUserTotalRewardsBalance = unstable_cache(
-  async (pools: string[], address: string) => {
+  async (pools: string[], address: string, chainId?: number) => {
+    if (!chainId) {
+      throw new Error("Chain ID is required")
+    }
+    const client = getClient(chainId)
     try {
       const claimableBalances = await Promise.all(
         pools.map((pool) =>
-          getClient(base.id).readContract({
+          client.readContract({
             address: getEthAddress(pool) as Address,
             abi: rewardPoolImplAbi,
             functionName: "getClaimableBalanceNow",
@@ -23,7 +26,7 @@ export const getUserTotalRewardsBalance = unstable_cache(
 
       const memberFlowRates = await Promise.all(
         pools.map((pool) =>
-          getClient(base.id).readContract({
+          client.readContract({
             address: getEthAddress(pool) as Address,
             abi: rewardPoolImplAbi,
             functionName: "getMemberFlowRate",

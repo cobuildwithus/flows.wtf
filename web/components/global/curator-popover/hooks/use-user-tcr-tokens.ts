@@ -17,6 +17,7 @@ export function useUserTcrTokens(address: string | undefined) {
       getUserTotalRewardsBalance(
         data?.map((token) => token.flow.managerRewardPool) || [],
         address!,
+        data?.map((token) => token.flow.chainId)?.[0],
       ),
   )
 

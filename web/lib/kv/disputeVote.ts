@@ -4,6 +4,7 @@ export enum Party {
   Challenger, // Party that challenges the request to change a status.
 }
 export interface SavedVote {
+  chainId: number
   choice: Party
   reason: string
   disputeId: number

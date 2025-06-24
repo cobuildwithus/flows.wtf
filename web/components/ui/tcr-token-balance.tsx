@@ -12,6 +12,7 @@ export const TcrTokenBalance = ({
   className,
   erc20,
   tokenEmitter,
+  chainId,
   monthlyRewardPoolRate,
   ethPrice,
   holderInfo,
@@ -19,11 +20,12 @@ export const TcrTokenBalance = ({
   holderInfo: TokenHolder
   className: string
   erc20: `0x${string}`
+  chainId: number
   tokenEmitter: `0x${string}`
   monthlyRewardPoolRate: string
   ethPrice: number
 }) => {
-  const { totalSupply } = useERC20Supply(erc20)
+  const { totalSupply } = useERC20Supply(erc20, chainId)
   const { payment: worthInETH } = useSellTokenQuote(
     tokenEmitter,
     BigInt(holderInfo.amount),

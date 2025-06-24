@@ -2,13 +2,13 @@
 
 import { unstable_cache } from "next/cache"
 import { getEnsName, normalize } from "viem/ens"
-import { getClient } from "@/lib/viem/client"
+import { getClient, mainnetClient } from "@/lib/viem/client"
 import { mainnet } from "viem/chains"
 
 export const getEnsNameFromAddress = unstable_cache(
   async (address: `0x${string}`): Promise<string | null> => {
     try {
-      return await getEnsName(getClient(mainnet.id), { address })
+      return await getEnsName(mainnetClient, { address })
     } catch (error) {
       console.error("Error fetching ENS name:", error)
       return null
