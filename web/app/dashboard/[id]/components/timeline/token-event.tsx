@@ -34,6 +34,7 @@ export async function TokenEvent({ payment, date }: Props) {
               address={payment.payer as `0x${string}`}
               username={payerProfile.username}
               className="font-medium text-foreground hover:text-primary"
+              chainId={payment.chainId}
             >
               {payerProfile.display_name}
             </ProfileLink>{" "}
@@ -45,6 +46,7 @@ export async function TokenEvent({ payment, date }: Props) {
                   address={beneficiary as `0x${string}`}
                   username={beneficiaryProfile.username}
                   className="font-medium text-foreground hover:text-primary"
+                  chainId={payment.chainId}
                 >
                   {beneficiaryProfile.username}
                 </ProfileLink>

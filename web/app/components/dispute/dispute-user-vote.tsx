@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { formatEther } from "viem"
-import { base } from "viem/chains"
 import { useSecretVoteHash } from "./useSecretVoteHash"
 import type { User } from "@/lib/auth/user"
 import { AuthButton } from "@/components/ui/auth-button"
@@ -109,7 +108,7 @@ export function DisputeUserVote(props: Props) {
                 abi: erc20VotesArbitratorImplAbi,
                 functionName: "commitVote",
                 args: [BigInt(dispute.disputeId), mirrored ? againstCommitHash : forCommitHash],
-                chainId: base.id,
+                chainId: grant.chainId,
               })
             } catch (e: any) {
               toast.error(e.message, { id: toastId })
@@ -138,7 +137,7 @@ export function DisputeUserVote(props: Props) {
                 abi: erc20VotesArbitratorImplAbi,
                 functionName: "commitVote",
                 args: [BigInt(dispute.disputeId), mirrored ? forCommitHash : againstCommitHash],
-                chainId: base.id,
+                chainId: grant.chainId,
               })
             } catch (e: any) {
               toast.error(e.message, { id: toastId })

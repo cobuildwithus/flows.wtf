@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
-import { base } from "viem/chains"
 import { useEffect, useState } from "react"
 import { Minus, Plus } from "lucide-react"
 
@@ -13,15 +12,16 @@ interface Props {
   changeProductsVolumeEth: (eth: number) => void
   products: Array<{ name: string; image: string; url: string }>
   startup: Startup
+  chainId: number
 }
 
 export function ProductsList(props: Props) {
-  const { changeProductsVolumeEth, products, startup } = props
+  const { changeProductsVolumeEth, products, startup, chainId } = props
   const [quantity, setQuantity] = useState("1")
   const [touched, setTouched] = useState(false)
   const projectId = startup.revnetProjectId
-  const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), base.id)
-  const { data: tokenDetails } = useRevnetTokenDetails(BigInt(projectId), base.id)
+  const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), chainId)
+  const { data: tokenDetails } = useRevnetTokenDetails(BigInt(projectId), chainId)
 
   const tokenSymbol = tokenDetails?.symbol || ""
   const quantityNum = quantity === "" ? 0 : parseInt(quantity)
