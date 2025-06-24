@@ -42,7 +42,7 @@ export function GrantsTable(props: Props) {
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
           <TableHead className="text-center">Votes</TableHead>
-          <TableHead className="text-right">{canManage ? "Manage payout" : "Your Vote"}</TableHead>
+          <TableHead className="text-right">{canManage ? "Manage" : "Your Vote"}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
