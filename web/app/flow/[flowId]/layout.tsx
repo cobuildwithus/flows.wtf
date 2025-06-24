@@ -7,7 +7,7 @@ import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import type { Metadata } from "next"
 import type { PropsWithChildren } from "react"
-import { base } from "viem/chains"
+
 import { FlowHeader } from "./components/flow-header"
 
 interface Props {
@@ -30,7 +30,7 @@ export default async function FlowLayout(props: PropsWithChildren<Props>) {
 
   return (
     <AllocationProvider
-      chainId={base.id}
+      chainId={flow.chainId}
       contract={getEthAddress(flow.recipient)}
       strategies={flow.allocationStrategies}
       user={user?.address ?? null}

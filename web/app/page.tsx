@@ -4,7 +4,6 @@ import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import Link from "next/link"
-import { base } from "viem/chains"
 import FlowsList from "./components/flows-list"
 import type { LimitedFlow } from "./components/flows-table"
 import { HomepageIntro } from "./components/homepage-intro"
@@ -30,7 +29,7 @@ export default async function Home() {
 
   return (
     <AllocationProvider
-      chainId={base.id}
+      chainId={pool.chainId}
       contract={getEthAddress(pool.recipient)}
       strategies={pool.allocationStrategies}
       user={user?.address ?? null}

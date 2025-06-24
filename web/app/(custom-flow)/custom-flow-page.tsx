@@ -9,7 +9,6 @@ import { sortGrants } from "@/lib/grant-utils"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import Image from "next/image"
-import { base } from "viem/chains"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
 import { AllocationBar } from "@/components/global/allocation-bar"
@@ -62,7 +61,7 @@ export async function CustomFlowPage(props: Props) {
 
   return (
     <AllocationProvider
-      chainId={base.id}
+      chainId={flow.chainId}
       contract={getEthAddress(flow.recipient)}
       strategies={flow.allocationStrategies}
       user={user?.address ?? null}
