@@ -11,6 +11,7 @@ import { mainnet as mainnetContracts } from "../../../addresses"
 import { Status } from "../../enums"
 import { isAccelerator } from "../recipients/helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
+import { calculateRootContract } from "../grant-helpers"
 
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
@@ -42,6 +43,11 @@ async function handleFlowInitialized(params: {
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
+  const rootContract = await calculateRootContract(
+    context.db,
+    contract,
+    parentContract
+  )
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -55,6 +61,7 @@ async function handleFlowInitialized(params: {
     isFlow: true,
     isRemoved: false,
     parentContract,
+    rootContract,
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),

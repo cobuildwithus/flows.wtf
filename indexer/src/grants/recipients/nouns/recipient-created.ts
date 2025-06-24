@@ -30,10 +30,12 @@ async function handleRecipientCreated(params: {
   const timestamp = Number(event.block.timestamp)
 
   const parentFlow = await getFlow(context.db, flowAddress)
+  const rootContract = parentFlow.rootContract
 
   const grant = await context.db.update(grants, { id: recipientId.toString() }).set({
     ...metadata,
     recipient,
+    rootContract,
     updatedAt: Number(event.block.timestamp),
     activatedAt: Number(event.block.timestamp),
     isActive: true,

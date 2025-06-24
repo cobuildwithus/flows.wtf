@@ -7,6 +7,7 @@ import {
   grants,
   parentFlowToChildren,
 } from "ponder:schema"
+import { calculateRootContract } from "../grant-helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { accelerators, customFlows } from "../../../addresses"
 import { isAccelerator } from "../recipients/helpers"
@@ -46,6 +47,11 @@ async function handleFlowInitialized(params: {
   const grantId = contract
 
   const isTopLevel = parentContract === zeroAddress
+  const rootContract = await calculateRootContract(
+    context.db,
+    contract,
+    parentContract
+  )
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -60,6 +66,7 @@ async function handleFlowInitialized(params: {
     isFlow: true,
     isRemoved: false,
     parentContract,
+    rootContract,
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),

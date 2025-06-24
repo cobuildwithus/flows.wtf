@@ -138,6 +138,7 @@ view Grant {
   flowId                           String  @map("flow_id")
   submitter                        String
   parentContract                   String  @map("parent_contract")
+  rootContract                     String  @map("root_contract")
   isTopLevel                       Boolean @map("is_top_level")
   isFlow                           Boolean @map("is_flow")
   title                            String
