@@ -19,6 +19,9 @@ async function handleFlowRecipientCreated(params: {
   const parentFlowContract = event.log.address.toLowerCase() as `0x${string}`
   const submitter = event.transaction.from.toLowerCase() as `0x${string}`
   const flowContract = recipient.toLowerCase() as `0x${string}`
+  const parentFlow = await context.db.find(grants, { id: parentFlowContract })
+  if (!parentFlow) throw new Error("Parent grant not found")
+  const rootContract = parentFlow.rootContract
 
   const grant = await context.db.find(grants, { id: recipientId })
 
@@ -34,6 +37,7 @@ async function handleFlowRecipientCreated(params: {
     activatedAt: timestamp,
     submitter,
     recipientId,
+    rootContract,
     isOnchainStartup: isOnchainStartup(parentFlowContract),
     isAccelerator: isAccelerator(flowContract),
   })

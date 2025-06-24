@@ -1,5 +1,6 @@
 import { Context } from "ponder:registry"
-import { flowContractAndRecipientIdToGrantId } from "ponder:schema"
+import { grants, flowContractAndRecipientIdToGrantId } from "ponder:schema"
+import { zeroAddress } from "viem"
 
 export async function addGrantIdToFlowContractAndRecipientId(
   db: Context["db"],
@@ -27,3 +28,16 @@ export async function getGrantIdFromFlowContractAndRecipientId(
 
 const getId = (flowContract: string, recipientId: string) =>
   `${flowContract.toLowerCase()}-${recipientId}`
+
+export async function calculateRootContract(
+  db: Context["db"],
+  contract: string,
+  parentContract: string
+) {
+  if (parentContract === zeroAddress) return contract.toLowerCase()
+
+  const parent = await db.find(grants, { id: parentContract.toLowerCase() })
+  if (!parent) throw new Error(`Parent grant not found: ${parentContract}`)
+
+  return parent.rootContract
+}
