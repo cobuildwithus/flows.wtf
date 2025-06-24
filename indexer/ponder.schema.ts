@@ -9,6 +9,7 @@ export const grants = onchainTable(
     flowId: t.text().notNull(),
     submitter: t.text().notNull(),
     parentContract: t.text().notNull(),
+    rootContract: t.text().notNull(),
     isTopLevel: t.boolean().notNull(),
     isFlow: t.boolean().notNull(),
     title: t.text().notNull(),
@@ -75,6 +76,7 @@ export const grants = onchainTable(
     recipientIdx: index().on(table.recipient),
     recipientIsFlowIdx: index().on(table.recipient, table.isFlow),
     recipientParentContractIdx: index().on(table.recipient, table.parentContract),
+    rootContractIdx: index().on(table.rootContract),
     recipientManagerRewardPoolIdx: index().on(table.recipient, table.managerRewardPool),
     tcrIsFlowCompoundIdx: index().on(table.tcr, table.isFlow),
     parentContractIsActiveIsRemovedIdx: index().on(

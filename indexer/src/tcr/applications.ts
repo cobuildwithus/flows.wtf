@@ -27,6 +27,7 @@ async function handleItemSubmitted(params: {
       functionName: "challengePeriodDuration",
     }),
   ])
+  const rootContract = flow.rootContract
 
   const [recipient, metadata, recipientType] = decodeAbiParameters(
     [
@@ -60,6 +61,7 @@ async function handleItemSubmitted(params: {
     flowId: flow.id,
     submitter: _submitter.toLowerCase(),
     parentContract: flow.recipient,
+    rootContract,
     isTopLevel: false,
     isFlow: recipientType === RecipientType.FlowContract,
     isRemoved: false,

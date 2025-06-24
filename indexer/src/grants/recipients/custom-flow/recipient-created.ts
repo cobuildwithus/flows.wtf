@@ -25,6 +25,7 @@ async function handleRecipientCreated(params: {
   const grantId = recipientId.toString()
   const timestamp = Number(event.block.timestamp)
   const flow = await getFlow(context.db, flowAddress)
+  const rootContract = flow.rootContract
 
   await context.db.update(grants, { id: flow.id }).set((row) => ({
     activeRecipientCount: row.activeRecipientCount + 1,
@@ -48,6 +49,7 @@ async function handleRecipientCreated(params: {
     flowId: flow.id,
     submitter: approvedBy.toLowerCase(),
     parentContract: flowAddress,
+    rootContract,
     baselinePool: "",
     bonusPool: "",
     managerRewardPoolFlowRatePercent: 0,

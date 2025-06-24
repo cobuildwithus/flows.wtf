@@ -15,6 +15,7 @@ import {
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { mainnet } from "viem/chains"
 import { isAccelerator } from "../recipients/helpers"
+import { calculateRootContract } from "../grant-helpers"
 
 ponder.on("NounsFlow:FlowInitialized", handleFlowInitialized)
 
@@ -46,6 +47,11 @@ async function handleFlowInitialized(params: {
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
+  const rootContract = await calculateRootContract(
+    context.db,
+    contract,
+    parentContract
+  )
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -59,6 +65,7 @@ async function handleFlowInitialized(params: {
     isFlow: true,
     isRemoved: false,
     parentContract,
+    rootContract,
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
