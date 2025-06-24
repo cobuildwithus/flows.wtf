@@ -46,11 +46,11 @@ export async function Team(props: Props) {
       data={{ startupId: startup.id }}
       identityToken={privyIdToken}
     >
-      <div className="container flex p-0 max-sm:flex-col">
-        <div className="flex">
+      <div className="container flex w-full p-0 max-sm:flex-col">
+        <div className="flex w-full overflow-hidden">
           <SectionLabel label="Meet the team" />
-          <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
-            <div className="flex space-x-4">
+          <ScrollArea className="pointer-events-auto mt-2 w-full whitespace-nowrap">
+            <div className="flex space-x-4 pr-4">
               <AllocateBudgets
                 isAllocator={canAllocate}
                 isManager={canManage}
@@ -58,9 +58,11 @@ export async function Team(props: Props) {
                 grants={budgets.map((b) => b.subgrants)}
                 user={user?.address ?? null}
               >
-                {members.map((m) => (
-                  <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
-                ))}
+                <div className="flex space-x-4">
+                  {members.map((m) => (
+                    <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
+                  ))}
+                </div>
               </AllocateBudgets>
               <div className="hidden sm:block">
                 <OpportunitiesSection
@@ -75,15 +77,17 @@ export async function Team(props: Props) {
           </ScrollArea>
         </div>
 
-        <div className="flex sm:hidden">
+        <div className="flex w-full overflow-hidden sm:hidden">
           <SectionLabel label="Join the team" />
-          <ScrollArea className="pointer-events-auto mt-2 grow whitespace-nowrap">
-            <OpportunitiesSection
-              canManage={canManage}
-              budgets={budgets}
-              startupId={startup.id}
-              user={user}
-            />
+          <ScrollArea className="pointer-events-auto mt-2 w-full whitespace-nowrap">
+            <div className="pr-4">
+              <OpportunitiesSection
+                canManage={canManage}
+                budgets={budgets}
+                startupId={startup.id}
+                user={user}
+              />
+            </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
@@ -162,7 +166,7 @@ interface SectionLabelProps {
   topClassName?: string
 }
 
-function SectionLabel({ label, topClassName = "top-3 md:top-5" }: SectionLabelProps) {
+function SectionLabel({ label, topClassName = "top-3 md:top-4" }: SectionLabelProps) {
   return (
     <div className="relative h-full w-9 shrink-0">
       <div

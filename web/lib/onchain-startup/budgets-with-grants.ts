@@ -1,19 +1,10 @@
 import database from "@/lib/database/flows-db"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getEthAddress } from "@/lib/utils"
+import { getStartupBudgets } from "./budgets"
 
 export const getBudgetsWithGrants = async (id: string) => {
-  const budgets = await database.grant.findMany({
-    omit: { description: true },
-    where: { flowId: id, isFlow: true, isActive: true },
-    orderBy: { createdAt: "asc" },
-    include: {
-      subgrants: {
-        where: { isActive: true },
-        include: { derivedData: true },
-      },
-    },
-  })
+  const budgets = await getStartupBudgets(id)
 
   const budgetsWithProfiles = await Promise.all(
     budgets.map(async (budget) => {

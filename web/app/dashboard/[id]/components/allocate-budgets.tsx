@@ -45,17 +45,17 @@ export function AllocateBudgets(props: Props) {
 
   // Calculate total budget across all flows
   const totalBudget = flows.reduce((sum, flow) => {
-    return sum + BigInt(flow.monthlyIncomingFlowRate || "0")
-  }, BigInt(0))
+    return sum + Number(flow.monthlyIncomingFlowRate)
+  }, 0)
 
-  if (!isAllocator) {
+  if (!isAllocator && !isManager) {
     return <div className="contents">{children}</div>
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="contents cursor-pointer">{children}</div>
+        <div className="contents cursor-pointer space-x-4">{children}</div>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
         <DialogHeader>
@@ -79,7 +79,7 @@ export function AllocateBudgets(props: Props) {
                   {flow.title}
                   {selectedFlowIndex === index && (
                     <span className="ml-2 text-xs">
-                      - <Currency>{BigInt(flow.monthlyIncomingFlowRate || "0")}</Currency>/mo
+                      - <Currency>{flow.monthlyIncomingFlowRate}</Currency>/mo
                     </span>
                   )}
                 </Button>
