@@ -14,6 +14,7 @@ import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import type { PropsWithChildren } from "react"
 import { toast } from "sonner"
 import { formatEther } from "viem"
+import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { useAgentChat } from "../agent-chat"
 
@@ -23,7 +24,6 @@ interface Props {
   comment: string | null
 }
 
-
 export function RequestGrantRemoval(props: Props) {
   const { grantId, reason, comment } = props
 
@@ -32,7 +32,7 @@ export function RequestGrantRemoval(props: Props) {
   const { address } = useAccount()
   const { user, append } = useAgentChat()
 
-  const chainId = grant?.flow.chainId ?? grant?.chainId ?? 0
+  const chainId = grant?.flow.chainId ?? grant?.chainId ?? base.id
 
   const { removeItemCost, challengePeriodFormatted } = useTcrData(
     grant?.flow.tcr as `0x${string}`,

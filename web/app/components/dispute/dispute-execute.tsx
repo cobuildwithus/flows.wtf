@@ -17,12 +17,13 @@ interface Props {
   arbitrator: `0x${string}`
   flowId: string
   dispute: Dispute
+  chainId: number
   className?: string
   size?: "default" | "sm"
 }
 
 export function DisputeExecuteButton(props: Props) {
-  const { dispute, flowId, arbitrator, className, size = "default" } = props
+  const { dispute, flowId, arbitrator, className, size = "default", chainId } = props
   const router = useRouter()
 
   const { writeContract, prepareWallet } = useContractTransaction({
@@ -31,6 +32,7 @@ export function DisputeExecuteButton(props: Props) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
       router.push(`/flow/${flowId}`)
     },
+    chainId,
   })
 
   return (

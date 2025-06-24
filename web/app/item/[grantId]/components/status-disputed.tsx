@@ -72,6 +72,7 @@ export async function StatusDisputed(props: Props) {
         <Results />
         <DisputeExecuteButton
           flowId={flow.id}
+          chainId={flow.chainId}
           arbitrator={getAddress(flow.arbitrator)}
           dispute={dispute}
           className="!mt-6 w-full"

@@ -52,6 +52,7 @@ export async function ApplicationDisputed(props: Props) {
             flowId={flow.id}
             arbitrator={flow.arbitrator}
             dispute={dispute}
+            chainId={flow.chainId}
             className="!mt-6 w-full"
           />
         </>

@@ -28,6 +28,7 @@ export function RequestExecuteButton(props: Props) {
       await new Promise((resolve) => setTimeout(resolve, 2000))
       router.push(`/flow/${flow.id}`)
     },
+    chainId: flow.chainId,
   })
 
   return (

@@ -58,6 +58,7 @@ export function DisputeUserVote(props: Props) {
         mutate()
       }, 1000)
     },
+    chainId: grant.chainId,
   })
 
   const hasVoted = !!disputeVote
