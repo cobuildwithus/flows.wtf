@@ -31,7 +31,7 @@ export function GrantCard({ grant }: Props) {
   const image = getIpfsUrl(coverImage || grant.image, "pinata")
 
   const url = isOnchainStartup
-    ? `/dashboard/${grant.id}`
+    ? `/startup/${grant.id}`
     : isFlow
       ? `/flow/${grant.id}`
       : `/item/${grant.id}`

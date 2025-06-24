@@ -148,7 +148,7 @@ export async function AcceleratorPage(props: Props) {
               />
 
               <Link
-                href={`/dashboard/${startup.id}`}
+                href={`/startup/${startup.id}`}
                 className="relative flex h-full flex-col justify-end overflow-hidden p-5"
               >
                 <div className="space-y-4">
