@@ -112,6 +112,7 @@ export function ViewApplications(props: Props) {
                           <AddRecipientToFlowButton
                             draft={application}
                             contract={flowContract}
+                            chainId={startup.chainId}
                             size="sm"
                           />
                         )}

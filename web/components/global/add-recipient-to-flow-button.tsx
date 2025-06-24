@@ -7,7 +7,6 @@ import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import type { Draft } from "@prisma/flows"
 import { toast } from "sonner"
 import { encodeAbiParameters, keccak256 } from "viem"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { publishDraft } from "../../app/draft/[draftId]/publish-draft"
 import { useRouter } from "next/navigation"
@@ -15,14 +14,13 @@ import { useRouter } from "next/navigation"
 interface Props {
   draft: Draft
   contract: `0x${string}`
+  chainId: number
   size?: "default" | "sm"
   onSuccess?: () => void
 }
 
-const chainId = base.id
-
 export function AddRecipientToFlowButton(props: Props) {
-  const { draft, contract, size = "default", onSuccess } = props
+  const { draft, contract, chainId, size = "default", onSuccess } = props
   const { address } = useAccount()
   const router = useRouter()
 

@@ -6,7 +6,6 @@ import { getEthAddress } from "@/lib/utils"
 import type { RelayChain } from "@reservoir0x/relay-sdk"
 import { useMemo, useState } from "react"
 import type { Address } from "viem"
-import { base } from "viem/chains"
 import { useAccount, useBalance } from "wagmi"
 import { BuyTokenButton } from "./buy-token-button"
 import { ConversionBox } from "./conversion-box"
@@ -25,12 +24,12 @@ interface Props {
   token: Address
   tokenEmitter: Address
   parentFlowContract: Address
+  chainId: number
   onSuccess: (hash: string) => void
   switchSwapBox: () => void
   setTokenAndEmitter: (token: Address, tokenEmitter: Address) => void
 }
 
-const chainId = base.id
 
 export function BuyTokenBox({
   defaultTokenAmount,
@@ -50,7 +49,11 @@ export function BuyTokenBox({
   const [tokenAmount, _setTokenAmount] = useState((Number(defaultTokenAmount) / 1e18).toString())
   const [tokenAmountBigInt, _setTokenAmountBigInt] = useState(defaultTokenAmount)
 
-  const { balances, refetch } = useERC20Balances([getEthAddress(token)], address)
+  const { balances, refetch } = useERC20Balances(
+    [getEthAddress(token)],
+    address,
+    chainId,
+  )
   const tokenBalance = balances?.[0]
 
   const {
@@ -91,6 +94,7 @@ export function BuyTokenBox({
                 }}
                 currentToken={token}
                 currentTokenEmitter={tokenEmitter}
+                chainId={chainId}
               />
             </div>
             <TokenBalanceAndUSDValue

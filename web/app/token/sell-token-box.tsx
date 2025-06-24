@@ -3,7 +3,6 @@
 import { getEthAddress } from "@/lib/utils"
 import { useState } from "react"
 import type { Address } from "viem"
-import { base } from "viem/chains"
 import { useAccount, useBalance } from "wagmi"
 import { useSellTokenQuote } from "./hooks/use-sell-token-quote"
 import { formatUSDValue, useETHPrice } from "./hooks/useETHPrice"
@@ -28,9 +27,9 @@ interface Props {
   tokenEmitter: Address
   onSuccess: (hash: string) => void
   setTokenAndEmitter: (token: Address, tokenEmitter: Address) => void
+  chainId: number
 }
 
-const chainId = base.id
 
 export function SellTokenBox(props: Props) {
   const {
@@ -41,13 +40,18 @@ export function SellTokenBox(props: Props) {
     parentFlowContract,
     setTokenAndEmitter,
     onSuccess,
+    chainId,
   } = props
   const { address } = useAccount()
   const { data: balance } = useBalance({ address })
   const [tokenAmount, _setTokenAmount] = useState((Number(defaultTokenAmount) / 1e18).toString())
   const [tokenAmountBigInt, _setTokenAmountBigInt] = useState(defaultTokenAmount)
 
-  const { balances, refetch } = useERC20Balances([getEthAddress(token)], address)
+  const { balances, refetch } = useERC20Balances(
+    [getEthAddress(token)],
+    address,
+    chainId,
+  )
   const tokenBalance = balances?.[0]
 
   const { tokens, refetch: refetchTokens } = useERC20Tokens([token], chainId)
@@ -85,6 +89,7 @@ export function SellTokenBox(props: Props) {
                 }}
                 currentToken={token}
                 currentTokenEmitter={tokenEmitter}
+                chainId={chainId}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -134,6 +139,7 @@ export function SellTokenBox(props: Props) {
         tokenBalance={tokenBalance}
         tokenAmountBigInt={tokenAmountBigInt}
         payment={BigInt(payment)}
+        chainId={chainId}
         onSuccess={(hash) => {
           refetch()
           refetchTokens()

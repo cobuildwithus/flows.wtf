@@ -19,7 +19,7 @@ export const WithdrawCuratorSalaryButton = ({
 }) => {
   const { balance, isLoading, refetch } = useClaimablePoolBalance(pool, user, chainId)
 
-  const { withdraw } = useBulkPoolWithdrawMacro([pool], () => refetch())
+  const { withdraw } = useBulkPoolWithdrawMacro([pool], chainId, () => refetch())
 
   return (
     <Tooltip>

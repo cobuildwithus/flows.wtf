@@ -103,6 +103,7 @@ export default async function DraftPage(props: Props) {
                     grantsCount={existingGrants}
                     draft={draft}
                     flow={flow}
+                    chainId={flow.chainId}
                     user={user}
                     tcrAddress={getEthAddress(flow.tcr as `0x${string}`)}
                     erc20Address={getEthAddress(flow.erc20 as `0x${string}`)}

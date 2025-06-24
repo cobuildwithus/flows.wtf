@@ -42,7 +42,11 @@ export function SwapTokenButton(props: Props) {
   const ref = useRef<HTMLButtonElement>(null)
   const isRemoved = flow.isRemoved
 
-  const { balances, refetch } = useERC20Balances([erc20Address], address)
+  const { balances, refetch } = useERC20Balances(
+    [erc20Address],
+    address,
+    flow.chainId,
+  )
   const {
     onSuccess = () => {
       // close dialog

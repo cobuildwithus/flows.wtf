@@ -2,13 +2,12 @@
 
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { Address } from "viem"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { erc20VotesMintableImplAbi } from "../abis"
 import { getTokenData } from "./get-token-data"
 import { useServerFunction } from "../hooks/use-server-function"
 
-export function useTcrToken(contract: Address, spender: Address, chainId = base.id, skip = false) {
+export function useTcrToken(contract: Address, spender: Address, chainId: number, skip = false) {
   const { address: owner } = useAccount()
 
   const { data, mutate } = useServerFunction(getTokenData, skip ? undefined : "token-data", [

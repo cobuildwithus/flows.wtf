@@ -82,6 +82,7 @@ export function ManagedFlowDraftPublishButton(props: Props) {
           <AddRecipientToFlowButton
             draft={draft}
             contract={flow.recipient as `0x${string}`}
+            chainId={flow.chainId}
             onSuccess={() => {
               ref.current?.click() // close dialog
             }}

@@ -1,9 +1,8 @@
 import type { Address } from "viem"
-import { base } from "viem/chains"
 import { useFlowsForParent } from "./use-flows-for-parent"
 import { useERC20Tokens } from "./use-erc20s"
 
-export function useERC20TokensForParent(parentGrantContract: Address, chainId = base.id) {
+export function useERC20TokensForParent(parentGrantContract: Address, chainId: number) {
   const { grants, isLoading: isLoadingFlows } = useFlowsForParent(parentGrantContract)
   const erc20s = grants.map((grant) => grant.erc20 as Address)
 

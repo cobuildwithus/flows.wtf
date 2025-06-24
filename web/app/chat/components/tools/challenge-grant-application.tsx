@@ -15,7 +15,6 @@ import type { PropsWithChildren } from "react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { formatEther } from "viem"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { useAgentChat } from "../agent-chat"
 import { Textarea } from "@/components/ui/textarea"
@@ -26,7 +25,6 @@ interface Props {
   comment: string | null
 }
 
-const chainId = base.id
 
 export function ChallengeGrantApplication(props: Props) {
   const { grantId, reason: initialReason, comment } = props
@@ -41,8 +39,17 @@ export function ChallengeGrantApplication(props: Props) {
   const { address } = useAccount()
   const { user, append } = useAgentChat()
 
-  const { challengeSubmissionCost, addItemCost, arbitrationCost } = useTcrData(tcrAddress)
-  const token = useTcrToken(erc20Address as `0x${string}`, tcrAddress as `0x${string}`, chainId)
+  const chainId = grant?.flow.chainId ?? grant?.chainId ?? 0
+
+  const { challengeSubmissionCost, addItemCost, arbitrationCost } = useTcrData(
+    tcrAddress,
+    chainId,
+  )
+  const token = useTcrToken(
+    erc20Address as `0x${string}`,
+    tcrAddress as `0x${string}`,
+    chainId,
+  )
 
   const hasEnoughBalance = token.balance >= challengeSubmissionCost
   const hasEnoughAllowance = token.allowance >= challengeSubmissionCost

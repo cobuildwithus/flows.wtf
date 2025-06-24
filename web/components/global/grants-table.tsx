@@ -137,6 +137,7 @@ export function GrantsTable(props: Props) {
                     <RemoveRecipientButton
                       contract={flow.recipient}
                       recipientId={grant.recipientId}
+                      chainId={flow.chainId}
                     />
                   )}
                 </div>
