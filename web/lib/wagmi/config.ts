@@ -1,6 +1,6 @@
 import { createConfig } from "@privy-io/wagmi"
-import { http, webSocket } from "wagmi"
-import { base, baseSepolia, Chain, mainnet } from "wagmi/chains"
+import { http } from "viem"
+import { base, baseSepolia, Chain, mainnet, optimism } from "wagmi/chains"
 
 declare module "wagmi" {
   interface Register {
@@ -8,7 +8,7 @@ declare module "wagmi" {
   }
 }
 
-export const chains = [base, baseSepolia, mainnet] satisfies Chain[]
+export const chains = [base, baseSepolia, mainnet, optimism] satisfies Chain[]
 
 export const config = createConfig({
   chains: chains as any,
@@ -16,6 +16,7 @@ export const config = createConfig({
     [base.id]: http(getRpcUrl(base, "http")),
     [baseSepolia.id]: http(getRpcUrl(baseSepolia, "http")),
     [mainnet.id]: http(getRpcUrl(mainnet, "http")),
+    [optimism.id]: http(getRpcUrl(optimism, "http")),
   },
 
   batch: { multicall: { wait: 32, batchSize: 2048 } },
@@ -34,6 +35,8 @@ export function getRpcUrl(chain: Chain, type: "http" | "ws") {
       return `${protocol}://base-sepolia.g.alchemy.com/v2/${alchemyId}`
     case mainnet.id:
       return `${protocol}://eth-mainnet.g.alchemy.com/v2/${alchemyId}`
+    case optimism.id:
+      return `${protocol}://opt-mainnet.g.alchemy.com/v2/${alchemyId}`
     default:
       throw new Error(`Unsupported chain: ${chain.id}`)
   }
