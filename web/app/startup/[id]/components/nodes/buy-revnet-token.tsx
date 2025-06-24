@@ -87,7 +87,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Pro
     <form className="pointer-events-auto space-y-1 rounded-xl py-1.5" onSubmit={handleSubmit}>
       <div className="relative flex flex-col">
         {/* Pay section */}
-        <div className="rounded-lg bg-muted/30 p-1.5 px-4">
+        <div className="rounded-lg bg-accent/40 p-1.5 px-4 dark:bg-muted/30">
           {/* <Label className="mb-1.5 block text-xs font-medium text-muted-foreground">Pay</Label> */}
           <div className="flex items-center justify-between">
             <Input
@@ -117,7 +117,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Pro
         <div className="mb-1" />
 
         {/* Receive section */}
-        <div className="rounded-lg bg-muted/30 p-1.5 px-4">
+        <div className="rounded-lg bg-accent/40 p-1.5 px-4 dark:bg-muted/30">
           {/* <Label className="mb-1.5 block text-xs font-medium text-muted-foreground">Receive</Label> */}
           <div className="flex items-center justify-between">
             <Input
