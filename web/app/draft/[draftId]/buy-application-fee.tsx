@@ -4,15 +4,12 @@ import { BuyTokenButton } from "@/app/token/buy-token-button"
 import { useEthBalances } from "@/app/token/hooks/use-eth-balances"
 import { useBuyTokenQuoteWithRewards } from "@/app/token/hooks/useBuyTokenQuote"
 import { getEthAddress } from "@/lib/utils"
-import { base } from "viem/chains"
 
 interface Props {
   flow: Pick<FlowWithTcr, "tokenEmitter" | "erc20" | "chainId">
   amount: bigint
   onSuccess: (hash: string) => void
 }
-
-const chainId = base.id
 
 export function BuyApplicationFee(props: Props) {
   const { flow, amount, onSuccess } = props
@@ -22,7 +19,7 @@ export function BuyApplicationFee(props: Props) {
   const { totalCost, isLoading } = useBuyTokenQuoteWithRewards(
     getEthAddress(flow.tokenEmitter),
     amount,
-    chainId,
+    flow.chainId,
   )
 
   return (
