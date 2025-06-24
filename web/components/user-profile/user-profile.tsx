@@ -5,6 +5,7 @@ import { Suspense, type JSX } from "react"
 import { getUserProfile, type Profile } from "./get-user-profile"
 import { UserProfilePopover } from "./user-popover"
 import { ProfileLink } from "./profile-link"
+import { base } from "viem/chains"
 
 type Props = {
   address: `0x${string}`
@@ -33,7 +34,7 @@ const UserProfileInner = async (props: Props) => {
       <UserProfilePopover profile={profile}>
         <div className="flex">
           {!hideLink && (
-            <ProfileLink username={profile.username} address={profile.address}>
+            <ProfileLink username={profile.username} address={profile.address} chainId={base.id}>
               {children(profile)}
             </ProfileLink>
           )}

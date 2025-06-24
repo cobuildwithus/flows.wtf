@@ -48,7 +48,7 @@ export function useVoteNouns(contract: `0x${string}`, chainId: number, onSuccess
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ tokens: serialize(tokenBatch) }),
+          body: JSON.stringify({ tokens: serialize(tokenBatch), chainId }),
         })
           .then((res) => {
             return res.json()

@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { formatEther } from "viem"
 import { useAccount } from "wagmi"
 import { useAgentChat } from "../agent-chat"
+import { base } from "viem/chains"
 
 interface Props {
   grantId: string
@@ -31,7 +32,7 @@ export function RequestGrantRemoval(props: Props) {
   const { address } = useAccount()
   const { user, append } = useAgentChat()
 
-  const chainId = grant?.flow.chainId ?? grant?.chainId
+  const chainId = grant?.flow.chainId ?? grant?.chainId ?? base.id
 
   const { removeItemCost, challengePeriodFormatted } = useTcrData(
     grant?.flow.tcr as `0x${string}`,

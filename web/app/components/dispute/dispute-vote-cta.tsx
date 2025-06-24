@@ -19,7 +19,12 @@ export function DisputeVoteCta(props: Props) {
   const { dispute, grant, size = "default" } = props
   const { address } = useAccount()
 
-  const receipt = useVotingReceipt(dispute.arbitrator as Address, dispute.disputeId, address)
+  const receipt = useVotingReceipt(
+    dispute.arbitrator as Address,
+    dispute.disputeId,
+    grant.chainId,
+    address,
+  )
 
   const isDisputeUnresolved = isDisputeResolvedForNoneParty(dispute)
   const isGrantRejected = isRequestRejected(grant, dispute)
