@@ -1,5 +1,6 @@
 import { NOUNS_TOKEN } from "@/lib/config"
-import { l1Client, l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base, mainnet } from "viem/chains"
 import { encodeAbiParameters, keccak256, PublicClient, toHex, type Address } from "viem"
 import { getBeaconBlock } from "./get-beacon-block"
 import { getBeaconRootAndL2Timestamp } from "./get-beacon-root-and-l2-timestamp"
@@ -19,7 +20,9 @@ export async function generateOwnerProofs(tokens: { id: bigint; owner: Address }
 
     // Step 1: Get the latest beacon root and L2 timestamp
     // This function retrieves the parentBeaconBlockRoot and timestamp from the latest L2 block
-    const beaconInfo = await getBeaconRootAndL2Timestamp(l2Client as PublicClient)
+    const beaconInfo = await getBeaconRootAndL2Timestamp(
+      getClient(base.id) as PublicClient,
+    )
 
     // Step 2: Fetch the beacon block using the beacon root
     // This function makes an API call to retrieve the beacon block data
@@ -43,7 +46,7 @@ export async function generateOwnerProofs(tokens: { id: bigint; owner: Address }
             )
 
             // Step 4: Get the storage proof from the L1 client
-            const proof = await l1Client.getProof({
+            const proof = await getClient(mainnet.id).getProof({
               address: NOUNS_TOKEN,
               storageKeys: [slot],
               blockNumber: BigInt(block.body.executionPayload.blockNumber),
@@ -66,7 +69,7 @@ export async function generateOwnerProofs(tokens: { id: bigint; owner: Address }
         )
 
         // Get the storage proof from the L1 client
-        const proof = await l1Client.getProof({
+        const proof = await getClient(mainnet.id).getProof({
           address: NOUNS_TOKEN,
           storageKeys: [slot],
           blockNumber: BigInt(block.body.executionPayload.blockNumber),

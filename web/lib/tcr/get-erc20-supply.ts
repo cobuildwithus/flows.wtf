@@ -1,7 +1,8 @@
 "use server"
 
 import { type Address, erc20Abi } from "viem"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base } from "viem/chains"
 
 export async function getERC20Supply(contract: Address | undefined) {
   if (!contract) {
@@ -9,7 +10,7 @@ export async function getERC20Supply(contract: Address | undefined) {
   }
 
   try {
-    const totalSupply = await l2Client.readContract({
+    const totalSupply = await getClient(base.id).readContract({
       abi: erc20Abi,
       address: contract,
       functionName: "totalSupply",

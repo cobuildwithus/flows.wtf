@@ -1,7 +1,8 @@
 "use server"
 
 import { superfluidPoolAbi } from "@/lib/abis"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base } from "viem/chains"
 import type { Address } from "viem"
 
 export async function getClaimablePoolBalance(
@@ -13,7 +14,7 @@ export async function getClaimablePoolBalance(
   }
 
   try {
-    const balance = await l2Client.readContract({
+    const balance = await getClient(base.id).readContract({
       address: pool,
       abi: superfluidPoolAbi,
       functionName: "getClaimableNow",

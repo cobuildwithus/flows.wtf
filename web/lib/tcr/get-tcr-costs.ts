@@ -3,7 +3,8 @@ import "server-only"
 import { unstable_cache } from "next/cache"
 import { erc20Abi, getContract } from "viem"
 import { flowTcrImplAbi } from "../abis"
-import { l2Client } from "../viem/client"
+import { getClient } from "../viem/client"
+import { base } from "viem/chains"
 import { getEthAddress } from "../utils"
 
 export async function getTcrCosts(tcrAddress: string | null, erc20Address: string | null) {
@@ -17,7 +18,11 @@ export async function getTcrCosts(tcrAddress: string | null, erc20Address: strin
 }
 
 async function readTcrCosts(tcrAddress: `0x${string}`, erc20Address: `0x${string}`) {
-  const tcr = getContract({ address: tcrAddress, abi: flowTcrImplAbi, client: l2Client })
+  const tcr = getContract({
+    address: tcrAddress,
+    abi: flowTcrImplAbi,
+    client: getClient(base.id),
+  })
 
   const [
     addItemCost,
@@ -27,7 +32,11 @@ async function readTcrCosts(tcrAddress: `0x${string}`, erc20Address: `0x${string
     arbitrationCost,
   ] = await tcr.read.getTotalCosts()
 
-  const erc20 = getContract({ address: erc20Address, abi: erc20Abi, client: l2Client })
+  const erc20 = getContract({
+    address: erc20Address,
+    abi: erc20Abi,
+    client: getClient(base.id),
+  })
 
   const symbol = await erc20.read.symbol()
 

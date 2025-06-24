@@ -2,7 +2,8 @@
 
 import { Address } from "viem"
 import { nounsFlowImplAbi } from "@/lib/abis"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base } from "viem/chains"
 import { unstable_cache } from "next/cache"
 
 export const getGrantsClaimableBalance = unstable_cache(
@@ -10,7 +11,7 @@ export const getGrantsClaimableBalance = unstable_cache(
     try {
       const balances = await Promise.all(
         contracts.map((contract) =>
-          l2Client.readContract({
+          getClient(base.id).readContract({
             address: contract as Address,
             abi: nounsFlowImplAbi,
             functionName: "getClaimableBalance",

@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { toast } from "sonner"
-import { getChain, l1Client, l2Client } from "../viem/client"
+import { getChain, getClient } from "../viem/client"
 import { explorerUrl } from "../utils"
 import { waitForTransactionReceipt } from "viem/actions"
-import { base } from "viem/chains"
 
 export const useWaitForTransactions = (
   txHashes: { txHash: string; chainId: number; confirmed: boolean }[],
@@ -32,15 +31,9 @@ export const useWaitForTransactions = (
           onClick: () => window.open(explorerUrl(tx.txHash, tx.chainId)),
         },
       })
-      if (chainId === base.id) {
-        await waitForTransactionReceipt(l2Client, {
-          hash: tx.txHash as `0x${string}`,
-        })
-      } else {
-        await waitForTransactionReceipt(l1Client, {
-          hash: tx.txHash as `0x${string}`,
-        })
-      }
+      await waitForTransactionReceipt(getClient(chainId), {
+        hash: tx.txHash as `0x${string}`,
+      })
 
       setConfirmedTxs((prev) => [...prev, tx.txHash])
       toast.success(`${chainName} transaction confirmed`, { duration: 3000, id: toastId })

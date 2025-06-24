@@ -2,7 +2,8 @@
 
 import { Address } from "viem"
 import { rewardPoolImplAbi } from "@/lib/abis"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base } from "viem/chains"
 import { unstable_cache } from "next/cache"
 import { getEthAddress } from "@/lib/utils"
 
@@ -11,7 +12,7 @@ export const getUserTotalRewardsBalance = unstable_cache(
     try {
       const claimableBalances = await Promise.all(
         pools.map((pool) =>
-          l2Client.readContract({
+          getClient(base.id).readContract({
             address: getEthAddress(pool) as Address,
             abi: rewardPoolImplAbi,
             functionName: "getClaimableBalanceNow",
@@ -22,7 +23,7 @@ export const getUserTotalRewardsBalance = unstable_cache(
 
       const memberFlowRates = await Promise.all(
         pools.map((pool) =>
-          l2Client.readContract({
+          getClient(base.id).readContract({
             address: getEthAddress(pool) as Address,
             abi: rewardPoolImplAbi,
             functionName: "getMemberFlowRate",
