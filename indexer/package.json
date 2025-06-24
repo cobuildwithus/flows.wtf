@@ -25,6 +25,7 @@
     "@types/pg": "^8.11.11",
     "eslint": "^9.29.0",
     "eslint-config-ponder": "^0.11.19",
+    "globals": "^16.2.0",
     "typescript": "^5.7.2"
   },
   "engines": {
