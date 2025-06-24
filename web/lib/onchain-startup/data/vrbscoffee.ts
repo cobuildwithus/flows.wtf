@@ -28,6 +28,11 @@ export const vrbscoffee = {
   },
   reviews: [
     {
+      url: "https://farcaster.xyz/coolbeans1r/0x084e82f6",
+      image:
+        "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3097ea4c-a919-4f0a-3738-8f1ecdef5000/rectcontain3",
+    },
+    {
       url: "https://farcaster.xyz/rocketman/0x136e36aa",
       image:
         "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/cc70cf70-395c-4937-cfca-15618fe0d900/original",

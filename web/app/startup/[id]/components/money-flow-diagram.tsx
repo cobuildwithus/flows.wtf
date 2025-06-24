@@ -157,7 +157,7 @@ export function MoneyFlowDiagram(props: Props) {
         col: 2,
         row: 1,
         id: "team",
-        height: 96,
+        height: 100,
         title: ["Team", `$${splits.team * 100}/mo`],
         content: <ShortTeam members={members} />,
       },
@@ -185,9 +185,7 @@ export function MoneyFlowDiagram(props: Props) {
           />
         ),
         height: 90,
-        content: (
-          <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />
-        ),
+        content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
       },
       {
         col: 3,

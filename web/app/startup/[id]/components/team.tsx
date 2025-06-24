@@ -135,7 +135,7 @@ async function getOpportunitiesWithProfiles(startupId: string) {
     select: {
       id: true,
       position: true,
-      _count: { select: { drafts: true } },
+      _count: { select: { drafts: { where: { isOnchain: false } } } },
       drafts: true,
       flowId: true,
       budget: {
