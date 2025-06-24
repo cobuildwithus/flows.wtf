@@ -91,7 +91,7 @@ export const FlowSubmenu = async (props: Props) => {
             />
           )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
-          {!isFlowRemoved && (!isFlow || canSuggest) && (
+          {!isFlowRemoved && (canSuggest || !flow.isTopLevel) && (
             <Link href={`/apply/${flowId}`}>
               <Button>{flow.isTopLevel ? "Suggest flow" : "Apply"}</Button>
             </Link>
