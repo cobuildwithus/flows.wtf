@@ -31,7 +31,6 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { encodeAbiParameters, zeroAddress } from "viem"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { BuyApplicationFee } from "./buy-application-fee"
 import { publishDraft } from "./publish-draft"
@@ -47,10 +46,9 @@ interface Props {
   tcrAddress: `0x${string}`
   erc20Address: `0x${string}`
   tokenEmitterAddress: `0x${string}`
+  chainId: number
   user?: User
 }
-
-const chainId = base.id
 
 export function TCRDraftPublishButton(props: Props) {
   const {
@@ -62,13 +60,14 @@ export function TCRDraftPublishButton(props: Props) {
     erc20Address,
     tokenEmitterAddress,
     user,
+    chainId,
   } = props
   const { address } = useAccount()
   const router = useRouter()
   const ref = useRef<HTMLButtonElement>(null)
 
-  const { addItemCost, challengePeriodFormatted } = useTcrData(tcrAddress)
-  const token = useTcrToken(erc20Address, tcrAddress)
+  const { addItemCost, challengePeriodFormatted } = useTcrData(tcrAddress, chainId)
+  const token = useTcrToken(erc20Address, tcrAddress, chainId)
 
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({
     chainId,
@@ -184,7 +183,9 @@ export function TCRDraftPublishButton(props: Props) {
               1
             </span>
             <p className="text-muted-foreground">
-              Deposit <TcrInUsd tokenEmitter={tokenEmitterAddress} amount={addItemCost} />.
+              Deposit{" "}
+              <TcrInUsd tokenEmitter={tokenEmitterAddress} amount={addItemCost} chainId={chainId} />
+              .
             </p>
           </li>
           <li className="flex items-start space-x-4">

@@ -9,12 +9,12 @@ import { sortGrants } from "@/lib/grant-utils"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import Image from "next/image"
-import { base } from "viem/chains"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import { Grant } from "@prisma/flows"
 import { zeroAddress } from "viem"
+import FlowsList from "../components/flows-list"
 
 interface Props {
   customFlow: CustomFlow
@@ -61,7 +61,7 @@ export async function CustomFlowPage(props: Props) {
 
   return (
     <AllocationProvider
-      chainId={base.id}
+      chainId={flow.chainId}
       contract={getEthAddress(flow.recipient)}
       strategies={flow.allocationStrategies}
       user={user?.address ?? null}
@@ -128,6 +128,8 @@ export async function CustomFlowPage(props: Props) {
               title="No projects found"
               description="There are no approved projects yet"
             />
+          ) : isTopLevel ? (
+            <FlowsList flows={grants.sort(sortGrants)} />
           ) : (
             <GrantsList grants={grants.sort(sortGrants)} flow={flow} />
           )}

@@ -221,6 +221,7 @@ export default async function ApplicationsGrantsList(props: Props) {
                     {!!flow.arbitrator && dispute && canDisputeBeExecuted(dispute) && (
                       <DisputeExecuteButton
                         flowId={flow.id}
+                        chainId={flow.chainId}
                         arbitrator={getAddress(flow.arbitrator)}
                         dispute={dispute}
                         size="sm"

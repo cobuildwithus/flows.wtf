@@ -8,6 +8,7 @@ export const maxDuration = 30
 
 interface Body {
   tokens: { id: bigint; owner: Address }[]
+  chainId: number
 }
 
 export async function POST(req: Request) {
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     const tokens = body.tokens.map(({ id, owner }) => ({ id: BigInt(id), owner }))
-    const proofs = await generateOwnerProofs(tokens)
+    const proofs = await generateOwnerProofs(tokens, body.chainId)
 
     return NextResponse.json(serialize(proofs))
   } catch (error) {

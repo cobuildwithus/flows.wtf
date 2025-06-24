@@ -1,15 +1,16 @@
 import { erc20VotesArbitratorImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
 import type { Address } from "viem"
 
 export async function getVoterRewardsBalance(
   arbitratorAddress: Address,
+  chainId: number,
   disputeId: bigint,
   round: bigint,
   userAddress: Address,
 ): Promise<bigint> {
-  const balance = await l2Client.readContract({
+  const balance = await getClient(chainId).readContract({
     address: getEthAddress(arbitratorAddress),
     abi: erc20VotesArbitratorImplAbi,
     functionName: "getRewardsForRound",

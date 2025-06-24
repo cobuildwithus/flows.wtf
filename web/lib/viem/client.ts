@@ -1,24 +1,32 @@
 import { createPublicClient, http } from "viem"
-import { base, mainnet } from "viem/chains"
+import { base, mainnet, optimism } from "viem/chains"
 
-export const l1Client = createPublicClient({
+export const mainnetClient = createPublicClient({
   chain: mainnet,
   transport: http(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
   batch: { multicall: true },
 })
 
-export const l2Client = createPublicClient({
+const baseClient = createPublicClient({
   chain: base,
   transport: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
+  batch: { multicall: true },
+})
+
+const optimismClient = createPublicClient({
+  chain: optimism,
+  transport: http(`https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
   batch: { multicall: true },
 })
 
 export const getClient = (chainId: number) => {
   switch (chainId) {
     case base.id:
-      return l2Client
+      return baseClient
     case mainnet.id:
-      return l1Client
+      return mainnetClient
+    case optimism.id:
+      return optimismClient
     default:
       throw new Error(`Unsupported chainId: ${chainId}`)
   }
@@ -30,6 +38,8 @@ export function getChain(chainId: number) {
       return base
     case mainnet.id:
       return mainnet
+    case optimism.id:
+      return optimism
     default:
       throw new Error(`Unsupported chainId: ${chainId}`)
   }

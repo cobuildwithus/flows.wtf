@@ -11,6 +11,7 @@ async function handleTransfer(params: {
 }) {
   const { event, context } = params
   const { value } = event.args
+  const chainId = context.chain.id
 
   const tokenContract = event.log.address.toLowerCase()
   const from = event.args.from.toLowerCase()
@@ -30,6 +31,7 @@ async function handleTransfer(params: {
       .values({
         id: `${tokenContract}-${to}`,
         tokenContract,
+        chainId,
         holder: to,
         amount: value.toString(),
         firstPurchase: Number(event.block.timestamp),

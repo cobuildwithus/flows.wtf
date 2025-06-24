@@ -118,6 +118,7 @@ export const RecipientPopover = (props: Props) => {
                           pools={[grant.flow.baselinePool, grant.flow.bonusPool].map((pool) =>
                             getEthAddress(pool),
                           )}
+                          chainId={grant.flow.chainId}
                         />
                       </div>
                     </div>

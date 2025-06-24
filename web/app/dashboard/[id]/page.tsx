@@ -116,6 +116,7 @@ export default async function GrantPage(props: Props) {
               monthlySales={salesSummary.monthlySales}
               startupTitle={startup.title}
               projectId={startup.revnetProjectIds.base}
+              chainId={startup.chainId}
             />
           </div>
 

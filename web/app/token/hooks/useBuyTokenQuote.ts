@@ -5,7 +5,7 @@ import { base } from "viem/chains"
 import useSWR from "swr"
 import { getTokenQuote, getTokenQuoteWithRewards } from "./buy-token-quotes"
 
-export function useBuyTokenQuote(contract: Address, amount: bigint, chainId = base.id) {
+export function useBuyTokenQuote(contract: Address, amount: bigint, chainId: number) {
   const { data, error, isLoading } = useSWR(["buyTokenQuote", contract, amount, chainId], () =>
     getTokenQuote(contract, amount, chainId),
   )
@@ -18,7 +18,7 @@ export function useBuyTokenQuote(contract: Address, amount: bigint, chainId = ba
   }
 }
 
-export function useBuyTokenQuoteWithRewards(contract: Address, amount: bigint, chainId = base.id) {
+export function useBuyTokenQuoteWithRewards(contract: Address, amount: bigint, chainId: number) {
   const { data, error, isLoading } = useSWR(
     ["buyTokenQuoteWithRewards", contract, amount, chainId],
     () => getTokenQuoteWithRewards(contract, amount, chainId),

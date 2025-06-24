@@ -6,8 +6,8 @@ ponder.on("NounsFlow:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
 ponder.on("CustomFlow:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
 
 async function handleBonusPoolQuorumUpdated(params: {
-  event: Event<"NounsFlow:BonusPoolQuorumUpdated">
-  context: Context<"NounsFlow:BonusPoolQuorumUpdated">
+  event: Event<"CustomFlow:BonusPoolQuorumUpdated">
+  context: Context<"CustomFlow:BonusPoolQuorumUpdated">
 }) {
   const { event, context } = params
 

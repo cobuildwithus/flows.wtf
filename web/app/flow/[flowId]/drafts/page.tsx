@@ -106,6 +106,7 @@ export default async function FlowDraftsPage(props: Props) {
                       tcrAddress={getEthAddress(flow.tcr)}
                       erc20Address={getEthAddress(flow.erc20)}
                       tokenEmitterAddress={getEthAddress(flow.tokenEmitter)}
+                      chainId={flow.chainId}
                       user={user}
                     />
                   </div>

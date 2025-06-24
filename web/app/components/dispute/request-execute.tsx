@@ -9,7 +9,6 @@ import type { Grant } from "@prisma/flows"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import type { Address } from "viem"
-import { base } from "viem/chains"
 
 interface Props {
   grant: Omit<Grant, "description">
@@ -28,6 +27,7 @@ export function RequestExecuteButton(props: Props) {
       await new Promise((resolve) => setTimeout(resolve, 2000))
       router.push(`/flow/${flow.id}`)
     },
+    chainId: flow.chainId,
   })
 
   return (
@@ -49,7 +49,7 @@ export function RequestExecuteButton(props: Props) {
           abi: [...flowTcrImplAbi, ...nounsFlowImplAbi, ...erc20VotesMintableImplAbi],
           functionName: "executeRequest",
           args: [grant.id as Address],
-          chainId: base.id,
+          chainId: flow.chainId,
         })
       }}
     >

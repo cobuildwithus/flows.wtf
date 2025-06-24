@@ -10,6 +10,7 @@ async function handleEvidence(params: {
 }) {
   const { event, context } = params
   const { _arbitrator, _evidenceGroupID, _evidence, _party } = event.args
+  const chainId = context.chain.id
 
   const blockNumber = event.block.number
   const arbitrator = _arbitrator.toString().toLowerCase()
@@ -19,6 +20,7 @@ async function handleEvidence(params: {
   await context.db.insert(evidence).values({
     id: `${arbitrator}_${blockNumber}_${party}_${evidenceGroupID}`,
     arbitrator,
+    chainId,
     evidenceGroupID,
     evidence: _evidence,
     party,

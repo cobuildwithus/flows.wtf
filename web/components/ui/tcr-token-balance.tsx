@@ -3,7 +3,6 @@ import { Currency } from "./currency"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
 import { useERC20Supply } from "@/lib/tcr/use-erc20-supply"
 import { useSellTokenQuote } from "@/app/token/hooks/use-sell-token-quote"
-import { base } from "viem/chains"
 import type { TokenHolder } from "@prisma/flows"
 import { formatUSDValue } from "@/app/token/hooks/useETHPrice"
 import { formatEther } from "viem"
@@ -12,6 +11,7 @@ export const TcrTokenBalance = ({
   className,
   erc20,
   tokenEmitter,
+  chainId,
   monthlyRewardPoolRate,
   ethPrice,
   holderInfo,
@@ -19,15 +19,16 @@ export const TcrTokenBalance = ({
   holderInfo: TokenHolder
   className: string
   erc20: `0x${string}`
+  chainId: number
   tokenEmitter: `0x${string}`
   monthlyRewardPoolRate: string
   ethPrice: number
 }) => {
-  const { totalSupply } = useERC20Supply(erc20)
+  const { totalSupply } = useERC20Supply(erc20, chainId)
   const { payment: worthInETH } = useSellTokenQuote(
     tokenEmitter,
     BigInt(holderInfo.amount),
-    base.id,
+    chainId,
   )
 
   return (

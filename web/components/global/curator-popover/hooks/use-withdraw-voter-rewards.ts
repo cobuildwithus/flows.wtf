@@ -2,16 +2,14 @@ import { erc20VotesArbitratorImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { toast } from "sonner"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import useSWR from "swr"
 import { getVoterRewardsBalance } from "./get-voter-rewards-balance"
 import { useUserTcrTokens } from "./use-user-tcr-tokens"
 
-const chainId = base.id
-
 export const useWithdrawVoterRewards = (
   arbitratorAddress: `0x${string}`,
+  chainId: number,
   disputeId: bigint,
   round: bigint,
 ) => {
@@ -26,7 +24,7 @@ export const useWithdrawVoterRewards = (
     address ? ["voter-rewards-balance", arbitratorAddress, disputeId, round, address] : null,
     () =>
       address
-        ? getVoterRewardsBalance(arbitratorAddress, disputeId, round, address)
+        ? getVoterRewardsBalance(arbitratorAddress, chainId, disputeId, round, address)
         : Promise.resolve(BigInt(0)),
   )
 

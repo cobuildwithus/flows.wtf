@@ -13,7 +13,6 @@ import type { DerivedData } from "@prisma/flows"
 import { useState } from "react"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
-import { base } from "viem/chains"
 import { GrantsTable } from "@/components/global/grants-table"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import { Currency } from "@/components/ui/currency"
@@ -90,7 +89,7 @@ export function AllocateBudgets(props: Props) {
           <div className="min-h-[340px]">
             {selectedGrants.length > 0 ? (
               <AllocationProvider
-                chainId={base.id}
+                chainId={selectedFlow.chainId}
                 contract={getEthAddress(selectedFlow.recipient)}
                 strategies={selectedFlow.allocationStrategies}
                 user={user}

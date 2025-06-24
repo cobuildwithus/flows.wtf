@@ -2,11 +2,8 @@ import { Button } from "@/components/ui/button"
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { Address } from "viem"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { toast } from "sonner"
-
-const chainId = base.id
 
 export const SellTokenButton = ({
   isLoadingQuote,
@@ -17,6 +14,7 @@ export const SellTokenButton = ({
   onSuccess,
   tokenSymbol,
   tokenEmitter,
+  chainId,
 }: {
   isLoadingQuote: boolean
   tokenBalance: bigint
@@ -26,6 +24,7 @@ export const SellTokenButton = ({
   onSuccess: (hash: string) => void
   tokenSymbol: string
   tokenEmitter: Address
+  chainId: number
 }) => {
   const { address } = useAccount()
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({

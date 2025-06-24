@@ -10,13 +10,14 @@ import {
 } from "@/components/ui/chart"
 import { MonthlySales } from "@/lib/shopify/summary"
 import { Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts"
-import { base } from "viem/chains"
+
 import { BringRevenueOnchain } from "./bring-revenue-onchain"
 
 interface Props {
   monthlySales: MonthlySales[]
   startupTitle: string
   projectId: bigint
+  chainId: number
 }
 
 const chartConfig = {
@@ -25,7 +26,7 @@ const chartConfig = {
 } as const
 
 export function SalesOverview(props: Props) {
-  const { monthlySales, startupTitle, projectId } = props
+  const { monthlySales, startupTitle, projectId, chainId } = props
 
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
@@ -38,7 +39,7 @@ export function SalesOverview(props: Props) {
           <BringRevenueOnchain
             startupTitle={startupTitle}
             projectId={projectId}
-            chainId={base.id}
+            chainId={chainId}
           />
         </div>
       </CardHeader>

@@ -4,7 +4,12 @@ import { Party } from "@/lib/kv/disputeVote"
 import { generateVoteHash } from "./get-secret-vote-hash"
 import { useEffect, useState } from "react"
 
-export function useSecretVoteHash(arbitrator: string, disputeId: string, address?: string) {
+export function useSecretVoteHash(
+  arbitrator: string,
+  disputeId: string,
+  chainId: number,
+  address?: string,
+) {
   const [forCommitHash, setForCommitHash] = useState<`0x${string}` | null>(null)
   const [againstCommitHash, setAgainstCommitHash] = useState<`0x${string}` | null>(null)
   const [error, setError] = useState<Error | null>(null)
@@ -17,8 +22,8 @@ export function useSecretVoteHash(arbitrator: string, disputeId: string, address
       setIsLoading(true)
       try {
         const [forHash, againstHash] = await Promise.all([
-          generateVoteHash(Party.Requester, arbitrator, disputeId, address),
-          generateVoteHash(Party.Challenger, arbitrator, disputeId, address),
+          generateVoteHash(Party.Requester, arbitrator, disputeId, address, chainId),
+          generateVoteHash(Party.Challenger, arbitrator, disputeId, address, chainId),
         ])
 
         setForCommitHash(forHash)

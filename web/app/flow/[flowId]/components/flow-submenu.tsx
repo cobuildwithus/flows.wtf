@@ -10,6 +10,7 @@ import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getEthAddress } from "@/lib/utils"
 import Link from "next/link"
 import { AllocationToggle } from "./allocation-toggle"
+import { getUser } from "@/lib/auth/user"
 
 interface Props {
   flowId: string
@@ -19,11 +20,12 @@ interface Props {
 export const FlowSubmenu = async (props: Props) => {
   const { flowId, segment } = props
 
-  const [flow, draftsCount] = await Promise.all([
+  const [flow, draftsCount, user] = await Promise.all([
     getFlowWithGrants(flowId),
     database.draft.count({
       where: { flowId, isPrivate: false, isOnchain: false, createdAt: { gt: DRAFT_CUTOFF_DATE } },
     }),
+    getUser(),
   ])
 
   const customFlow = getCustomFlowById(flowId)
@@ -41,6 +43,11 @@ export const FlowSubmenu = async (props: Props) => {
   const approvedCount = flow.subgrants.filter(isGrantApproved).length
   const awaitingCount = flow.subgrants.filter(isGrantAwaiting).length
   const isFlowRemoved = flow.isRemoved
+  const hasTcr = !!flow.tcr
+  const isFlow = flow.isFlow
+  const isManager = flow.manager === user?.address
+  const canSuggest = hasTcr || isManager
+  const showDrafts = (isFlow && (hasTcr || isManager)) || !flow.isTopLevel
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
@@ -50,7 +57,7 @@ export const FlowSubmenu = async (props: Props) => {
     },
   ]
 
-  if (!flow.isTopLevel && !!flow.tcr) {
+  if (!flow.isTopLevel && hasTcr) {
     links.push({
       label: "Curate",
       href: `/flow/${flowId}/curate`,
@@ -59,12 +66,14 @@ export const FlowSubmenu = async (props: Props) => {
     })
   }
 
-  links.push({
-    label: "Drafts",
-    href: `/flow/${flowId}/drafts`,
-    isActive: isDrafts,
-    badge: draftsCount,
-  })
+  if (showDrafts) {
+    links.push({
+      label: "Drafts",
+      href: `/flow/${flowId}/drafts`,
+      isActive: isDrafts,
+      badge: draftsCount,
+    })
+  }
 
   return (
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
@@ -82,7 +91,7 @@ export const FlowSubmenu = async (props: Props) => {
             />
           )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
-          {!isFlowRemoved && (
+          {!isFlowRemoved && (!isFlow || canSuggest) && (
             <Link href={`/apply/${flowId}`}>
               <Button>{flow.isTopLevel ? "Suggest flow" : "Apply"}</Button>
             </Link>

@@ -41,6 +41,20 @@ const customFlows: CustomFlow[] = [
       },
     },
   },
+  {
+    id: "gardens",
+    name: "Gardens",
+    flowId: customFlowAddresses.gardens,
+    coverImage: "/gardens-bg.png",
+    styles: {
+      light: {
+        "--muted": "120 60% 90%",
+        "--muted-foreground": "120 40% 20%",
+        "--primary": "120 70% 50%",
+        "--primary-foreground": "0 0% 100%",
+      },
+    },
+  },
 ] as const
 
 export function getCustomFlow(id: CustomFlowId) {

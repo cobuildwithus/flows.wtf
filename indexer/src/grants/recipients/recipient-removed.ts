@@ -10,8 +10,8 @@ ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
 ponder.on("CustomFlow:RecipientRemoved", handleRecipientRemoved)
 
 async function handleRecipientRemoved(params: {
-  event: Event<"NounsFlow:RecipientRemoved">
-  context: Context<"NounsFlow:RecipientRemoved">
+  event: Event<"CustomFlow:RecipientRemoved">
+  context: Context<"CustomFlow:RecipientRemoved">
 }) {
   const { event, context } = params
   const { recipientId } = event.args

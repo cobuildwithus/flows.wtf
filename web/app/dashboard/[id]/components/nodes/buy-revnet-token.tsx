@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
-import { base } from "viem/chains"
 import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
 import { AuthButton } from "@/components/ui/auth-button"
@@ -14,17 +13,18 @@ import { ArrowDown } from "lucide-react"
 interface Props {
   projectId: bigint
   changeTokenVolumeEth: (eth: number) => void
+  chainId: number
 }
 
-export function BuyRevnetToken({ projectId, changeTokenVolumeEth }: Props) {
+export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Props) {
   const { address } = useAccount()
-  const { payRevnet, isLoading } = usePayRevnet(base.id)
+  const { payRevnet, isLoading } = usePayRevnet(chainId)
   const {
     isLoading: isPriceLoading,
     calculateTokensFromEth,
     calculateEthFromTokens,
-  } = useRevnetTokenPrice(projectId, base.id)
-  const { data: tokenDetails } = useRevnetTokenDetails(projectId, base.id)
+  } = useRevnetTokenPrice(projectId, chainId)
+  const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")

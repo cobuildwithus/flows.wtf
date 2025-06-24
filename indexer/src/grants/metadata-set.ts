@@ -6,8 +6,8 @@ ponder.on("NounsFlowChildren:MetadataSet", handleMetadataSet)
 ponder.on("CustomFlow:MetadataSet", handleMetadataSet)
 
 async function handleMetadataSet(params: {
-  event: Event<"NounsFlow:MetadataSet">
-  context: Context<"NounsFlow:MetadataSet">
+  event: Event<"CustomFlow:MetadataSet">
+  context: Context<"CustomFlow:MetadataSet">
 }) {
   const { event, context } = params
   const { metadata } = event.args

@@ -13,13 +13,16 @@ import {
   customFlowImplAbi,
   nounsTokenAbi,
 } from "./abis"
-import { base as baseContracts, mainnet as mainnetContracts } from "./addresses"
-import { getChainsAndRpcUrls } from "./src/utils"
+import {
+  base as baseContracts,
+  mainnet as mainnetContracts,
+  optimism as optimismContracts,
+} from "./addresses"
+import { GARDENx, getChainsAndRpcUrls, IndexerConfig, USDCx } from "./src/utils"
 
 const blockStarts = {
   base: {
     FLOWS: 21519031,
-    CUSTOM_FLOWS: 31834955,
     GNARS: 11194740,
     GROUNDS: 12698633,
   },
@@ -138,38 +141,35 @@ export default createConfig({
     },
     SuperfluidPool: {
       abi: superfluidPoolAbi,
+      chain: IndexerConfig.SuperfluidPool,
       filter: {
         event: "MemberUnitsUpdated",
         args: {
-          token: "0xd04383398dd2426297da660f9cca3d439af9ce1b",
+          token: [USDCx, GARDENx],
         },
       },
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
     },
     GdaV1: {
       abi: gdav1ImplAbi,
-      address: gdav1Address[8453],
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
+      chain: IndexerConfig.GdaV1,
+      address: [gdav1Address[8453], optimismContracts.GdaV1],
       filter: {
         event: "FlowDistributionUpdated",
         args: {
           // usdc on base
-          token: "0xd04383398dd2426297da660f9cca3d439af9ce1b",
+          token: [USDCx, GARDENx],
         },
       },
     },
     CustomFlow: {
       abi: customFlowImplAbi,
+      chain: IndexerConfig.CustomFlow,
       filter: {
         event: "FlowInitialized",
         args: {
-          flowImpl: [baseContracts.CustomFlowImpl],
+          flowImpl: [baseContracts.CustomFlowImpl, optimismContracts.CustomFlowImpl],
         },
       },
-      chain: "base",
-      startBlock: blockStarts.base.CUSTOM_FLOWS,
     },
     ERC721TokenMainnet: {
       abi: nounsTokenAbi,
@@ -180,18 +180,13 @@ export default createConfig({
     ERC721TokenBase: {
       abi: nounsTokenAbi,
       chain: "base",
-      startBlock: Math.min(
-        blockStarts.base.GNARS,
-        blockStarts.base.GROUNDS,
-        blockStarts.base.CUSTOM_FLOWS
-      ),
+      startBlock: Math.min(blockStarts.base.GNARS, blockStarts.base.GROUNDS),
       address: [baseContracts.VrbsToken, baseContracts.GroundsToken, baseContracts.GnarsToken],
     },
   },
   blocks: {
     TotalEarned: {
-      chain: "base",
-      startBlock: "latest",
+      chain: IndexerConfig.TotalEarned,
       interval: (6 * 60 * 60) / 2, // Every 6 hours (base block time is 2s)
     },
   },

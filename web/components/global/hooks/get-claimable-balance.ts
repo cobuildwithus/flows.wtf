@@ -1,11 +1,15 @@
 import { nounsFlowImplAbi } from "@/lib/abis"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
 
-export async function getClaimableBalance(contract: `0x${string}`, address?: `0x${string}`) {
+export async function getClaimableBalance(
+  contract: `0x${string}`,
+  chainId: number,
+  address?: `0x${string}`,
+) {
   if (!address) return BigInt(0)
 
   try {
-    const balance = await l2Client.readContract({
+    const balance = await getClient(chainId).readContract({
       address: contract,
       abi: nounsFlowImplAbi,
       functionName: "getClaimableBalance",

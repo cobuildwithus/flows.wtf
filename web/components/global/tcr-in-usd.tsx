@@ -5,12 +5,13 @@ import { EthInUsd } from "./eth-in-usd"
 interface Props {
   tokenEmitter: string
   amount: bigint
+  chainId: number
 }
 
 export function TcrInUsd(props: Props) {
-  const { tokenEmitter, amount } = props
+  const { tokenEmitter, amount, chainId } = props
 
-  const { totalCost } = useBuyTokenQuoteWithRewards(getEthAddress(tokenEmitter), amount)
+  const { totalCost } = useBuyTokenQuoteWithRewards(getEthAddress(tokenEmitter), amount, chainId)
 
   return <EthInUsd amount={BigInt(totalCost)} />
 }

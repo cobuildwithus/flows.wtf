@@ -3,8 +3,6 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Chain } from "viem"
-import { base } from "viem/chains"
 import {
   useAccount,
   useSwitchChain,
@@ -15,8 +13,8 @@ import {
 import { useLogin } from "../auth/use-login"
 import { explorerUrl } from "../utils"
 
-export const useContractTransaction = (args?: {
-  chainId?: Chain["id"]
+export const useContractTransaction = (args: {
+  chainId: number
   onSuccess?: (hash: string) => void
   loading?: string
   success?: string
@@ -24,7 +22,7 @@ export const useContractTransaction = (args?: {
 }) => {
   const router = useRouter()
   const {
-    chainId = base.id,
+    chainId,
     loading = "Transaction in progress...",
     success,
     onSuccess = () => router.refresh(),

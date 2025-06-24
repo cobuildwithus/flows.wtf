@@ -5,9 +5,7 @@ import { base, mainnet } from "viem/chains"
 import { useAccount } from "wagmi"
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { createRelayClient } from "@/lib/relay/client"
-import { getChain, l1Client, l2Client } from "@/lib/viem/client"
-
-const toChainId = base.id
+import { getChain, getClient } from "@/lib/viem/client"
 
 export const useBuyTokenRelay = () => {
   const { address } = useAccount()
@@ -24,8 +22,10 @@ export const useBuyTokenRelay = () => {
     toastId,
     onSuccess,
     successMessage,
+    toChainId,
   }: {
     chainId: number
+    toChainId: number
     tokenEmitter: Address
     args: [Address, bigint, bigint, { builder: Address; purchaseReferral: Address }]
     costWithSlippage: bigint
@@ -33,7 +33,7 @@ export const useBuyTokenRelay = () => {
     onSuccess: (hash: string) => void
     successMessage: string
   }) => {
-    const publicClient = chainId === mainnet.id ? l1Client : l2Client
+    const publicClient = getClient(chainId)
 
     const { request } = await publicClient.simulateContract({
       address: tokenEmitter,

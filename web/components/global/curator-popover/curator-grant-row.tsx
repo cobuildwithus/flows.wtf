@@ -31,6 +31,7 @@ export function ActiveCuratorGrantRow({
 
   const { withdrawRewards, voterRewardsBalance } = useWithdrawVoterRewards(
     getEthAddress(grant.parentArbitrator),
+    grant.chainId,
     mostRecentDispute?.disputeId ? BigInt(mostRecentDispute?.disputeId) : BigInt(0),
     BigInt(0), // only 1 round for now
   )

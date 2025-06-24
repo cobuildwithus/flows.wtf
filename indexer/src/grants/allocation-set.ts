@@ -11,6 +11,7 @@ async function handleAllocationSet(params: {
 }) {
   const { event, context } = params
   const { recipientId, strategy, allocationKey, bps, totalWeight } = event.args
+  const chainId = context.chain.id
 
   const blockNumber = event.block.number.toString()
   const blockTimestamp = Number(event.block.timestamp)
@@ -42,6 +43,7 @@ async function handleAllocationSet(params: {
   // Create the new vote
   await context.db.insert(allocations).values({
     id: voteId,
+    chainId,
     contract,
     recipientId: recipientId.toString(),
     allocationKey: allocationKey.toString(),

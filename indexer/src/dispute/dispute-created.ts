@@ -15,6 +15,7 @@ async function handleDisputeCreated(params: {
   context: Context<"Arbitrator:DisputeCreated">
 }) {
   const { event, context } = params
+  const chainId = context.chain.id
   const {
     arbitrable,
     id,
@@ -32,6 +33,7 @@ async function handleDisputeCreated(params: {
   await context.db.insert(disputes).values({
     id: getDisputePrimaryKey(id, arbitrator),
     disputeId: id.toString(),
+    chainId,
     grantId: "",
     evidenceGroupID: "",
     arbitrator,

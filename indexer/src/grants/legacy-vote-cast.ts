@@ -23,6 +23,7 @@ async function handleAllocationCast(params: {
 }) {
   const { event, context } = params
   const { recipientId, tokenId, bps, totalWeight } = event.args
+  const chainId = context.chain.id
 
   const blockNumber = event.block.number.toString()
   const blockTimestamp = Number(event.block.timestamp)
@@ -57,6 +58,7 @@ async function handleAllocationCast(params: {
   // Create the new allocation
   await context.db.insert(allocations).values({
     id: allocationId,
+    chainId,
     contract,
     recipientId: recipientId.toString(),
     allocationKey: tokenId.toString(),

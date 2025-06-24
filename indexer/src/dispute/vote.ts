@@ -15,6 +15,7 @@ async function handleVoteCommitted(params: {
 }) {
   const { event, context } = params
   const { disputeId, commitHash } = event.args
+  const chainId = context.chain.id
 
   const arbitrator = event.log.address.toLowerCase()
   const voter = event.transaction.from.toLowerCase()
@@ -22,6 +23,7 @@ async function handleVoteCommitted(params: {
   await context.db.insert(disputeVotes).values({
     id: getDisputeVotePrimaryKey(disputeId, arbitrator, voter, commitHash),
     disputeId: disputeId.toString(),
+    chainId,
     committedAt: Number(event.block.timestamp),
     commitHash,
     arbitrator,

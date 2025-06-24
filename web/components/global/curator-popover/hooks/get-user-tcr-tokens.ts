@@ -15,6 +15,7 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
         flow: {
           select: {
             id: true,
+            chainId: true,
             superToken: true,
             managerRewardSuperfluidPool: true,
             managerRewardPool: true,
@@ -53,6 +54,7 @@ export const getUserTcrTokens = cache(async (address: `0x${string}`) => {
         })
         return {
           id: subgrant.id,
+          chainId: subgrant.chainId,
           title: subgrant.title,
           image: subgrant.image,
           challengePeriodEndsAt: subgrant.challengePeriodEndsAt,

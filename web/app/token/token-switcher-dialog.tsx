@@ -14,7 +14,6 @@ import { getIpfsUrl } from "@/lib/utils"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { useRef } from "react"
 import type { Address } from "viem"
-import { base } from "viem/chains"
 import { CurrencyDisplay } from "./currency-display"
 import { TokenList } from "./token-list"
 import { TokenLogo } from "./token-logo"
@@ -24,15 +23,15 @@ interface Props {
   currentToken: Address | undefined
   currentTokenEmitter: Address | undefined
   parentFlowContract: Address
+  chainId: number
 }
-
-const chainId = base.id
 
 export function TokenSwitcherDialog({
   switchToken,
   currentToken,
   currentTokenEmitter,
   parentFlowContract,
+  chainId,
 }: Props) {
   const { tokens, isLoading } = useERC20TokensForParent(parentFlowContract, chainId)
   const ref = useRef<HTMLButtonElement>(null)
@@ -65,6 +64,7 @@ export function TokenSwitcherDialog({
               ref.current?.click() // close dialog
             }}
             tokens={tokens}
+            chainId={chainId}
           />
         )}
       </DialogContent>

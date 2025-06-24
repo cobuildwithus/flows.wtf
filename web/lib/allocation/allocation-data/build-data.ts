@@ -43,9 +43,10 @@ export const buildAllocationData = async (
           tokenIds?.map((id) => encodeAbiParameters([{ type: "uint256" }], [BigInt(id)])) || [],
         )
         break
-      case StrategyKey.SingleAllocator:
-        // SingleAllocator doesn't require any data in the JSON
-        allocationData.push([])
+        case StrategyKey.SingleAllocator:
+        // SingleAllocator expects a single empty bytes value so that
+        // the contract computes the allocation key for the caller
+        allocationData.push(["0x"])
         break
       default:
         allocationData.push([])

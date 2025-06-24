@@ -5,6 +5,7 @@ import { ExternalLinkIcon } from "@radix-ui/react-icons"
 import type { PropsWithChildren } from "react"
 import type { Profile } from "./get-user-profile"
 import { ProfileLink } from "./profile-link"
+import { base } from "viem/chains"
 
 interface Props {
   profile: Profile
@@ -27,7 +28,7 @@ export const UserProfilePopover = (props: PropsWithChildren<Props>) => {
             <div>
               <h4 className="flex flex-row items-center space-x-1.5 text-sm font-semibold">
                 <span>{display_name}</span>
-                <ProfileLink username={username} address={address}>
+                <ProfileLink username={username} address={address} chainId={base.id}>
                   <ExternalLinkIcon className="size-3.5" />
                 </ProfileLink>
               </h4>

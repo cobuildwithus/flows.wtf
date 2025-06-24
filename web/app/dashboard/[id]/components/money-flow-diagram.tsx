@@ -10,7 +10,6 @@ import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/
 import "@xyflow/react/dist/style.css"
 import Image from "next/image"
 import Link from "next/link"
-import { base } from "viem/chains"
 import { JoinStartupLink } from "./join-startup-link"
 import { TokenDAOLink } from "./token-dao-link"
 import { BuyRevnetToken } from "./nodes/buy-revnet-token"
@@ -50,7 +49,7 @@ export function MoneyFlowDiagram(props: Props) {
     tokenVolume,
     setTokenVolumeEth,
     totalRevnetTokens,
-  } = useFundraiseIllustration(startup.revnetProjectIds.base)
+  } = useFundraiseIllustration(startup.revnetProjectIds.base, startup.chainId)
 
   // return <MoneyFlowSkeleton />
   if (!width)
@@ -121,13 +120,14 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         height: 320,
         id: "user_action",
-        title: <ProductsTitle startup={startup} chainId={base.id} />,
+        title: <ProductsTitle startup={startup} chainId={startup.chainId} />,
         className: "bg-background dark:bg-background/50 shadow",
         content: (
           <ProductsList
             changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
             products={products.slice(0, 10)}
             startup={startup}
+            chainId={startup.chainId}
           />
         ),
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
@@ -139,7 +139,7 @@ export function MoneyFlowDiagram(props: Props) {
           <JoinStartupLink
             startupTitle={startup.title}
             projectId={startup.revnetProjectIds.base}
-            chainId={base.id}
+            chainId={startup.chainId}
           />
         ),
         id: "user_token",
@@ -148,6 +148,7 @@ export function MoneyFlowDiagram(props: Props) {
           <BuyRevnetToken
             projectId={startup.revnetProjectIds.base}
             changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
+            chainId={startup.chainId}
           />
         ),
         handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
@@ -179,12 +180,14 @@ export function MoneyFlowDiagram(props: Props) {
         title: (
           <TreasuryTitle
             startup={startup}
-            chainId={base.id}
+            chainId={startup.chainId}
             ethRaised={productsVolumeEth + tokenVolume}
           />
         ),
         height: 90,
-        content: <Treasury projectId={startup.revnetProjectIds.base} chainId={base.id} />,
+        content: (
+          <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />
+        ),
       },
       {
         col: 3,
@@ -231,7 +234,7 @@ export function MoneyFlowDiagram(props: Props) {
           <TokenDAOLink
             startupTitle={startup.title}
             projectId={startup.revnetProjectIds.base}
-            chainId={base.id}
+            chainId={startup.chainId}
             tokenAmount={Number(totalRevnetTokens)}
           />
         ),
@@ -240,7 +243,7 @@ export function MoneyFlowDiagram(props: Props) {
         content: (
           <TokenRewards
             projectId={startup.revnetProjectIds.base}
-            chainId={base.id}
+            chainId={startup.chainId}
             userAddress={user?.address}
             extraRevnetTokens={totalRevnetTokens}
             startupTitle={startup.title}

@@ -14,7 +14,7 @@ export function useUserGrants(address: string | undefined) {
     address && grants.length ? [`${address}_claimable_balance`, grants] : null,
     () =>
       getGrantsClaimableBalance(
-        grants.map((g) => g.parentContract),
+        grants.map((g) => ({ address: g.parentContract, chainId: g.flow.chainId })),
         address!,
       ),
   )

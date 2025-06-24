@@ -223,6 +223,7 @@ view Allocation {
   blockTimestamp   Int    @map("block_timestamp")
   transactionHash  String @map("transaction_hash")
   allocationsCount String @map("allocations_count")
+  chainId          Int    @map("chain_id")
 
   grant Grant @relation(fields: [recipientId], references: [recipientId])
 
@@ -266,6 +267,7 @@ view Dispute {
   totalSupply          String     @map("total_supply")
   isExecuted           Boolean    @map("is_executed")
   evidenceGroupID      String     @unique @map("evidence_group_id")
+  chainId              Int        @map("chain_id")
   grant                Grant      @relation(fields: [grantId], references: [id])
   evidences            Evidence[]
 
@@ -284,6 +286,7 @@ view DisputeVote {
   committedAt Int     @map("committed_at")
   revealedBy  String? @map("revealed_by")
   revealedAt  Int?    @map("revealed_at")
+  chainId     Int     @map("chain_id")
 
   @@unique([disputeId, arbitrator, voter])
   @@index([voter])
@@ -301,6 +304,7 @@ view TokenHolder {
   totalSold         String @map("total_sold")
   costBasis         String @map("cost_basis")
   totalSaleProceeds String @map("total_sale_proceeds")
+  chainId          Int    @map("chain_id")
 
   @@unique([tokenContract, holder])
   @@index([holder])
@@ -315,6 +319,7 @@ view Evidence {
   evidence        String
   party           String
   blockNumber     String @map("block_number")
+  chainId         Int    @map("chain_id")
 
   dispute Dispute @relation(fields: [evidenceGroupID], references: [evidenceGroupID])
   grant   Grant   @relation(fields: [evidenceGroupID], references: [evidenceGroupID])

@@ -92,6 +92,7 @@ export const allocations = onchainTable(
   (t) => ({
     id: t.text().primaryKey(),
     contract: t.text().notNull(),
+    chainId: t.integer().notNull(),
     recipientId: t.text().notNull(),
     allocationKey: t.text().notNull(),
     strategy: t.text().notNull(),
@@ -130,6 +131,7 @@ export const disputes = onchainTable(
     totalSupply: t.text().notNull(),
     isExecuted: t.boolean().notNull(),
     evidenceGroupID: t.text().notNull(),
+    chainId: t.integer().notNull(),
   }),
   (table) => ({
     arbitratorIdx: index().on(table.arbitrator),
@@ -153,6 +155,7 @@ export const disputeVotes = onchainTable(
     choice: t.integer(),
     votes: t.text(),
     reason: t.text(),
+    chainId: t.integer().notNull(),
   }),
   (table) => ({
     disputeIdIdx: index().on(table.disputeId),
@@ -183,6 +186,7 @@ export const tokenHolders = onchainTable(
   (t) => ({
     id: t.text().primaryKey(),
     tokenContract: t.text().notNull(),
+    chainId: t.integer().notNull(),
     holder: t.text().notNull(),
     firstPurchase: t.integer().notNull(),
     amount: t.text().notNull(),
@@ -206,6 +210,7 @@ export const evidence = onchainTable(
     evidence: t.text().notNull(),
     party: t.text().notNull(),
     blockNumber: t.text().notNull(),
+    chainId: t.integer().notNull(),
   }),
   (table) => ({
     arbitratorIdx: index().on(table.arbitrator),

@@ -1,5 +1,5 @@
 import { Context } from "ponder:registry"
-import { rewardPoolImplAbi } from "../../../abis"
+import { customFlowImplAbi, rewardPoolImplAbi } from "../../../abis"
 import { zeroAddress } from "viem"
 
 export async function getFlowMetadataAndRewardPool(
@@ -13,7 +13,7 @@ export async function getFlowMetadataAndRewardPool(
   const [metadata, managerRewardSuperfluidPool] = await Promise.all([
     context.client.readContract({
       address: contract,
-      abi: context.contracts.NounsFlow.abi,
+      abi: customFlowImplAbi,
       functionName: "flowMetadata",
     }),
     managerRewardPool !== zeroAddress
