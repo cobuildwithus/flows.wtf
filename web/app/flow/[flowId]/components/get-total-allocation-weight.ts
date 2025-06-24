@@ -12,7 +12,7 @@ import { StrategyKey } from "@/lib/allocation/strategy-key"
  * Sums the "totalAllocationWeight" from each matching strategy contract.
  * Returns the value as a BigInt.
  */
-export async function getVotingTokenSupply(allocationStrategies: string[], chainId: number) {
+export async function getTotalAllocationWeight(allocationStrategies: string[], chainId: number) {
   if (!allocationStrategies.length) {
     return 0n
   }

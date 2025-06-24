@@ -80,6 +80,7 @@ export const BuyTokenButton = ({
           if (useRelay) {
             executeBuyTokenRelay({
               chainId,
+              toChainId,
               tokenEmitter,
               args,
               costWithSlippage,

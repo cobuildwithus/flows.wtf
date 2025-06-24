@@ -7,7 +7,7 @@ import { getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { BudgetDialog } from "./budget-dialog"
-import { getVotingTokenSupply } from "./get-voting-token-supply"
+import { getTotalAllocationWeight } from "./get-total-allocation-weight"
 
 interface Props {
   flow: FlowWithGrants
@@ -16,7 +16,10 @@ interface Props {
 export const FlowHeader = async (props: Props) => {
   const { flow } = props
 
-  const votingTokenSupply = await getVotingTokenSupply(flow.allocationStrategies, flow.chainId)
+  const totalAllocationWeight = await getTotalAllocationWeight(
+    flow.allocationStrategies,
+    flow.chainId,
+  )
 
   return (
     <div className="flex flex-col items-start justify-between space-y-6 md:flex-row md:items-center md:space-x-4 md:space-y-0">
@@ -38,7 +41,7 @@ export const FlowHeader = async (props: Props) => {
                 {flow.title}
               </Link>
               <div className="text-sm max-sm:text-xs md:text-center">
-                <BudgetDialog votingTokenSupply={Number(votingTokenSupply)} flow={flow} />
+                <BudgetDialog totalAllocationWeight={Number(totalAllocationWeight)} flow={flow} />
               </div>
             </div>
             {flow.status === Status.ClearingRequested && (

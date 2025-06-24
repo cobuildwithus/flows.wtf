@@ -7,8 +7,6 @@ import { tokenEmitterImplAbi } from "@/lib/abis"
 import { createRelayClient } from "@/lib/relay/client"
 import { getChain, getClient } from "@/lib/viem/client"
 
-const toChainId = base.id
-
 export const useBuyTokenRelay = () => {
   const { address } = useAccount()
 
@@ -24,8 +22,10 @@ export const useBuyTokenRelay = () => {
     toastId,
     onSuccess,
     successMessage,
+    toChainId,
   }: {
     chainId: number
+    toChainId: number
     tokenEmitter: Address
     args: [Address, bigint, bigint, { builder: Address; purchaseReferral: Address }]
     costWithSlippage: bigint
