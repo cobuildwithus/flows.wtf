@@ -5,7 +5,7 @@ import { generateKVKey, SavedVote } from "@/lib/kv/disputeVote"
 import { getRevealVotesWalletClient } from "@/lib/viem/walletClient"
 import { base } from "viem/chains"
 import { erc20VotesArbitratorImplAbi } from "@/lib/abis"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
 import { waitForTransactionReceipt } from "viem/actions"
 
 export const dynamic = "force-dynamic"
@@ -45,7 +45,7 @@ export async function GET() {
         }
 
         // Check if vote is already revealed
-        const receipt = await l2Client.readContract({
+        const receipt = await getClient(base.id).readContract({
           address: arbitrator as `0x${string}`,
           abi: erc20VotesArbitratorImplAbi,
           functionName: "getReceipt",
@@ -58,7 +58,7 @@ export async function GET() {
         }
 
         // Get the latest nonce for the account
-        const nonce = await l2Client.getTransactionCount({
+        const nonce = await getClient(base.id).getTransactionCount({
           address: client.account.address,
         })
 

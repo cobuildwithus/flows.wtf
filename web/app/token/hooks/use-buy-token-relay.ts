@@ -5,7 +5,7 @@ import { base, mainnet } from "viem/chains"
 import { useAccount } from "wagmi"
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { createRelayClient } from "@/lib/relay/client"
-import { getChain, l1Client, l2Client } from "@/lib/viem/client"
+import { getChain, getClient } from "@/lib/viem/client"
 
 const toChainId = base.id
 
@@ -33,7 +33,7 @@ export const useBuyTokenRelay = () => {
     onSuccess: (hash: string) => void
     successMessage: string
   }) => {
-    const publicClient = chainId === mainnet.id ? l1Client : l2Client
+    const publicClient = getClient(chainId)
 
     const { request } = await publicClient.simulateContract({
       address: tokenEmitter,

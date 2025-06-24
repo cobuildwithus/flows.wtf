@@ -67,12 +67,13 @@ export const FlowSubmenu = async (props: Props) => {
   }
 
   if (showDrafts) {
-  links.push({
-    label: "Drafts",
-    href: `/flow/${flowId}/drafts`,
-    isActive: isDrafts,
-    badge: draftsCount,
-  })
+    links.push({
+      label: "Drafts",
+      href: `/flow/${flowId}/drafts`,
+      isActive: isDrafts,
+      badge: draftsCount,
+    })
+  }
 
   return (
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">

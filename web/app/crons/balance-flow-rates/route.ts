@@ -5,7 +5,7 @@ import { base } from "viem/chains"
 import { waitForTransactionReceipt } from "viem/actions"
 import { nounsFlowImplAbi } from "@/lib/abis"
 import { getContract } from "viem"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -20,7 +20,7 @@ export async function GET() {
     const contract = getContract({
       address: NOUNS_FLOW,
       abi: nounsFlowImplAbi,
-      client: l2Client,
+      client: getClient(base.id),
     })
 
     // Read the number of child flows that are out of sync

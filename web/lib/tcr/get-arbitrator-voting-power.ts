@@ -1,7 +1,8 @@
 "use server"
 
 import type { Address } from "viem"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base } from "viem/chains"
 import { erc20VotesArbitratorImplAbi } from "../abis"
 
 export async function getVotingPower(contract: Address, disputeId: string, address?: Address) {
@@ -13,7 +14,7 @@ export async function getVotingPower(contract: Address, disputeId: string, addre
   }
 
   try {
-    const votingPower = await l2Client.readContract({
+    const votingPower = await getClient(base.id).readContract({
       abi: erc20VotesArbitratorImplAbi,
       address: contract,
       functionName: "votingPowerInCurrentRound",

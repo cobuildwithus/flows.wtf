@@ -1,7 +1,8 @@
 "use server"
 
 import { Address, erc20Abi } from "viem"
-import { l2Client } from "@/lib/viem/client"
+import { getClient } from "@/lib/viem/client"
+import { base } from "viem/chains"
 import { getContract } from "viem"
 
 export async function getTokenData(
@@ -12,7 +13,7 @@ export async function getTokenData(
   const erc20Contract = getContract({
     address: contract,
     abi: erc20Abi,
-    client: l2Client,
+    client: getClient(base.id),
   })
 
   const [allowance, symbol, name, balance] = await Promise.all([

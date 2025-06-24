@@ -1,6 +1,5 @@
 "use server"
 
-import { l1Client } from "@/lib/viem/client"
 import { unstable_cache } from "next/cache"
 import { getEnsName, normalize } from "viem/ens"
 import { getClient } from "@/lib/viem/client"
@@ -9,7 +8,7 @@ import { mainnet } from "viem/chains"
 export const getEnsNameFromAddress = unstable_cache(
   async (address: `0x${string}`): Promise<string | null> => {
     try {
-      return await getEnsName(l1Client, { address })
+      return await getEnsName(getClient(mainnet.id), { address })
     } catch (error) {
       console.error("Error fetching ENS name:", error)
       return null
@@ -22,7 +21,7 @@ export const getEnsNameFromAddress = unstable_cache(
 export const getEnsAvatar = unstable_cache(
   async (ensNameOrAddress: string): Promise<string | null> => {
     try {
-      return await l1Client.getEnsAvatar({ name: ensNameOrAddress })
+      return await getClient(mainnet.id).getEnsAvatar({ name: ensNameOrAddress })
     } catch (error) {
       console.error("Error fetching ENS avatar:", error)
       return null
