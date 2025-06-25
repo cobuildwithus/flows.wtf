@@ -128,9 +128,9 @@ export function GrantsTable(props: Props) {
 
               <TableCell className="text-center">{grant.allocationsCount}</TableCell>
 
-              <TableCell className="w-[120px] max-w-[120px] text-center">
+              <TableCell className="w-[130px] max-w-[130px] text-center">
                 <div className="flex items-center gap-1 px-0.5">
-                  <div className="w-[100px]">
+                  <div className="w-[130px]">
                     <AllocationInput recipientId={grant.recipientId} />
                   </div>
                   {canManage && (
