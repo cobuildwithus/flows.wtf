@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { SkeletonLoader } from "@/components/ui/skeleton"
-import { useERC20TokensForParent } from "@/lib/tcr/use-erc20s-for-parent"
+import { useERC20TokensForParent } from "@/lib/erc20/use-erc20s-for-parent"
 import { useFlowForToken } from "@/lib/tcr/use-flow-for-token"
 import { getIpfsUrl } from "@/lib/utils"
 import { ChevronDownIcon } from "@radix-ui/react-icons"

@@ -22,8 +22,6 @@ import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import React, { ComponentProps, useRef, useState } from "react"
-import { erc20Abi } from "viem"
-import { useReadContract } from "wagmi"
 import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
 import { TokenLogo } from "@/app/token/token-logo"
@@ -33,6 +31,8 @@ import { useFundingButtonState } from "./hooks/use-funding-button-state"
 import { useFundingInput } from "./hooks/use-funding-input"
 import { useFundingActions } from "./hooks/use-funding-actions"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
+import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
+import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 
 interface Props {
   id: string
@@ -53,25 +53,28 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
 
   const selectedToken = TOKENS[selectedTokenKey]
 
-  const { data: underlyingTokenBalance } = useReadContract({
-    address: underlyingERC20Token as `0x${string}`,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    chainId: chainId,
-    query: { enabled: !!address },
-  })
+  // Fetch both token balances in one call
+  const { balances } = useERC20Balances(
+    [underlyingERC20Token as `0x${string}`, superToken as `0x${string}`],
+    address,
+    chainId,
+  )
 
-  const { data: superTokenBalance } = useReadContract({
-    address: superToken as `0x${string}`,
-    abi: superTokenAbi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    chainId: chainId,
-    query: { enabled: !!address },
-  })
+  const underlyingTokenBalance = balances[0] || 0n
+  const superTokenBalance = balances[1] || 0n
 
-  const totalTokenBalance = (underlyingTokenBalance || 0n) + (superTokenBalance || 0n)
+  // Check current allowance of underlying token to super token
+  const { allowance: currentAllowance } = useERC20Allowance(
+    underlyingERC20Token,
+    address,
+    superToken,
+    chainId,
+  )
+
+  const streamingTokenBalance = underlyingTokenBalance + superTokenBalance
+
+  // Check if selected token is the streaming token (non-native token that matches the flow's token)
+  const isStreamingToken = !selectedToken.isNative
 
   const buttonState = useFundingButtonState({
     isConnected,
@@ -79,17 +82,19 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     donationAmount,
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     ethBalances,
-    totalTokenBalance,
+    totalTokenBalance: streamingTokenBalance,
+    isStreamingToken,
+    superTokenBalance: superTokenBalance || 0n,
   })
 
   const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     ethBalances,
-    totalTokenBalance,
+    totalTokenBalance: streamingTokenBalance,
     setDonationAmount,
   })
 
-  const { handleFund } = useFundingActions({
+  const { handleFund, isApproving } = useFundingActions({
     authenticated,
     isConnected,
     login,
@@ -98,6 +103,12 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     donationAmount,
     id,
     name,
+    chainId,
+    underlyingTokenAddress: underlyingERC20Token as `0x${string}`,
+    superTokenAddress: superToken as `0x${string}`,
+    superTokenBalance: superTokenBalance || 0n,
+    underlyingTokenBalance: underlyingTokenBalance || 0n,
+    currentAllowance: currentAllowance || 0n,
   })
 
   return (
@@ -147,7 +158,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                     {getTokenDropdownItems(
                       chainId,
                       ethBalances,
-                      totalTokenBalance,
+                      streamingTokenBalance,
                       ethPrice || undefined,
                     ).map(({ token, balance, chainName, usdValue }) => (
                       <DropdownMenuItem
@@ -196,7 +207,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                       getTokenBalance(
                         { key: selectedTokenKey, ...selectedToken },
                         ethBalances,
-                        totalTokenBalance,
+                        streamingTokenBalance,
                       ),
                       selectedToken.decimals,
                       selectedToken.symbol,
@@ -217,8 +228,13 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
             </div>
           </div>
 
-          <Button onClick={handleFund} disabled={buttonState.disabled} className="w-full" size="xl">
-            {buttonState.text}
+          <Button
+            onClick={handleFund}
+            disabled={buttonState.disabled || isApproving}
+            className="w-full"
+            size="xl"
+          >
+            {isApproving ? "Approving..." : buttonState.text}
           </Button>
         </div>
       </DialogContent>

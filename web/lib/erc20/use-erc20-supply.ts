@@ -1,7 +1,7 @@
 "use client"
 
 import type { Address } from "viem"
-import { getERC20Supply } from "./get-erc20-supply"
+import { getERC20Supply } from "../tcr/get-erc20-supply"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
 
 export function useERC20Supply(contract: Address | undefined, chainId: number) {

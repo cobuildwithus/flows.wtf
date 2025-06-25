@@ -9,6 +9,8 @@ interface UseFundingButtonStateProps {
   selectedToken: Token
   ethBalances: Record<number, bigint>
   totalTokenBalance: bigint
+  isStreamingToken?: boolean
+  superTokenBalance?: bigint
 }
 
 export function useFundingButtonState({
@@ -18,6 +20,8 @@ export function useFundingButtonState({
   selectedToken,
   ethBalances,
   totalTokenBalance,
+  isStreamingToken,
+  superTokenBalance,
 }: UseFundingButtonStateProps) {
   return useMemo(() => {
     if (!isConnected || !authenticated) {
@@ -29,15 +33,21 @@ export function useFundingButtonState({
     }
 
     try {
-      const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
       const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
 
       let hasInsufficientBalance = false
 
       if (selectedToken.isNative) {
+        // For native tokens (ETH), check ETH balance with gas reserve
+        const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
         const gasReserve = parseUnits("0.01", selectedToken.decimals)
         hasInsufficientBalance = balance < donationAmountBigInt + gasReserve
+      } else if (isStreamingToken) {
+        // For streaming tokens, check if total balance (underlying + super) is sufficient
+        hasInsufficientBalance = totalTokenBalance < donationAmountBigInt
       } else {
+        // For other tokens, check the specific token balance
+        const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
         hasInsufficientBalance = balance < donationAmountBigInt
       }
 
@@ -45,6 +55,17 @@ export function useFundingButtonState({
         return {
           text: `Insufficient ${selectedToken.symbol} balance`,
           disabled: true,
+        }
+      }
+
+      // Check if approval is needed (for streaming tokens)
+      if (isStreamingToken && superTokenBalance !== undefined) {
+        const needsApproval = donationAmountBigInt > superTokenBalance
+        if (needsApproval) {
+          return {
+            text: `Approve & Fund ${donationAmount} ${selectedToken.symbol}`,
+            disabled: false,
+          }
         }
       }
     } catch {
@@ -55,5 +76,14 @@ export function useFundingButtonState({
       text: `Fund ${donationAmount} ${selectedToken.symbol}`,
       disabled: false,
     }
-  }, [isConnected, authenticated, donationAmount, selectedToken, ethBalances, totalTokenBalance])
+  }, [
+    isConnected,
+    authenticated,
+    donationAmount,
+    selectedToken,
+    ethBalances,
+    totalTokenBalance,
+    isStreamingToken,
+    superTokenBalance,
+  ])
 }

@@ -13,7 +13,7 @@ import Link from "next/link"
 import { useRef } from "react"
 import { SwapTokenBox } from "./swap-token-box"
 import { useAccount } from "wagmi"
-import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
+import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { useRouter } from "next/navigation"
 import { AuthButton } from "@/components/ui/auth-button"
 
@@ -42,11 +42,7 @@ export function SwapTokenButton(props: Props) {
   const ref = useRef<HTMLButtonElement>(null)
   const isRemoved = flow.isRemoved
 
-  const { balances, refetch } = useERC20Balances(
-    [erc20Address],
-    address,
-    flow.chainId,
-  )
+  const { balances, refetch } = useERC20Balances([erc20Address], address, flow.chainId)
   const {
     onSuccess = () => {
       // close dialog

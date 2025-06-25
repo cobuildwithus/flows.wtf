@@ -1,7 +1,7 @@
 "use client"
 
 import { createRelayClient } from "@/lib/relay/client"
-import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
+import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { getEthAddress } from "@/lib/utils"
 import type { RelayChain } from "@reservoir0x/relay-sdk"
 import { useMemo, useState } from "react"
