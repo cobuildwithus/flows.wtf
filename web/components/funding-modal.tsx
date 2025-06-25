@@ -74,7 +74,7 @@ interface Props {
   flow: Grant
 }
 
-export function DonationModal(props: Props & ComponentProps<typeof Button>) {
+export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const { id, flow, ...buttonProps } = props
   const { title: name, underlyingERC20Token, chainId } = flow
   const [isOpen, setIsOpen] = useState(false)
@@ -146,7 +146,7 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
     }
 
     return {
-      text: `Donate ${donationAmount} ${selectedToken.symbol}`,
+      text: `Fund ${donationAmount} ${selectedToken.symbol}`,
       disabled: false,
     }
   }, [
@@ -184,13 +184,13 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
     }
   }
 
-  const handleDonate = async () => {
+  const handleFund = async () => {
     if (!authenticated) return login()
     if (!isConnected) return connectWallet()
 
     const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
 
-    console.debug("Donate contract call", {
+    console.debug("Fund contract call", {
       flowId: id,
       name,
       amount: donationAmount,
@@ -313,12 +313,7 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
             </div>
           </div>
 
-          <Button
-            onClick={handleDonate}
-            disabled={buttonState.disabled}
-            className="w-full"
-            size="xl"
-          >
+          <Button onClick={handleFund} disabled={buttonState.disabled} className="w-full" size="xl">
             {buttonState.text}
           </Button>
         </div>
