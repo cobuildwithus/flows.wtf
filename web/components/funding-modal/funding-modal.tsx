@@ -67,11 +67,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const { buttonText, isDisabled, handleFund } = useFunding({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     donationAmount,
-    flowId: id,
-    flowName: name,
-    chainId,
-    underlyingTokenAddress: underlyingERC20Token,
-    superTokenAddress: superToken,
+    flow,
     totalTokenBalance: streamingTokenBalance,
     superTokenBalance: superTokenBalance || 0n,
     isStreamingToken,

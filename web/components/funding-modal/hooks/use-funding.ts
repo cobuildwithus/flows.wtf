@@ -8,15 +8,12 @@ import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useApprovalAmount } from "./use-approval-amount"
 import { useUpgradeToken } from "@/lib/erc20/super-token/use-upgrade-token"
+import { Grant } from "@/lib/database/types"
 
 interface UseFundingProps {
   selectedToken: Token
   donationAmount: string
-  flowId: string
-  flowName: string
-  chainId: number
-  underlyingTokenAddress: string
-  superTokenAddress: string
+  flow: Pick<Grant, "id" | "title" | "chainId" | "underlyingERC20Token" | "superToken">
   totalTokenBalance: bigint
   superTokenBalance?: bigint
   isStreamingToken?: boolean
@@ -25,11 +22,7 @@ interface UseFundingProps {
 export function useFunding({
   selectedToken,
   donationAmount,
-  flowId,
-  flowName,
-  chainId,
-  underlyingTokenAddress,
-  superTokenAddress,
+  flow,
   totalTokenBalance,
   superTokenBalance: externalSuperTokenBalance,
   isStreamingToken,
@@ -39,18 +32,18 @@ export function useFunding({
 
   // Fetch token balances if not provided
   const { balances } = useERC20Balances(
-    [underlyingTokenAddress as `0x${string}`, superTokenAddress as `0x${string}`],
+    [flow.underlyingERC20Token as `0x${string}`, flow.superToken as `0x${string}`],
     address,
-    chainId,
+    flow.chainId,
   )
   const superTokenBalance = externalSuperTokenBalance ?? balances[1] ?? 0n
 
   // Check allowance
   const { allowance: currentAllowance } = useERC20Allowance(
-    underlyingTokenAddress,
+    flow.underlyingERC20Token,
     address,
-    superTokenAddress,
-    chainId,
+    flow.superToken,
+    flow.chainId,
   )
 
   const { approvalNeeded, approvalAmount, amountNeededFromUnderlying } = useApprovalAmount({
@@ -62,17 +55,17 @@ export function useFunding({
   })
 
   const { approve, isLoading: isApproving } = useApproveErc20({
-    chainId,
-    tokenAddress: underlyingTokenAddress as `0x${string}`,
-    spenderAddress: superTokenAddress as `0x${string}`,
+    chainId: flow.chainId,
+    tokenAddress: flow.underlyingERC20Token as `0x${string}`,
+    spenderAddress: flow.superToken as `0x${string}`,
     onSuccess: (hash: string) => {
       console.log("Approval successful:", hash)
     },
   })
 
   const { upgrade, isLoading: isUpgrading } = useUpgradeToken({
-    chainId,
-    superTokenAddress: superTokenAddress as `0x${string}`,
+    chainId: flow.chainId,
+    superTokenAddress: flow.superToken as `0x${string}`,
     onSuccess: (hash: string) => {
       console.log("Upgrade successful:", hash)
     },
@@ -181,8 +174,8 @@ export function useFunding({
 
     // Step 3: Execute the actual funding
     console.debug("Fund contract call", {
-      flowId,
-      flowName,
+      flowId: flow.id,
+      flowName: flow.title,
       amount: donationAmount,
       amountBigInt: donationAmountBigInt.toString(),
       token: selectedToken,
