@@ -26,13 +26,10 @@ import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
 import { TokenLogo } from "@/app/token/token-logo"
 import { TOKENS, TokenKey, formatTokenAmount, getTokenBalance } from "./libs/funding-token-lib"
-import { superTokenAbi } from "@/lib/abis"
-import { useFundingButtonState } from "./hooks/use-funding-button-state"
+import { useFunding } from "./hooks/use-funding"
 import { useFundingInput } from "./hooks/use-funding-input"
-import { useFundingActions } from "./hooks/use-funding-actions"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
-import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 
 interface Props {
   id: string
@@ -47,13 +44,13 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const [donationAmount, setDonationAmount] = useState("100")
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { login, authenticated, address, isConnected, connectWallet } = useLogin()
+  const { authenticated, address, isConnected } = useLogin()
   const { balances: ethBalances } = useEthBalances()
   const { ethPrice } = useETHPrice()
 
   const selectedToken = TOKENS[selectedTokenKey]
 
-  // Fetch both token balances in one call
+  // Fetch both token balances for display purposes
   const { balances } = useERC20Balances(
     [underlyingERC20Token as `0x${string}`, superToken as `0x${string}`],
     address,
@@ -62,53 +59,28 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
 
   const underlyingTokenBalance = balances[0] || 0n
   const superTokenBalance = balances[1] || 0n
-
-  // Check current allowance of underlying token to super token
-  const { allowance: currentAllowance } = useERC20Allowance(
-    underlyingERC20Token,
-    address,
-    superToken,
-    chainId,
-  )
-
   const streamingTokenBalance = underlyingTokenBalance + superTokenBalance
 
   // Check if selected token is the streaming token (non-native token that matches the flow's token)
   const isStreamingToken = !selectedToken.isNative
 
-  const buttonState = useFundingButtonState({
-    isConnected,
-    authenticated,
-    donationAmount,
+  const { buttonText, isDisabled, handleFund } = useFunding({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
-    ethBalances,
+    donationAmount,
+    flowId: id,
+    flowName: name,
+    chainId,
+    underlyingTokenAddress: underlyingERC20Token,
+    superTokenAddress: superToken,
     totalTokenBalance: streamingTokenBalance,
-    isStreamingToken,
     superTokenBalance: superTokenBalance || 0n,
+    isStreamingToken,
   })
 
   const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
-    ethBalances,
     totalTokenBalance: streamingTokenBalance,
     setDonationAmount,
-  })
-
-  const { handleFund, isApproving } = useFundingActions({
-    authenticated,
-    isConnected,
-    login,
-    connectWallet,
-    selectedToken: { key: selectedTokenKey, ...selectedToken },
-    donationAmount,
-    id,
-    name,
-    chainId,
-    underlyingTokenAddress: underlyingERC20Token as `0x${string}`,
-    superTokenAddress: superToken as `0x${string}`,
-    superTokenBalance: superTokenBalance || 0n,
-    underlyingTokenBalance: underlyingTokenBalance || 0n,
-    currentAllowance: currentAllowance || 0n,
   })
 
   return (
@@ -228,13 +200,8 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
             </div>
           </div>
 
-          <Button
-            onClick={handleFund}
-            disabled={buttonState.disabled || isApproving}
-            className="w-full"
-            size="xl"
-          >
-            {isApproving ? "Approving..." : buttonState.text}
+          <Button onClick={handleFund} disabled={isDisabled} className="w-full" size="xl">
+            {buttonText}
           </Button>
         </div>
       </DialogContent>

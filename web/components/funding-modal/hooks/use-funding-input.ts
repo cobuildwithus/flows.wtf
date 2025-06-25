@@ -1,20 +1,21 @@
 import React from "react"
 import { formatUnits, parseUnits } from "viem"
 import { type Token, validateNumericInput, getTokenBalance } from "../libs/funding-token-lib"
+import { useEthBalances } from "@/app/token/hooks/use-eth-balances"
 
 interface UseFundingInputProps {
   selectedToken: Token
-  ethBalances: Record<number, bigint>
   totalTokenBalance: bigint
   setDonationAmount: (amount: string) => void
 }
 
 export function useFundingInput({
   selectedToken,
-  ethBalances,
   totalTokenBalance,
   setDonationAmount,
 }: UseFundingInputProps) {
+  const { balances: ethBalances } = useEthBalances()
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const maxDecimals = 6
     const validatedValue = validateNumericInput(e.target.value, maxDecimals)
