@@ -119,7 +119,7 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
     }
 
     if (!donationAmount || Number(donationAmount) <= 0) {
-      return { text: "Donate", disabled: true }
+      return { text: "Fund", disabled: true }
     }
 
     try {
@@ -142,7 +142,7 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
         }
       }
     } catch {
-      return { text: "Donate", disabled: true }
+      return { text: "Fund", disabled: true }
     }
 
     return {
@@ -202,13 +202,13 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button {...buttonProps}>Donate</Button>
+        <Button {...buttonProps}>Fund</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Donate to {name}</DialogTitle>
+          <DialogTitle>Fund {name}</DialogTitle>
           <DialogDescription className="text-zinc-500 dark:text-muted-foreground">
-            Support builders
+            Support our builders on the ground
           </DialogDescription>
         </DialogHeader>
 
@@ -233,7 +233,11 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="secondary" className="gap-2 rounded-full">
-                      <ChainLogo chainId={selectedToken.chainId} size={18} />
+                      {selectedToken.isNative ? (
+                        <ChainLogo chainId={selectedToken.chainId} size={18} />
+                      ) : (
+                        <TokenLogo src={selectedToken.logo} alt={selectedToken.name} size={18} />
+                      )}
                       <span className="font-semibold">{selectedToken.symbol}</span>
                       <ChevronDownIcon className="h-4 w-4" />
                     </Button>
@@ -250,7 +254,7 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
                           onClick={() => setSelectedTokenKey(token.key)}
                           className="cursor-pointer py-3"
                         >
-                          <div className="flex w-full items-center justify-between">
+                          <div className="flex w-full items-start justify-between">
                             <div className="flex items-center gap-3">
                               {token.isNative ? (
                                 <ChainLogo chainId={token.chainId} size={24} />
@@ -259,20 +263,19 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
                               )}
                               <div>
                                 <div className="font-medium">{token.symbol}</div>
-                                {token.isNative && (
-                                  <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                    {chainName}
-                                  </div>
-                                )}
+
+                                <div className="text-xs text-zinc-500 dark:text-muted-foreground">
+                                  {token.isNative ? chainName : token.name}
+                                </div>
                               </div>
                             </div>
                             {token.isNative ? (
                               <div className="text-right">
                                 <div className="text-sm font-medium">
-                                  <Currency>{usdValue}</Currency>
+                                  {formatTokenAmount(balance, token.decimals, token.symbol)}
                                 </div>
                                 <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                  {formatTokenAmount(balance, token.decimals, token.symbol)}
+                                  <Currency>{usdValue}</Currency>
                                 </div>
                               </div>
                             ) : (
