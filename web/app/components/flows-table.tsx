@@ -54,9 +54,7 @@ export const FlowsTable = (props: Props) => {
           <TableHead className="text-center">Paid out</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
           <TableHead className="text-center">Votes</TableHead>
-          <TableHead className="text-center">
-            {canManage ? "Manage" : "Your Vote"}
-          </TableHead>
+          <TableHead className="text-center">{canManage ? "Manage" : "Your Vote"}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -114,9 +112,9 @@ export const FlowsTable = (props: Props) => {
                 />
               </TableCell>
               <TableCell className="text-center">{flow.allocationsCount}</TableCell>
-              <TableCell className="w-[100px] max-w-[100px] text-center">
+              <TableCell className="w-[130px] max-w-[130px] text-center">
                 <div className="flex items-center gap-1 px-0.5">
-                  <div className="w-[100px]">
+                  <div className="w-[130px]">
                     <AllocationInput recipientId={flow.recipientId} />
                   </div>
                   {canManage && (
