@@ -36,6 +36,7 @@ export async function CustomFlowPage(props: Props) {
   )
 
   const isTopLevel = flow.parentContract === zeroAddress
+  const canManage = user?.address === flow.manager
 
   const relevantGrants = isTopLevel ? grants : [flow]
 
@@ -129,9 +130,18 @@ export async function CustomFlowPage(props: Props) {
               description="There are no approved projects yet"
             />
           ) : isTopLevel ? (
-            <FlowsList flows={grants.sort(sortGrants)} />
+            <FlowsList
+              flows={grants.sort(sortGrants)}
+              canManage={canManage}
+              contract={getEthAddress(flow.recipient)}
+              chainId={flow.chainId}
+            />
           ) : (
-            <GrantsList grants={grants.sort(sortGrants)} flow={flow} />
+            <GrantsList
+              grants={grants.sort(sortGrants)}
+              flow={flow}
+              canManage={canManage}
+            />
           )}
         </div>
         <AllocationBar />

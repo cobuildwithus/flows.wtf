@@ -27,6 +27,8 @@ export default async function Home() {
     getUser(),
   ])
 
+  const canManage = user?.address === pool.manager
+
   return (
     <AllocationProvider
       chainId={pool.chainId}
@@ -53,7 +55,12 @@ export default async function Home() {
         </div>
 
         <div className="container my-6">
-          <FlowsList flows={activeFlows} />
+          <FlowsList
+            flows={activeFlows}
+            canManage={canManage}
+            contract={getEthAddress(pool.recipient)}
+            chainId={pool.chainId}
+          />
         </div>
         <div className="pt-12">
           <Footer />

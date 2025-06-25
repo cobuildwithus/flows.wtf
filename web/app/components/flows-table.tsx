@@ -15,6 +15,7 @@ import type { Grant } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 import { AllocationInput } from "@/components/global/allocation-input"
+import { RemoveRecipientButton } from "@/components/global/remove-recipient-button"
 import { MonthlyBudget, type FlowWithBudget } from "./monthly-budget"
 
 export type LimitedFlow = FlowWithBudget &
@@ -36,10 +37,13 @@ export type LimitedFlow = FlowWithBudget &
 
 interface Props {
   flows: Array<LimitedFlow>
+  canManage?: boolean
+  contract: `0x${string}`
+  chainId: number
 }
 
 export const FlowsTable = (props: Props) => {
-  const { flows } = props
+  const { flows, canManage = false, contract, chainId } = props
 
   return (
     <Table>
@@ -50,7 +54,9 @@ export const FlowsTable = (props: Props) => {
           <TableHead className="text-center">Paid out</TableHead>
           <TableHead className="text-center">Monthly support</TableHead>
           <TableHead className="text-center">Votes</TableHead>
-          <TableHead className="text-center">Your Vote</TableHead>
+          <TableHead className="text-center">
+            {canManage ? "Manage" : "Your Vote"}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -109,8 +115,17 @@ export const FlowsTable = (props: Props) => {
               </TableCell>
               <TableCell className="text-center">{flow.allocationsCount}</TableCell>
               <TableCell className="w-[100px] max-w-[100px] text-center">
-                <div className="px-0.5">
-                  <AllocationInput recipientId={flow.recipientId} />
+                <div className="flex items-center gap-1 px-0.5">
+                  <div className="w-[100px]">
+                    <AllocationInput recipientId={flow.recipientId} />
+                  </div>
+                  {canManage && (
+                    <RemoveRecipientButton
+                      contract={contract}
+                      recipientId={flow.recipientId}
+                      chainId={chainId}
+                    />
+                  )}
                 </div>
               </TableCell>
             </TableRow>

@@ -19,17 +19,18 @@ interface Props {
       profile: Profile
     }
   >
+  canManage?: boolean
 }
 
 export default function GrantsList(props: Props) {
-  const { flow, grants } = props
+  const { flow, grants, canManage = false } = props
   const { isActive } = useAllocate()
 
   if (isActive) {
     return (
       <Card>
         <CardContent>
-          <GrantsTable flow={flow} grants={grants} />
+          <GrantsTable canManage={canManage} flow={flow} grants={grants} />
         </CardContent>
       </Card>
     )
