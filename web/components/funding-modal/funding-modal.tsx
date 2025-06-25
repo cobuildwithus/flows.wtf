@@ -21,21 +21,18 @@ import {
 import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
-import React, { ComponentProps, useMemo, useRef, useState } from "react"
-import { erc20Abi, formatUnits, parseUnits } from "viem"
+import React, { ComponentProps, useRef, useState } from "react"
+import { erc20Abi } from "viem"
 import { useReadContract } from "wagmi"
 import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
 import { TokenLogo } from "@/app/token/token-logo"
-import {
-  TOKENS,
-  AVAILABLE_TOKENS,
-  TokenKey,
-  formatTokenAmount,
-  validateNumericInput,
-  getTokenBalance,
-  getTokenUSDValue,
-} from "./funding-token-lib"
+import { TOKENS, TokenKey, formatTokenAmount, getTokenBalance } from "./funding-token-lib"
+import { superTokenAbi } from "@/lib/abis"
+import { useFundingButtonState } from "./use-funding-button-state"
+import { useFundingInput } from "./use-funding-input"
+import { useFundingActions } from "./use-funding-actions"
+import { getTokenDropdownItems } from "./funding-dropdown-lib"
 
 interface Props {
   id: string
@@ -44,7 +41,7 @@ interface Props {
 
 export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const { id, flow, ...buttonProps } = props
-  const { title: name, underlyingERC20Token, chainId } = flow
+  const { title: name, underlyingERC20Token, chainId, superToken } = flow
   const [isOpen, setIsOpen] = useState(false)
   const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`eth-${chainId}`)
   const [donationAmount, setDonationAmount] = useState("100")
@@ -65,99 +62,44 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     query: { enabled: !!address },
   })
 
-  const buttonState = useMemo(() => {
-    if (!isConnected || !authenticated) {
-      return { text: "Connect wallet", disabled: false }
-    }
+  const { data: superTokenBalance } = useReadContract({
+    address: superToken as `0x${string}`,
+    abi: superTokenAbi,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    chainId: chainId,
+    query: { enabled: !!address },
+  })
 
-    if (!donationAmount || Number(donationAmount) <= 0) {
-      return { text: "Fund", disabled: true }
-    }
+  const streamingTokenBalance = (underlyingTokenBalance || 0n) + (superTokenBalance || 0n)
 
-    try {
-      const balance = getTokenBalance(
-        { key: selectedTokenKey, ...selectedToken },
-        ethBalances,
-        underlyingTokenBalance,
-      )
-      const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
-
-      let hasInsufficientBalance = false
-
-      if (selectedToken.isNative) {
-        const gasReserve = parseUnits("0.01", selectedToken.decimals)
-        hasInsufficientBalance = balance < donationAmountBigInt + gasReserve
-      } else {
-        hasInsufficientBalance = balance < donationAmountBigInt
-      }
-
-      if (hasInsufficientBalance) {
-        return {
-          text: `Insufficient ${selectedToken.symbol} balance`,
-          disabled: true,
-        }
-      }
-    } catch {
-      return { text: "Fund", disabled: true }
-    }
-
-    return {
-      text: `Fund ${donationAmount} ${selectedToken.symbol}`,
-      disabled: false,
-    }
-  }, [
+  const buttonState = useFundingButtonState({
     isConnected,
     authenticated,
     donationAmount,
-    selectedToken,
-    selectedTokenKey,
+    selectedToken: { key: selectedTokenKey, ...selectedToken },
     ethBalances,
-    underlyingTokenBalance,
-  ])
+    streamingTokenBalance,
+  })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const maxDecimals = 6
-    const validatedValue = validateNumericInput(e.target.value, maxDecimals)
-    setDonationAmount(validatedValue)
-  }
+  const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({
+    selectedToken: { key: selectedTokenKey, ...selectedToken },
+    ethBalances,
+    streamingTokenBalance,
+    donationAmount,
+    setDonationAmount,
+  })
 
-  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    setTimeout(() => {
-      const length = e.target.value.length
-      e.target.setSelectionRange(length, length)
-    }, 0)
-  }
-
-  const handleMaxClick = () => {
-    const balance = getTokenBalance(
-      { key: selectedTokenKey, ...selectedToken },
-      ethBalances,
-      underlyingTokenBalance,
-    )
-
-    if (selectedToken.isNative) {
-      const gasReserve = parseUnits("0.01", selectedToken.decimals)
-      const maxAmount = balance > gasReserve ? balance - gasReserve : 0n
-      setDonationAmount(formatUnits(maxAmount, selectedToken.decimals))
-    } else {
-      setDonationAmount(formatUnits(balance, selectedToken.decimals))
-    }
-  }
-
-  const handleFund = async () => {
-    if (!authenticated) return login()
-    if (!isConnected) return connectWallet()
-
-    const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
-
-    console.debug("Fund contract call", {
-      flowId: id,
-      name,
-      amount: donationAmount,
-      amountBigInt: donationAmountBigInt.toString(),
-      token: selectedToken,
-    })
-  }
+  const { handleFund } = useFundingActions({
+    authenticated,
+    isConnected,
+    login,
+    connectWallet,
+    selectedToken: { key: selectedTokenKey, ...selectedToken },
+    donationAmount,
+    id,
+    name,
+  })
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -203,50 +145,49 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-64">
-                    {AVAILABLE_TOKENS.filter((token) => token.chainId === chainId).map((token) => {
-                      const balance = getTokenBalance(token, ethBalances, underlyingTokenBalance)
-                      const chainName = TOKENS[token.key].name
-                      const usdValue = getTokenUSDValue(token, balance, ethPrice || undefined)
+                    {getTokenDropdownItems(
+                      chainId,
+                      ethBalances,
+                      streamingTokenBalance,
+                      ethPrice || undefined,
+                    ).map(({ token, balance, chainName, usdValue }) => (
+                      <DropdownMenuItem
+                        key={token.key}
+                        onClick={() => setSelectedTokenKey(token.key)}
+                        className="cursor-pointer py-3"
+                      >
+                        <div className="flex w-full items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            {token.isNative ? (
+                              <ChainLogo chainId={token.chainId} size={24} />
+                            ) : (
+                              <TokenLogo src={token.logo} alt={token.name} size={24} />
+                            )}
+                            <div>
+                              <div className="font-medium">{token.symbol}</div>
 
-                      return (
-                        <DropdownMenuItem
-                          key={token.key}
-                          onClick={() => setSelectedTokenKey(token.key)}
-                          className="cursor-pointer py-3"
-                        >
-                          <div className="flex w-full items-start justify-between">
-                            <div className="flex items-center gap-3">
-                              {token.isNative ? (
-                                <ChainLogo chainId={token.chainId} size={24} />
-                              ) : (
-                                <TokenLogo src={token.logo} alt={token.name} size={24} />
-                              )}
-                              <div>
-                                <div className="font-medium">{token.symbol}</div>
-
-                                <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                  {token.isNative ? chainName : token.name}
-                                </div>
+                              <div className="text-xs text-zinc-500 dark:text-muted-foreground">
+                                {token.isNative ? chainName : token.name}
                               </div>
                             </div>
-                            {token.isNative ? (
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {formatTokenAmount(balance, token.decimals, token.symbol)}
-                                </div>
-                                <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                  <Currency>{usdValue}</Currency>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="text-right">
-                                <div className="text-sm font-medium">{usdValue}</div>
-                              </div>
-                            )}
                           </div>
-                        </DropdownMenuItem>
-                      )
-                    })}
+                          {token.isNative ? (
+                            <div className="text-right">
+                              <div className="text-sm font-medium">
+                                {formatTokenAmount(balance, token.decimals, token.symbol)}
+                              </div>
+                              <div className="text-xs text-zinc-500 dark:text-muted-foreground">
+                                <Currency>{usdValue}</Currency>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-right">
+                              <div className="text-sm font-medium">{usdValue}</div>
+                            </div>
+                          )}
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -256,7 +197,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                       getTokenBalance(
                         { key: selectedTokenKey, ...selectedToken },
                         ethBalances,
-                        underlyingTokenBalance,
+                        streamingTokenBalance,
                       ),
                       selectedToken.decimals,
                       selectedToken.symbol,
