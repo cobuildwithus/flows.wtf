@@ -7,17 +7,25 @@ import { FlowCard } from "./flow-card"
 
 interface Props {
   flows: Array<LimitedFlow>
+  canManage?: boolean
+  contract: `0x${string}`
+  chainId: number
 }
 
 export default function FlowsList(props: Props) {
-  const { flows } = props
+  const { flows, canManage = false, contract, chainId } = props
   const { isActive } = useAllocate()
 
   if (isActive) {
     return (
       <Card>
         <CardContent>
-          <FlowsTable flows={flows} />
+          <FlowsTable
+            flows={flows}
+            canManage={canManage}
+            contract={contract}
+            chainId={chainId}
+          />
         </CardContent>
       </Card>
     )

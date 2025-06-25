@@ -36,6 +36,7 @@ export default async function FlowPage(props: Props) {
   )
 
   const monthlyImpact = flow.derivedData?.impactMonthly
+  const isManager = flow.manager === user?.address
 
   return (
     <AgentChatProvider
@@ -61,7 +62,11 @@ export default async function FlowPage(props: Props) {
         {!subgrants || subgrants.length === 0 ? (
           <EmptyState title="No grants found" description="There are no approved grants yet" />
         ) : (
-          <GrantsList flow={flow} grants={grants.sort(sortGrants)} />
+          <GrantsList
+            flow={flow}
+            grants={grants.sort(sortGrants)}
+            canManage={isManager}
+          />
         )}
       </div>
 
