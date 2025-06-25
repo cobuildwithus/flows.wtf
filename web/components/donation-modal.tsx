@@ -22,41 +22,39 @@ import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import React, { ComponentProps, useMemo, useRef, useState } from "react"
-import type { Address } from "viem"
 import { erc20Abi, formatUnits, parseUnits } from "viem"
-import { base, mainnet } from "viem/chains"
+import { base, mainnet, optimism } from "viem/chains"
 import { useReadContract } from "wagmi"
 import { ChainLogo } from "./ui/chain-logo"
+import { Grant } from "@/lib/database/types"
 
 const TOKENS = {
-  "eth-mainnet": {
+  [`eth-${mainnet.id}`]: {
     symbol: "ETH",
     name: "Ethereum",
     chainId: mainnet.id,
     decimals: 18,
     isNative: true,
   },
-  "eth-base": {
+  [`eth-${base.id}`]: {
     symbol: "ETH",
     name: "Base ETH",
     chainId: base.id,
     decimals: 18,
     isNative: true,
   },
-  "usdc-mainnet": {
-    symbol: "USDC",
-    name: "USD Coin",
-    chainId: mainnet.id,
-    decimals: 6,
-    address: "0xa0b86a33e6417aae2b7d1b1a6a8d29fb0f0fa1f7" as Address,
-    isNative: false,
+  [`eth-${optimism.id}`]: {
+    symbol: "ETH",
+    name: "Optimism ETH",
+    chainId: optimism.id,
+    decimals: 18,
+    isNative: true,
   },
-  "usdc-base": {
-    symbol: "USDC",
-    name: "USD Coin",
-    chainId: base.id,
-    decimals: 6,
-    address: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913" as Address,
+  "gardens-optimism": {
+    symbol: "⚘GARDEN",
+    name: "Gardens",
+    chainId: optimism.id,
+    decimals: 18,
     isNative: false,
   },
 } as const
@@ -71,13 +69,14 @@ const AVAILABLE_TOKENS: Token[] = Object.entries(TOKENS).map(([key, token]) => (
 
 interface Props {
   id: string
-  name: string
+  flow: Grant
 }
 
 export function DonationModal(props: Props & ComponentProps<typeof Button>) {
-  const { id, name, ...buttonProps } = props
+  const { id, flow, ...buttonProps } = props
+  const { title: name, underlyingERC20Token, chainId } = flow
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>("usdc-base")
+  const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`eth-${chainId}`)
   const [donationAmount, setDonationAmount] = useState("100")
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -87,21 +86,12 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
 
   const selectedToken = TOKENS[selectedTokenKey]
 
-  const { data: usdcMainnetBalance } = useReadContract({
-    address: TOKENS["usdc-mainnet"].address,
+  const { data: underlyingTokenBalance } = useReadContract({
+    address: underlyingERC20Token as `0x${string}`,
     abi: erc20Abi,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
-    chainId: mainnet.id,
-    query: { enabled: !!address },
-  })
-
-  const { data: usdcBaseBalance } = useReadContract({
-    address: TOKENS["usdc-base"].address,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    chainId: base.id,
+    chainId: chainId,
     query: { enabled: !!address },
   })
 
@@ -110,16 +100,15 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
       return ethBalances[token.chainId as keyof typeof ethBalances] || 0n
     }
 
-    return token.chainId === mainnet.id ? usdcMainnetBalance || 0n : usdcBaseBalance || 0n
+    return underlyingTokenBalance || 0n
   }
 
   const getTokenUSDValue = (token: Token, balance: bigint): number => {
     const amount = Number(formatUnits(balance, token.decimals))
 
-    if (token.symbol === "USDC") return amount
     if (token.symbol === "ETH" && ethPrice) return amount * ethPrice
 
-    return 0
+    return amount
   }
 
   const buttonState = useMemo(() => {
@@ -165,12 +154,11 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
     selectedToken,
     selectedTokenKey,
     ethBalances,
-    usdcMainnetBalance,
-    usdcBaseBalance,
+    underlyingTokenBalance,
   ])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const maxDecimals = selectedToken.symbol === "USDC" ? 2 : 6
+    const maxDecimals = 6
     const validatedValue = validateNumericInput(e.target.value, maxDecimals)
     setDonationAmount(validatedValue)
   }
@@ -246,9 +234,9 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-64">
-                    {AVAILABLE_TOKENS.map((token) => {
+                    {AVAILABLE_TOKENS.filter((token) => token.chainId === chainId).map((token) => {
                       const balance = getTokenBalance(token)
-                      const chainName = token.chainId === mainnet.id ? "Mainnet" : "Base"
+                      const chainName = TOKENS[token.key].name
                       const usdValue = getTokenUSDValue(token, balance)
 
                       return (
@@ -259,22 +247,30 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
                         >
                           <div className="flex w-full items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <ChainLogo chainId={token.chainId} size={24} />
+                              {token.isNative && <ChainLogo chainId={token.chainId} size={24} />}
                               <div>
                                 <div className="font-medium">{token.symbol}</div>
+                                {token.isNative && (
+                                  <div className="text-xs text-zinc-500 dark:text-muted-foreground">
+                                    {chainName}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {token.isNative ? (
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  <Currency>{usdValue}</Currency>
+                                </div>
                                 <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                  {chainName}
+                                  {formatTokenAmount(balance, token.decimals, token.symbol)}
                                 </div>
                               </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-sm font-medium">
-                                <Currency>{usdValue}</Currency>
+                            ) : (
+                              <div className="text-right">
+                                <div className="text-sm font-medium">{usdValue}</div>
                               </div>
-                              <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                {formatTokenAmount(balance, token.decimals, token.symbol)}
-                              </div>
-                            </div>
+                            )}
                           </div>
                         </DropdownMenuItem>
                       )

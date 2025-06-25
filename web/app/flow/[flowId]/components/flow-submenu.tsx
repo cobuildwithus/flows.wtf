@@ -98,7 +98,7 @@ export const FlowSubmenu = async (props: Props) => {
             </Link>
           )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
-          <DonationModal variant="default" id={flowId} name={flow.title} />
+          <DonationModal variant="default" id={flowId} flow={flow} />
         </div>
       </div>
     </div>

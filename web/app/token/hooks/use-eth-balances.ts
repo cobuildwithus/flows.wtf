@@ -1,4 +1,4 @@
-import { base, mainnet } from "viem/chains"
+import { base, mainnet, optimism } from "viem/chains"
 import { useAccount, useBalance } from "wagmi"
 
 export function useEthBalances() {
@@ -16,6 +16,12 @@ export function useEthBalances() {
     query: { select: (data) => data.value },
   })
 
+  const { data: optimismBalance = 0n, isLoading: isLoadingOptimism } = useBalance({
+    chainId: optimism.id,
+    address,
+    query: { select: (data) => data.value },
+  })
+
   function choosePreferredFor(cost: bigint) {
     // Prefer mainnet only if has enough balance on it, but not enough on base
     if (cost > baseBalance && cost < mainnetBalance)
@@ -28,6 +34,7 @@ export function useEthBalances() {
     balances: {
       [base.id]: baseBalance,
       [mainnet.id]: mainnetBalance,
+      [optimism.id]: optimismBalance,
     },
     preferredFor: (cost: bigint) => choosePreferredFor(cost),
     isLoading: isLoadingBase || isLoadingMainnet,

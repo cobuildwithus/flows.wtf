@@ -37,21 +37,14 @@ async function handleFlowInitialized(params: {
 
   // const parentFlow = await context.db.find(grants, { id: parentContract })
 
-  const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
-    context,
-    contract,
-    managerRewardPool
-  )
+  const { metadata, managerRewardSuperfluidPool, underlyingERC20Token } =
+    await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
   const isTopLevel = parentContract === zeroAddress
-  const rootContract = await calculateRootContract(
-    context.db,
-    contract,
-    parentContract
-  )
+  const rootContract = await calculateRootContract(context.db, contract, parentContract)
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -70,6 +63,7 @@ async function handleFlowInitialized(params: {
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
+    underlyingERC20Token: underlyingERC20Token.toLowerCase(),
     submitter: zeroAddress,
     allocationsCount: "0",
     totalAllocationWeightOnFlow: "0",

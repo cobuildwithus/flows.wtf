@@ -81,6 +81,7 @@ async function handleRecipientCreated(params: {
     arbitrator: null,
     tokenEmitter: null,
     superToken: "",
+    underlyingERC20Token: "",
     managerRewardPool: "",
     managerRewardSuperfluidPool: "",
     status: Status.Registered,

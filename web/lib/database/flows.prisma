@@ -179,6 +179,7 @@ view Grant {
   bonusPool                        String  @map("bonus_pool")
   managerRewardPool                String  @map("manager_reward_pool")
   superToken                       String  @map("super_token")
+  underlyingERC20Token             String  @map("underlying_erc_20_token")
   manager                          String  @map("manager")
   managerRewardSuperfluidPool      String  @map("manager_reward_superfluid_pool")
   managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")

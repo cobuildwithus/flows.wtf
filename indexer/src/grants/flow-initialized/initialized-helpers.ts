@@ -1,5 +1,5 @@
 import { Context } from "ponder:registry"
-import { customFlowImplAbi, rewardPoolImplAbi } from "../../../abis"
+import { customFlowImplAbi, rewardPoolImplAbi, superTokenAbi } from "../../../abis"
 import { zeroAddress } from "viem"
 
 export async function getFlowMetadataAndRewardPool(
@@ -8,9 +8,10 @@ export async function getFlowMetadataAndRewardPool(
     | Context<"CustomFlow:FlowInitialized">
     | Context<"NounsFlowChildren:FlowInitialized">,
   contract: `0x${string}`,
-  managerRewardPool: `0x${string}`
+  managerRewardPool: `0x${string}`,
+  superToken: `0x${string}`
 ) {
-  const [metadata, managerRewardSuperfluidPool] = await Promise.all([
+  const [metadata, managerRewardSuperfluidPool, underlyingERC20Token] = await Promise.all([
     context.client.readContract({
       address: contract,
       abi: customFlowImplAbi,
@@ -23,7 +24,12 @@ export async function getFlowMetadataAndRewardPool(
           functionName: "rewardPool",
         })
       : Promise.resolve(zeroAddress),
+    context.client.readContract({
+      address: superToken,
+      abi: superTokenAbi,
+      functionName: "getUnderlyingToken",
+    }),
   ])
 
-  return { metadata, managerRewardSuperfluidPool }
+  return { metadata, managerRewardSuperfluidPool, underlyingERC20Token }
 }

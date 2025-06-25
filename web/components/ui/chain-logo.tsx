@@ -1,7 +1,7 @@
 "use client"
 
 import { TokenLogo } from "@/app/token/token-logo"
-import { base, mainnet } from "viem/chains"
+import { base, mainnet, optimism } from "viem/chains"
 
 interface Props {
   chainId: number
@@ -12,6 +12,7 @@ interface Props {
 const logos = {
   [base.id]: "/base.png",
   [mainnet.id]: "/eth.png",
+  [optimism.id]: "/optimism.svg",
 }
 
 export function ChainLogo(props: Props) {

@@ -87,6 +87,7 @@ async function handleItemSubmitted(params: {
     arbitrator: null,
     tokenEmitter: null,
     superToken: "",
+    underlyingERC20Token: "",
     managerRewardPool: "",
     managerRewardSuperfluidPool: "",
     managerRewardPoolFlowRatePercent: 0,
