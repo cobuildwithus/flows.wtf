@@ -67,38 +67,36 @@ export function ManagedFlowDraftPublishButton(props: Props) {
           {draft.opportunityId ? "Approve application" : "Add to flow"}
         </AuthButton>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-screen-xs">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="px-4 text-center text-xl font-medium">
-            Add {draft.title} to {flow.title}
-          </DialogTitle>
+          <DialogTitle>Add to the {flow.title} flow</DialogTitle>
         </DialogHeader>
-        <div>
+        <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
             This is a self managed flow. You can add and remove applicants at any time, and set a
             custom flow rate for each applicant.
           </p>
-        </div>
-        <div className="flex justify-end space-x-2">
-          {flow.isAccelerator ? (
-            <AddFlowToFlowButton
-              draft={draft}
-              contract={flow.recipient as `0x${string}`}
-              chainId={flow.chainId}
-              onSuccess={() => {
-                ref.current?.click() // close dialog
-              }}
-            />
-          ) : (
-            <AddRecipientToFlowButton
-              draft={draft}
-              contract={flow.recipient as `0x${string}`}
-              chainId={flow.chainId}
-              onSuccess={() => {
-                ref.current?.click() // close dialog
-              }}
-            />
-          )}
+          <div className="flex justify-end">
+            {flow.isAccelerator ? (
+              <AddFlowToFlowButton
+                draft={draft}
+                contract={flow.recipient as `0x${string}`}
+                chainId={flow.chainId}
+                onSuccess={() => {
+                  ref.current?.click() // close dialog
+                }}
+              />
+            ) : (
+              <AddRecipientToFlowButton
+                draft={draft}
+                contract={flow.recipient as `0x${string}`}
+                chainId={flow.chainId}
+                onSuccess={() => {
+                  ref.current?.click() // close dialog
+                }}
+              />
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
