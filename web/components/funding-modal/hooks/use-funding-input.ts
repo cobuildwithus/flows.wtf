@@ -1,20 +1,18 @@
 import React from "react"
 import { formatUnits, parseUnits } from "viem"
-import { type Token, validateNumericInput, getTokenBalance } from "./funding-token-lib"
+import { type Token, validateNumericInput, getTokenBalance } from "../libs/funding-token-lib"
 
 interface UseFundingInputProps {
   selectedToken: Token
   ethBalances: Record<number, bigint>
-  streamingTokenBalance: bigint
-  donationAmount: string
+  totalTokenBalance: bigint
   setDonationAmount: (amount: string) => void
 }
 
 export function useFundingInput({
   selectedToken,
   ethBalances,
-  streamingTokenBalance,
-  donationAmount,
+  totalTokenBalance,
   setDonationAmount,
 }: UseFundingInputProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +29,7 @@ export function useFundingInput({
   }
 
   const handleMaxClick = () => {
-    const balance = getTokenBalance(selectedToken, ethBalances, streamingTokenBalance)
+    const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
 
     if (selectedToken.isNative) {
       const gasReserve = parseUnits("0.01", selectedToken.decimals)

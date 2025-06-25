@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { parseUnits } from "viem"
-import { type Token, getTokenBalance } from "./funding-token-lib"
+import { type Token, getTokenBalance } from "../libs/funding-token-lib"
 
 interface UseFundingButtonStateProps {
   isConnected: boolean
@@ -8,7 +8,7 @@ interface UseFundingButtonStateProps {
   donationAmount: string
   selectedToken: Token
   ethBalances: Record<number, bigint>
-  streamingTokenBalance: bigint
+  totalTokenBalance: bigint
 }
 
 export function useFundingButtonState({
@@ -17,7 +17,7 @@ export function useFundingButtonState({
   donationAmount,
   selectedToken,
   ethBalances,
-  streamingTokenBalance,
+  totalTokenBalance,
 }: UseFundingButtonStateProps) {
   return useMemo(() => {
     if (!isConnected || !authenticated) {
@@ -29,7 +29,7 @@ export function useFundingButtonState({
     }
 
     try {
-      const balance = getTokenBalance(selectedToken, ethBalances, streamingTokenBalance)
+      const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
       const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
 
       let hasInsufficientBalance = false
@@ -55,12 +55,5 @@ export function useFundingButtonState({
       text: `Fund ${donationAmount} ${selectedToken.symbol}`,
       disabled: false,
     }
-  }, [
-    isConnected,
-    authenticated,
-    donationAmount,
-    selectedToken,
-    ethBalances,
-    streamingTokenBalance,
-  ])
+  }, [isConnected, authenticated, donationAmount, selectedToken, ethBalances, totalTokenBalance])
 }

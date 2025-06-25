@@ -27,12 +27,12 @@ import { useReadContract } from "wagmi"
 import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
 import { TokenLogo } from "@/app/token/token-logo"
-import { TOKENS, TokenKey, formatTokenAmount, getTokenBalance } from "./funding-token-lib"
+import { TOKENS, TokenKey, formatTokenAmount, getTokenBalance } from "./libs/funding-token-lib"
 import { superTokenAbi } from "@/lib/abis"
-import { useFundingButtonState } from "./use-funding-button-state"
-import { useFundingInput } from "./use-funding-input"
-import { useFundingActions } from "./use-funding-actions"
-import { getTokenDropdownItems } from "./funding-dropdown-lib"
+import { useFundingButtonState } from "./hooks/use-funding-button-state"
+import { useFundingInput } from "./hooks/use-funding-input"
+import { useFundingActions } from "./hooks/use-funding-actions"
+import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 
 interface Props {
   id: string
@@ -71,7 +71,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     query: { enabled: !!address },
   })
 
-  const streamingTokenBalance = (underlyingTokenBalance || 0n) + (superTokenBalance || 0n)
+  const totalTokenBalance = (underlyingTokenBalance || 0n) + (superTokenBalance || 0n)
 
   const buttonState = useFundingButtonState({
     isConnected,
@@ -79,14 +79,13 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     donationAmount,
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     ethBalances,
-    streamingTokenBalance,
+    totalTokenBalance,
   })
 
   const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     ethBalances,
-    streamingTokenBalance,
-    donationAmount,
+    totalTokenBalance,
     setDonationAmount,
   })
 
@@ -148,7 +147,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                     {getTokenDropdownItems(
                       chainId,
                       ethBalances,
-                      streamingTokenBalance,
+                      totalTokenBalance,
                       ethPrice || undefined,
                     ).map(({ token, balance, chainName, usdValue }) => (
                       <DropdownMenuItem
@@ -197,7 +196,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                       getTokenBalance(
                         { key: selectedTokenKey, ...selectedToken },
                         ethBalances,
-                        streamingTokenBalance,
+                        totalTokenBalance,
                       ),
                       selectedToken.decimals,
                       selectedToken.symbol,

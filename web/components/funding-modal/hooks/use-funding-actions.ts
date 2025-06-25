@@ -1,5 +1,5 @@
 import { parseUnits } from "viem"
-import { type Token } from "./funding-token-lib"
+import { type Token } from "../libs/funding-token-lib"
 
 interface UseFundingActionsProps {
   authenticated: boolean
