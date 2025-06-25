@@ -22,11 +22,12 @@ import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import React, { ComponentProps, useMemo, useRef, useState } from "react"
-import { erc20Abi, formatUnits, parseUnits } from "viem"
+import { erc20Abi, formatUnits, parseUnits, size } from "viem"
 import { base, mainnet, optimism } from "viem/chains"
 import { useReadContract } from "wagmi"
 import { ChainLogo } from "./ui/chain-logo"
 import { Grant } from "@/lib/database/types"
+import { TokenLogo } from "@/app/token/token-logo"
 
 const TOKENS = {
   [`eth-${mainnet.id}`]: {
@@ -56,6 +57,7 @@ const TOKENS = {
     chainId: optimism.id,
     decimals: 18,
     isNative: false,
+    logo: "/gardens.png",
   },
 } as const
 
@@ -176,9 +178,9 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
     if (selectedToken.isNative) {
       const gasReserve = parseUnits("0.01", selectedToken.decimals)
       const maxAmount = balance > gasReserve ? balance - gasReserve : 0n
-      setDonationAmount(formatTokenAmount(maxAmount, selectedToken.decimals, selectedToken.symbol))
+      setDonationAmount(formatUnits(maxAmount, selectedToken.decimals))
     } else {
-      setDonationAmount(formatTokenAmount(balance, selectedToken.decimals, selectedToken.symbol))
+      setDonationAmount(formatUnits(balance, selectedToken.decimals))
     }
   }
 
@@ -186,10 +188,13 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
     if (!authenticated) return login()
     if (!isConnected) return connectWallet()
 
+    const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
+
     console.debug("Donate contract call", {
       flowId: id,
       name,
       amount: donationAmount,
+      amountBigInt: donationAmountBigInt.toString(),
       token: selectedToken,
     })
   }
@@ -247,7 +252,11 @@ export function DonationModal(props: Props & ComponentProps<typeof Button>) {
                         >
                           <div className="flex w-full items-center justify-between">
                             <div className="flex items-center gap-3">
-                              {token.isNative && <ChainLogo chainId={token.chainId} size={24} />}
+                              {token.isNative ? (
+                                <ChainLogo chainId={token.chainId} size={24} />
+                              ) : (
+                                <TokenLogo src={token.logo} alt={token.name} size={24} />
+                              )}
                               <div>
                                 <div className="font-medium">{token.symbol}</div>
                                 {token.isNative && (
