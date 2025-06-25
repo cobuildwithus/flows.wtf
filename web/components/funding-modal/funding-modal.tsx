@@ -22,52 +22,20 @@ import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import React, { ComponentProps, useMemo, useRef, useState } from "react"
-import { erc20Abi, formatUnits, parseUnits, size } from "viem"
-import { base, mainnet, optimism } from "viem/chains"
+import { erc20Abi, formatUnits, parseUnits } from "viem"
 import { useReadContract } from "wagmi"
-import { ChainLogo } from "./ui/chain-logo"
+import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
 import { TokenLogo } from "@/app/token/token-logo"
-
-const TOKENS = {
-  [`eth-${mainnet.id}`]: {
-    symbol: "ETH",
-    name: "Ethereum",
-    chainId: mainnet.id,
-    decimals: 18,
-    isNative: true,
-  },
-  [`eth-${base.id}`]: {
-    symbol: "ETH",
-    name: "Base ETH",
-    chainId: base.id,
-    decimals: 18,
-    isNative: true,
-  },
-  [`eth-${optimism.id}`]: {
-    symbol: "ETH",
-    name: "Optimism ETH",
-    chainId: optimism.id,
-    decimals: 18,
-    isNative: true,
-  },
-  "gardens-optimism": {
-    symbol: "⚘GARDEN",
-    name: "Gardens",
-    chainId: optimism.id,
-    decimals: 18,
-    isNative: false,
-    logo: "/gardens.png",
-  },
-} as const
-
-type TokenKey = keyof typeof TOKENS
-type Token = (typeof TOKENS)[TokenKey] & { key: TokenKey }
-
-const AVAILABLE_TOKENS: Token[] = Object.entries(TOKENS).map(([key, token]) => ({
-  key: key as TokenKey,
-  ...token,
-}))
+import {
+  TOKENS,
+  AVAILABLE_TOKENS,
+  TokenKey,
+  formatTokenAmount,
+  validateNumericInput,
+  getTokenBalance,
+  getTokenUSDValue,
+} from "./funding-token-lib"
 
 interface Props {
   id: string
@@ -97,22 +65,6 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     query: { enabled: !!address },
   })
 
-  const getTokenBalance = (token: Token): bigint => {
-    if (token.isNative) {
-      return ethBalances[token.chainId as keyof typeof ethBalances] || 0n
-    }
-
-    return underlyingTokenBalance || 0n
-  }
-
-  const getTokenUSDValue = (token: Token, balance: bigint): number => {
-    const amount = Number(formatUnits(balance, token.decimals))
-
-    if (token.symbol === "ETH" && ethPrice) return amount * ethPrice
-
-    return amount
-  }
-
   const buttonState = useMemo(() => {
     if (!isConnected || !authenticated) {
       return { text: "Connect wallet", disabled: false }
@@ -123,7 +75,11 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
     }
 
     try {
-      const balance = getTokenBalance({ key: selectedTokenKey, ...selectedToken })
+      const balance = getTokenBalance(
+        { key: selectedTokenKey, ...selectedToken },
+        ethBalances,
+        underlyingTokenBalance,
+      )
       const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
 
       let hasInsufficientBalance = false
@@ -173,7 +129,11 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   }
 
   const handleMaxClick = () => {
-    const balance = getTokenBalance({ key: selectedTokenKey, ...selectedToken })
+    const balance = getTokenBalance(
+      { key: selectedTokenKey, ...selectedToken },
+      ethBalances,
+      underlyingTokenBalance,
+    )
 
     if (selectedToken.isNative) {
       const gasReserve = parseUnits("0.01", selectedToken.decimals)
@@ -244,9 +204,9 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-64">
                     {AVAILABLE_TOKENS.filter((token) => token.chainId === chainId).map((token) => {
-                      const balance = getTokenBalance(token)
+                      const balance = getTokenBalance(token, ethBalances, underlyingTokenBalance)
                       const chainName = TOKENS[token.key].name
-                      const usdValue = getTokenUSDValue(token, balance)
+                      const usdValue = getTokenUSDValue(token, balance, ethPrice || undefined)
 
                       return (
                         <DropdownMenuItem
@@ -293,7 +253,11 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                 <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-muted-foreground">
                   <span className="font-medium">
                     {formatTokenAmount(
-                      getTokenBalance({ key: selectedTokenKey, ...selectedToken }),
+                      getTokenBalance(
+                        { key: selectedTokenKey, ...selectedToken },
+                        ethBalances,
+                        underlyingTokenBalance,
+                      ),
                       selectedToken.decimals,
                       selectedToken.symbol,
                     )}{" "}
@@ -320,31 +284,4 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
       </DialogContent>
     </Dialog>
   )
-}
-
-const formatTokenAmount = (amount: bigint, decimals: number, symbol: string): string => {
-  const formatted = formatUnits(amount, decimals)
-  const number = Number(formatted)
-
-  if (number === 0) return "0"
-  if (number < 0.000001 && symbol === "ETH") {
-    return number.toFixed(8).replace(/\.?0+$/, "")
-  }
-
-  const maxDecimals = symbol === "USDC" ? 2 : 6
-  return number.toFixed(maxDecimals).replace(/\.?0+$/, "")
-}
-
-const validateNumericInput = (value: string, maxDecimals: number): string => {
-  const sanitized = value.replace(/[^0-9.]/g, "")
-  const parts = sanitized.split(".")
-
-  if (parts.length <= 2) {
-    if (parts.length === 2 && parts[1].length > maxDecimals) {
-      parts[1] = parts[1].substring(0, maxDecimals)
-    }
-    return parts.join(".")
-  }
-
-  return value
 }

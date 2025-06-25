@@ -1,6 +1,6 @@
 import { getAcceleratorFlow, getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 import { SwapTokenButton } from "@/app/token/swap-token-button"
-import { FundingModal } from "@/components/funding-modal"
+import { FundingModal } from "@/components/funding-modal/funding-modal"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
