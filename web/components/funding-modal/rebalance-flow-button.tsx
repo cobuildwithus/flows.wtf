@@ -32,17 +32,33 @@ export function RebalanceFlowButton({
   className,
 }: RebalanceFlowButtonProps) {
   const router = useRouter()
-  const { actualFlowRate, isLoading: actualLoading } = useActualFlowRate(contract, chainId)
-  const { actualFlowRate: maxFlowRate, isLoading: maxLoading } = useMaxSafeFlowRate(
-    contract,
-    chainId,
-  )
-  const { isFlowRateTooHigh, isLoading: tooHighLoading } = useFlowRateTooHigh(contract, chainId)
+  const {
+    actualFlowRate,
+    isLoading: actualLoading,
+    refetch: mutateActual,
+  } = useActualFlowRate(contract, chainId)
+  const {
+    actualFlowRate: maxFlowRate,
+    isLoading: maxLoading,
+    refetch: mutateMax,
+  } = useMaxSafeFlowRate(contract, chainId)
+  const {
+    isFlowRateTooHigh,
+    isLoading: tooHighLoading,
+    refetch: mutateTooHigh,
+  } = useFlowRateTooHigh(contract, chainId)
   const { data: existingFlows, isLoading: flowsLoading } = useExistingFlows(
     address,
     chainId,
     receiver,
   )
+
+  const onSuccess = () => {
+    mutateActual()
+    mutateMax()
+    mutateTooHigh()
+    router.refresh()
+  }
 
   const {
     increaseFlowRate,
@@ -53,17 +69,13 @@ export function RebalanceFlowButton({
     chainId,
     superToken,
     userAddress: address as `0x${string}`,
-    onSuccess: (hash) => {
-      router.refresh()
-    },
+    onSuccess,
   })
 
   const { decreaseFlowRate, isLoading: decreaseLoading } = useDecreaseFlowRate({
     contract,
     chainId,
-    onSuccess: (hash) => {
-      router.refresh()
-    },
+    onSuccess,
   })
 
   const isLoading = actualLoading || maxLoading || tooHighLoading || flowsLoading

@@ -5,7 +5,7 @@ import { useReadContract } from "wagmi"
 
 export function useActualFlowRate(contractAddress: `0x${string}`, chainId: number) {
   // getActualFlowRate() returns int96, which wagmi/viem will decode as bigint
-  const { data, error, isLoading } = useReadContract({
+  const { data, error, isLoading, refetch } = useReadContract({
     address: contractAddress,
     abi: customFlowImplAbi,
     functionName: "getActualFlowRate",
@@ -16,5 +16,6 @@ export function useActualFlowRate(contractAddress: `0x${string}`, chainId: numbe
     actualFlowRate: data ?? 0n,
     error,
     isLoading,
+    refetch,
   }
 }

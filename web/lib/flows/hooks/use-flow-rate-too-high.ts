@@ -5,7 +5,7 @@ import { useReadContract } from "wagmi"
 
 export function useFlowRateTooHigh(flowId: `0x${string}`, chainId: number) {
   // Returns { data, error, isLoading } for isFlowRateTooHigh
-  const { data, error, isLoading } = useReadContract({
+  const { data, error, isLoading, refetch } = useReadContract({
     address: flowId,
     abi: customFlowImplAbi,
     functionName: "isFlowRateTooHigh",
@@ -16,5 +16,6 @@ export function useFlowRateTooHigh(flowId: `0x${string}`, chainId: number) {
     isFlowRateTooHigh: data ?? false,
     error,
     isLoading,
+    refetch,
   }
 }

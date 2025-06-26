@@ -67,8 +67,8 @@ export function useFundFlow({
     chainId: flow.chainId,
     tokenAddress: flow.underlyingERC20Token as `0x${string}`,
     spenderAddress: flow.superToken as `0x${string}`,
-    onSuccess: (hash: string) => {
-      console.log("Approval successful:", hash)
+    onSuccess: () => {
+      router.refresh()
     },
   })
 

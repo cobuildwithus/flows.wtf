@@ -6,6 +6,7 @@ import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useGetRequiredBufferAmount } from "./use-get-required-buffer-amount"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 interface UseIncreaseFlowRateProps {
   contract: `0x${string}`
@@ -22,6 +23,7 @@ export function useIncreaseFlowRate({
   userAddress,
   onSuccess,
 }: UseIncreaseFlowRateProps) {
+  const router = useRouter()
   const [isApproving, setIsApproving] = useState(false)
   const [pendingAmount, setPendingAmount] = useState<bigint>(0n)
 
@@ -45,6 +47,7 @@ export function useIncreaseFlowRate({
     onSuccess: () => {
       setIsApproving(false)
       refetchAllowance()
+      router.refresh()
     },
   })
 
