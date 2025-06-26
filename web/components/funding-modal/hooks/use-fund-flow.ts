@@ -1,12 +1,12 @@
-import { useMemo } from "react"
 import { parseUnits } from "viem"
-import { type Token, getTokenBalance } from "../libs/funding-token-lib"
+import { type Token } from "../libs/funding-token-lib"
 import { useLogin } from "@/lib/auth/use-login"
-import { useEthBalances } from "@/app/token/hooks/use-eth-balances"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useApprovalAmount } from "./use-approval-amount"
+import { useFundButtonState } from "./use-fund-button-state"
+import { useInsufficientBalance } from "./use-insufficient-balance"
 import { useCreateFlow } from "@/lib/erc20/super-token/use-create-flow"
 import { Grant } from "@/lib/database/types"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
@@ -35,9 +35,8 @@ export function useFundFlow({
   isStreamingToken,
   streamingMonths,
 }: UseFundingProps) {
-  const { authenticated, isConnected, login, connectWallet, address } = useLogin()
-  const { balances: ethBalances } = useEthBalances()
   const router = useRouter()
+  const { authenticated, isConnected, login, connectWallet, address } = useLogin()
   const { data: existingFlows, mutate } = useExistingFlows(address, flow.chainId, flow.recipient)
 
   // Fetch token balances if not provided
@@ -92,90 +91,25 @@ export function useFundFlow({
   })
 
   // Track if balance is insufficient
-  const hasInsufficientBalance = useMemo(() => {
-    if (!donationAmount || Number(donationAmount) <= 0) return false
-
-    try {
-      const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
-
-      if (selectedToken.isNative) {
-        // For native tokens (ETH), check ETH balance with gas reserve
-        const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
-        const gasReserve = parseUnits("0.01", selectedToken.decimals)
-        return balance < donationAmountBigInt + gasReserve
-      } else if (isStreamingToken) {
-        // For streaming tokens, check if total balance (underlying + super) is sufficient
-        return totalTokenBalance < donationAmountBigInt
-      } else {
-        // For other tokens, check the specific token balance
-        const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
-        return balance < donationAmountBigInt
-      }
-    } catch {
-      return false
-    }
-  }, [donationAmount, selectedToken, ethBalances, totalTokenBalance, isStreamingToken])
-
-  // Button state logic
-  const buttonState = useMemo(() => {
-    // Handle loading states first
-    if (isApproving) {
-      return { text: "Approving...", disabled: true }
-    }
-
-    if (isUpgrading || isUpdating) {
-      return { text: "Funding...", disabled: true }
-    }
-
-    if (!isConnected || !authenticated) {
-      return { text: "Connect wallet", disabled: false }
-    }
-
-    if (!donationAmount || Number(donationAmount) <= 0) {
-      return { text: "Fund", disabled: true }
-    }
-
-    if (hasInsufficientBalance) {
-      return {
-        text: `Insufficient ${selectedToken.symbol} balance`,
-        disabled: true,
-      }
-    }
-
-    try {
-      const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
-
-      // Check if approval is needed (for streaming tokens)
-      if (isStreamingToken && superTokenBalance !== undefined) {
-        const needsApproval = donationAmountBigInt > superTokenBalance
-        if (needsApproval && approvalNeeded) {
-          return {
-            text: `Approve & Fund ${donationAmount} ${selectedToken.symbol}`,
-            disabled: false,
-          }
-        }
-      }
-    } catch {
-      return { text: "Fund", disabled: true }
-    }
-
-    return {
-      text: `Fund ${donationAmount} ${selectedToken.symbol}`,
-      disabled: false,
-    }
-  }, [
-    isConnected,
-    authenticated,
+  const hasInsufficientBalance = useInsufficientBalance({
     donationAmount,
     selectedToken,
+    totalTokenBalance,
     isStreamingToken,
-    superTokenBalance,
+  })
+
+  // Button state logic
+  const buttonState = useFundButtonState({
+    donationAmount,
+    selectedToken,
     isApproving,
     isUpgrading,
     isUpdating,
     hasInsufficientBalance,
+    isStreamingToken,
+    superTokenBalance,
     approvalNeeded,
-  ])
+  })
 
   const handleFund = async () => {
     if (!authenticated) return login()
