@@ -1,4 +1,4 @@
-import { superfluidAddress } from "@/lib/abis"
+import { cfaAddress, superfluidAddress } from "@/lib/abis"
 
 export const getHostAddress = (chainId: number) => {
   if (chainId === 1) return superfluidAddress[1]
@@ -6,4 +6,12 @@ export const getHostAddress = (chainId: number) => {
   if (chainId === 8453) return superfluidAddress[8453]
 
   throw new Error(`Superfluid host address not found for chainId: ${chainId}`)
+}
+
+export const getCfaAddress = (chainId: number) => {
+  if (chainId === 1) return cfaAddress[1]
+  if (chainId === 10) return cfaAddress[10]
+  if (chainId === 8453) return cfaAddress[8453]
+
+  throw new Error(`CFA address not found for chainId: ${chainId}`)
 }

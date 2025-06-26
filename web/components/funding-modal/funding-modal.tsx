@@ -21,11 +21,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
-import React, { ComponentProps, useRef, useState } from "react"
+import React, { ComponentProps, useRef, useState, useEffect } from "react"
 import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
 import { TokenLogo } from "@/app/token/token-logo"
-import { TOKENS, TokenKey, formatTokenAmount, getTokenBalance } from "./libs/funding-token-lib"
+import {
+  TOKENS,
+  TokenKey,
+  formatTokenAmount,
+  getTokenBalance,
+  AVAILABLE_TOKENS,
+} from "./libs/funding-token-lib"
 import { useFunding } from "./hooks/use-funding"
 import { useFundingInput } from "./hooks/use-funding-input"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
@@ -62,6 +68,19 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const underlyingTokenBalance = balances[0] || 0n
   const superTokenBalance = balances[1] || 0n
   const streamingTokenBalance = underlyingTokenBalance + superTokenBalance
+
+  // When modal opens, default to streaming token if user has balance
+  useEffect(() => {
+    if (isOpen && streamingTokenBalance > 0n) {
+      // Find the non-native token for this chain
+      const streamingToken = AVAILABLE_TOKENS.find(
+        (token) => !token.isNative && token.chainId === chainId,
+      )
+      if (streamingToken) {
+        setSelectedTokenKey(streamingToken.key)
+      }
+    }
+  }, [isOpen]) // Only run when modal opens/closes
 
   // Check if selected token is the streaming token (non-native token that matches the flow's token)
   const isStreamingToken = !selectedToken.isNative

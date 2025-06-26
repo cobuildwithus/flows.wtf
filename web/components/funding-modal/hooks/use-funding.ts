@@ -65,7 +65,7 @@ export function useFunding({
     },
   })
 
-  const { upgrade, isLoading: isUpgrading } = useUpgradeAndCreateFlow({
+  const { createFlow, isLoading: isUpgrading } = useUpgradeAndCreateFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.superToken as `0x${string}`,
     onSuccess: (hash: string) => {
@@ -175,24 +175,14 @@ export function useFunding({
         await approve(approvalAmount)
         return // Wait for approval to complete before continuing
       }
-
-      // Step 2: Execute upgrade and create flow in one batch transaction
-      if (amountNeededFromUnderlying > 0n) {
-        console.log("Upgrading and creating flow:", {
-          upgradeAmount: amountNeededFromUnderlying.toString(),
-          receiver: flow.id,
-          monthlyFlowRate: monthlyFlowRate.toString(),
-        })
-
-        // Use the batch operation to upgrade tokens and create flow in one transaction
-        await upgrade(
-          amountNeededFromUnderlying,
-          flow.id as `0x${string}`, // Flow ID is the receiver address
-          monthlyFlowRate,
-        )
-        return
-      }
     }
+
+    // Use the batch operation to upgrade tokens and create flow in one transaction
+    await createFlow(
+      amountNeededFromUnderlying,
+      flow.id as `0x${string}`, // Flow ID is the receiver address
+      monthlyFlowRate,
+    )
 
     // For native tokens or when no upgrade is needed
     console.debug("Fund contract call", {

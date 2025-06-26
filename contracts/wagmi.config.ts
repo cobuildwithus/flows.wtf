@@ -72,6 +72,7 @@ export default defineConfig(() => {
       etherscan({
         apiKey: env.ETHERSCAN_API_KEY,
         chainId: 1,
+        tryFetchProxyImplementation: true,
         contracts: [
           { name: "nounsToken", address: mainnet.NounsToken as `0x${string}` },
           {
@@ -84,6 +85,14 @@ export default defineConfig(() => {
               1: "0x4E583d9390082B65Bef884b629DFA426114CED6d",
               10: "0x567c4B141ED61923967cA25Ef4906C8781069a10",
               8453: "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
+            },
+          },
+          {
+            name: "cfa",
+            address: {
+              1: "0x2844c1BBdA121E9E43105630b9C8310e5c72744b",
+              10: "0x204C6f131bb7F258b2Ea1593f5309911d8E458eD",
+              8453: "0x19ba78B9cDB05A877718841c574325fdB53601bb",
             },
           },
         ],

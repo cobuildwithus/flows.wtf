@@ -1,21 +1,17 @@
 "use client"
 
-import {
-  superTokenAbi,
-  cfav1ForwarderAbi,
-  cfav1ForwarderAddress,
-  superfluidImplAbi,
-} from "@/lib/abis"
+import { superTokenAbi, cfaAbi, superfluidImplAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { encodeFunctionData } from "viem"
 import { calculateFlowratePerSecond, TIME_UNIT } from "./flow-rate"
 import { toast } from "sonner"
-import { OPERATION_TYPE } from "./operation-type"
-import { getHostAddress } from "./addresses"
+import { OPERATION_TYPE, prepareOperation } from "./operation-type"
+import { getCfaAddress, getHostAddress } from "./addresses"
 
-// same on all networks
-const cfaAddress = cfav1ForwarderAddress[8453]
-
+/**
+ * Hook to upgrade ERC20 tokens to Super Tokens and create a Superfluid flow in a single transaction
+ * Uses Superfluid's batch call functionality to combine operations atomically
+ */
 export const useUpgradeAndCreateFlow = (args: {
   chainId: number
   superTokenAddress: `0x${string}`
@@ -33,46 +29,60 @@ export const useUpgradeAndCreateFlow = (args: {
     account: sender,
   } = useContractTransaction({
     chainId,
-    loading: "Upgrading tokens...",
-    success: "Tokens upgraded successfully",
+    loading: "Creating flow...",
+    success: "Flow created successfully",
     onSuccess,
   })
 
-  const upgrade = async (amount: bigint, receiver: `0x${string}`, monthlyFlowRate: bigint) => {
+  const createFlow = async (
+    amountToUpgrade: bigint,
+    receiver: `0x${string}`,
+    monthlyFlowRate: bigint,
+  ) => {
     await prepareWallet()
     if (!sender) return toast.error("Please connect your wallet")
 
-    const upgradeData = encodeFunctionData({
-      abi: superTokenAbi,
-      functionName: "upgrade",
-      args: [amount],
+    // Convert monthly flow rate to per-second flow rate for Superfluid
+    const flowRate = calculateFlowratePerSecond({
+      amountWei: monthlyFlowRate,
+      timeUnit: TIME_UNIT.month,
     })
 
+    const ops = []
+
+    // First operation: Upgrade ERC20 tokens to Super Tokens (if amount > 0)
+    if (amountToUpgrade > 0n) {
+      const upgradeData = encodeFunctionData({
+        abi: superTokenAbi,
+        functionName: "upgrade",
+        args: [amountToUpgrade],
+      })
+
+      ops.push(
+        prepareOperation({
+          operationType: OPERATION_TYPE.SUPERTOKEN_UPGRADE,
+          target: superTokenAddress,
+          data: upgradeData,
+        }),
+      )
+    }
+
+    // Second operation: Create a Superfluid flow to the receiver
     const createFlowData = encodeFunctionData({
-      abi: cfav1ForwarderAbi,
+      abi: cfaAbi,
       functionName: "createFlow",
-      args: [
-        superTokenAddress,
-        sender,
-        receiver,
-        calculateFlowratePerSecond({ amountWei: monthlyFlowRate, timeUnit: TIME_UNIT.month }),
-        "0x",
-      ],
+      args: [superTokenAddress, receiver, flowRate, "0x"],
     })
 
-    const ops = [
-      {
-        operationType: OPERATION_TYPE.SUPERTOKEN_UPGRADE,
-        target: superTokenAddress,
-        data: upgradeData,
-      },
-      {
+    ops.push(
+      prepareOperation({
         operationType: OPERATION_TYPE.SUPERFLUID_CALL_AGREEMENT,
-        target: cfaAddress,
+        target: getCfaAddress(chainId),
         data: createFlowData,
-      },
-    ] as const
+      }),
+    )
 
+    // Execute both operations atomically using Superfluid's batch call
     writeContract({
       address: getHostAddress(chainId),
       abi: superfluidImplAbi,
@@ -83,7 +93,7 @@ export const useUpgradeAndCreateFlow = (args: {
   }
 
   return {
-    upgrade,
+    createFlow,
     isLoading,
     isSuccess,
     isError,
