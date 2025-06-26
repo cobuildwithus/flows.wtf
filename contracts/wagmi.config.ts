@@ -52,11 +52,6 @@ const baseContracts = [
   },
 
   {
-    name: "gdav1",
-    address: "0xfE6c87BE05feDB2059d2EC41bA0A09826C9FD7aa" as `0x${string}`,
-  },
-
-  {
     name: "superfluidPool",
     address: "0x9224413b9177e6c1d5721b4a4d1d00ec84b07ce7" as `0x${string}`,
   },
@@ -74,6 +69,14 @@ export default defineConfig(() => {
         chainId: 1,
         tryFetchProxyImplementation: true,
         contracts: [
+          {
+            name: "gdav1",
+            address: {
+              1: "0xAAdBB3Eee3Bd080f5353d86DdF1916aCA3fAC842" as `0x${string}`,
+              10: "0x68Ae17fa7a31b86F306c383277552fd4813b0d35" as `0x${string}`,
+              8453: "0xfE6c87BE05feDB2059d2EC41bA0A09826C9FD7aa" as `0x${string}`,
+            },
+          },
           { name: "nounsToken", address: mainnet.NounsToken as `0x${string}` },
           {
             name: "superfluidImpl",

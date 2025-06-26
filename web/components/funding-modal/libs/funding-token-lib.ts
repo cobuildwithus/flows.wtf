@@ -50,7 +50,15 @@ export const formatTokenAmount = (amount: bigint, decimals: number, symbol: stri
     return number.toFixed(8).replace(/\.?0+$/, "")
   }
 
-  const maxDecimals = symbol === "USDC" ? 2 : 6
+  // For GARDEN tokens with large balances, use 2 decimals; otherwise use more
+  let maxDecimals = 6
+  if (symbol === "USDC") {
+    maxDecimals = 2
+  } else if (symbol === "⚘GARDEN") {
+    if (number >= 10) maxDecimals = 2
+    else if (number >= 1) maxDecimals = 4
+  }
+
   return number.toFixed(maxDecimals).replace(/\.?0+$/, "")
 }
 

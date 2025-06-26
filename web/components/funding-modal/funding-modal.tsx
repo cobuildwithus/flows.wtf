@@ -32,6 +32,7 @@ import {
   getTokenBalance,
   AVAILABLE_TOKENS,
 } from "./libs/funding-token-lib"
+import { formatUnits } from "viem"
 import { useFunding } from "./hooks/use-funding"
 import { useFundingInput } from "./hooks/use-funding-input"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
@@ -48,7 +49,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const { title: name, underlyingERC20Token, chainId, superToken } = flow
   const [isOpen, setIsOpen] = useState(false)
   const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`eth-${chainId}`)
-  const [donationAmount, setDonationAmount] = useState("100")
+  const [donationAmount, setDonationAmount] = useState("")
   const [streamingMonths, setStreamingMonths] = useState(3)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -69,15 +70,35 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const superTokenBalance = balances[1] || 0n
   const streamingTokenBalance = underlyingTokenBalance + superTokenBalance
 
-  // When modal opens, default to streaming token if user has balance
+  // When modal opens, set default token and amount
   useEffect(() => {
-    if (isOpen && streamingTokenBalance > 0n) {
-      // Find the non-native token for this chain
-      const streamingToken = AVAILABLE_TOKENS.find(
-        (token) => !token.isNative && token.chainId === chainId,
+    if (isOpen) {
+      // Default to streaming token if user has balance
+      let defaultTokenKey = selectedTokenKey
+      if (streamingTokenBalance > 0n) {
+        const streamingToken = AVAILABLE_TOKENS.find(
+          (token) => !token.isNative && token.chainId === chainId,
+        )
+        if (streamingToken) {
+          defaultTokenKey = streamingToken.key
+          setSelectedTokenKey(streamingToken.key)
+        }
+      }
+
+      // Calculate default donation amount (half of balance, rounded up)
+      const currentBalance = getTokenBalance(
+        { key: defaultTokenKey, ...TOKENS[defaultTokenKey] },
+        ethBalances,
+        streamingTokenBalance,
       )
-      if (streamingToken) {
-        setSelectedTokenKey(streamingToken.key)
+
+      if (currentBalance > 0n) {
+        const decimals = TOKENS[defaultTokenKey].decimals
+        const balanceInUnits = Number(formatUnits(currentBalance, decimals))
+        const halfBalance = Math.ceil(balanceInUnits / 2)
+        setDonationAmount(halfBalance.toString())
+      } else {
+        setDonationAmount("1") // Default to 1 if no balance
       }
     }
   }, [isOpen]) // Only run when modal opens/closes
@@ -182,7 +203,9 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                             </div>
                           ) : (
                             <div className="text-right">
-                              <div className="text-sm font-medium">{usdValue}</div>
+                              <div className="text-sm font-medium">
+                                {formatTokenAmount(balance, token.decimals, token.symbol)}
+                              </div>
                             </div>
                           )}
                         </div>

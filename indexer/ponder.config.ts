@@ -8,7 +8,7 @@ import {
   superfluidPoolAbi,
   tcrFactoryImplAbi,
   gdav1Address,
-  gdav1ImplAbi,
+  gdav1Abi,
   tokenEmitterImplAbi,
   customFlowImplAbi,
   nounsTokenAbi,
@@ -150,9 +150,9 @@ export default createConfig({
       },
     },
     GdaV1: {
-      abi: gdav1ImplAbi,
+      abi: gdav1Abi,
       chain: IndexerConfig.GdaV1,
-      address: [gdav1Address[8453], optimismContracts.GdaV1],
+      address: [gdav1Address[8453], gdav1Address[10]],
       filter: {
         event: "FlowDistributionUpdated",
         args: {
