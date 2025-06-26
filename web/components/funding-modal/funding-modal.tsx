@@ -33,7 +33,7 @@ import {
   AVAILABLE_TOKENS,
 } from "./libs/funding-token-lib"
 import { formatUnits } from "viem"
-import { useFunding } from "./hooks/use-funding"
+import { useFundFlow } from "./hooks/use-fund-flow"
 import { useFundingInput } from "./hooks/use-funding-input"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
@@ -107,7 +107,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   // Check if selected token is the streaming token (non-native token that matches the flow's token)
   const isStreamingToken = !selectedToken.isNative
 
-  const { buttonText, isDisabled, handleFund, hasInsufficientBalance } = useFunding({
+  const { buttonText, isDisabled, handleFund, hasInsufficientBalance } = useFundFlow({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     donationAmount,
     flow,

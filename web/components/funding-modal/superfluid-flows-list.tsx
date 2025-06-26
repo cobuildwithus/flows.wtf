@@ -4,15 +4,12 @@ import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
-import { formatUnits } from "viem"
-import { ArrowUpIcon, ArrowDownIcon } from "@radix-ui/react-icons"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS } from "./libs/funding-token-lib"
 
 interface SuperfluidFlowsListProps {
   address: string | undefined
-  chainId?: number
+  chainId: number
   receiver?: string
   token?: string
   maxItems?: number

@@ -7,20 +7,26 @@ import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useApprovalAmount } from "./use-approval-amount"
-import { useUpgradeAndCreateFlow } from "@/lib/erc20/super-token/use-upgrade-create-flow"
+import { useCreateFlow } from "@/lib/erc20/super-token/use-create-flow"
 import { Grant } from "@/lib/database/types"
+import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
+import { useUpdateFlow } from "@/lib/erc20/super-token/use-update-flow"
+import { useRouter } from "next/navigation"
 
 interface UseFundingProps {
   selectedToken: Token
   donationAmount: string
-  flow: Pick<Grant, "id" | "title" | "chainId" | "underlyingERC20Token" | "superToken">
+  flow: Pick<
+    Grant,
+    "id" | "title" | "chainId" | "underlyingERC20Token" | "superToken" | "recipient"
+  >
   totalTokenBalance: bigint
   superTokenBalance?: bigint
   isStreamingToken?: boolean
   streamingMonths: number
 }
 
-export function useFunding({
+export function useFundFlow({
   selectedToken,
   donationAmount,
   flow,
@@ -31,6 +37,8 @@ export function useFunding({
 }: UseFundingProps) {
   const { authenticated, isConnected, login, connectWallet, address } = useLogin()
   const { balances: ethBalances } = useEthBalances()
+  const router = useRouter()
+  const { data: existingFlows, mutate } = useExistingFlows(address, flow.chainId, flow.recipient)
 
   // Fetch token balances if not provided
   const { balances } = useERC20Balances(
@@ -65,11 +73,21 @@ export function useFunding({
     },
   })
 
-  const { createFlow, isLoading: isUpgrading } = useUpgradeAndCreateFlow({
+  const { createFlow, isLoading: isUpgrading } = useCreateFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.superToken as `0x${string}`,
-    onSuccess: (hash: string) => {
-      console.log("Upgrade successful:", hash)
+    onSuccess: () => {
+      router.refresh()
+      mutate()
+    },
+  })
+
+  const { updateFlow, isLoading: isUpdating } = useUpdateFlow({
+    chainId: flow.chainId,
+    superTokenAddress: flow.superToken as `0x${string}`,
+    onSuccess: () => {
+      router.refresh()
+      mutate()
     },
   })
 
@@ -105,7 +123,7 @@ export function useFunding({
       return { text: "Approving...", disabled: true }
     }
 
-    if (isUpgrading) {
+    if (isUpgrading || isUpdating) {
       return { text: "Funding...", disabled: true }
     }
 
@@ -154,6 +172,7 @@ export function useFunding({
     superTokenBalance,
     isApproving,
     isUpgrading,
+    isUpdating,
     hasInsufficientBalance,
     approvalNeeded,
   ])
@@ -177,12 +196,13 @@ export function useFunding({
       }
     }
 
-    // Use the batch operation to upgrade tokens and create flow in one transaction
-    await createFlow(
-      amountNeededFromUnderlying,
-      flow.id as `0x${string}`, // Flow ID is the receiver address
-      monthlyFlowRate,
-    )
+    if (existingFlows?.length === 0) {
+      // Use the batch operation to upgrade tokens and create flow in one transaction
+      await createFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+      return
+    }
+
+    await updateFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
 
     // For native tokens or when no upgrade is needed
     console.debug("Fund contract call", {
