@@ -2,8 +2,6 @@ import { defineConfig, loadEnv } from "@wagmi/cli"
 import { etherscan } from "@wagmi/cli/plugins"
 import { base, mainnet } from "./addresses"
 
-const mainnetContracts = [{ name: "nounsToken", address: mainnet.NounsToken }]
-
 const baseContracts = [
   { name: "nounsFlowImpl", address: base.NounsFlowImpl },
 
@@ -71,8 +69,26 @@ export default defineConfig(() => {
     out: "src/generated.ts",
     contracts: [],
     plugins: [
-      etherscan({ apiKey: env.ETHERSCAN_API_KEY, chainId: 1, contracts: mainnetContracts }),
-      etherscan({ apiKey: env.BASESCAN_API_KEY, chainId: 8453, contracts: baseContracts }),
+      etherscan({
+        apiKey: env.ETHERSCAN_API_KEY,
+        chainId: 1,
+        contracts: [
+          { name: "nounsToken", address: mainnet.NounsToken as `0x${string}` },
+          {
+            name: "superfluidImpl",
+            address: "0x07e4a282f8f20032f3e766fffb73c8b86ba7e1f1" as `0x${string}`,
+          },
+          {
+            name: "superfluid",
+            address: {
+              1: "0x4E583d9390082B65Bef884b629DFA426114CED6d",
+              10: "0x567c4B141ED61923967cA25Ef4906C8781069a10",
+              8453: "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
+            },
+          },
+        ],
+      }),
+      etherscan({ apiKey: env.ETHERSCAN_API_KEY, chainId: 8453, contracts: baseContracts }),
     ],
   }
 })

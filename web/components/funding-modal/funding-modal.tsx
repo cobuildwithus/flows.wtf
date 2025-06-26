@@ -30,6 +30,7 @@ import { useFunding } from "./hooks/use-funding"
 import { useFundingInput } from "./hooks/use-funding-input"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
+import { StreamingDurationSelector } from "./streaming-duration-selector"
 
 interface Props {
   id: string
@@ -42,6 +43,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`eth-${chainId}`)
   const [donationAmount, setDonationAmount] = useState("100")
+  const [streamingMonths, setStreamingMonths] = useState(3)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { authenticated, address, isConnected } = useLogin()
@@ -64,13 +66,14 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   // Check if selected token is the streaming token (non-native token that matches the flow's token)
   const isStreamingToken = !selectedToken.isNative
 
-  const { buttonText, isDisabled, handleFund } = useFunding({
+  const { buttonText, isDisabled, handleFund, hasInsufficientBalance } = useFunding({
     selectedToken: { key: selectedTokenKey, ...selectedToken },
     donationAmount,
     flow,
     totalTokenBalance: streamingTokenBalance,
     superTokenBalance: superTokenBalance || 0n,
     isStreamingToken,
+    streamingMonths,
   })
 
   const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({
@@ -195,6 +198,20 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
               </div>
             </div>
           </div>
+
+          {/* Only show streaming duration selector for non-native tokens when there are sufficient funds */}
+          {!selectedToken.isNative &&
+            !hasInsufficientBalance &&
+            donationAmount &&
+            Number(donationAmount) > 0 && (
+              <StreamingDurationSelector
+                donationAmount={donationAmount}
+                tokenSymbol={selectedToken.symbol}
+                tokenDecimals={selectedToken.decimals}
+                months={streamingMonths}
+                onMonthsChange={setStreamingMonths}
+              />
+            )}
 
           <Button onClick={handleFund} disabled={isDisabled} className="w-full" size="xl">
             {buttonText}
