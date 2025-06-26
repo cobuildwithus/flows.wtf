@@ -19,16 +19,18 @@ export function getTokenDropdownItems(
   streamingTokenBalance: bigint,
   ethPrice?: number,
 ): TokenDropdownItem[] {
-  return AVAILABLE_TOKENS.filter((token) => token.chainId === chainId).map((token) => {
-    const balance = getTokenBalance(token, ethBalances, streamingTokenBalance)
-    const chainName = TOKENS[token.key].name
-    const usdValue = getTokenUSDValue(token, balance, ethPrice || undefined)
+  return AVAILABLE_TOKENS.filter((token) => token.chainId === chainId && !token.isNative).map(
+    (token) => {
+      const balance = getTokenBalance(token, ethBalances, streamingTokenBalance)
+      const chainName = TOKENS[token.key].name
+      const usdValue = getTokenUSDValue(token, balance, ethPrice || undefined)
 
-    return {
-      token,
-      balance,
-      chainName,
-      usdValue,
-    }
-  })
+      return {
+        token,
+        balance,
+        chainName,
+        usdValue,
+      }
+    },
+  )
 }

@@ -23,7 +23,7 @@ export const TOKENS = {
     decimals: 18,
     isNative: true,
   },
-  "gardens-optimism": {
+  [`0x99e50193f4a70b2581cf3a80ae32505a4e0337ff-${optimism.id}`]: {
     symbol: "⚘GARDEN",
     name: "Gardens",
     chainId: optimism.id,

@@ -39,7 +39,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const { id, flow, ...buttonProps } = props
   const { title: name, underlyingERC20Token, chainId, superToken } = flow
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`eth-${chainId}`)
+  const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`${superToken}-${chainId}`)
   const [donationAmount, setDonationAmount] = useState("")
   const [streamingMonths, setStreamingMonths] = useState(3)
   const inputRef = useRef<HTMLInputElement>(null)
