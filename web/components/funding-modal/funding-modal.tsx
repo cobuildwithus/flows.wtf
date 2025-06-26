@@ -226,7 +226,6 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                       selectedToken.decimals,
                       selectedToken.symbol,
                     )}{" "}
-                    {selectedToken.symbol}
                   </span>
                   <Button
                     type="button"

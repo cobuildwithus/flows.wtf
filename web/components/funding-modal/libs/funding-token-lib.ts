@@ -55,7 +55,7 @@ export const formatTokenAmount = (amount: bigint, decimals: number, symbol: stri
   let maxDecimals = 6
   if (symbol === "USDC") {
     maxDecimals = 2
-  } else if (symbol === "⚘GARDEN") {
+  } else {
     if (number >= 10) maxDecimals = 2
     else if (number >= 1) maxDecimals = 4
   }
