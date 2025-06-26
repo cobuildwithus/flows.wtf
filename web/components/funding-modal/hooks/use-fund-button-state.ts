@@ -18,6 +18,7 @@ interface UseFundButtonStateProps {
   isStreamingToken?: boolean
   superTokenBalance?: bigint
   approvalNeeded: boolean
+  streamingMonths: number
 }
 
 export function useFundButtonState({
@@ -30,10 +31,26 @@ export function useFundButtonState({
   isStreamingToken,
   superTokenBalance,
   approvalNeeded,
+  streamingMonths,
 }: UseFundButtonStateProps) {
   const { authenticated, isConnected } = useLogin()
 
   return useMemo(() => {
+    // Calculate monthly amount for display
+    const calculateMonthlyAmount = () => {
+      try {
+        const totalAmount = parseFloat(donationAmount)
+        if (!isNaN(totalAmount) && totalAmount > 0) {
+          const monthlyAmount = totalAmount / streamingMonths
+          // Format to 2 decimal places, removing trailing zeros
+          return parseFloat(monthlyAmount.toFixed(2)).toString()
+        }
+      } catch {}
+      return "0"
+    }
+
+    const monthlyAmount = calculateMonthlyAmount()
+
     // Handle loading states first
     if (isApproving) {
       return { text: "Approving...", disabled: true }
@@ -69,7 +86,7 @@ export function useFundButtonState({
 
         if (needsApproval && approvalNeeded) {
           return {
-            text: `Approve & Fund ${donationAmount} ${selectedToken.symbol}`,
+            text: `Approve & Fund ${monthlyAmount} ${selectedToken.symbol}/mo`,
             disabled: false,
           }
         }
@@ -80,7 +97,7 @@ export function useFundButtonState({
 
     // Default successful state
     return {
-      text: `Fund ${donationAmount} ${selectedToken.symbol}`,
+      text: `Fund ${monthlyAmount} ${selectedToken.symbol}/mo`,
       disabled: false,
     }
   }, [
@@ -95,5 +112,6 @@ export function useFundButtonState({
     isStreamingToken,
     superTokenBalance,
     approvalNeeded,
+    streamingMonths,
   ])
 }

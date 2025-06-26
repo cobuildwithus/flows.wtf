@@ -109,6 +109,7 @@ export function useFundFlow({
     isStreamingToken,
     superTokenBalance,
     approvalNeeded,
+    streamingMonths,
   })
 
   const handleFund = async () => {

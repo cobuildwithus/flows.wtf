@@ -94,9 +94,7 @@ export function RebalanceFlowButton({
   if (!shouldShow) return null
 
   // Amount to rebalance: the minimum between what can be increased and what the user is sending
-  const amount = needsIncrease
-    ? BigInt(Math.min(Number(userFlowRate), Number(maxFlowRate - actualFlowRate)))
-    : userFlowRate
+  const amount = needsIncrease ? maxFlowRate - actualFlowRate : maxFlowRate - actualFlowRate
 
   if (amount === 0n) return null
 
@@ -121,7 +119,7 @@ export function RebalanceFlowButton({
     }
 
     if (needsDecrease) {
-      return `Reduce (-${displayAmount}/mo)`
+      return `Reduce (${displayAmount}/mo)`
     }
 
     if (needsApproval(amount)) {

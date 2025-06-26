@@ -52,10 +52,10 @@ export function SuperfluidFlowsList({
   }
 
   return (
-    <div className="mt-3 space-y-3 border-t pt-3">
+    <div className="mt-3 space-y-3 border-t pt-4">
       {showTitle && (
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium">You funded</h4>
+          <h4 className="text-sm font-medium">You are funding</h4>
           {filteredFlows.length > maxItems && (
             <Badge variant="secondary" className="text-xs">
               +{filteredFlows.length - maxItems} more
