@@ -124,7 +124,6 @@ export function useFundFlow({
     if (isStreamingToken && superTokenBalance !== undefined) {
       // Step 1: Handle approval if needed
       if (approvalNeeded && approvalAmount > 0n) {
-        console.log("Need approval for amount:", approvalAmount.toString())
         await approve(approvalAmount)
         return // Wait for approval to complete before continuing
       }
@@ -137,18 +136,6 @@ export function useFundFlow({
     }
 
     await updateFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
-
-    // For native tokens or when no upgrade is needed
-    console.debug("Fund contract call", {
-      flowId: flow.id,
-      flowName: flow.title,
-      amount: donationAmount,
-      amountBigInt: donationAmountBigInt.toString(),
-      token: selectedToken,
-      streamingMonths,
-    })
-
-    // TODO: Implement direct funding logic for native tokens
   }
 
   return {
