@@ -137,7 +137,7 @@ export function RebalanceFlowButton({
 
   return (
     <Card className="border-l-4 border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20">
-      <CardContent className="p-2 md:p-4">
+      <CardContent className="p-2 md:p-3">
         <div className="space-y-3">
           <div>
             <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">Rebalance flow</h4>
