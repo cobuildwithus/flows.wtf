@@ -3,7 +3,6 @@
 import { useEthBalances } from "@/app/token/hooks/use-eth-balances"
 import { useETHPrice } from "@/app/token/hooks/useETHPrice"
 import { Button } from "@/components/ui/button"
-import { Currency } from "@/components/ui/currency"
 import {
   Dialog,
   DialogContent,
@@ -12,19 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
-import { ChevronDownIcon } from "@radix-ui/react-icons"
 import React, { ComponentProps, useRef, useState, useEffect } from "react"
-import { ChainLogo } from "../ui/chain-logo"
 import { Grant } from "@/lib/database/types"
-import { TokenLogo } from "@/app/token/token-logo"
 import {
   TOKENS,
   TokenKey,
@@ -35,10 +25,10 @@ import {
 import { formatUnits } from "viem"
 import { useFundFlow } from "./hooks/use-fund-flow"
 import { useFundingInput } from "./hooks/use-funding-input"
-import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { StreamingDurationSelector } from "./streaming-duration-selector"
 import { SuperfluidFlowsList } from "./superfluid-flows-list"
+import { FundingTokenSelector } from "./funding-token-selector"
 
 interface Props {
   id: string
@@ -154,66 +144,14 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
               </div>
 
               <div className="flex flex-col items-end gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="secondary" className="gap-2 rounded-full">
-                      {selectedToken.isNative ? (
-                        <ChainLogo chainId={selectedToken.chainId} size={18} />
-                      ) : (
-                        <TokenLogo src={selectedToken.logo} alt={selectedToken.name} size={18} />
-                      )}
-                      <span className="font-semibold">{selectedToken.symbol}</span>
-                      <ChevronDownIcon className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64">
-                    {getTokenDropdownItems(
-                      chainId,
-                      ethBalances,
-                      streamingTokenBalance,
-                      ethPrice || undefined,
-                    ).map(({ token, balance, chainName, usdValue }) => (
-                      <DropdownMenuItem
-                        key={token.key}
-                        onClick={() => setSelectedTokenKey(token.key)}
-                        className="cursor-pointer py-3"
-                      >
-                        <div className="flex w-full items-start justify-between">
-                          <div className="flex items-center gap-3">
-                            {token.isNative ? (
-                              <ChainLogo chainId={token.chainId} size={24} />
-                            ) : (
-                              <TokenLogo src={token.logo} alt={token.name} size={24} />
-                            )}
-                            <div>
-                              <div className="font-medium">{token.symbol}</div>
-
-                              <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                {token.isNative ? chainName : token.name}
-                              </div>
-                            </div>
-                          </div>
-                          {token.isNative ? (
-                            <div className="text-right">
-                              <div className="text-sm font-medium">
-                                {formatTokenAmount(balance, token.decimals, token.symbol)}
-                              </div>
-                              <div className="text-xs text-zinc-500 dark:text-muted-foreground">
-                                <Currency>{usdValue}</Currency>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="text-right">
-                              <div className="text-sm font-medium">
-                                {formatTokenAmount(balance, token.decimals, token.symbol)}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <FundingTokenSelector
+                  selectedToken={{ key: selectedTokenKey, ...selectedToken }}
+                  onTokenChange={setSelectedTokenKey}
+                  chainId={chainId}
+                  ethBalances={ethBalances}
+                  streamingTokenBalance={streamingTokenBalance}
+                  ethPrice={ethPrice || undefined}
+                />
 
                 <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-muted-foreground">
                   <span className="font-medium">
