@@ -13,7 +13,7 @@ export {
 } from "./flow-operations"
 
 // Flow rate utilities
-export { calculateFlowratePerSecond, TIME_UNIT } from "./flow-rate"
+export { calculateFlowratePerSecond } from "./flow-rate"
 
 // Address utilities
 export { getCfaAddress, getHostAddress } from "./addresses"

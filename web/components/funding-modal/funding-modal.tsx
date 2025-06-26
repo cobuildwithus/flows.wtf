@@ -29,6 +29,7 @@ import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { StreamingDurationSelector } from "./streaming-duration-selector"
 import { SuperfluidFlowsList } from "./superfluid-flows-list"
 import { FundingTokenSelector } from "./funding-token-selector"
+import { RebalanceFlowButton } from "./rebalance-flow-button"
 
 interface Props {
   id: string
@@ -44,7 +45,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const [streamingMonths, setStreamingMonths] = useState(3)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { authenticated, address, isConnected } = useLogin()
+  const { address, isConnected } = useLogin()
   const { balances: ethBalances } = useEthBalances()
   const { ethPrice } = useETHPrice()
 
@@ -126,6 +127,14 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
           </DialogDescription>
         </DialogHeader>
 
+        <RebalanceFlowButton
+          contract={flow.recipient as `0x${string}`}
+          chainId={chainId}
+          address={address as `0x${string}`}
+          receiver={flow.recipient}
+          superToken={superToken as `0x${string}`}
+        />
+
         <div className="mt-6 space-y-6">
           <div className="dark:hover-border-border rounded-lg border border-zinc-300 p-4 duration-300 focus-within:border-zinc-500 hover:border-zinc-500 dark:border-border/50 dark:focus-within:border-border">
             <div className="flex items-center justify-between">
@@ -136,7 +145,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                   inputMode="numeric"
                   value={donationAmount}
                   onChange={handleInputChange}
-                  disabled={!authenticated || !isConnected}
+                  disabled={!isConnected}
                   onFocus={handleInputFocus}
                   placeholder="0"
                   className="h-auto border-none bg-transparent p-0 text-3xl font-medium shadow-none focus-visible:ring-0"
@@ -197,14 +206,14 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
             {buttonText}
           </Button>
 
-          {authenticated && address && (
+          <div className="space-y-3">
             <SuperfluidFlowsList
               address={address}
               chainId={chainId}
               receiver={flow.recipient}
               maxItems={3}
             />
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

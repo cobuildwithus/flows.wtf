@@ -1,7 +1,5 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem"
 
-// TODO: Add more comments here?
-
 export const OPERATION_TYPE = {
   UNSUPPORTED: 0,
   ERC20_APPROVE: 1,
@@ -82,7 +80,7 @@ export const TIME_UNIT = {
   hour: 3600,
   day: 86400,
   week: 604800,
-  month: 2628000,
+  month: 2592000,
   year: 31536000,
 } as const
 

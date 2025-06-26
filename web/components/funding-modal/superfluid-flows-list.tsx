@@ -103,7 +103,7 @@ function SuperfluidFlowItem({ flow }: SuperfluidFlowItemProps) {
 
   return (
     <Card className="border-l-4 border-l-primary transition-colors hover:bg-muted/50">
-      <CardContent className="p-2 md:p-4">
+      <CardContent className="p-2 md:p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {tokenLogo && <TokenLogo src={tokenLogo} alt={tokenSymbol} size={20} />}
@@ -115,7 +115,7 @@ function SuperfluidFlowItem({ flow }: SuperfluidFlowItemProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge variant={flow.isActive ? "default" : "secondary"} className="text-xs">
+            <Badge variant={flow.isActive ? "default" : "secondary"} className="text-[10px]">
               {flow.isActive ? "Active" : "Closed"}
             </Badge>
           </div>

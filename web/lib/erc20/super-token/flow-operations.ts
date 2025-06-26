@@ -1,9 +1,9 @@
-import { superTokenAbi, superfluidImplAbi, cfav1Abi } from "@/lib/abis"
+import { superTokenAbi, cfav1Abi } from "@/lib/abis"
 import { encodeFunctionData } from "viem"
-import { calculateFlowratePerSecond, TIME_UNIT } from "./flow-rate"
+import { calculateFlowratePerSecond } from "./flow-rate"
 import { toast } from "sonner"
-import { OPERATION_TYPE, prepareOperation } from "./operation-type"
-import { getCfaAddress, getHostAddress } from "./addresses"
+import { OPERATION_TYPE, prepareOperation, TIME_UNIT } from "./operation-type"
+import { getCfaAddress } from "./addresses"
 
 export type FlowOperationType = "create" | "update"
 
