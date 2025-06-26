@@ -91,7 +91,7 @@ export default defineConfig(() => {
             },
           },
           {
-            name: "cfa",
+            name: "cfav1",
             address: {
               1: "0x2844c1BBdA121E9E43105630b9C8310e5c72744b",
               10: "0x204C6f131bb7F258b2Ea1593f5309911d8E458eD",

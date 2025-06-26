@@ -72,6 +72,14 @@ export const IndexerConfig = {
       startBlock: 137560689,
     },
   },
+  CfaV1: {
+    base: {
+      startBlock: 21519031,
+    },
+    optimism: {
+      startBlock: 137560689,
+    },
+  },
   TotalEarned: {
     base: {
       startBlock: "latest",

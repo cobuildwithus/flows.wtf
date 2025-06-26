@@ -213,6 +213,28 @@ view Grant {
   @@schema("onchain")
 }
 
+view SuperfluidFlow {
+  token      String
+  sender     String
+  receiver   String
+  flowRate   String @map("flow_rate")
+  deposit    String
+  startTime  Int    @map("start_time")
+  lastUpdate Int    @map("last_update")
+  closeTime  Int?   @map("close_time")
+  chainId    Int    @map("chain_id")
+
+  @@id([token, sender, receiver, chainId])
+  @@index([token])
+  @@index([sender])
+  @@index([receiver])
+  @@index([sender, receiver])
+  @@index([flowRate])
+  @@index([chainId])
+  @@schema("onchain")
+}
+
+
 view Allocation {
   id               String @id
   contract         String

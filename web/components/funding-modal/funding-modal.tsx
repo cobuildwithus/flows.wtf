@@ -38,6 +38,7 @@ import { useFundingInput } from "./hooks/use-funding-input"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { StreamingDurationSelector } from "./streaming-duration-selector"
+import { SuperfluidFlowsList } from "./superfluid-flows-list"
 
 interface Props {
   id: string
@@ -258,6 +259,17 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
           <Button onClick={handleFund} disabled={isDisabled} className="w-full" size="xl">
             {buttonText}
           </Button>
+
+          {authenticated && address && (
+            <div className="mt-6 border-t pt-6">
+              <SuperfluidFlowsList
+                address={address}
+                chainId={chainId}
+                receiver={flow.recipient}
+                maxItems={3}
+              />
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

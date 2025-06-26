@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// cfa
+// cfav1
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -7,7 +7,7 @@
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x204C6f131bb7F258b2Ea1593f5309911d8E458eD)
  * - [__View Contract on Base Basescan__](https://basescan.org/address/0x19ba78B9cDB05A877718841c574325fdB53601bb)
  */
-export const cfaAbi = [
+export const cfav1Abi = [
   {
     type: 'constructor',
     inputs: [
@@ -675,7 +675,7 @@ export const cfaAbi = [
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x204C6f131bb7F258b2Ea1593f5309911d8E458eD)
  * - [__View Contract on Base Basescan__](https://basescan.org/address/0x19ba78B9cDB05A877718841c574325fdB53601bb)
  */
-export const cfaAddress = {
+export const cfav1Address = {
   1: '0x2844c1BBdA121E9E43105630b9C8310e5c72744b',
   10: '0x204C6f131bb7F258b2Ea1593f5309911d8E458eD',
   8453: '0x19ba78B9cDB05A877718841c574325fdB53601bb',
@@ -686,7 +686,7 @@ export const cfaAddress = {
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x204C6f131bb7F258b2Ea1593f5309911d8E458eD)
  * - [__View Contract on Base Basescan__](https://basescan.org/address/0x19ba78B9cDB05A877718841c574325fdB53601bb)
  */
-export const cfaConfig = { address: cfaAddress, abi: cfaAbi } as const
+export const cfav1Config = { address: cfav1Address, abi: cfav1Abi } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cfav1Forwarder
@@ -12582,17 +12582,840 @@ export const superTokenConfig = {
  * - [__View Contract on Base Basescan__](https://basescan.org/address/0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74)
  */
 export const superfluidAbi = [
-  { type: 'fallback', stateMutability: 'payable' },
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'nonUpgradable', internalType: 'bool', type: 'bool' },
+      { name: 'appWhiteListingEnabled', internalType: 'bool', type: 'bool' },
+      { name: 'callbackGasLimit', internalType: 'uint64', type: 'uint64' },
+      {
+        name: 'simpleForwarderAddress',
+        internalType: 'address',
+        type: 'address',
+      },
+      {
+        name: 'erc2771ForwarderAddress',
+        internalType: 'address',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: '_code', internalType: 'uint256', type: 'uint256' }],
+    name: 'APP_RULE',
+  },
+  { type: 'error', inputs: [], name: 'HOST_AGREEMENT_ALREADY_REGISTERED' },
+  { type: 'error', inputs: [], name: 'HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION' },
+  { type: 'error', inputs: [], name: 'HOST_AGREEMENT_IS_NOT_REGISTERED' },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'HOST_CALL_AGREEMENT_WITH_CTX_FROM_WRONG_ADDRESS',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'HOST_CALL_APP_ACTION_WITH_CTX_FROM_WRONG_ADDRESS',
+  },
+  {
+    type: 'error',
+    inputs: [],
+    name: 'HOST_CANNOT_DOWNGRADE_TO_NON_UPGRADEABLE',
+  },
+  { type: 'error', inputs: [], name: 'HOST_INVALID_CONFIG_WORD' },
+  { type: 'error', inputs: [], name: 'HOST_MAX_256_AGREEMENTS' },
+  { type: 'error', inputs: [], name: 'HOST_MUST_BE_CONTRACT' },
+  { type: 'error', inputs: [], name: 'HOST_NEED_MORE_GAS' },
+  { type: 'error', inputs: [], name: 'HOST_NON_UPGRADEABLE' },
+  { type: 'error', inputs: [], name: 'HOST_NON_ZERO_LENGTH_PLACEHOLDER_CTX' },
+  { type: 'error', inputs: [], name: 'HOST_NOT_A_SUPER_APP' },
+  { type: 'error', inputs: [], name: 'HOST_NO_APP_REGISTRATION_PERMISSION' },
+  { type: 'error', inputs: [], name: 'HOST_ONLY_GOVERNANCE' },
+  { type: 'error', inputs: [], name: 'HOST_ONLY_LISTED_AGREEMENT' },
+  { type: 'error', inputs: [], name: 'HOST_RECEIVER_IS_NOT_SUPER_APP' },
+  { type: 'error', inputs: [], name: 'HOST_SENDER_IS_NOT_SUPER_APP' },
+  { type: 'error', inputs: [], name: 'HOST_SOURCE_APP_NEEDS_HIGHER_APP_LEVEL' },
+  { type: 'error', inputs: [], name: 'HOST_SUPER_APP_ALREADY_REGISTERED' },
+  { type: 'error', inputs: [], name: 'HOST_SUPER_APP_IS_JAILED' },
+  { type: 'error', inputs: [], name: 'HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'agreementType',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'code',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AgreementClassRegistered',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'agreementType',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'code',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AgreementClassUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'app',
+        internalType: 'contract ISuperApp',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'AppRegistered',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'uuid',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'codeAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'CodeUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldGov',
+        internalType: 'contract ISuperfluidGovernance',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'newGov',
+        internalType: 'contract ISuperfluidGovernance',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'GovernanceReplaced',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'version', internalType: 'uint8', type: 'uint8', indexed: false },
+    ],
+    name: 'Initialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'app',
+        internalType: 'contract ISuperApp',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'reason',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Jail',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beaconProxy',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newBeaconLogic',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'PoolBeaconLogicUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newFactory',
+        internalType: 'contract ISuperTokenFactory',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'SuperTokenFactoryUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'code',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'SuperTokenLogicUpdated',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'APP_WHITE_LISTING_ENABLED',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'CALLBACK_GAS_LIMIT',
+    outputs: [{ name: '', internalType: 'uint64', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_APP_CALLBACK_LEVEL',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_NUM_AGREEMENTS',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'NON_UPGRADABLE_DEPLOYMENT',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SIMPLE_FORWARDER',
+    outputs: [
+      { name: '', internalType: 'contract SimpleForwarder', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
   {
     type: 'function',
     inputs: [
-      { name: 'initialAddress', internalType: 'address', type: 'address' },
+      { name: 'bitmap', internalType: 'uint256', type: 'uint256' },
+      { name: 'agreementType', internalType: 'bytes32', type: 'bytes32' },
     ],
-    name: 'initializeProxy',
+    name: 'addToAgreementClassesBitmap',
+    outputs: [{ name: 'newBitmap', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'targetApp',
+        internalType: 'contract ISuperApp',
+        type: 'address',
+      },
+    ],
+    name: 'allowCompositeApp',
     outputs: [],
     stateMutability: 'nonpayable',
   },
-  { type: 'receive', stateMutability: 'payable' },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+      { name: 'appCreditUsedDelta', internalType: 'int256', type: 'int256' },
+    ],
+    name: 'appCallbackPop',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'appCreditGranted', internalType: 'uint256', type: 'uint256' },
+      { name: 'appCreditUsed', internalType: 'int256', type: 'int256' },
+      {
+        name: 'appCreditToken',
+        internalType: 'contract ISuperfluidToken',
+        type: 'address',
+      },
+    ],
+    name: 'appCallbackPush',
+    outputs: [{ name: 'appCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'operations',
+        internalType: 'struct ISuperfluid.Operation[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'operationType', internalType: 'uint32', type: 'uint32' },
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    name: 'batchCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'agreementClass',
+        internalType: 'contract ISuperAgreement',
+        type: 'address',
+      },
+      { name: 'callData', internalType: 'bytes', type: 'bytes' },
+      { name: 'userData', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'callAgreement',
+    outputs: [{ name: 'returnedData', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'agreementClass',
+        internalType: 'contract ISuperAgreement',
+        type: 'address',
+      },
+      { name: 'callData', internalType: 'bytes', type: 'bytes' },
+      { name: 'userData', internalType: 'bytes', type: 'bytes' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'callAgreementWithContext',
+    outputs: [
+      { name: 'newCtx', internalType: 'bytes', type: 'bytes' },
+      { name: 'returnedData', internalType: 'bytes', type: 'bytes' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'callData', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'callAppAction',
+    outputs: [{ name: 'returnedData', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'callData', internalType: 'bytes', type: 'bytes' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'callAppActionWithContext',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'callData', internalType: 'bytes', type: 'bytes' },
+      { name: 'isTermination', internalType: 'bool', type: 'bool' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'callAppAfterCallback',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'callData', internalType: 'bytes', type: 'bytes' },
+      { name: 'isTermination', internalType: 'bool', type: 'bool' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'callAppBeforeCallback',
+    outputs: [{ name: 'cbdata', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'castrate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'contract ISuperToken', type: 'address' },
+      { name: 'newAdmin', internalType: 'address', type: 'address' },
+    ],
+    name: 'changeSuperTokenAdmin',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+      { name: 'appCreditUsedMore', internalType: 'int256', type: 'int256' },
+    ],
+    name: 'ctxUseCredit',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'ctx', internalType: 'bytes', type: 'bytes' }],
+    name: 'decodeCtx',
+    outputs: [
+      {
+        name: 'context',
+        internalType: 'struct ISuperfluid.Context',
+        type: 'tuple',
+        components: [
+          { name: 'appCallbackLevel', internalType: 'uint8', type: 'uint8' },
+          { name: 'callType', internalType: 'uint8', type: 'uint8' },
+          { name: 'timestamp', internalType: 'uint256', type: 'uint256' },
+          { name: 'msgSender', internalType: 'address', type: 'address' },
+          { name: 'agreementSelector', internalType: 'bytes4', type: 'bytes4' },
+          { name: 'userData', internalType: 'bytes', type: 'bytes' },
+          {
+            name: 'appCreditGranted',
+            internalType: 'uint256',
+            type: 'uint256',
+          },
+          {
+            name: 'appCreditWantedDeprecated',
+            internalType: 'uint256',
+            type: 'uint256',
+          },
+          { name: 'appCreditUsed', internalType: 'int256', type: 'int256' },
+          { name: 'appAddress', internalType: 'address', type: 'address' },
+          {
+            name: 'appCreditToken',
+            internalType: 'contract ISuperfluidToken',
+            type: 'address',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'operations',
+        internalType: 'struct ISuperfluid.Operation[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'operationType', internalType: 'uint32', type: 'uint32' },
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    name: 'forwardBatchCall',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'agreementType', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'getAgreementClass',
+    outputs: [
+      {
+        name: 'agreementClass',
+        internalType: 'contract ISuperAgreement',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'appAddr', internalType: 'contract ISuperApp', type: 'address' },
+    ],
+    name: 'getAppCallbackLevel',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+    ],
+    name: 'getAppManifest',
+    outputs: [
+      { name: 'isSuperApp', internalType: 'bool', type: 'bool' },
+      { name: 'isJailed', internalType: 'bool', type: 'bool' },
+      { name: 'noopMask', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getCodeAddress',
+    outputs: [
+      { name: 'codeAddress', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getERC2771Forwarder',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getGovernance',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract ISuperfluidGovernance',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getNow',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getSuperTokenFactory',
+    outputs: [
+      {
+        name: 'factory',
+        internalType: 'contract ISuperTokenFactory',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getSuperTokenFactoryLogic',
+    outputs: [{ name: 'logic', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'gov',
+        internalType: 'contract ISuperfluidGovernance',
+        type: 'address',
+      },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'agreementClass',
+        internalType: 'contract ISuperAgreement',
+        type: 'address',
+      },
+    ],
+    name: 'isAgreementClassListed',
+    outputs: [{ name: 'yes', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'agreementType', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'isAgreementTypeListed',
+    outputs: [{ name: 'yes', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+    ],
+    name: 'isApp',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+    ],
+    name: 'isAppJailed',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      {
+        name: 'targetApp',
+        internalType: 'contract ISuperApp',
+        type: 'address',
+      },
+    ],
+    name: 'isCompositeAppAllowed',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'ctx', internalType: 'bytes', type: 'bytes' }],
+    name: 'isCtxValid',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'forwarder', internalType: 'address', type: 'address' }],
+    name: 'isTrustedForwarder',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'reason', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'jailApp',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'bitmap', internalType: 'uint256', type: 'uint256' }],
+    name: 'mapAgreementClasses',
+    outputs: [
+      {
+        name: 'agreementClasses',
+        internalType: 'contract ISuperAgreement[]',
+        type: 'address[]',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'proxiableUUID',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'agreementClassLogic',
+        internalType: 'contract ISuperAgreement',
+        type: 'address',
+      },
+    ],
+    name: 'registerAgreementClass',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'configWord', internalType: 'uint256', type: 'uint256' }],
+    name: 'registerApp',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'configWord', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'registerApp',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'app', internalType: 'contract ISuperApp', type: 'address' },
+      { name: 'configWord', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'registerAppByFactory',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'configWord', internalType: 'uint256', type: 'uint256' },
+      { name: 'registrationKey', internalType: 'string', type: 'string' },
+    ],
+    name: 'registerAppWithKey',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'bitmap', internalType: 'uint256', type: 'uint256' },
+      { name: 'agreementType', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'removeFromAgreementClassesBitmap',
+    outputs: [{ name: 'newBitmap', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'newGov',
+        internalType: 'contract ISuperfluidGovernance',
+        type: 'address',
+      },
+    ],
+    name: 'replaceGovernance',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'agreementClassLogic',
+        internalType: 'contract ISuperAgreement',
+        type: 'address',
+      },
+    ],
+    name: 'updateAgreementClass',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newAddress', internalType: 'address', type: 'address' }],
+    name: 'updateCode',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newLogic', internalType: 'address', type: 'address' }],
+    name: 'updatePoolBeaconLogic',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'newFactory',
+        internalType: 'contract ISuperTokenFactory',
+        type: 'address',
+      },
+    ],
+    name: 'updateSuperTokenFactory',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'token', internalType: 'contract ISuperToken', type: 'address' },
+      { name: 'newLogicOverride', internalType: 'address', type: 'address' },
+    ],
+    name: 'updateSuperTokenLogic',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'versionRecipient',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'pure',
+  },
 ] as const
 
 /**

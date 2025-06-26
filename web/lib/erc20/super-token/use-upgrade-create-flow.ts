@@ -1,6 +1,6 @@
 "use client"
 
-import { superTokenAbi, cfaAbi, superfluidImplAbi } from "@/lib/abis"
+import { superTokenAbi, superfluidImplAbi, cfav1Abi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { encodeFunctionData } from "viem"
 import { calculateFlowratePerSecond, TIME_UNIT } from "./flow-rate"
@@ -69,7 +69,7 @@ export const useUpgradeAndCreateFlow = (args: {
 
     // Second operation: Create a Superfluid flow to the receiver
     const createFlowData = encodeFunctionData({
-      abi: cfaAbi,
+      abi: cfav1Abi,
       functionName: "createFlow",
       args: [superTokenAddress, receiver, flowRate, "0x"],
     })

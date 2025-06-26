@@ -239,6 +239,33 @@ export const allocationStrategies = onchainTable(
 )
 
 /**
+ * Superfluid CFA v1 flows tracking
+ */
+export const superfluidFlow = onchainTable(
+  "SuperfluidFlow",
+  (t) => ({
+    token: t.text().notNull(),
+    sender: t.text().notNull(),
+    receiver: t.text().notNull(),
+    flowRate: t.text().notNull(), // int96 stored as string
+    deposit: t.text().notNull(), // uint256 stored as string
+    startTime: t.integer().notNull(), // first non-zero update timestamp
+    lastUpdate: t.integer().notNull(), // last update timestamp
+    closeTime: t.integer(), // set when flowRate hits 0
+    chainId: t.integer().notNull(),
+  }),
+  (table) => ({
+    primaryKey: primaryKey({ columns: [table.token, table.sender, table.receiver, table.chainId] }),
+    tokenIdx: index().on(table.token),
+    senderIdx: index().on(table.sender),
+    receiverIdx: index().on(table.receiver),
+    senderReceiverIdx: index().on(table.sender, table.receiver),
+    flowRateIdx: index().on(table.flowRate),
+    chainIdIdx: index().on(table.chainId),
+  })
+)
+
+/**
  * Lookup tables
  */
 
