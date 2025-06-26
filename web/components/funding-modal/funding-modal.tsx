@@ -260,14 +260,12 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
           </Button>
 
           {authenticated && address && (
-            <div className="mt-6 border-t pt-6">
-              <SuperfluidFlowsList
-                address={address}
-                chainId={chainId}
-                receiver={flow.recipient}
-                maxItems={3}
-              />
-            </div>
+            <SuperfluidFlowsList
+              address={address}
+              chainId={chainId}
+              receiver={flow.recipient}
+              maxItems={3}
+            />
           )}
         </div>
       </DialogContent>

@@ -42,17 +42,6 @@ export function SuperfluidFlowsList({
   // Limit the number of items displayed
   const displayFlows = filteredFlows.slice(0, maxItems)
 
-  if (isLoading) {
-    return (
-      <div className="space-y-3">
-        {showTitle && <h4 className="text-sm font-medium">Existing Streams</h4>}
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full" height={64} />
-        ))}
-      </div>
-    )
-  }
-
   if (error) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
@@ -62,15 +51,11 @@ export function SuperfluidFlowsList({
   }
 
   if (displayFlows.length === 0) {
-    return (
-      <div className="py-4 text-center">
-        <p className="text-sm text-muted-foreground">No existing streams found</p>
-      </div>
-    )
+    return null
   }
 
   return (
-    <div className="space-y-3">
+    <div className="mt-6 space-y-3 border-t pt-6">
       {showTitle && (
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium">Existing funding</h4>
