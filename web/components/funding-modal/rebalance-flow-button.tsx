@@ -7,7 +7,6 @@ import { useMaxSafeFlowRate } from "@/lib/flows/hooks/use-max-flow-rate"
 import { useFlowRateTooHigh } from "@/lib/flows/hooks/use-flow-rate-too-high"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import { useIncreaseFlowRate } from "@/lib/flows/hooks/use-increase-flow-rate"
-import { useDecreaseFlowRate } from "@/lib/flows/hooks/use-decrease-flow-rate"
 import { formatUnits } from "viem"
 import { useRouter } from "next/navigation"
 import { TIME_UNIT } from "@/lib/erc20/super-token/operation-type"
@@ -72,12 +71,6 @@ export function RebalanceFlowButton({
     onSuccess,
   })
 
-  const { decreaseFlowRate, isLoading: decreaseLoading } = useDecreaseFlowRate({
-    contract,
-    chainId,
-    onSuccess,
-  })
-
   const isLoading = actualLoading || maxLoading || tooHighLoading || flowsLoading
 
   // User's current flow rate to this receiver
@@ -102,24 +95,15 @@ export function RebalanceFlowButton({
   const displayAmount = Number(formatUnits(amount * BigInt(TIME_UNIT.month), 18)).toFixed(0)
 
   const handleRebalance = async () => {
-    if (needsDecrease) {
-      await decreaseFlowRate()
-    } else if (needsIncrease) {
-      await increaseFlowRate(amount)
-    }
+    await increaseFlowRate(amount)
   }
 
-  const isTransactionLoading = increaseLoading || decreaseLoading
+  const isTransactionLoading = increaseLoading
 
   // Determine button text based on state
   const getButtonText = () => {
     if (isTransactionLoading) {
-      if (needsDecrease) return "Reducing flow..."
       return needsApproval(amount) ? "Approving..." : "Increasing flow..."
-    }
-
-    if (needsDecrease) {
-      return `Reduce (${displayAmount}/mo)`
     }
 
     if (needsApproval(amount)) {
