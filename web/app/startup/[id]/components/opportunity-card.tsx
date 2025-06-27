@@ -88,7 +88,7 @@ export function OpportunityCard(props: Props) {
         )}
         <div className="flex w-full flex-col">
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between space-x-2">
               <div className="flex gap-1.5">
                 <Badge variant="secondary" className="shrink-0">
                   ${expectedMonthlySalary}/mo
@@ -97,12 +97,14 @@ export function OpportunityCard(props: Props) {
                   Hiring
                 </Badge>
               </div>
-              <CopyOpportunityLink
-                flowContract={flowContract}
-                opportunityId={id}
-                startupId={startupId}
-                position={title}
-              />
+              {canManage && (
+                <CopyOpportunityLink
+                  flowContract={flowContract}
+                  opportunityId={id}
+                  startupId={startupId}
+                  position={title}
+                />
+              )}
             </div>
 
             <h3 className="mt-2 text-sm font-medium">{title}</h3>

@@ -46,7 +46,14 @@ export function TokenRewards({
   }, [extraRevnetTokens])
 
   if (!userAddress) {
-    return <div className="text-pretty text-sm text-muted-foreground">Earn on every order</div>
+    return (
+      <div className="flex flex-col">
+        <div className="text-pretty text-sm text-muted-foreground">Earn on every order</div>
+        {Number(extraRevnetTokens) > 0 && (
+          <AnimatedBenefits startupTitle={startupTitle} projectId={projectId} chainId={chainId} />
+        )}
+      </div>
+    )
   }
 
   return (
