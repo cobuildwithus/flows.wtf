@@ -116,7 +116,7 @@ export function useFundFlow({
     if (!authenticated) return login()
     if (!isConnected) return connectWallet()
 
-    const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
+    const donationAmountBigInt = parseUnits(donationAmount, 18)
 
     // Calculate monthly flow rate based on streaming months
     const monthlyFlowRate = donationAmountBigInt / BigInt(streamingMonths)

@@ -40,7 +40,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`${superToken}-${chainId}`)
   const [donationAmount, setDonationAmount] = useState("")
-  const [streamingMonths, setStreamingMonths] = useState(3)
+  const [streamingMonths, setStreamingMonths] = useState(1)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { address, isConnected } = useLogin()
