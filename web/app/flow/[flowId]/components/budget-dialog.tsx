@@ -45,6 +45,9 @@ export const BudgetDialog = (props: Props) => {
     requiredVotes,
   }
 
+  const hasMinimumSalary = (flow.derivedData?.minimumSalary || 0) > 0
+  const hasQuorum = (flow.bonusPoolQuorum || 0) > 0
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -59,58 +62,63 @@ export const BudgetDialog = (props: Props) => {
         </Badge>
       </DialogTrigger>
       <DialogContent className="p-12 md:min-w-[600px]">
-        <Card>
-          <CardContent className="space-y-8">
-            {/* Minimum Funding Section */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h3 className="text-sm font-medium text-muted-foreground">Min. Funding</h3>
-                <p className="text-2xl font-bold">
-                  <Currency flow={flow}>{flow.derivedData?.minimumSalary || 0}</Currency>
-                  /month
-                </p>
-              </div>
-              <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                Guaranteed
-              </div>
-            </div>
-
-            {flow.bonusPoolQuorum > 0 && (
-              <>
-                <Separator />
-
-                <div className="space-y-4">
+        {hasMinimumSalary ||
+          (hasQuorum && (
+            <Card>
+              <CardContent className="space-y-8">
+                {/* Minimum Funding Section */}
+                {hasMinimumSalary && (
                   <div className="flex items-center justify-between">
-                    <TooltipProvider delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="flex cursor-pointer items-center gap-2">
-                            Quorum
-                            <InfoIcon className="h-4 w-4 text-muted-foreground" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          When full quorum
-                          <br />
-                          is reached, the bonus
-                          <br />
-                          pool will be {bonusFlowRatePercent / 1e4}% of
-                          <br />
-                          the total flow.
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <span className="text-sm font-medium">
-                      {formatValue(quorumData.currentVotes)}/{formatValue(quorumData.requiredVotes)}{" "}
-                      votes
-                    </span>
+                    <div className="space-y-1">
+                      <h3 className="text-sm font-medium text-muted-foreground">Min. Funding</h3>
+                      <p className="text-2xl font-bold">
+                        <Currency flow={flow}>{flow.derivedData?.minimumSalary || 0}</Currency>
+                        /month
+                      </p>
+                    </div>
+                    <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                      Guaranteed
+                    </div>
                   </div>
-                  <Progress value={quorumData.quorumPercentage} className="h-2" />
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                )}
+
+                {hasQuorum && (
+                  <>
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex cursor-pointer items-center gap-2">
+                                Quorum
+                                <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              When full quorum
+                              <br />
+                              is reached, the bonus
+                              <br />
+                              pool will be {bonusFlowRatePercent / 1e4}% of
+                              <br />
+                              the total flow.
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <span className="text-sm font-medium">
+                          {formatValue(quorumData.currentVotes)}/
+                          {formatValue(quorumData.requiredVotes)} votes
+                        </span>
+                      </div>
+                      <Progress value={quorumData.quorumPercentage} className="h-2" />
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          ))}
 
         <Card>
           <CardContent className="space-y-6">
@@ -183,7 +191,7 @@ export const BudgetDialog = (props: Props) => {
               <Progress value={bonusPercent} className="h-2" />
             </div>
 
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
@@ -202,7 +210,7 @@ export const BudgetDialog = (props: Props) => {
                 </span>
               </div>
               <Progress value={managerPercent} className="h-2" />
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
