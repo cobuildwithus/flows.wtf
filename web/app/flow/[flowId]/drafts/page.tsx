@@ -1,6 +1,6 @@
 import "server-only"
 
-import { TCRDraftPublishButton } from "@/app/draft/[draftId]/tcr-draft-publish-button"
+import { TCRDraftPublishButton } from "@/app/draft/[draftId]/components/tcr-draft-publish-button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DateTime } from "@/components/ui/date-time"
 import { EmptyState } from "@/components/ui/empty-state"

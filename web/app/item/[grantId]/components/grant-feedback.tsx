@@ -11,23 +11,23 @@ import { cn } from "@/lib/utils"
 interface Props {
   user?: User
   castsPromise: Promise<MinimalCast[]>
-  grantId: string
   builderUsername: string
   title?: string
   description?: string
   initialMessage?: string
   className?: string
+  parentUrl: string
 }
 
 export function GrantFeedback(props: Props) {
   const {
     castsPromise,
-    grantId,
     builderUsername,
     title = "Feedback",
     description = "Help the builder improve",
     initialMessage,
     className,
+    parentUrl,
   } = props
 
   return (
@@ -46,7 +46,7 @@ export function GrantFeedback(props: Props) {
 
           <div className="mt-3 flex space-x-2.5">
             <LeaveFeedbackButton
-              grantId={grantId}
+              parentUrl={parentUrl}
               builderUsername={builderUsername}
               initialMessage={initialMessage}
             />
@@ -56,7 +56,7 @@ export function GrantFeedback(props: Props) {
         <Suspense>
           <CastDialogWrapper
             castsPromise={castsPromise}
-            grantId={grantId}
+            parentUrl={parentUrl}
             builderUsername={builderUsername}
           />
         </Suspense>
@@ -67,11 +67,11 @@ export function GrantFeedback(props: Props) {
 
 function CastDialogWrapper({
   castsPromise,
-  grantId,
+  parentUrl,
   builderUsername,
 }: {
   castsPromise: Promise<MinimalCast[]>
-  grantId: string
+  parentUrl: string
   builderUsername: string
 }) {
   const casts = use(castsPromise)
@@ -82,7 +82,7 @@ function CastDialogWrapper({
       title="Feedback"
       description="Questions for the builder"
       showVerification={false}
-      grantId={grantId}
+      parentUrl={parentUrl}
       builderUsername={builderUsername}
       trigger={
         <div className="relative flex size-9 items-center justify-center rounded-full bg-primary p-2.5">

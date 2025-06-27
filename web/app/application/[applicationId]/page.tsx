@@ -225,9 +225,9 @@ export default async function ApplicationPage(props: Props) {
             <Suspense>
               <div className="col-span-full xl:col-span-3">
                 <GrantFeedback
+                  parentUrl={`https://flows.wtf/item/${grant.id}`} // so feedback is linked to the grant post acceptance
                   className="bg-card shadow"
                   castsPromise={getGrantFeedbackCasts(grant.id)}
-                  grantId={grant.id}
                   builderUsername={
                     (await getFarcasterUserByEthAddress(grant.recipient as `0x${string}`))?.fname ||
                     ""

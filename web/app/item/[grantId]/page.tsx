@@ -208,8 +208,8 @@ export default async function GrantPage(props: Props) {
               </Dialog>
               <div className="col-span-full xl:col-span-3">
                 <GrantFeedback
+                  parentUrl={`https://flows.wtf/item/${grantId}`}
                   castsPromise={getGrantFeedbackCasts(grantId)}
-                  grantId={grant.id}
                   builderUsername={grantBuilder?.fname || ""}
                 />
               </div>

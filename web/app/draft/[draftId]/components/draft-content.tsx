@@ -10,8 +10,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useAccount } from "wagmi"
-import { updateDraft } from "./update-draft"
-import { useCanManageDraft } from "./use-can-manage-draft"
+import { updateDraft } from "../update-draft"
+import { useCanManageDraft } from "../use-can-manage-draft"
 import { FileInput } from "@/components/ui/file-input"
 
 interface Props {

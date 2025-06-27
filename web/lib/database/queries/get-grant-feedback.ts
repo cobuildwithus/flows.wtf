@@ -34,3 +34,7 @@ export async function getGrantFeedbackCasts(grantId: string): Promise<MinimalCas
 export async function getGrantFeedbackCastsForFlow(grantId: string): Promise<MinimalCast[]> {
   return fetchFeedbackCasts(`https://flows.wtf/flow/${grantId}/about`)
 }
+
+export async function getFeedbackCastsForDraft(draftId: string): Promise<MinimalCast[]> {
+  return fetchFeedbackCasts(`https://flows.wtf/draft/${draftId}`)
+}

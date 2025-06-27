@@ -5,13 +5,13 @@ import { AuthButton } from "@/components/ui/auth-button"
 import { flushSync } from "react-dom"
 
 export function LeaveFeedbackButton({
-  grantId,
+  parentUrl,
   builderUsername,
   text = "Leave feedback",
   variant = "secondary",
   initialMessage = "I want to leave feedback or ask the builder a question please",
 }: {
-  grantId: string
+  parentUrl: string
   builderUsername: string
   text?: string
   variant?: "default" | "secondary"
@@ -39,7 +39,7 @@ export function LeaveFeedbackButton({
           
           When using the cast preview tool:
           - Use the user's feedback text directly.
-          - Set the parent_url to: https://flows.wtf/item/${grantId}
+          - Set the parent_url to: ${parentUrl}
           - Begin the message with @${builderUsername || "the builder's farcaster username (try to extract it from their grant text)"}.
           If the builder does not have a farcaster username available, inform the user that you cannot find it and don't include @[username] in the message.`,
           )

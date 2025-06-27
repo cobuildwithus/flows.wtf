@@ -17,4 +17,5 @@ export type ChatData = {
   castId?: string
   startupId?: string
   opportunityId?: string
+  draftId?: string
 }

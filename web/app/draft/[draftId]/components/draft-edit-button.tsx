@@ -6,8 +6,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useAccount } from "wagmi"
-import { deleteDraft } from "./delete-draft"
-import { useCanManageDraft } from "./use-can-manage-draft"
+import { deleteDraft } from "../delete-draft"
+import { useCanManageDraft } from "../use-can-manage-draft"
 
 interface Props {
   draft: Draft

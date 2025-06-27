@@ -22,7 +22,7 @@ interface GrantFeedbackDialogProps {
   title?: string
   description?: string
   casts: MinimalCast[]
-  grantId: string
+  parentUrl: string
   builderUsername: string
   showVerification?: boolean
 }
@@ -32,7 +32,7 @@ export function GrantFeedbackDialog({
   title = "Feedback",
   description,
   casts,
-  grantId,
+  parentUrl,
   builderUsername,
   showVerification,
 }: GrantFeedbackDialogProps) {
@@ -56,7 +56,7 @@ export function GrantFeedbackDialog({
             <LeaveFeedbackButton
               variant="default"
               text="Post new"
-              grantId={grantId}
+              parentUrl={parentUrl}
               builderUsername={builderUsername}
             />
           </DialogTitle>
