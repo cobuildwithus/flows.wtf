@@ -253,7 +253,7 @@ export function MoneyFlowDiagram(props: Props) {
   )
 
   return (
-    <div style={{ width: "100%", height }} className="max-sm:mt-4">
+    <div style={{ width: "100%", height }} className="touch-pan-y max-sm:mt-4">
       <ReactFlow
         nodes={nodes}
         defaultEdges={
@@ -288,6 +288,7 @@ export function MoneyFlowDiagram(props: Props) {
           markerEnd: { type: MarkerType.ArrowClosed },
           style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
         }}
+        style={{ touchAction: "pan-y" }}
       >
         {!isMobile && <Background gap={32} />}
       </ReactFlow>

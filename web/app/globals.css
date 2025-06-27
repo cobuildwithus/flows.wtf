@@ -111,3 +111,21 @@
     --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
   }
 }
+
+/* Fix for iOS scrolling issues in ReactFlow diagrams */
+@media (max-width: 768px) {
+  .react-flow__node {
+    touch-action: pan-y !important;
+  }
+
+  .react-flow__node * {
+    touch-action: inherit !important;
+  }
+
+  /* Allow scrolling but maintain interactivity */
+  .react-flow__node a,
+  .react-flow__node button {
+    pointer-events: auto;
+    touch-action: manipulation !important;
+  }
+}
