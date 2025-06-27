@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Currency } from "@/components/ui/currency"
-import { Markdown } from "@/components/ui/markdown"
+import { EditDescription } from "../components/edit-description"
+import { isAdmin } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getPool } from "@/lib/database/queries/pool"
 import { Status } from "@/lib/enums"
@@ -30,7 +31,8 @@ export default async function FlowPage(props: Props) {
   const pool = await getPool()
   const user = await getUser()
 
-  const { description, parentContract, isTopLevel } = flow
+  const { description, parentContract, isTopLevel, recipient, chainId, manager } = flow
+  const canEdit = manager === user?.address || isAdmin(user?.address)
 
   return (
     <div className="container mt-2.5 max-w-6xl pb-24 md:mt-6">
@@ -44,7 +46,12 @@ export default async function FlowPage(props: Props) {
         >
           <div className="md:col-span-3">
             <div className="mb-12 mt-6 space-y-5 text-pretty text-sm">
-              <Markdown>{description}</Markdown>
+              <EditDescription
+                initial={description}
+                contract={getEthAddress(recipient)}
+                chainId={chainId}
+                canEdit={canEdit}
+              />
             </div>
           </div>
 
