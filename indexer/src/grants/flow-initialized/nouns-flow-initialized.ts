@@ -1,7 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
 import { Status } from "../../enums"
-import { base as baseContracts, mainnet as mainnetContracts } from "../../../addresses"
+import { base as baseContracts } from "../../../addresses"
 import {
   arbitratorToGrantId,
   baselinePoolToGrantId,
@@ -13,10 +13,9 @@ import {
   tokenEmitterToErc20,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { mainnet } from "viem/chains"
 import { isAccelerator } from "../recipients/helpers"
 import { calculateRootContract } from "../grant-helpers"
-import { fetchSuperTokenInfo } from "../../utils/super-token-utils"
+import { fetchTokenInfo } from "../../utils/token-utils"
 
 ponder.on("NounsFlow:FlowInitialized", handleFlowInitialized)
 
@@ -44,15 +43,12 @@ async function handleFlowInitialized(params: {
     await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
 
   const {
-    symbol: superTokenSymbol,
-    prefix: superTokenPrefix,
-    name: superTokenName,
-    decimals: superTokenDecimals,
-    logo: superTokenLogo,
-  } = await fetchSuperTokenInfo(
-    context,
-    superToken,
-  )
+    symbol: underlyingTokenSymbol,
+    prefix: underlyingTokenPrefix,
+    name: underlyingTokenName,
+    decimals: underlyingTokenDecimals,
+    logo: underlyingTokenLogo,
+  } = await fetchTokenInfo(context, underlyingERC20Token)
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
@@ -75,11 +71,11 @@ async function handleFlowInitialized(params: {
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
     underlyingERC20Token: underlyingERC20Token.toLowerCase(),
-    superTokenSymbol,
-    superTokenPrefix,
-    superTokenName,
-    superTokenDecimals,
-    superTokenLogo,
+    underlyingTokenSymbol,
+    underlyingTokenPrefix,
+    underlyingTokenName,
+    underlyingTokenDecimals,
+    underlyingTokenLogo,
     submitter: zeroAddress,
     allocationsCount: "0",
     totalAllocationWeightOnFlow: "0",

@@ -13,16 +13,14 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useLogin } from "@/lib/auth/use-login"
-import React, { ComponentProps, useRef, useState, useEffect } from "react"
+import React, { ComponentProps, useRef, useState } from "react"
 import { Grant } from "@/lib/database/types"
 import {
   TokenKey,
   formatTokenAmount,
   getTokenBalance,
-  type TokenInfo,
   getTokensWithFlow,
 } from "./libs/funding-token-lib"
-import { formatUnits } from "viem"
 import { useFundFlow } from "./hooks/use-fund-flow"
 import { useFundingInput } from "./hooks/use-funding-input"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
@@ -52,13 +50,11 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const TOKENS_WITH_FLOW = getTokensWithFlow({
     superToken,
     chainId,
-    superTokenSymbol: flow.superTokenSymbol,
-    superTokenName: flow.superTokenName,
-    superTokenDecimals: flow.superTokenDecimals,
-    superTokenLogo: flow.superTokenLogo,
+    underlyingTokenSymbol: flow.underlyingTokenSymbol,
+    underlyingTokenName: flow.underlyingTokenName,
+    underlyingTokenDecimals: flow.underlyingTokenDecimals,
+    underlyingTokenLogo: flow.underlyingTokenLogo,
   })
-
-  const flowTokenKey = `${superToken}-${chainId}` as TokenKey
 
   const selectedToken = TOKENS_WITH_FLOW[selectedTokenKey]
 
@@ -72,39 +68,6 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const underlyingTokenBalance = balances[0] || 0n
   const superTokenBalance = balances[1] || 0n
   const streamingTokenBalance = underlyingTokenBalance + superTokenBalance
-
-  // When modal opens, set default token and amount
-  useEffect(() => {
-    if (isOpen) {
-      // Default to streaming token if user has balance
-      let defaultTokenKey = selectedTokenKey
-      if (streamingTokenBalance > 0n) {
-        const streamingToken = Object.entries(TOKENS_WITH_FLOW)
-          .map(([key, token]) => ({ key: key as TokenKey, ...token }))
-          .find((token) => !token.isNative && token.chainId === chainId)
-        if (streamingToken) {
-          defaultTokenKey = streamingToken.key
-          setSelectedTokenKey(streamingToken.key)
-        }
-      }
-
-      // Calculate default donation amount (half of balance, rounded up)
-      const currentBalance = getTokenBalance(
-        { key: defaultTokenKey, ...TOKENS_WITH_FLOW[defaultTokenKey] },
-        ethBalances,
-        streamingTokenBalance,
-      )
-
-      if (currentBalance > 0n) {
-        const decimals = TOKENS_WITH_FLOW[defaultTokenKey].decimals
-        const balanceInUnits = Number(formatUnits(currentBalance, decimals))
-        const halfBalance = Math.ceil(balanceInUnits / 2)
-        setDonationAmount(halfBalance.toString())
-      } else {
-        setDonationAmount("1") // Default to 1 if no balance
-      }
-    }
-  }, [isOpen]) // Only run when modal opens/closes
 
   // Check if selected token is the streaming token (non-native token that matches the flow's token)
   const isStreamingToken = !selectedToken.isNative
@@ -159,7 +122,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                   disabled={!isConnected}
                   onFocus={handleInputFocus}
                   placeholder="0"
-                  className="h-auto border-none bg-transparent p-0 text-3xl font-medium shadow-none focus-visible:ring-0"
+                  className="h-auto border-none bg-transparent p-0 text-3xl font-medium shadow-none placeholder:text-zinc-500 focus-visible:ring-0 dark:placeholder:text-zinc-400"
                 />
               </div>
 
@@ -201,18 +164,15 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
           </div>
 
           {/* Only show streaming duration selector for non-native tokens when there are sufficient funds */}
-          {!selectedToken.isNative &&
-            !hasInsufficientBalance &&
-            donationAmount &&
-            Number(donationAmount) > 0 && (
-              <StreamingDurationSelector
-                donationAmount={donationAmount}
-                tokenSymbol={selectedToken.symbol}
-                tokenDecimals={selectedToken.decimals}
-                months={streamingMonths}
-                onMonthsChange={setStreamingMonths}
-              />
-            )}
+          {!selectedToken.isNative && !hasInsufficientBalance && (
+            <StreamingDurationSelector
+              donationAmount={donationAmount}
+              tokenSymbol={selectedToken.symbol}
+              tokenDecimals={selectedToken.decimals}
+              months={streamingMonths}
+              onMonthsChange={setStreamingMonths}
+            />
+          )}
 
           <Button onClick={handleFund} disabled={isDisabled} className="w-full" size="xl">
             {buttonText}

@@ -47,16 +47,16 @@ export async function CustomFlowPage(props: Props) {
       name: "Paid out",
       value: formatCurrency(
         getSum(relevantGrants, "earned"),
-        flow.superTokenSymbol,
-        flow.superTokenPrefix,
+        flow.underlyingTokenSymbol,
+        flow.underlyingTokenPrefix,
       ),
     },
     {
       name: "Monthly support",
       value: formatCurrency(
         getSum(relevantGrants, "monthly"),
-        flow.superTokenSymbol,
-        flow.superTokenPrefix,
+        flow.underlyingTokenSymbol,
+        flow.underlyingTokenPrefix,
       ),
     },
   ]

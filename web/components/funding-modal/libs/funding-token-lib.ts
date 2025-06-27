@@ -48,28 +48,28 @@ export const AVAILABLE_TOKENS: Token[] = Object.entries(TOKENS).map(([key, token
 export function getTokensWithFlow(flow: {
   superToken: string
   chainId: number
-  superTokenSymbol: string
-  superTokenName: string
-  superTokenDecimals: number
-  superTokenLogo: string | null
+  underlyingTokenSymbol: string
+  underlyingTokenName: string
+  underlyingTokenDecimals: number
+  underlyingTokenLogo: string | null
 }): Record<string, TokenInfo> {
   const flowTokenKey = `${flow.superToken}-${flow.chainId}`
   return {
     ...TOKENS,
     [flowTokenKey]: {
-      symbol: flow.superTokenSymbol,
-      name: flow.superTokenName,
+      symbol: flow.underlyingTokenSymbol,
+      name: flow.underlyingTokenName,
       chainId: flow.chainId,
-      decimals: flow.superTokenDecimals,
+      decimals: flow.underlyingTokenDecimals,
       isNative: false,
-      logo: flow.superTokenLogo ?? undefined,
+      logo: flow.underlyingTokenLogo ?? undefined,
       address: flow.superToken,
     },
   }
 }
 
 export const formatTokenAmount = (amount: bigint, decimals: number, symbol: string): string => {
-  const formatted = formatUnits(amount, decimals)
+  const formatted = formatUnits(amount, 18)
   const number = Number(formatted)
 
   if (number === 0) return "0"
@@ -78,7 +78,7 @@ export const formatTokenAmount = (amount: bigint, decimals: number, symbol: stri
   }
 
   // For GARDEN tokens with large balances, use 2 decimals; otherwise use more
-  let maxDecimals = 6
+  let maxDecimals = decimals
   if (symbol === "USDC") {
     maxDecimals = 2
   } else {

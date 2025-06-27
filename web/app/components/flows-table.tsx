@@ -33,8 +33,8 @@ export type LimitedFlow = FlowWithBudget &
     | "isFlow"
     | "allocationsCount"
     | "recipientId"
-    | "superTokenSymbol"
-    | "superTokenPrefix"
+    | "underlyingTokenSymbol"
+    | "underlyingTokenPrefix"
   >
 
 interface Props {

@@ -129,8 +129,6 @@ export function RebalanceFlowButton({
     return `Increase (+${displayAmount}/mo)`
   }
 
-  // Determine button variant and icon
-  const buttonVariant = needsDecrease ? "outline" : "default"
   const ButtonIcon = needsDecrease ? ArrowDownIcon : ArrowUpIcon
 
   return (
@@ -146,7 +144,6 @@ export function RebalanceFlowButton({
 
           <Button
             onClick={handleRebalance}
-            variant={buttonVariant}
             size="sm"
             className={cn("flex w-full items-center gap-2", className)}
             disabled={isTransactionLoading}

@@ -148,16 +148,14 @@ export function StreamingDurationSelector({
         </div>
       </div>
 
-      {totalAmount > 0 && (
-        <div className="mt-3 rounded-md bg-primary/5 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-600 dark:text-zinc-400">Monthly funding</span>
-            <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-              {formatMonthlyAmount(monthlyAmount)} {tokenSymbol}
-            </span>
-          </div>
+      <div className="mt-3 rounded-md bg-primary/5 p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-zinc-600 dark:text-zinc-400">Monthly funding</span>
+          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+            {formatMonthlyAmount(monthlyAmount)} {tokenSymbol}
+          </span>
         </div>
-      )}
+      </div>
     </div>
   )
 }
