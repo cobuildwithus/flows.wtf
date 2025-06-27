@@ -1,7 +1,17 @@
 import { formatUnits } from "viem"
 import { base, mainnet, optimism } from "viem/chains"
 
-export const TOKENS = {
+export interface TokenInfo {
+  symbol: string
+  name: string
+  chainId: number
+  decimals: number
+  isNative: boolean
+  logo?: string
+  address?: string
+}
+
+export const TOKENS: Record<string, TokenInfo> = {
   [`eth-${mainnet.id}`]: {
     symbol: "ETH",
     name: "Ethereum",
@@ -23,24 +33,40 @@ export const TOKENS = {
     decimals: 18,
     isNative: true,
   },
-  [`0x99e50193f4a70b2581cf3a80ae32505a4e0337ff-${optimism.id}`]: {
-    symbol: "⚘GARDEN",
-    name: "Gardens",
-    chainId: optimism.id,
-    decimals: 18,
-    isNative: false,
-    logo: "/gardens.png",
-    address: "0x99e50193f4a70b2581cf3a80ae32505a4e0337ff",
-  },
-} as const
+}
 
-export type TokenKey = keyof typeof TOKENS
-export type Token = (typeof TOKENS)[TokenKey] & { key: TokenKey }
+export type TokenKey = keyof typeof TOKENS | string
+export interface Token extends TokenInfo {
+  key: TokenKey
+}
 
 export const AVAILABLE_TOKENS: Token[] = Object.entries(TOKENS).map(([key, token]) => ({
   key: key as TokenKey,
   ...token,
 }))
+
+export function getTokensWithFlow(flow: {
+  superToken: string
+  chainId: number
+  superTokenSymbol: string
+  superTokenName: string
+  superTokenDecimals: number
+  superTokenLogo: string | null
+}): Record<string, TokenInfo> {
+  const flowTokenKey = `${flow.superToken}-${flow.chainId}`
+  return {
+    ...TOKENS,
+    [flowTokenKey]: {
+      symbol: flow.superTokenSymbol,
+      name: flow.superTokenName,
+      chainId: flow.chainId,
+      decimals: flow.superTokenDecimals,
+      isNative: false,
+      logo: flow.superTokenLogo ?? undefined,
+      address: flow.superToken,
+    },
+  }
+}
 
 export const formatTokenAmount = (amount: bigint, decimals: number, symbol: string): string => {
   const formatted = formatUnits(amount, decimals)

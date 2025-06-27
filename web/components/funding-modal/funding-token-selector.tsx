@@ -11,7 +11,12 @@ import {
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { ChainLogo } from "../ui/chain-logo"
 import { TokenLogo } from "@/app/token/token-logo"
-import { type TokenKey, type Token, formatTokenAmount } from "./libs/funding-token-lib"
+import {
+  type TokenKey,
+  type Token,
+  type TokenInfo,
+  formatTokenAmount,
+} from "./libs/funding-token-lib"
 import { getTokenDropdownItems } from "./libs/funding-dropdown-lib"
 
 interface FundingTokenSelectorProps {
@@ -21,6 +26,7 @@ interface FundingTokenSelectorProps {
   ethBalances: Record<number, bigint>
   streamingTokenBalance: bigint
   ethPrice?: number
+  tokens: Record<string, TokenInfo>
 }
 
 export function FundingTokenSelector({
@@ -30,6 +36,7 @@ export function FundingTokenSelector({
   ethBalances,
   streamingTokenBalance,
   ethPrice,
+  tokens,
 }: FundingTokenSelectorProps) {
   return (
     <DropdownMenu>
@@ -37,15 +44,17 @@ export function FundingTokenSelector({
         <Button variant="secondary" className="gap-2 rounded-full">
           {selectedToken.isNative ? (
             <ChainLogo chainId={selectedToken.chainId} size={18} />
-          ) : (
+          ) : selectedToken.logo ? (
             <TokenLogo src={selectedToken.logo} alt={selectedToken.name} size={18} />
+          ) : (
+            <div className="h-5 w-5 rounded-full bg-muted" />
           )}
           <span className="font-semibold">{selectedToken.symbol}</span>
           <ChevronDownIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
-        {getTokenDropdownItems(chainId, ethBalances, streamingTokenBalance, ethPrice).map(
+        {getTokenDropdownItems(tokens, chainId, ethBalances, streamingTokenBalance, ethPrice).map(
           ({ token, balance, chainName, usdValue }) => (
             <DropdownMenuItem
               key={token.key}
@@ -56,8 +65,10 @@ export function FundingTokenSelector({
                 <div className="flex items-center gap-3">
                   {token.isNative ? (
                     <ChainLogo chainId={token.chainId} size={24} />
-                  ) : (
+                  ) : token.logo ? (
                     <TokenLogo src={token.logo} alt={token.name} size={24} />
+                  ) : (
+                    <div className="h-6 w-6 rounded-full bg-muted" />
                   )}
                   <div>
                     <div className="font-medium">{token.symbol}</div>
