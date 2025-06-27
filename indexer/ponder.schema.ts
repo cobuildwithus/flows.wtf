@@ -46,6 +46,7 @@ export const grants = onchainTable(
     challengedRecipientCount: t.integer().notNull(),
     bonusPool: t.text().notNull(),
     manager: t.text().notNull(),
+    owner: t.text().notNull(),
     managerRewardPool: t.text().notNull(),
     managerRewardSuperfluidPool: t.text().notNull(),
     superToken: t.text().notNull(),

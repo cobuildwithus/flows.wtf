@@ -62,6 +62,7 @@ async function handleItemSubmitted(params: {
     submitter: _submitter.toLowerCase(),
     parentContract: flow.recipient,
     rootContract,
+    owner: "",
     isTopLevel: false,
     isFlow: recipientType === RecipientType.FlowContract,
     isRemoved: false,

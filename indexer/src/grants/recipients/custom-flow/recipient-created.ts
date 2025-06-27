@@ -50,6 +50,7 @@ async function handleRecipientCreated(params: {
     submitter: approvedBy.toLowerCase(),
     parentContract: flowAddress,
     rootContract,
+    owner: "",
     baselinePool: "",
     bonusPool: "",
     managerRewardPoolFlowRatePercent: 0,

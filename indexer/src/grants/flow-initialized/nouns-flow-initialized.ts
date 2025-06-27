@@ -16,6 +16,7 @@ import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { isAccelerator } from "../recipients/helpers"
 import { calculateRootContract } from "../grant-helpers"
 import { fetchTokenInfo } from "../../utils/token-utils"
+import { customFlowImplAbi } from "../../../abis"
 
 ponder.on("NounsFlow:FlowInitialized", handleFlowInitialized)
 
@@ -42,6 +43,12 @@ async function handleFlowInitialized(params: {
   const { metadata, managerRewardSuperfluidPool, underlyingERC20Token } =
     await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
 
+  const owner = await context.client.readContract({
+    address: contract,
+    abi: customFlowImplAbi,
+    functionName: "owner",
+  })
+
   const {
     symbol: underlyingTokenSymbol,
     prefix: underlyingTokenPrefix,
@@ -67,6 +74,7 @@ async function handleFlowInitialized(params: {
     isRemoved: false,
     parentContract,
     rootContract,
+    owner,
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
