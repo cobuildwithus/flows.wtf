@@ -4,9 +4,9 @@ import { customFlowImplAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
-import { useGetRequiredBufferAmount } from "./use-get-required-buffer-amount"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { getClient } from "@/lib/viem/client"
 
 interface UseIncreaseFlowRateProps {
   contract: `0x${string}`
@@ -25,13 +25,6 @@ export function useIncreaseFlowRate({
 }: UseIncreaseFlowRateProps) {
   const router = useRouter()
   const [isApproving, setIsApproving] = useState(false)
-  const [pendingAmount, setPendingAmount] = useState<bigint>(0n)
-
-  const { requiredBufferAmount } = useGetRequiredBufferAmount({
-    contract,
-    chainId,
-    amount: pendingAmount,
-  })
 
   const { allowance, refetch: refetchAllowance } = useERC20Allowance(
     superToken,
@@ -67,29 +60,40 @@ export function useIncreaseFlowRate({
     success: "Flow rate increased successfully",
   })
 
+  const getBufferAmount = async (amount: bigint): Promise<bigint> => {
+    const client = getClient(chainId)
+    return (await client.readContract({
+      address: contract,
+      abi: customFlowImplAbi,
+      functionName: "getRequiredBufferAmount",
+      args: [amount],
+    })) as bigint
+  }
+
   const increaseFlowRate = async (amount: bigint) => {
     if (!userAddress) return
 
-    setPendingAmount(amount)
+    try {
+      const bufferAmount = await getBufferAmount(amount)
 
-    // Wait for required buffer amount to be calculated
-    const bufferAmount = requiredBufferAmount || amount
+      // Check if approval is needed for the buffer amount
+      if (allowance < bufferAmount) {
+        setIsApproving(true)
+        await approve(bufferAmount)
+        return
+      }
 
-    // Check if approval is needed for the buffer amount
-    if (allowance < bufferAmount) {
-      setIsApproving(true)
-      await approve(bufferAmount)
-      return
+      await prepareWallet()
+
+      writeContract({
+        address: contract,
+        abi: customFlowImplAbi,
+        functionName: "increaseFlowRate",
+        args: [amount],
+      })
+    } catch (err) {
+      console.error("Unable to fetch required buffer amount", err)
     }
-
-    await prepareWallet()
-
-    writeContract({
-      address: contract,
-      abi: customFlowImplAbi,
-      functionName: "increaseFlowRate",
-      args: [amount],
-    })
   }
 
   return {
@@ -101,10 +105,5 @@ export function useIncreaseFlowRate({
     hash,
     error,
     allowance,
-    requiredBufferAmount,
-    needsApproval: (amount: bigint) => {
-      const bufferAmount = requiredBufferAmount || amount
-      return allowance < bufferAmount
-    },
   }
 }
