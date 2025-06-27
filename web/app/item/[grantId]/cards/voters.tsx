@@ -31,7 +31,7 @@ export const Voters = async (props: Props) => {
       {voters.length > 0 && (
         <div className="grid gap-x-4 gap-y-6 lg:grid-cols-2">
           {voters.map((v) => (
-            <UserProfile address={v.voter} key={v.voter} withPopover={false}>
+            <UserProfile address={v.allocator} key={v.allocator} withPopover={false}>
               {(profile) => (
                 <div className="flex items-center">
                   <Avatar className="mr-2.5 size-7 rounded-full bg-primary">
@@ -42,7 +42,9 @@ export const Voters = async (props: Props) => {
                     <span className="mr-1.5 truncate text-sm font-medium">
                       {profile.display_name}
                     </span>
-                    <span className="text-xs text-muted-foreground">{v.votesCount} votes</span>
+                    <span className="text-xs text-muted-foreground">
+                      {v.allocationsCount} votes
+                    </span>
                   </div>
                 </div>
               )}
