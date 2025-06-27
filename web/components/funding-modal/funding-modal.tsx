@@ -16,11 +16,11 @@ import { useLogin } from "@/lib/auth/use-login"
 import React, { ComponentProps, useRef, useState, useEffect } from "react"
 import { Grant } from "@/lib/database/types"
 import {
-  TOKENS,
   TokenKey,
   formatTokenAmount,
   getTokenBalance,
-  AVAILABLE_TOKENS,
+  type TokenInfo,
+  getTokensWithFlow,
 } from "./libs/funding-token-lib"
 import { formatUnits } from "viem"
 import { useFundFlow } from "./hooks/use-fund-flow"
@@ -49,7 +49,18 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   const { balances: ethBalances } = useEthBalances()
   const { ethPrice } = useETHPrice()
 
-  const selectedToken = TOKENS[selectedTokenKey]
+  const TOKENS_WITH_FLOW = getTokensWithFlow({
+    superToken,
+    chainId,
+    superTokenSymbol: flow.superTokenSymbol,
+    superTokenName: flow.superTokenName,
+    superTokenDecimals: flow.superTokenDecimals,
+    superTokenLogo: flow.superTokenLogo,
+  })
+
+  const flowTokenKey = `${superToken}-${chainId}` as TokenKey
+
+  const selectedToken = TOKENS_WITH_FLOW[selectedTokenKey]
 
   // Fetch both token balances for display purposes
   const { balances } = useERC20Balances(
@@ -68,9 +79,9 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
       // Default to streaming token if user has balance
       let defaultTokenKey = selectedTokenKey
       if (streamingTokenBalance > 0n) {
-        const streamingToken = AVAILABLE_TOKENS.find(
-          (token) => !token.isNative && token.chainId === chainId,
-        )
+        const streamingToken = Object.entries(TOKENS_WITH_FLOW)
+          .map(([key, token]) => ({ key: key as TokenKey, ...token }))
+          .find((token) => !token.isNative && token.chainId === chainId)
         if (streamingToken) {
           defaultTokenKey = streamingToken.key
           setSelectedTokenKey(streamingToken.key)
@@ -79,13 +90,13 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
 
       // Calculate default donation amount (half of balance, rounded up)
       const currentBalance = getTokenBalance(
-        { key: defaultTokenKey, ...TOKENS[defaultTokenKey] },
+        { key: defaultTokenKey, ...TOKENS_WITH_FLOW[defaultTokenKey] },
         ethBalances,
         streamingTokenBalance,
       )
 
       if (currentBalance > 0n) {
-        const decimals = TOKENS[defaultTokenKey].decimals
+        const decimals = TOKENS_WITH_FLOW[defaultTokenKey].decimals
         const balanceInUnits = Number(formatUnits(currentBalance, decimals))
         const halfBalance = Math.ceil(balanceInUnits / 2)
         setDonationAmount(halfBalance.toString())
@@ -160,6 +171,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
                   ethBalances={ethBalances}
                   streamingTokenBalance={streamingTokenBalance}
                   ethPrice={ethPrice || undefined}
+                  tokens={TOKENS_WITH_FLOW}
                 />
 
                 <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-muted-foreground">
@@ -212,6 +224,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
               chainId={chainId}
               receiver={flow.recipient}
               maxItems={3}
+              tokens={TOKENS_WITH_FLOW}
             />
           </div>
         </div>
