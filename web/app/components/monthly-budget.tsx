@@ -43,12 +43,7 @@ export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
     <Tooltip>
       <TooltipTrigger tabIndex={-1}>
         <Badge variant={isGoingNegative ? "warning" : "default"}>
-          <Currency
-            tokenSymbol={flow.underlyingTokenSymbol}
-            tokenPrefix={flow.underlyingTokenPrefix}
-          >
-            {Math.ceil(Number(display))}
-          </Currency>
+          <Currency flow={flow}>{Math.ceil(Number(display))}</Currency>
           /mo
         </Badge>
       </TooltipTrigger>
@@ -56,20 +51,8 @@ export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
         {isGoingNegative ? (
           <>
             Warning: More outgoing funds than incoming.{" "}
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {monthlyOutgoingFlowRate}
-            </Currency>{" "}
-            vs{" "}
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {monthlyIncomingFlowRate}
-            </Currency>
-            .
+            <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency> vs{" "}
+            <Currency flow={flow}>{monthlyIncomingFlowRate}</Currency>.
             {isGoingNegativeSignificant && (
               <>
                 <br /> This will be automatically fixed within 1 minute.
@@ -79,20 +62,8 @@ export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
         ) : isNotStreamingEnough ? (
           <>
             Warning: Not streaming enough funds.{" "}
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {monthlyIncomingFlowRate}
-            </Currency>{" "}
-            vs{" "}
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {monthlyOutgoingFlowRate}
-            </Currency>
-            .
+            <Currency flow={flow}>{monthlyIncomingFlowRate}</Currency> vs{" "}
+            <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency>.
             {isGoingNegativeSignificant && (
               <>
                 <br /> This will be automatically fixed within 1 minute.
@@ -101,46 +72,24 @@ export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
           </>
         ) : approvedGrants ? (
           <>
-            Streaming{" "}
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {monthlyOutgoingFlowRate}
-            </Currency>
+            Streaming <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency>
             /mo to {approvedGrants} {pluralize("builder", approvedGrants)}.
           </>
         ) : isFlow ? (
           <>
-            Streaming{" "}
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {monthlyOutgoingFlowRate}
-            </Currency>
+            Streaming <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency>
             /mo to builders.
           </>
         ) : (
           <>
-            <Currency
-              tokenSymbol={flow.underlyingTokenSymbol}
-              tokenPrefix={flow.underlyingTokenPrefix}
-            >
-              {Number(flow.monthlyIncomingBaselineFlowRate)}
-            </Currency>
+            <Currency flow={flow}>{Number(flow.monthlyIncomingBaselineFlowRate)}</Currency>
             /mo baseline grant.
             <br />
             {Number(flow.monthlyIncomingBonusFlowRate) < 1 ? (
               "No bonus from voters."
             ) : (
               <>
-                <Currency
-                  tokenSymbol={flow.underlyingTokenSymbol}
-                  tokenPrefix={flow.underlyingTokenPrefix}
-                >
-                  {Number(flow.monthlyIncomingBonusFlowRate)}
-                </Currency>
+                <Currency flow={flow}>{Number(flow.monthlyIncomingBonusFlowRate)}</Currency>
                 /mo as a bonus from voters.
               </>
             )}

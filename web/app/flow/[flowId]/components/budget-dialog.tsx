@@ -49,10 +49,7 @@ export const BudgetDialog = (props: Props) => {
     <Dialog>
       <DialogTrigger asChild>
         <Badge className="cursor-help">
-          <Currency
-            tokenSymbol={flow.underlyingTokenSymbol}
-            tokenPrefix={flow.underlyingTokenPrefix}
-          >
+          <Currency flow={flow}>
             {(flow.subgrants.length > 0
               ? flow.monthlyOutgoingFlowRate
               : flow.monthlyIncomingFlowRate
@@ -69,7 +66,8 @@ export const BudgetDialog = (props: Props) => {
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground">Min. Funding</h3>
                 <p className="text-2xl font-bold">
-                  <Currency>{flow.derivedData?.minimumSalary || 0}</Currency>/month
+                  <Currency flow={flow}>{flow.derivedData?.minimumSalary || 0}</Currency>
+                  /month
                 </p>
               </div>
               <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
@@ -125,7 +123,8 @@ export const BudgetDialog = (props: Props) => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Incoming Flow</p>
                   <p className="text-xl font-bold">
-                    <Currency>{flow.monthlyIncomingFlowRate || 0}</Currency>/month
+                    <Currency flow={flow}>{flow.monthlyIncomingFlowRate || 0}</Currency>
+                    /month
                   </p>
                 </div>
               </div>
@@ -136,7 +135,8 @@ export const BudgetDialog = (props: Props) => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Outgoing Flow</p>
                   <p className="text-xl font-bold">
-                    <Currency>{flow.monthlyOutgoingFlowRate || 0}</Currency>/month
+                    <Currency flow={flow}>{flow.monthlyOutgoingFlowRate || 0}</Currency>
+                    /month
                   </p>
                 </div>
               </div>
@@ -155,7 +155,8 @@ export const BudgetDialog = (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency>{flow.monthlyBaselinePoolFlowRate || 0}</Currency>/mo
+                  <Currency flow={flow}>{flow.monthlyBaselinePoolFlowRate || 0}</Currency>
+                  /mo
                 </span>
               </div>
               <Progress value={baselinePercent} className="h-2" />
@@ -175,7 +176,8 @@ export const BudgetDialog = (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency>{flow.monthlyBonusPoolFlowRate || 0}</Currency>/mo
+                  <Currency flow={flow}>{flow.monthlyBonusPoolFlowRate || 0}</Currency>
+                  /mo
                 </span>
               </div>
               <Progress value={bonusPercent} className="h-2" />
@@ -195,7 +197,8 @@ export const BudgetDialog = (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency>{flow.monthlyRewardPoolFlowRate || 0}</Currency>/mo
+                  <Currency flow={flow}>{flow.monthlyRewardPoolFlowRate || 0}</Currency>
+                  /mo
                 </span>
               </div>
               <Progress value={managerPercent} className="h-2" />

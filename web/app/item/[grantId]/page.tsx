@@ -20,7 +20,7 @@ import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { cn, getIpfsUrl } from "@/lib/utils"
 import { ZoomInIcon } from "lucide-react"
 import type { Metadata } from "next"
-import { notFound, redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 import { Suspense } from "react"
 import { BeneficiariesCard } from "./cards/beneficiaries"
 import { Builder } from "./cards/builder"
@@ -178,7 +178,8 @@ export default async function GrantPage(props: Props) {
               </div>
 
               <Stat label="Budget" className="">
-                <Currency>{grant.monthlyIncomingFlowRate}</Currency>/mo
+                <Currency flow={grant}>{grant.monthlyIncomingFlowRate}</Currency>
+                /mo
               </Stat>
 
               <Stat label="Total Earned">
