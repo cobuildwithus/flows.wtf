@@ -16,7 +16,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   if (!customFlow) notFound()
   const flow = await getFlow(customFlow.flowId)
-  return { title: flow.title, description: flow.description }
+  return { title: flow.title, description: flow.tagline }
 }
 
 export default async function CustomFlowPage(props: Props) {
