@@ -5,19 +5,15 @@ interface Props {
   as?: "span" | "div"
   className?: string
   currency?: "USD" | "ETH" | "ERC20"
-  tokenSymbol?: string
-  tokenPrefix?: string
+  flow?: {
+    underlyingTokenSymbol?: string
+    underlyingTokenPrefix?: string
+  }
 }
 
 export const Currency = (props: PropsWithChildren<Props>) => {
-  const {
-    children: amount,
-    as: Component = "span",
-    currency = "USD",
-    tokenSymbol,
-    tokenPrefix,
-    ...rest
-  } = props
+  const { children: amount, as: Component = "span", currency = "USD", flow, ...rest } = props
+  const { underlyingTokenSymbol: tokenSymbol, underlyingTokenPrefix: tokenPrefix } = flow || {}
 
   const value = currency === "ETH" || currency === "ERC20" ? Number(amount) / 1e18 : Number(amount)
 
