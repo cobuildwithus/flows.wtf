@@ -1,50 +1,40 @@
 import { USDCx, GARDENx } from "../utils"
-import { superTokenAbi } from "../../abis"
-import type { Context } from "ponder:registry"
 
-export interface SuperTokenInfo {
+interface SuperTokenInfo {
   symbol: string
-  name: string
-  decimals: number
   prefix: string
-  logo?: string
 }
 
-const PREFIX_MAP: Record<string, string> = {
-  [USDCx.toLowerCase()]: "$",
-  [GARDENx.toLowerCase()]: "⚘",
+const SUPER_TOKEN_MAP: Record<string, SuperTokenInfo> = {
+  [USDCx.toLowerCase()]: {
+    symbol: "USDC",
+    prefix: "$",
+  },
+  [GARDENx.toLowerCase()]: {
+    symbol: "Garden",
+    prefix: "⚘",
+  },
 }
 
-const LOGO_MAP: Record<string, string> = {
-  [USDCx.toLowerCase()]: "/usdc.svg",
-  [GARDENx.toLowerCase()]: "/gardens.png",
-}
+export function getSuperTokenInfo(superTokenAddress: string): SuperTokenInfo {
+  const normalizedAddress = superTokenAddress.toLowerCase()
+  const tokenInfo = SUPER_TOKEN_MAP[normalizedAddress]
 
-export async function fetchSuperTokenInfo(
-  context:
-    | Context<"NounsFlow:FlowInitialized">
-    | Context<"CustomFlow:FlowInitialized">
-    | Context<"NounsFlowChildren:FlowInitialized">,
-  superTokenAddress: `0x${string}`,
-): Promise<SuperTokenInfo> {
-  const address = superTokenAddress.toLowerCase() as `0x${string}`
-
-  const [symbol, name, decimals] = await context.client.multicall({
-    contracts: [
-      { address, abi: superTokenAbi, functionName: "symbol" },
-      { address, abi: superTokenAbi, functionName: "name" },
-      { address, abi: superTokenAbi, functionName: "decimals" },
-    ],
-    allowFailure: false,
-  })
-
-  const decimalNumber = Number(decimals)
-
-  return {
-    symbol,
-    name,
-    decimals: decimalNumber,
-    prefix: PREFIX_MAP[address] ?? "",
-    logo: LOGO_MAP[address],
+  if (!tokenInfo) {
+    // Default fallback for unknown tokens
+    return {
+      symbol: "Unknown",
+      prefix: "",
+    }
   }
+
+  return tokenInfo
+}
+
+export function getSuperTokenSymbol(superTokenAddress: string): string {
+  return getSuperTokenInfo(superTokenAddress).symbol
+}
+
+export function getSuperTokenPrefix(superTokenAddress: string): string {
+  return getSuperTokenInfo(superTokenAddress).prefix
 }

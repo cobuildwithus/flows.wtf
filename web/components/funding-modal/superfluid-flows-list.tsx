@@ -5,7 +5,7 @@ import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TokenLogo } from "@/app/token/token-logo"
-import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
+import { formatTokenAmount, TOKENS } from "./libs/funding-token-lib"
 
 interface SuperfluidFlowsListProps {
   address: string | undefined
@@ -14,7 +14,6 @@ interface SuperfluidFlowsListProps {
   token?: string
   maxItems?: number
   showTitle?: boolean
-  tokens?: Record<string, TokenInfo>
 }
 
 export function SuperfluidFlowsList({
@@ -24,7 +23,6 @@ export function SuperfluidFlowsList({
   token,
   maxItems = 5,
   showTitle = true,
-  tokens = TOKENS,
 }: SuperfluidFlowsListProps) {
   const { data: flows, isLoading, error } = useExistingFlows(address, chainId)
 
@@ -71,7 +69,6 @@ export function SuperfluidFlowsList({
           <SuperfluidFlowItem
             key={`${flow.token}-${flow.sender}-${flow.receiver}-${index}`}
             flow={flow}
-            tokens={tokens}
           />
         ))}
       </div>
@@ -81,16 +78,15 @@ export function SuperfluidFlowsList({
 
 interface SuperfluidFlowItemProps {
   flow: SuperfluidFlowWithState
-  tokens: Record<string, TokenInfo>
 }
 
-function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
+function SuperfluidFlowItem({ flow }: SuperfluidFlowItemProps) {
   const flowRatePerSecond = BigInt(flow.flowRate)
   const flowRatePerMonth = flowRatePerSecond * BigInt(30 * 24 * 60 * 60) // 30 days in seconds
 
   // Try to find token info, fallback to basic display
   // Only match non-native tokens that have an address property
-  const tokenInfo = Object.values(tokens).find(
+  const tokenInfo = Object.values(TOKENS).find(
     (token) =>
       !token.isNative &&
       "address" in token &&
@@ -110,11 +106,7 @@ function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
       <CardContent className="p-2 md:p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {tokenLogo ? (
-              <TokenLogo src={tokenLogo} alt={tokenSymbol} size={20} />
-            ) : (
-              <div className="h-5 w-5 rounded-full bg-muted" />
-            )}
+            {tokenLogo && <TokenLogo src={tokenLogo} alt={tokenSymbol} size={20} />}
             <div>
               <div className="text-xs text-muted-foreground">
                 {displayRate} {tokenSymbol}/mo

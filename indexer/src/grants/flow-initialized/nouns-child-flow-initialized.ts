@@ -12,7 +12,7 @@ import { Status } from "../../enums"
 import { isAccelerator } from "../recipients/helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { calculateRootContract } from "../grant-helpers"
-import { fetchSuperTokenInfo } from "../../utils/super-token-utils"
+import { getSuperTokenPrefix, getSuperTokenSymbol } from "../../utils/super-token-utils"
 
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
@@ -39,17 +39,6 @@ async function handleFlowInitialized(params: {
   const { metadata, managerRewardSuperfluidPool, underlyingERC20Token } =
     await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
 
-  const {
-    symbol: superTokenSymbol,
-    prefix: superTokenPrefix,
-    name: superTokenName,
-    decimals: superTokenDecimals,
-    logo: superTokenLogo,
-  } = await fetchSuperTokenInfo(
-    context,
-    superToken,
-  )
-
   // This is because the top level flow has no parent flow contract
   const grantId = contract
   const rootContract = await calculateRootContract(context.db, contract, parentContract)
@@ -71,11 +60,8 @@ async function handleFlowInitialized(params: {
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
     underlyingERC20Token: underlyingERC20Token.toLowerCase(),
-    superTokenSymbol,
-    superTokenPrefix,
-    superTokenName,
-    superTokenDecimals,
-    superTokenLogo,
+    superTokenSymbol: getSuperTokenSymbol(superToken),
+    superTokenPrefix: getSuperTokenPrefix(superToken),
     submitter: zeroAddress,
     allocationsCount: "0",
     totalAllocationWeightOnFlow: "0",
