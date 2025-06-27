@@ -31,7 +31,7 @@ export function LeaveFeedbackButton({
           Begin collecting their feedback and prepare it for submission via the cast preview tool.
           
           Critical instructions:
-          - Do NOT provide ANY examples, suggestions, or ideas for feedback.
+          - Do NOT provide ANY examples, suggestions, or ideas for feedback unless the user asks for them.
           - Do NOT mention general categories or types of feedback.
           - Simply ask: "What feedback would you like to leave for the builder?" and wait for their response.
           - Any examples or suggestions, even general ones, violate this instruction.
