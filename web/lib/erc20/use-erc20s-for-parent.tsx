@@ -1,5 +1,5 @@
 import type { Address } from "viem"
-import { useFlowsForParent } from "./use-flows-for-parent"
+import { useFlowsForParent } from "../tcr/use-flows-for-parent"
 import { useERC20Tokens } from "./use-erc20s"
 
 export function useERC20TokensForParent(parentGrantContract: Address, chainId: number) {

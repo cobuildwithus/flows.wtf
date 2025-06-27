@@ -1,4 +1,5 @@
 import { getChain } from "@/lib/viem/client"
+import { getRpcUrl } from "@/lib/wagmi/config"
 import { createWalletClient, http } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 
@@ -8,11 +9,12 @@ export function getRevealVotesWalletClient(chainId: number) {
   }
 
   const account = privateKeyToAccount(process.env.REVEAL_VOTES_PK as `0x${string}`)
+  const chain = getChain(chainId)
 
   const client = createWalletClient({
     account,
-    chain: getChain(chainId),
-    transport: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
+    chain,
+    transport: http(getRpcUrl(chain, "http")),
   })
 
   return client
@@ -24,11 +26,12 @@ export function getBalanceFlowRatesWalletClient(chainId: number) {
   }
 
   const account = privateKeyToAccount(process.env.BALANCE_FLOW_RATES_PK as `0x${string}`)
+  const chain = getChain(chainId)
 
   const client = createWalletClient({
     account,
-    chain: getChain(chainId),
-    transport: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
+    chain,
+    transport: http(getRpcUrl(chain, "http")),
   })
 
   return client

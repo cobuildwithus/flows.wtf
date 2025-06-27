@@ -49,7 +49,10 @@ export const BudgetDialog = (props: Props) => {
     <Dialog>
       <DialogTrigger asChild>
         <Badge className="cursor-help">
-          <Currency>
+          <Currency
+            tokenSymbol={flow.underlyingTokenSymbol}
+            tokenPrefix={flow.underlyingTokenPrefix}
+          >
             {(flow.subgrants.length > 0
               ? flow.monthlyOutgoingFlowRate
               : flow.monthlyIncomingFlowRate

@@ -21,7 +21,7 @@ export const RemoveRecipientButton = ({
   }
 
   return (
-    <Button size="sm" variant="ghost" className="py-0.5" onClick={handleDelete}>
+    <Button tabIndex={-1} size="sm" variant="ghost" className="py-0.5" onClick={handleDelete}>
       <Trash className="size-3.5" />
     </Button>
   )

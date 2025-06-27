@@ -179,6 +179,12 @@ view Grant {
   bonusPool                        String  @map("bonus_pool")
   managerRewardPool                String  @map("manager_reward_pool")
   superToken                       String  @map("super_token")
+  underlyingERC20Token             String  @map("underlying_erc_20_token")
+  underlyingTokenSymbol                 String  @map("underlying_token_symbol")
+  underlyingTokenPrefix                 String  @map("underlying_token_prefix")
+  underlyingTokenName                   String  @map("underlying_token_name")
+  underlyingTokenDecimals               Int     @map("underlying_token_decimals")
+  underlyingTokenLogo                   String? @map("underlying_token_logo")
   manager                          String  @map("manager")
   managerRewardSuperfluidPool      String  @map("manager_reward_superfluid_pool")
   managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")
@@ -211,6 +217,28 @@ view Grant {
   @@map("Grant")
   @@schema("onchain")
 }
+
+view SuperfluidFlow {
+  token      String
+  sender     String
+  receiver   String
+  flowRate   String @map("flow_rate")
+  deposit    String
+  startTime  Int    @map("start_time")
+  lastUpdate Int    @map("last_update")
+  closeTime  Int?   @map("close_time")
+  chainId    Int    @map("chain_id")
+
+  @@id([token, sender, receiver, chainId])
+  @@index([token])
+  @@index([sender])
+  @@index([receiver])
+  @@index([sender, receiver])
+  @@index([flowRate])
+  @@index([chainId])
+  @@schema("onchain")
+}
+
 
 view Allocation {
   id               String @id

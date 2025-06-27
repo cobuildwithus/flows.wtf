@@ -2,8 +2,6 @@ import { defineConfig, loadEnv } from "@wagmi/cli"
 import { etherscan } from "@wagmi/cli/plugins"
 import { base, mainnet } from "./addresses"
 
-const mainnetContracts = [{ name: "nounsToken", address: mainnet.NounsToken }]
-
 const baseContracts = [
   { name: "nounsFlowImpl", address: base.NounsFlowImpl },
 
@@ -54,11 +52,6 @@ const baseContracts = [
   },
 
   {
-    name: "gdav1",
-    address: "0xfE6c87BE05feDB2059d2EC41bA0A09826C9FD7aa" as `0x${string}`,
-  },
-
-  {
     name: "superfluidPool",
     address: "0x9224413b9177e6c1d5721b4a4d1d00ec84b07ce7" as `0x${string}`,
   },
@@ -71,8 +64,43 @@ export default defineConfig(() => {
     out: "src/generated.ts",
     contracts: [],
     plugins: [
-      etherscan({ apiKey: env.ETHERSCAN_API_KEY, chainId: 1, contracts: mainnetContracts }),
-      etherscan({ apiKey: env.BASESCAN_API_KEY, chainId: 8453, contracts: baseContracts }),
+      etherscan({
+        apiKey: env.ETHERSCAN_API_KEY,
+        chainId: 1,
+        tryFetchProxyImplementation: true,
+        contracts: [
+          {
+            name: "gdav1",
+            address: {
+              1: "0xAAdBB3Eee3Bd080f5353d86DdF1916aCA3fAC842" as `0x${string}`,
+              10: "0x68Ae17fa7a31b86F306c383277552fd4813b0d35" as `0x${string}`,
+              8453: "0xfE6c87BE05feDB2059d2EC41bA0A09826C9FD7aa" as `0x${string}`,
+            },
+          },
+          { name: "nounsToken", address: mainnet.NounsToken as `0x${string}` },
+          {
+            name: "superfluidImpl",
+            address: "0x07e4a282f8f20032f3e766fffb73c8b86ba7e1f1" as `0x${string}`,
+          },
+          {
+            name: "superfluid",
+            address: {
+              1: "0x4E583d9390082B65Bef884b629DFA426114CED6d",
+              10: "0x567c4B141ED61923967cA25Ef4906C8781069a10",
+              8453: "0x4C073B3baB6d8826b8C5b229f3cfdC1eC6E47E74",
+            },
+          },
+          {
+            name: "cfav1",
+            address: {
+              1: "0x2844c1BBdA121E9E43105630b9C8310e5c72744b",
+              10: "0x204C6f131bb7F258b2Ea1593f5309911d8E458eD",
+              8453: "0x19ba78B9cDB05A877718841c574325fdB53601bb",
+            },
+          },
+        ],
+      }),
+      etherscan({ apiKey: env.ETHERSCAN_API_KEY, chainId: 8453, contracts: baseContracts }),
     ],
   }
 })

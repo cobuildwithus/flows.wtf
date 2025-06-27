@@ -8,10 +8,12 @@ import {
   superfluidPoolAbi,
   tcrFactoryImplAbi,
   gdav1Address,
-  gdav1ImplAbi,
+  gdav1Abi,
   tokenEmitterImplAbi,
   customFlowImplAbi,
   nounsTokenAbi,
+  cfav1Abi,
+  cfav1Address,
 } from "./abis"
 import {
   base as baseContracts,
@@ -150,13 +152,24 @@ export default createConfig({
       },
     },
     GdaV1: {
-      abi: gdav1ImplAbi,
+      abi: gdav1Abi,
       chain: IndexerConfig.GdaV1,
-      address: [gdav1Address[8453], optimismContracts.GdaV1],
+      address: [gdav1Address[8453], gdav1Address[10]],
       filter: {
         event: "FlowDistributionUpdated",
         args: {
           // usdc on base
+          token: [USDCx, GARDENx],
+        },
+      },
+    },
+    CfaV1: {
+      abi: cfav1Abi,
+      chain: IndexerConfig.CfaV1,
+      address: [cfav1Address[8453], cfav1Address[10]],
+      filter: {
+        event: "FlowUpdated",
+        args: {
           token: [USDCx, GARDENx],
         },
       },

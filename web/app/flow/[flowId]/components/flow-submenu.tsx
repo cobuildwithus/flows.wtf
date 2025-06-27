@@ -1,6 +1,6 @@
 import { getAcceleratorFlow, getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 import { SwapTokenButton } from "@/app/token/swap-token-button"
-import { DonationModal } from "@/components/donation-modal"
+import { FundingModal } from "@/components/funding-modal/funding-modal"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
@@ -90,15 +90,15 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {!isFlowRemoved && (!isFlow || canSuggest) && (
+          {!isFlowRemoved && (
             <Link href={`/apply/${flowId}`}>
-              <Button variant={isManager ? "outline" : "default"} className="rounded-md">
+              <Button variant="outline" className="rounded-md">
                 {flow.isTopLevel ? (isManager ? "Add new budget" : "Suggest flow") : "Apply"}
               </Button>
             </Link>
           )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
-          <DonationModal variant="default" id={flowId} name={flow.title} />
+          <FundingModal variant="default" id={flowId} flow={flow} />
         </div>
       </div>
     </div>

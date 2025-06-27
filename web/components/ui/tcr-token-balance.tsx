@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Currency } from "./currency"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
-import { useERC20Supply } from "@/lib/tcr/use-erc20-supply"
+import { useERC20Supply } from "@/lib/erc20/use-erc20-supply"
 import { useSellTokenQuote } from "@/app/token/hooks/use-sell-token-quote"
 import type { TokenHolder } from "@prisma/flows"
 import { formatUSDValue } from "@/app/token/hooks/useETHPrice"

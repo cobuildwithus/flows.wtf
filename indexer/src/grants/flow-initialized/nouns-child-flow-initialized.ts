@@ -6,12 +6,11 @@ import {
   parentFlowToChildren,
 } from "ponder:schema"
 import { zeroAddress } from "viem"
-import { mainnet } from "viem/chains"
-import { mainnet as mainnetContracts } from "../../../addresses"
 import { Status } from "../../enums"
 import { isAccelerator } from "../recipients/helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { calculateRootContract } from "../grant-helpers"
+import { fetchTokenInfo } from "../../utils/token-utils"
 
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
@@ -35,19 +34,20 @@ async function handleFlowInitialized(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const parentContract = parent.toLowerCase() as `0x${string}`
 
-  const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
-    context,
-    contract,
-    managerRewardPool
-  )
+  const { metadata, managerRewardSuperfluidPool, underlyingERC20Token } =
+    await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
+
+  const {
+    symbol: underlyingTokenSymbol,
+    prefix: underlyingTokenPrefix,
+    name: underlyingTokenName,
+    decimals: underlyingTokenDecimals,
+    logo: underlyingTokenLogo,
+  } = await fetchTokenInfo(context, underlyingERC20Token)
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
-  const rootContract = await calculateRootContract(
-    context.db,
-    contract,
-    parentContract
-  )
+  const rootContract = await calculateRootContract(context.db, contract, parentContract)
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -65,6 +65,12 @@ async function handleFlowInitialized(params: {
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
+    underlyingERC20Token: underlyingERC20Token.toLowerCase(),
+    underlyingTokenSymbol,
+    underlyingTokenPrefix,
+    underlyingTokenName,
+    underlyingTokenDecimals,
+    underlyingTokenLogo,
     submitter: zeroAddress,
     allocationsCount: "0",
     totalAllocationWeightOnFlow: "0",

@@ -10,9 +10,9 @@ import { ConversionBox } from "./conversion-box"
 import { CurrencyInput } from "./currency-input"
 import { TokenBalance } from "./token-balance"
 import { SwitchSwapBoxButton } from "./switch-box-button"
-import { useERC20Balances } from "@/lib/tcr/use-erc20-balances"
+import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
 import { TokenBalanceAndUSDValue } from "./token-balance-usd-value"
-import { useERC20Tokens } from "@/lib/tcr/use-erc20s"
+import { useERC20Tokens } from "@/lib/erc20/use-erc20s"
 import { TokenSwitcherDialog } from "./token-switcher-dialog"
 import { EthConversionBox } from "./eth-conversion-box"
 import { CurrencyDisplay } from "./currency-display"
@@ -30,7 +30,6 @@ interface Props {
   chainId: number
 }
 
-
 export function SellTokenBox(props: Props) {
   const {
     defaultTokenAmount,
@@ -47,11 +46,7 @@ export function SellTokenBox(props: Props) {
   const [tokenAmount, _setTokenAmount] = useState((Number(defaultTokenAmount) / 1e18).toString())
   const [tokenAmountBigInt, _setTokenAmountBigInt] = useState(defaultTokenAmount)
 
-  const { balances, refetch } = useERC20Balances(
-    [getEthAddress(token)],
-    address,
-    chainId,
-  )
+  const { balances, refetch } = useERC20Balances([getEthAddress(token)], address, chainId)
   const tokenBalance = balances?.[0]
 
   const { tokens, refetch: refetchTokens } = useERC20Tokens([token], chainId)

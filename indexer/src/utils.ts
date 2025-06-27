@@ -72,6 +72,14 @@ export const IndexerConfig = {
       startBlock: 137560689,
     },
   },
+  CfaV1: {
+    base: {
+      startBlock: 21519031,
+    },
+    optimism: {
+      startBlock: 137560689,
+    },
+  },
   TotalEarned: {
     base: {
       startBlock: "latest",
@@ -84,3 +92,5 @@ export const IndexerConfig = {
 
 export const USDCx = "0xd04383398dd2426297da660f9cca3d439af9ce1b"
 export const GARDENx = "0x99E50193F4A70B2581cF3a80ae32505a4E0337fF"
+export const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+export const GARDEN = "0x8b2F706cd2bc0Df6679218177c56E72C5241de9B"

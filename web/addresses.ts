@@ -35,7 +35,6 @@ export const base = {
 
 export const optimism = {
   CustomFlowImpl: "0x9a6032569e50d6864106911884510c2aa6fa033d",
-  GdaV1: "0x68Ae17fa7a31b86F306c383277552fd4813b0d35",
 } as const
 
 export const customFlows = {

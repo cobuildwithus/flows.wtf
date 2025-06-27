@@ -79,6 +79,7 @@ export const useContractTransaction = (args: {
     isLoading: isLoading || isPending,
     hash,
     error,
+    account: address,
     prepareWallet: async (toastId?: number | string) => {
       setCallbackHandled(false)
 

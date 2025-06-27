@@ -11,6 +11,7 @@ import { calculateRootContract } from "../grant-helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { accelerators, customFlows } from "../../../addresses"
 import { isAccelerator } from "../recipients/helpers"
+import { fetchTokenInfo } from "../../utils/token-utils"
 
 ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
 
@@ -37,21 +38,22 @@ async function handleFlowInitialized(params: {
 
   // const parentFlow = await context.db.find(grants, { id: parentContract })
 
-  const { metadata, managerRewardSuperfluidPool } = await getFlowMetadataAndRewardPool(
-    context,
-    contract,
-    managerRewardPool
-  )
+  const { metadata, managerRewardSuperfluidPool, underlyingERC20Token } =
+    await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
+
+  const {
+    symbol: underlyingTokenSymbol,
+    prefix: underlyingTokenPrefix,
+    name: underlyingTokenName,
+    decimals: underlyingTokenDecimals,
+    logo: underlyingTokenLogo,
+  } = await fetchTokenInfo(context, underlyingERC20Token)
 
   // This is because the top level flow has no parent flow contract
   const grantId = contract
 
   const isTopLevel = parentContract === zeroAddress
-  const rootContract = await calculateRootContract(
-    context.db,
-    contract,
-    parentContract
-  )
+  const rootContract = await calculateRootContract(context.db, contract, parentContract)
 
   await context.db.insert(grants).values({
     id: grantId,
@@ -70,6 +72,12 @@ async function handleFlowInitialized(params: {
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
+    underlyingTokenSymbol,
+    underlyingTokenPrefix,
+    underlyingTokenName,
+    underlyingTokenDecimals,
+    underlyingTokenLogo,
+    underlyingERC20Token: underlyingERC20Token.toLowerCase(),
     submitter: zeroAddress,
     allocationsCount: "0",
     totalAllocationWeightOnFlow: "0",

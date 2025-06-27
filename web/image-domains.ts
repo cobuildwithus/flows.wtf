@@ -18,4 +18,5 @@ export const imageDomains = [
   "cdn.shopify.com",
   "images.unsplash.com",
   "*.cdninstagram.com",
+  "cdn.whisk.so",
 ]
