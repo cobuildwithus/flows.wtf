@@ -23,7 +23,10 @@ export function EditDescription({ initial, contract, chainId, canEdit }: Props) 
     chainId,
     onSuccess: () => {
       setIsEditing(false)
-      router.refresh()
+      // wait 500ms before refreshing
+      setTimeout(() => {
+        router.refresh()
+      }, 500)
     },
   })
 
@@ -33,11 +36,13 @@ export function EditDescription({ initial, contract, chainId, canEdit }: Props) 
 
   if (!isEditing) {
     return (
-      <div className="space-y-2">
+      <div className="flex flex-col space-y-8">
         <Markdown>{initial}</Markdown>
-        <Button variant="outline" size="sm" type="button" onClick={() => setIsEditing(true)}>
-          Edit
-        </Button>
+        <div className="flex justify-start">
+          <Button variant="outline" size="sm" type="button" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        </div>
       </div>
     )
   }
