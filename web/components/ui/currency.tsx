@@ -1,15 +1,31 @@
 import { PropsWithChildren } from "react"
+import { formatCurrency } from "@/lib/erc20/super-token"
 
 interface Props {
   as?: "span" | "div"
   className?: string
   currency?: "USD" | "ETH" | "ERC20"
+  tokenSymbol?: string
+  tokenPrefix?: string
 }
 
 export const Currency = (props: PropsWithChildren<Props>) => {
-  const { children: amount, as: Component = "span", currency = "USD", ...rest } = props
+  const {
+    children: amount,
+    as: Component = "span",
+    currency = "USD",
+    tokenSymbol,
+    tokenPrefix,
+    ...rest
+  } = props
 
   const value = currency === "ETH" || currency === "ERC20" ? Number(amount) / 1e18 : Number(amount)
+
+  // If token overrides are provided, use them regardless of currency type
+  if (tokenSymbol || tokenPrefix) {
+    const formattedCurrency = formatCurrency(value, tokenSymbol || "Token", tokenPrefix)
+    return <Component {...rest}>{formattedCurrency}</Component>
+  }
 
   if (currency === "ETH") {
     return <Component {...rest}>Ξ{formatValue(value)}</Component>

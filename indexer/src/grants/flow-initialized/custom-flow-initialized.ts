@@ -11,6 +11,7 @@ import { calculateRootContract } from "../grant-helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { accelerators, customFlows } from "../../../addresses"
 import { isAccelerator } from "../recipients/helpers"
+import { getSuperTokenSymbol, getSuperTokenPrefix } from "../../utils/super-token-utils"
 
 ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
 
@@ -63,6 +64,8 @@ async function handleFlowInitialized(params: {
     managerRewardPool: managerRewardPool.toLowerCase(),
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
+    superTokenSymbol: getSuperTokenSymbol(superToken),
+    superTokenPrefix: getSuperTokenPrefix(superToken),
     underlyingERC20Token: underlyingERC20Token.toLowerCase(),
     submitter: zeroAddress,
     allocationsCount: "0",

@@ -8,6 +8,7 @@ import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { sortGrants } from "@/lib/grant-utils"
 import { getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
+import { formatCurrency } from "@/lib/erc20/super-token"
 import Image from "next/image"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
@@ -44,19 +45,19 @@ export async function CustomFlowPage(props: Props) {
     { name: "Projects", value: getSum(relevantGrants, "projects") },
     {
       name: "Paid out",
-      value: Intl.NumberFormat("en", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-      }).format(getSum(relevantGrants, "earned")),
+      value: formatCurrency(
+        getSum(relevantGrants, "earned"),
+        flow.superTokenSymbol,
+        flow.superTokenPrefix,
+      ),
     },
     {
       name: "Monthly support",
-      value: Intl.NumberFormat("en", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-      }).format(getSum(relevantGrants, "monthly")),
+      value: formatCurrency(
+        getSum(relevantGrants, "monthly"),
+        flow.superTokenSymbol,
+        flow.superTokenPrefix,
+      ),
     },
   ]
 
@@ -137,11 +138,7 @@ export async function CustomFlowPage(props: Props) {
               chainId={flow.chainId}
             />
           ) : (
-            <GrantsList
-              grants={grants.sort(sortGrants)}
-              flow={flow}
-              canManage={canManage}
-            />
+            <GrantsList grants={grants.sort(sortGrants)} flow={flow} canManage={canManage} />
           )}
         </div>
         <AllocationBar />

@@ -20,3 +20,6 @@ export { getCfaAddress, getHostAddress } from "./addresses"
 
 // Operation type utilities
 export { OPERATION_TYPE, prepareOperation } from "./operation-type"
+
+// Currency formatting utilities
+export { formatSuperTokenCurrency, formatCurrency } from "./currency-format"

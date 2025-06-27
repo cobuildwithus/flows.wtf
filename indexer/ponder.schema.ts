@@ -50,6 +50,8 @@ export const grants = onchainTable(
     managerRewardSuperfluidPool: t.text().notNull(),
     superToken: t.text().notNull(),
     underlyingERC20Token: t.text().notNull(),
+    superTokenSymbol: t.text().notNull(),
+    superTokenPrefix: t.text().notNull(),
     updatedAt: t.integer().notNull(),
     removedAt: t.integer(),
     activatedAt: t.integer(),

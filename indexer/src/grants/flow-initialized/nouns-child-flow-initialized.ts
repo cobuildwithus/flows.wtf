@@ -12,6 +12,7 @@ import { Status } from "../../enums"
 import { isAccelerator } from "../recipients/helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { calculateRootContract } from "../grant-helpers"
+import { getSuperTokenPrefix, getSuperTokenSymbol } from "../../utils/super-token-utils"
 
 ponder.on("NounsFlowChildren:FlowInitialized", handleFlowInitialized)
 
@@ -59,6 +60,8 @@ async function handleFlowInitialized(params: {
     managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
     superToken: superToken.toLowerCase(),
     underlyingERC20Token: underlyingERC20Token.toLowerCase(),
+    superTokenSymbol: getSuperTokenSymbol(superToken),
+    superTokenPrefix: getSuperTokenPrefix(superToken),
     submitter: zeroAddress,
     allocationsCount: "0",
     totalAllocationWeightOnFlow: "0",
