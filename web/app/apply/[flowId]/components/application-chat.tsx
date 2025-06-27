@@ -10,6 +10,7 @@ import { Grant } from "@prisma/flows"
 import { RotateCcw } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import StartImage from "./start.svg"
 import { useRecipientExists } from "./useRecipientExists"
@@ -22,8 +23,12 @@ interface Props {
 
 export function ApplicationChat(props: Props) {
   const { flow, title, subtitle } = props
+  const searchParams = useSearchParams()
+  const opportunityId = searchParams.get("opportunityId")
+  const startupId = searchParams.get("startupId")
+  const position = searchParams.get("position")
 
-  const { messages, restart, user, append, isLoading } = useAgentChat()
+  const { messages, restart, user, append, isLoading, appendData } = useAgentChat()
 
   const recipientExists = useRecipientExists(flow.recipient, user?.address)
 
@@ -74,10 +79,18 @@ export function ApplicationChat(props: Props) {
                 return
               }
 
-              append({
-                role: "user",
-                content: `Hi, I want to apply for a grant in ${flow.title}... Can we start the application?`,
-              })
+              if (opportunityId && startupId) {
+                appendData({ opportunityId, startupId })
+                append({
+                  role: "user",
+                  content: `Hi, I'm interested in applying for this opportunity: ${position}`,
+                })
+              } else {
+                append({
+                  role: "user",
+                  content: `Hi, I want to apply for a grant in ${flow.title}... Can we start the application?`,
+                })
+              }
             }}
             size="xl"
             loading={isLoading}

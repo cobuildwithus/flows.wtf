@@ -1,8 +1,8 @@
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { FundFlow } from "@/components/fund-flow/fund-flow"
 import { EthInUsd } from "@/components/global/eth-in-usd"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
-import { EmptyState } from "@/components/ui/empty-state"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
@@ -120,10 +120,11 @@ export async function AcceleratorPage(props: Props) {
             ]}
           />
 
-          <div className="max-sm:hidden">
+          <div className="flex flex-row space-x-2 max-sm:hidden">
+            <FundFlow variant="ghost" flow={flow} />
             <Link href={`/apply/${accelerator.flowId}`}>
               <Button style={{ backgroundColor: accelerator.color }} className="text-white">
-                Apply for funding
+                Apply
               </Button>
             </Link>
           </div>

@@ -28,14 +28,26 @@ import { StreamingDurationSelector } from "./streaming-duration-selector"
 import { SuperfluidFlowsList } from "./superfluid-flows-list"
 import { FundingTokenSelector } from "./funding-token-selector"
 import { RebalanceFlowButton } from "./rebalance-flow-button"
+import { AuthButton } from "../ui/auth-button"
 
 interface Props {
-  id: string
-  flow: Grant
+  flow: Pick<
+    Grant,
+    | "id"
+    | "title"
+    | "underlyingERC20Token"
+    | "chainId"
+    | "superToken"
+    | "underlyingTokenSymbol"
+    | "underlyingTokenName"
+    | "underlyingTokenDecimals"
+    | "underlyingTokenLogo"
+    | "recipient"
+  >
 }
 
-export function FundingModal(props: Props & ComponentProps<typeof Button>) {
-  const { id, flow, ...buttonProps } = props
+export function FundFlow(props: Props & ComponentProps<typeof Button>) {
+  const { flow, ...buttonProps } = props
   const { title: name, underlyingERC20Token, chainId, superToken } = flow
   const [isOpen, setIsOpen] = useState(false)
   const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`${superToken}-${chainId}`)
@@ -91,7 +103,7 @@ export function FundingModal(props: Props & ComponentProps<typeof Button>) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button {...buttonProps}>Fund</Button>
+        <AuthButton {...buttonProps}>Fund</AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

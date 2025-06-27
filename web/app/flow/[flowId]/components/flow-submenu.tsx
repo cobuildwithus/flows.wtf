@@ -1,6 +1,6 @@
 import { getAcceleratorFlow, getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 import { SwapTokenButton } from "@/app/token/swap-token-button"
-import { FundingModal } from "@/components/funding-modal/funding-modal"
+import { FundFlow } from "@/components/fund-flow/fund-flow"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
 import { DRAFT_CUTOFF_DATE } from "@/lib/config"
@@ -98,7 +98,7 @@ export const FlowSubmenu = async (props: Props) => {
             </Link>
           )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
-          <FundingModal variant="default" id={flowId} flow={flow} />
+          <FundFlow variant="default" flow={flow} />
         </div>
       </div>
     </div>

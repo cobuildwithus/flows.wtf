@@ -10,6 +10,7 @@ import pluralize from "pluralize"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ApplyOpportunity } from "./apply-opportunity"
+import { CopyOpportunityLink } from "./copy-opportunity-link"
 import { deleteOpportunity } from "./delete-opportunity"
 import { ApplicationWithProfile, ViewApplications } from "./view-applications"
 
@@ -87,9 +88,21 @@ export function OpportunityCard(props: Props) {
         )}
         <div className="flex w-full flex-col">
           <div>
-            <div className="mt-2.5 flex flex-row justify-start gap-x-1.5">
-              <Badge variant="secondary">${expectedMonthlySalary}/mo</Badge>
-              <Badge variant="secondary">Hiring</Badge>
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1.5">
+                <Badge variant="secondary" className="shrink-0">
+                  ${expectedMonthlySalary}/mo
+                </Badge>
+                <Badge variant="secondary" className="shrink-0">
+                  Hiring
+                </Badge>
+              </div>
+              <CopyOpportunityLink
+                flowContract={flowContract}
+                opportunityId={id}
+                startupId={startupId}
+                position={title}
+              />
             </div>
 
             <h3 className="mt-2 text-sm font-medium">{title}</h3>
