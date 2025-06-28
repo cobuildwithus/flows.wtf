@@ -30,7 +30,7 @@ export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
   const fractionDigits = getCurrencyFractionDigits(Number(monthlyRate))
 
   // If token overrides are provided, use custom formatting without currency style
-  if (tokenPrefix !== "$") {
+  if (grant && tokenPrefix !== "$") {
     return (
       <span>
         {tokenPrefix && `${tokenPrefix}`}
