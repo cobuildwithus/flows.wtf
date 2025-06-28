@@ -25,7 +25,7 @@ import { TreasuryTitle } from "./treasury-title"
 import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
 import { MoneyFlowSkeleton } from "./money-flow-skeleton"
 import { ImpactGrants } from "./nodes/impact-grants"
-import { ImpactTitle } from "./impact-title"
+import { TitleWithFlowRate } from "./title-with-flow-rate"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -164,7 +164,13 @@ export function MoneyFlowDiagram(props: Props) {
         row: 1,
         id: "team",
         height: 100,
-        title: ["Team", `$${splits.team * 100}/mo`],
+        title: (
+          <TitleWithFlowRate
+            title="Team"
+            flowId={startup.impactFlowId}
+            monthlyFlowRate={Number(startup.monthlyOutgoingFlowRate)}
+          />
+        ),
         content: <ShortTeam members={members} />,
       },
       // {
@@ -208,7 +214,8 @@ export function MoneyFlowDiagram(props: Props) {
         id: "impact",
         height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
         title: (
-          <ImpactTitle
+          <TitleWithFlowRate
+            title="Real world impact"
             flowId={impactGrants.flowId}
             monthlyFlowRate={impactGrants.monthlyFlowRate}
           />
