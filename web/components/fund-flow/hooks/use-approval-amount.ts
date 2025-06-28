@@ -5,7 +5,6 @@ import { parseUnits } from "viem"
 
 interface UseApprovalAmountProps {
   donationAmount: string
-  tokenDecimals: number
   superTokenBalance: bigint
   currentAllowance: bigint
   isNativeToken: boolean
@@ -13,7 +12,6 @@ interface UseApprovalAmountProps {
 
 export function useApprovalAmount({
   donationAmount,
-  tokenDecimals,
   superTokenBalance,
   currentAllowance,
   isNativeToken,
@@ -29,7 +27,7 @@ export function useApprovalAmount({
     }
 
     try {
-      const donationAmountBigInt = parseUnits(donationAmount || "0", tokenDecimals)
+      const donationAmountBigInt = parseUnits(donationAmount || "0", 18) // assume super token decimals is 18
 
       // Calculate how much we need from underlying token
       const amountNeededFromUnderlying =
@@ -47,12 +45,12 @@ export function useApprovalAmount({
         approvalAmount,
         amountNeededFromUnderlying,
       }
-    } catch {
+    } catch (e) {
       return {
         approvalNeeded: false,
         approvalAmount: 0n,
         amountNeededFromUnderlying: 0n,
       }
     }
-  }, [donationAmount, tokenDecimals, superTokenBalance, currentAllowance, isNativeToken])
+  }, [donationAmount, superTokenBalance, currentAllowance, isNativeToken])
 }

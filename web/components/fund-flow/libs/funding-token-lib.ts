@@ -107,6 +107,7 @@ export const getTokenBalance = (
   token: Token,
   ethBalances: Record<number, bigint>,
   underlyingTokenBalance?: bigint,
+  superTokenBalance?: bigint,
 ): bigint => {
   if (token.isNative) {
     return ethBalances[token.chainId] || 0n

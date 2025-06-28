@@ -78,8 +78,11 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
   )
 
   const underlyingTokenBalance = balances[0] || 0n
+  const normalizedUnderlyingTokenBalance =
+    underlyingTokenBalance * BigInt(10 ** (18 - flow.underlyingTokenDecimals))
   const superTokenBalance = balances[1] || 0n
-  const streamingTokenBalance = underlyingTokenBalance + superTokenBalance
+
+  const streamingTokenBalance = normalizedUnderlyingTokenBalance + superTokenBalance
 
   // Check if selected token is the streaming token (non-native token that matches the flow's token)
   const isStreamingToken = !selectedToken.isNative

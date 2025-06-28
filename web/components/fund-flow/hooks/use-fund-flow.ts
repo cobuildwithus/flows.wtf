@@ -57,7 +57,6 @@ export function useFundFlow({
 
   const { approvalNeeded, approvalAmount, amountNeededFromUnderlying } = useApprovalAmount({
     donationAmount,
-    tokenDecimals: selectedToken.decimals,
     superTokenBalance,
     currentAllowance,
     isNativeToken: selectedToken.isNative,
