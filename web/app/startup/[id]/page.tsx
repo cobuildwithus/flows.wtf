@@ -109,6 +109,7 @@ export default async function GrantPage(props: Props) {
           impactGrants={{
             grants: impactFlow.subgrants,
             monthlyFlowRate: Number(startup.monthlyIncomingFlowRate),
+            flowId: impactFlow.id,
           }}
         />
       </div>

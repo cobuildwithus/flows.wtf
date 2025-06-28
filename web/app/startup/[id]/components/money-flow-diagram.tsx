@@ -24,6 +24,8 @@ import { ProductsTitle } from "./products-title"
 import { TreasuryTitle } from "./treasury-title"
 import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
 import { MoneyFlowSkeleton } from "./money-flow-skeleton"
+import { ImpactGrants } from "./nodes/impact-grants"
+import { ImpactTitle } from "./impact-title"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -37,7 +39,11 @@ interface Props {
   members: Array<TeamMember>
   user: User | undefined
   startup: Startup
-  impactGrants: { grants: Pick<Grant, "id" | "title" | "image">[]; monthlyFlowRate: number }
+  impactGrants: {
+    grants: Pick<Grant, "id" | "title" | "image">[]
+    monthlyFlowRate: number
+    flowId: string
+  }
 }
 
 export function MoneyFlowDiagram(props: Props) {
@@ -201,31 +207,13 @@ export function MoneyFlowDiagram(props: Props) {
         row: 2,
         id: "impact",
         height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
-        title: ["Real world impact", `$${impactGrants.monthlyFlowRate}/mo`],
-        content: (
-          <div className="flex flex-col space-y-4">
-            {impactGrants.grants.length > 0 ? (
-              impactGrants.grants.map((s) => (
-                <Link
-                  href={`/item/${s.id}`}
-                  key={s.id}
-                  className="group pointer-events-auto flex items-center gap-2.5 transition-opacity hover:opacity-80"
-                >
-                  <Image
-                    src={getIpfsUrl(s.image)}
-                    alt={s.title}
-                    width={40}
-                    height={40}
-                    className="size-10 shrink-0 rounded-md object-cover"
-                  />
-                  <span className="line-clamp-2 text-sm text-muted-foreground">{s.title}</span>
-                </Link>
-              ))
-            ) : (
-              <div className="text-pretty text-sm text-muted-foreground">Coming soon</div>
-            )}
-          </div>
+        title: (
+          <ImpactTitle
+            flowId={impactGrants.flowId}
+            monthlyFlowRate={impactGrants.monthlyFlowRate}
+          />
         ),
+        content: <ImpactGrants grants={impactGrants.grants} />,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
       },
       {
