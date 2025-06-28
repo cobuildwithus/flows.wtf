@@ -37,7 +37,7 @@ interface Props {
   members: Array<TeamMember>
   user: User | undefined
   startup: Startup
-  impactGrants: Pick<Grant, "id" | "title" | "image">[]
+  impactGrants: { grants: Pick<Grant, "id" | "title" | "image">[]; monthlyFlowRate: number }
 }
 
 export function MoneyFlowDiagram(props: Props) {
@@ -200,12 +200,12 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 2,
         id: "impact",
-        height: impactGrants.length > 0 ? 52 + impactGrants.length * 56 : 90,
-        title: "Real world impact",
+        height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
+        title: ["Real world impact", `$${impactGrants.monthlyFlowRate}/mo`],
         content: (
           <div className="flex flex-col space-y-4">
-            {impactGrants.length > 0 ? (
-              impactGrants.map((s) => (
+            {impactGrants.grants.length > 0 ? (
+              impactGrants.grants.map((s) => (
                 <Link
                   href={`/item/${s.id}`}
                   key={s.id}
@@ -222,9 +222,7 @@ export function MoneyFlowDiagram(props: Props) {
                 </Link>
               ))
             ) : (
-              <div className="text-pretty text-sm text-muted-foreground">
-                Impact projects coming soon
-              </div>
+              <div className="text-pretty text-sm text-muted-foreground">Coming soon</div>
             )}
           </div>
         ),
