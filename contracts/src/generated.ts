@@ -897,7 +897,7 @@ export const cfav1ForwarderConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x793767fc568a223b3f52887efb07eb64cc7557a4)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b)
  */
 export const customFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -2214,14 +2214,14 @@ export const customFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x793767fc568a223b3f52887efb07eb64cc7557a4)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b)
  */
 export const customFlowImplAddress = {
-  8453: '0x793767fC568a223b3f52887efB07eB64cc7557A4',
+  8453: '0x233Ed8Be4E5ee1c57Be03De38377Bb2d2c25FD2B',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x793767fc568a223b3f52887efb07eb64cc7557a4)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b)
  */
 export const customFlowImplConfig = {
   address: customFlowImplAddress,

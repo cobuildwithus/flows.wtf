@@ -16,10 +16,7 @@ export const vrbscoffee = {
     url: "8fab74-1b.myshopify.com",
     adminApiAccessToken: `${process.env.SHOPIFY_VRBS_COFFEE}`,
   },
-  supports: [
-    "0x1ebcea729ab7e71b363fda3c57b75d9e39845ddd26e20421394d96f4fe31c991",
-    "0x734975caced090388c6f507733a4c2ec4ca33acf8c72e94386bed35f805c24db",
-  ],
+  impactFlowId: "0x5a0b34e575c46b657d0dba5c87f74380987204c8",
   socialUsernames: {
     x: "vrbscoffee",
     instagram: "vrbscoffee",

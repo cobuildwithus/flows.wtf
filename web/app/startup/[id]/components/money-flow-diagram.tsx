@@ -37,11 +37,11 @@ interface Props {
   members: Array<TeamMember>
   user: User | undefined
   startup: Startup
-  supports: Array<Pick<Grant, "id" | "title" | "image" | "tagline">>
+  impactGrants: Pick<Grant, "id" | "title" | "image">[]
 }
 
 export function MoneyFlowDiagram(props: Props) {
-  const { products, members, user, startup, supports } = props
+  const { products, members, user, startup, impactGrants } = props
   const { width } = useWindowSize()
   const {
     productsVolumeEth,
@@ -161,18 +161,18 @@ export function MoneyFlowDiagram(props: Props) {
         title: ["Team", `$${splits.team * 100}/mo`],
         content: <ShortTeam members={members} />,
       },
-      {
-        col: 2,
-        row: 2,
-        id: "public_goods",
-        title: ["Public Good", `$${splits.support * 100}/mo`],
-        height: 90,
-        content: (
-          <div className="text-pretty text-sm text-muted-foreground">
-            Profits support community impact
-          </div>
-        ),
-      },
+      // {
+      //   col: 2,
+      //   row: 2,
+      //   id: "public_goods",
+      //   title: ["Public Good", `$${splits.support * 100}/mo`],
+      //   height: 90,
+      //   content: (
+      //     <div className="text-pretty text-sm text-muted-foreground">
+      //       Profits support community impact
+      //     </div>
+      //   ),
+      // },
       {
         col: 2,
         row: 3,
@@ -200,26 +200,32 @@ export function MoneyFlowDiagram(props: Props) {
         col: 3,
         row: 2,
         id: "impact",
-        height: 52 + supports.length * 56,
+        height: impactGrants.length > 0 ? 52 + impactGrants.length * 56 : 90,
         title: "Real world impact",
         content: (
           <div className="flex flex-col space-y-4">
-            {supports.map((s) => (
-              <Link
-                href={`/item/${s.id}`}
-                key={s.id}
-                className="group pointer-events-auto flex items-center gap-2.5 transition-opacity hover:opacity-80"
-              >
-                <Image
-                  src={getIpfsUrl(s.image)}
-                  alt={s.title}
-                  width={40}
-                  height={40}
-                  className="size-10 shrink-0 rounded-md object-cover"
-                />
-                <span className="line-clamp-2 text-sm text-muted-foreground">{s.title}</span>
-              </Link>
-            ))}
+            {impactGrants.length > 0 ? (
+              impactGrants.map((s) => (
+                <Link
+                  href={`/item/${s.id}`}
+                  key={s.id}
+                  className="group pointer-events-auto flex items-center gap-2.5 transition-opacity hover:opacity-80"
+                >
+                  <Image
+                    src={getIpfsUrl(s.image)}
+                    alt={s.title}
+                    width={40}
+                    height={40}
+                    className="size-10 shrink-0 rounded-md object-cover"
+                  />
+                  <span className="line-clamp-2 text-sm text-muted-foreground">{s.title}</span>
+                </Link>
+              ))
+            ) : (
+              <div className="text-pretty text-sm text-muted-foreground">
+                Impact projects coming soon
+              </div>
+            )}
           </div>
         ),
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],

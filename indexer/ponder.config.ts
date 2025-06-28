@@ -18,6 +18,7 @@ import {
 import {
   base as baseContracts,
   mainnet as mainnetContracts,
+  oldCustomFlowImpl,
   optimism as optimismContracts,
 } from "./addresses"
 import { GARDENx, getChainsAndRpcUrls, IndexerConfig, USDCx } from "./src/utils"
@@ -180,7 +181,11 @@ export default createConfig({
       filter: {
         event: "FlowInitialized",
         args: {
-          flowImpl: [baseContracts.CustomFlowImpl, optimismContracts.CustomFlowImpl],
+          flowImpl: [
+            baseContracts.CustomFlowImpl,
+            optimismContracts.CustomFlowImpl,
+            ...oldCustomFlowImpl,
+          ],
         },
       },
     },

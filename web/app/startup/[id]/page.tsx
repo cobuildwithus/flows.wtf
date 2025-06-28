@@ -51,12 +51,18 @@ export default async function GrantPage(props: Props) {
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
 
-  const [teamMembers, user, supports, orders] = await Promise.all([
+  const [teamMembers, user, impactFlow, orders] = await Promise.all([
     getTeamMembers(startup.id),
     getUser(),
-    database.grant.findMany({
-      where: { isActive: true, id: { in: startup.supports } },
-      select: { id: true, title: true, image: true, tagline: true },
+    database.grant.findFirstOrThrow({
+      where: { isActive: true, id: startup.impactFlowId },
+      select: {
+        id: true,
+        title: true,
+        image: true,
+        tagline: true,
+        subgrants: { select: { id: true, title: true, image: true } },
+      },
     }),
     getAllOrders(startup.shopify),
   ])
@@ -100,7 +106,7 @@ export default async function GrantPage(props: Props) {
           members={teamMembers}
           user={user}
           startup={startup}
-          supports={supports}
+          impactGrants={impactFlow.subgrants}
         />
       </div>
 

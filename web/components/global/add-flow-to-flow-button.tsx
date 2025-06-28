@@ -72,7 +72,7 @@ export function AddFlowToFlowButton(props: Props) {
               },
               getEthAddress(draft.users[0]), // flow's manager
               zeroAddress, // manager reward pool
-              ["0xb9d3bcc9d5107ca0febd05123bd4b484e5163cfa"], // custom single allocator
+              ["0xb9d3bcc9d5107ca0febd05123bd4b484e5163cfa"], // custom single allocator TODO update before deploy
             ],
           })
         } catch (e: unknown) {
