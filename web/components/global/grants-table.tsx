@@ -117,6 +117,7 @@ export function GrantsTable(props: Props) {
 
               <TableCell className="text-center">
                 <AnimatedSalary
+                  grant={grant}
                   value={grant.totalEarned}
                   monthlyRate={grant.monthlyIncomingFlowRate}
                 />
