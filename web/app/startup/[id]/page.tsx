@@ -58,6 +58,7 @@ export default async function GrantPage(props: Props) {
       where: { isActive: true, id: startup.impactFlowId },
       select: {
         id: true,
+        monthlyOutgoingFlowRate: true,
         title: true,
         image: true,
         tagline: true,
@@ -108,7 +109,7 @@ export default async function GrantPage(props: Props) {
           startup={startup}
           impactGrants={{
             grants: impactFlow.subgrants,
-            monthlyFlowRate: Number(startup.monthlyIncomingFlowRate),
+            monthlyFlowRate: Number(impactFlow.monthlyOutgoingFlowRate),
             flowId: impactFlow.id,
           }}
         />
