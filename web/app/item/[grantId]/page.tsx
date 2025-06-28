@@ -184,6 +184,7 @@ export default async function GrantPage(props: Props) {
 
               <Stat label="Total Earned">
                 <AnimatedSalary
+                  grant={grant}
                   value={grant.totalEarned}
                   monthlyRate={grant.monthlyIncomingFlowRate}
                 />

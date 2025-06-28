@@ -6,10 +6,15 @@ import { useEffect, useState } from "react"
 interface Props {
   value: number | string
   monthlyRate: number | string
+  grant?: {
+    underlyingTokenSymbol?: string
+    underlyingTokenPrefix?: string
+  }
 }
 
-export function AnimatedSalary({ value, monthlyRate }: Props) {
+export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
   const [currentValue, setCurrentValue] = useState(Number(value))
+  const { underlyingTokenSymbol: tokenSymbol, underlyingTokenPrefix: tokenPrefix } = grant || {}
 
   useEffect(() => {
     setCurrentValue(Number(value))
@@ -23,6 +28,24 @@ export function AnimatedSalary({ value, monthlyRate }: Props) {
   }, [monthlyRate])
 
   const fractionDigits = getCurrencyFractionDigits(Number(monthlyRate))
+
+  // If token overrides are provided, use custom formatting without currency style
+  if (tokenPrefix !== "$") {
+    return (
+      <span>
+        {tokenPrefix && `${tokenPrefix}`}
+        <NumberFlow
+          value={currentValue}
+          format={{
+            minimumFractionDigits: fractionDigits,
+            maximumFractionDigits: fractionDigits,
+          }}
+          locales="en-US"
+          trend={1}
+        />
+      </span>
+    )
+  }
 
   return (
     <NumberFlow
