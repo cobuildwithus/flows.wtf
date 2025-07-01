@@ -10,6 +10,7 @@ import { useDeleteFlow } from "@/lib/erc20/super-token/use-delete-flow"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
 import { EmptyState } from "../ui/empty-state"
+import { useRouter } from "next/navigation"
 
 interface SuperfluidFlowsListProps {
   address: string | undefined
@@ -93,10 +94,16 @@ interface SuperfluidFlowItemProps {
 }
 
 function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowItemProps) {
+  const router = useRouter()
   const { deleteFlow, isLoading: isDeleting } = useDeleteFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.token as `0x${string}`,
-    onSuccess: () => mutate(),
+    onSuccess: () => {
+      setTimeout(() => {
+        mutate()
+        router.refresh()
+      }, 2000)
+    },
   })
   const flowRatePerSecond = BigInt(flow.flowRate)
   const flowRatePerMonth = flowRatePerSecond * BigInt(30 * 24 * 60 * 60) // 30 days in seconds

@@ -101,10 +101,11 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
     isStreamingToken,
     streamingMonths,
     onSuccess: () => {
-      setDonationAmount("")
-      console.log("onSuccess")
-      router.refresh()
-      setTab("manage")
+      setTimeout(() => {
+        setDonationAmount("")
+        router.refresh()
+        setTab("manage")
+      }, 2000)
     },
   })
 
