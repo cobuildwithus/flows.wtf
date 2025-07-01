@@ -1,44 +1,58 @@
 "use client"
 
-import { cfav1Abi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import { getCfaAddress } from "./addresses"
+import { type FlowOperationConfig, getFlowOperationConfig, validateWallet } from "./flow-operations"
+import { getCfaAddress, getHostAddress } from "./addresses"
+import { superfluidImplAbi, cfav1Abi } from "@/lib/abis"
+import { encodeFunctionData } from "viem"
+import { OPERATION_TYPE, prepareOperation } from "./operation-type"
 
-interface UseDeleteFlowProps {
-  chainId: number
-  superTokenAddress: `0x${string}`
-  sender: `0x${string}` | undefined
-  receiver: `0x${string}`
-  onSuccess?: (hash: string) => void
-}
+interface UseDeleteFlowProps extends FlowOperationConfig {}
 
-export function useDeleteFlow({
-  chainId,
-  superTokenAddress,
-  sender,
-  receiver,
-  onSuccess,
-}: UseDeleteFlowProps) {
-  const { prepareWallet, writeContract, isLoading, ...rest } = useContractTransaction({
-    chainId,
-    loading: "Deleting flow...",
-    success: "Flow deleted successfully",
-    onSuccess,
-  })
+/**
+ * Hook to delete a Superfluid flow
+ * Uses Superfluid's batch call functionality
+ */
+export function useDeleteFlow({ chainId, superTokenAddress, onSuccess }: FlowOperationConfig) {
+  const { prepareWallet, writeContract, isLoading, isSuccess, isError, error } =
+    useContractTransaction({
+      chainId,
+      ...getFlowOperationConfig("delete", onSuccess),
+    })
 
-  const deleteFlow = async () => {
+  const deleteFlow = async (sender: `0x${string}`, receiver: `0x${string}`) => {
     await prepareWallet()
-    if (!sender) return
+    if (!validateWallet(sender)) return
 
-    writeContract({
-      account: sender,
-      address: getCfaAddress(chainId),
+    // Build delete flow operation for batch call
+    const deleteFlowData = encodeFunctionData({
       abi: cfav1Abi,
       functionName: "deleteFlow",
-      args: [superTokenAddress, sender, receiver, "0x"],
+      args: [superTokenAddress, sender!, receiver, "0x"],
+    })
+
+    const operations = [
+      prepareOperation({
+        operationType: OPERATION_TYPE.SUPERFLUID_CALL_AGREEMENT,
+        target: getCfaAddress(chainId),
+        data: deleteFlowData,
+      }),
+    ]
+
+    writeContract({
+      address: getHostAddress(chainId),
+      abi: superfluidImplAbi,
+      functionName: "batchCall",
+      args: [operations],
       chainId,
     })
   }
 
-  return { deleteFlow, isLoading, ...rest }
+  return {
+    deleteFlow,
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  }
 }

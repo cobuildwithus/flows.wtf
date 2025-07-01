@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { OPERATION_TYPE, prepareOperation, TIME_UNIT } from "./operation-type"
 import { getCfaAddress } from "./addresses"
 
-export type FlowOperationType = "create" | "update"
+export type FlowOperationType = "create" | "update" | "delete"
 
 export interface FlowOperationParams {
   amountToUpgrade: bigint
@@ -30,10 +30,31 @@ export function getFlowOperationConfig(
   operationType: FlowOperationType,
   onSuccess?: (hash: string) => void,
 ) {
-  return {
-    loading: operationType === "create" ? "Creating flow..." : "Updating flow...",
-    success: operationType === "create" ? "Flow created successfully" : "Flow updated successfully",
-    onSuccess,
+  switch (operationType) {
+    case "create":
+      return {
+        loading: "Creating flow...",
+        success: "Flow created successfully",
+        onSuccess,
+      }
+    case "update":
+      return {
+        loading: "Updating flow...",
+        success: "Flow updated successfully",
+        onSuccess,
+      }
+    case "delete":
+      return {
+        loading: "Deleting flow...",
+        success: "Flow deleted successfully",
+        onSuccess,
+      }
+    default:
+      return {
+        loading: "Processing flow...",
+        success: "Flow operation completed",
+        onSuccess,
+      }
   }
 }
 

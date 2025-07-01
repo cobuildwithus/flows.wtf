@@ -2,11 +2,10 @@
 
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
-import { useLogin } from "@/lib/auth/use-login"
 import { useDeleteFlow } from "@/lib/erc20/super-token/use-delete-flow"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
@@ -96,8 +95,6 @@ function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowIte
   const { deleteFlow, isLoading: isDeleting } = useDeleteFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.token as `0x${string}`,
-    sender: address as `0x${string}` | undefined,
-    receiver: flow.receiver as `0x${string}`,
     onSuccess: () => mutate(),
   })
   const flowRatePerSecond = BigInt(flow.flowRate)
@@ -147,7 +144,9 @@ function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowIte
                   size="icon"
                   variant="ghost"
                   className="h-6 w-6 overflow-hidden opacity-0 transition-all duration-200 group-hover:opacity-100"
-                  onClick={deleteFlow}
+                  onClick={() =>
+                    deleteFlow(address as `0x${string}`, flow.receiver as `0x${string}`)
+                  }
                   disabled={isDeleting}
                 >
                   <XIcon className="h-3 w-3" />
