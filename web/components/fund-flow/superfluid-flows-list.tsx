@@ -2,14 +2,15 @@
 
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
-import { useLogin } from "@/lib/auth/use-login"
 import { useDeleteFlow } from "@/lib/erc20/super-token/use-delete-flow"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
+import { EmptyState } from "../ui/empty-state"
+import { useRouter } from "next/navigation"
 
 interface SuperfluidFlowsListProps {
   address: string | undefined
@@ -54,11 +55,11 @@ export function SuperfluidFlowsList({
   }
 
   if (displayFlows.length === 0) {
-    return null
+    return <EmptyState title="No flows found" description="You are not funding any flows yet" />
   }
 
   return (
-    <div className="mt-3 space-y-3 border-t pt-4">
+    <div className="space-y-3 border-t pt-4">
       {showTitle && (
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium">You are funding</h4>
@@ -93,12 +94,16 @@ interface SuperfluidFlowItemProps {
 }
 
 function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowItemProps) {
+  const router = useRouter()
   const { deleteFlow, isLoading: isDeleting } = useDeleteFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.token as `0x${string}`,
-    sender: address as `0x${string}` | undefined,
-    receiver: flow.receiver as `0x${string}`,
-    onSuccess: () => mutate(),
+    onSuccess: () => {
+      setTimeout(() => {
+        mutate()
+        router.refresh()
+      }, 2000)
+    },
   })
   const flowRatePerSecond = BigInt(flow.flowRate)
   const flowRatePerMonth = flowRatePerSecond * BigInt(30 * 24 * 60 * 60) // 30 days in seconds
@@ -132,7 +137,7 @@ function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowIte
             )}
             <div>
               <div className="text-xs text-muted-foreground">
-                {displayRate} {tokenSymbol}/mo
+                {displayRate} {tokenSymbol} per month
               </div>
             </div>
           </div>
@@ -147,7 +152,9 @@ function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowIte
                   size="icon"
                   variant="ghost"
                   className="h-6 w-6 overflow-hidden opacity-0 transition-all duration-200 group-hover:opacity-100"
-                  onClick={deleteFlow}
+                  onClick={() =>
+                    deleteFlow(address as `0x${string}`, flow.receiver as `0x${string}`)
+                  }
                   disabled={isDeleting}
                 >
                   <XIcon className="h-3 w-3" />

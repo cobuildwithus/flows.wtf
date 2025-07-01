@@ -29,6 +29,7 @@ import { SuperfluidFlowsList } from "./superfluid-flows-list"
 import { FundingTokenSelector } from "./funding-token-selector"
 import { RebalanceFlowButton } from "./rebalance-flow-button"
 import { AuthButton } from "../ui/auth-button"
+import { useRouter } from "next/navigation"
 
 interface Props {
   flow: Pick<
@@ -46,13 +47,17 @@ interface Props {
   >
 }
 
+type FundTab = "fund" | "manage"
+
 export function FundFlow(props: Props & ComponentProps<typeof Button>) {
+  const router = useRouter()
   const { flow, ...buttonProps } = props
   const { title: name, underlyingERC20Token, chainId, superToken } = flow
   const [isOpen, setIsOpen] = useState(false)
   const [selectedTokenKey, setSelectedTokenKey] = useState<TokenKey>(`${superToken}-${chainId}`)
   const [donationAmount, setDonationAmount] = useState("")
   const [streamingMonths, setStreamingMonths] = useState(1)
+  const [tab, setTab] = useState<FundTab>("fund")
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { address, isConnected } = useLogin()
@@ -95,6 +100,13 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
     superTokenBalance: superTokenBalance || 0n,
     isStreamingToken,
     streamingMonths,
+    onSuccess: () => {
+      setTimeout(() => {
+        setDonationAmount("")
+        router.refresh()
+        setTab("manage")
+      }, 3000)
+    },
   })
 
   const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({
@@ -116,94 +128,122 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
           </DialogDescription>
         </DialogHeader>
 
-        <RebalanceFlowButton
-          contract={flow.recipient as `0x${string}`}
-          chainId={chainId}
-          address={address as `0x${string}`}
-          receiver={flow.recipient}
-          superToken={superToken as `0x${string}`}
-          underlyingToken={underlyingERC20Token as `0x${string}`}
-        />
+        {/* Tab Buttons */}
+        <div className="flex items-center justify-start gap-2">
+          <Button
+            type="button"
+            variant={tab === "fund" ? "outline" : "ghost"}
+            className="min-w-20 rounded-full"
+            onClick={() => setTab("fund")}
+            size="xs"
+          >
+            Fund
+          </Button>
+          <Button
+            type="button"
+            variant={tab === "manage" ? "outline" : "ghost"}
+            className="min-w-20 rounded-full"
+            onClick={() => setTab("manage")}
+            size="xs"
+          >
+            Manage
+          </Button>
+        </div>
 
-        <div className="mt-6 space-y-6">
-          <div className="dark:hover-border-border rounded-lg border border-zinc-300 p-4 duration-300 focus-within:border-zinc-500 hover:border-zinc-500 dark:border-border/50 dark:focus-within:border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <Input
-                  ref={inputRef}
-                  type="text"
-                  inputMode="numeric"
-                  value={donationAmount}
-                  onChange={handleInputChange}
-                  disabled={!isConnected}
-                  onFocus={handleInputFocus}
-                  placeholder="0"
-                  className="h-auto border-none bg-transparent p-0 text-3xl font-medium shadow-none placeholder:text-zinc-500 focus-visible:ring-0 dark:placeholder:text-zinc-400"
-                />
-              </div>
+        {/* Tab Content */}
+        {tab === "fund" && (
+          <div className="space-y-6">
+            <div className="dark:hover-border-border rounded-lg border border-zinc-300 p-4 duration-300 focus-within:border-zinc-500 hover:border-zinc-500 dark:border-border/50 dark:focus-within:border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <Input
+                    ref={inputRef}
+                    type="text"
+                    inputMode="numeric"
+                    value={donationAmount}
+                    onChange={handleInputChange}
+                    disabled={!isConnected}
+                    onFocus={handleInputFocus}
+                    placeholder="0"
+                    className="h-auto border-none bg-transparent p-0 text-3xl font-medium shadow-none placeholder:text-zinc-500 focus-visible:ring-0 dark:placeholder:text-zinc-400"
+                  />
+                </div>
 
-              <div className="flex flex-col items-end gap-2">
-                <FundingTokenSelector
-                  selectedToken={{ key: selectedTokenKey, ...selectedToken }}
-                  onTokenChange={setSelectedTokenKey}
-                  chainId={chainId}
-                  ethBalances={ethBalances}
-                  streamingTokenBalance={streamingTokenBalance}
-                  ethPrice={ethPrice || undefined}
-                  tokens={TOKENS_WITH_FLOW}
-                />
+                <div className="flex flex-col items-end gap-2">
+                  <FundingTokenSelector
+                    selectedToken={{ key: selectedTokenKey, ...selectedToken }}
+                    onTokenChange={setSelectedTokenKey}
+                    chainId={chainId}
+                    ethBalances={ethBalances}
+                    streamingTokenBalance={streamingTokenBalance}
+                    ethPrice={ethPrice || undefined}
+                    tokens={TOKENS_WITH_FLOW}
+                  />
 
-                <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-muted-foreground">
-                  <span className="font-medium">
-                    {formatTokenAmount(
-                      getTokenBalance(
-                        { key: selectedTokenKey, ...selectedToken },
-                        ethBalances,
-                        streamingTokenBalance,
-                      ),
-                      selectedToken.decimals,
-                      selectedToken.symbol,
-                    )}{" "}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleMaxClick}
-                    className="h-6 rounded-xl bg-primary/10 px-2 text-xs font-medium text-primary hover:bg-primary/25 hover:text-primary"
-                  >
-                    Max
-                  </Button>
+                  <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-muted-foreground">
+                    <span className="font-medium">
+                      {formatTokenAmount(
+                        getTokenBalance(
+                          { key: selectedTokenKey, ...selectedToken },
+                          ethBalances,
+                          streamingTokenBalance,
+                        ),
+                        selectedToken.decimals,
+                        selectedToken.symbol,
+                      )}{" "}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleMaxClick}
+                      className="h-6 rounded-xl bg-primary/10 px-2 text-xs font-medium text-primary hover:bg-primary/25 hover:text-primary"
+                    >
+                      Max
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Only show streaming duration selector for non-native tokens when there are sufficient funds */}
+            {!selectedToken.isNative && !hasInsufficientBalance && (
+              <StreamingDurationSelector
+                donationAmount={donationAmount}
+                tokenSymbol={selectedToken.symbol}
+                tokenDecimals={selectedToken.decimals}
+                months={streamingMonths}
+                onMonthsChange={setStreamingMonths}
+              />
+            )}
+
+            <Button onClick={handleFund} disabled={isDisabled} className="w-full" size="xl">
+              {buttonText}
+            </Button>
           </div>
+        )}
 
-          {/* Only show streaming duration selector for non-native tokens when there are sufficient funds */}
-          {!selectedToken.isNative && !hasInsufficientBalance && (
-            <StreamingDurationSelector
-              donationAmount={donationAmount}
-              tokenSymbol={selectedToken.symbol}
-              tokenDecimals={selectedToken.decimals}
-              months={streamingMonths}
-              onMonthsChange={setStreamingMonths}
-            />
-          )}
-
-          <Button onClick={handleFund} disabled={isDisabled} className="w-full" size="xl">
-            {buttonText}
-          </Button>
-
-          <div className="space-y-3">
-            <SuperfluidFlowsList
-              address={address}
+        {tab === "manage" && (
+          <div className="min-h-[320px] items-end justify-between space-y-6">
+            <RebalanceFlowButton
+              contract={flow.recipient as `0x${string}`}
               chainId={chainId}
+              address={address as `0x${string}`}
               receiver={flow.recipient}
-              maxItems={3}
-              tokens={TOKENS_WITH_FLOW}
+              superToken={superToken as `0x${string}`}
+              underlyingToken={underlyingERC20Token as `0x${string}`}
             />
+            <div className="space-y-3">
+              <SuperfluidFlowsList
+                address={address}
+                chainId={chainId}
+                receiver={flow.recipient}
+                maxItems={3}
+                tokens={TOKENS_WITH_FLOW}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   )

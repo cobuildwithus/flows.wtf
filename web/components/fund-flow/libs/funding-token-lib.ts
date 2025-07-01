@@ -84,6 +84,7 @@ export const formatTokenAmount = (amount: bigint, decimals: number, symbol: stri
   } else {
     if (number >= 10) maxDecimals = 2
     else if (number >= 1) maxDecimals = 4
+    else if (number >= 0.1) maxDecimals = 6
   }
 
   return number.toFixed(maxDecimals).replace(/\.?0+$/, "")

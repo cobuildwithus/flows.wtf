@@ -9,6 +9,7 @@ import {
 } from "./flow-operations"
 import { getHostAddress } from "./addresses"
 import { superfluidImplAbi } from "@/lib/abis"
+import { getClient } from "@/lib/viem/client"
 
 /**
  * Hook to upgrade ERC20 tokens to Super Tokens and create a Superfluid flow in a single transaction
@@ -19,7 +20,7 @@ export const useCreateFlow = (args: FlowOperationConfig) => {
 
   const {
     prepareWallet,
-    writeContract,
+    writeContractAsync,
     isLoading,
     isSuccess,
     isError,
@@ -47,12 +48,18 @@ export const useCreateFlow = (args: FlowOperationConfig) => {
       operationType: "create",
     })
 
-    writeContract({
+    const hash = await writeContractAsync({
       address: getHostAddress(chainId),
       abi: superfluidImplAbi,
       functionName: "batchCall",
       args: [operations],
       chainId,
+    })
+
+    const client = getClient(chainId)
+
+    await client.waitForTransactionReceipt({
+      hash,
     })
   }
 

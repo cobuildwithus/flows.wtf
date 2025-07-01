@@ -1,8 +1,5 @@
 import { parseUnits } from "viem"
 import { type Token } from "../libs/funding-token-lib"
-import { useLogin } from "@/lib/auth/use-login"
-import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
-import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useApprovalAmount } from "./use-approval-amount"
 import { useFundButtonState } from "./use-fund-button-state"
@@ -11,7 +8,7 @@ import { useCreateFlow } from "@/lib/erc20/super-token/use-create-flow"
 import { Grant } from "@/lib/database/types"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import { useUpdateFlow } from "@/lib/erc20/super-token/use-update-flow"
-import { useRouter } from "next/navigation"
+import { useAccount } from "wagmi"
 
 interface UseFundingProps {
   selectedToken: Token
@@ -24,6 +21,7 @@ interface UseFundingProps {
   superTokenBalance?: bigint
   isStreamingToken?: boolean
   streamingMonths: number
+  onSuccess?: () => void
 }
 
 export function useFundFlow({
@@ -31,35 +29,26 @@ export function useFundFlow({
   donationAmount,
   flow,
   totalTokenBalance,
-  superTokenBalance: externalSuperTokenBalance,
   isStreamingToken,
   streamingMonths,
+  onSuccess,
 }: UseFundingProps) {
-  const router = useRouter()
-  const { authenticated, isConnected, login, connectWallet, address } = useLogin()
-  const { data: existingFlows, mutate } = useExistingFlows(address, flow.chainId, flow.recipient)
-
-  // Fetch token balances if not provided
-  const { balances } = useERC20Balances(
-    [flow.underlyingERC20Token as `0x${string}`, flow.superToken as `0x${string}`],
+  const { address } = useAccount()
+  const { data: existingFlows, mutate: mutateExistingFlows } = useExistingFlows(
     address,
     flow.chainId,
-  )
-  const superTokenBalance = externalSuperTokenBalance ?? balances[1] ?? 0n
-
-  // Check allowance
-  const { allowance: currentAllowance } = useERC20Allowance(
-    flow.underlyingERC20Token,
-    address,
-    flow.superToken,
-    flow.chainId,
+    flow.recipient,
   )
 
-  const { approvalNeeded, approvalAmount, amountNeededFromUnderlying } = useApprovalAmount({
+  const {
+    approvalNeeded,
+    approvalAmount,
+    needFromUnderlying,
+    mutate: mutateApprovalAmount,
+  } = useApprovalAmount({
     donationAmount,
-    superTokenBalance,
-    currentAllowance,
     isNativeToken: selectedToken.isNative,
+    flow,
   })
 
   const { approve, isLoading: isApproving } = useApproveErc20({
@@ -67,7 +56,7 @@ export function useFundFlow({
     tokenAddress: flow.underlyingERC20Token as `0x${string}`,
     spenderAddress: flow.superToken as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
+      mutateApprovalAmount()
     },
   })
 
@@ -75,8 +64,7 @@ export function useFundFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.superToken as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
-      mutate()
+      mutateExistingFlows()
     },
   })
 
@@ -84,8 +72,7 @@ export function useFundFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.superToken as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
-      mutate()
+      mutateExistingFlows()
     },
   })
 
@@ -106,14 +93,13 @@ export function useFundFlow({
     isUpdating,
     hasInsufficientBalance,
     isStreamingToken,
-    superTokenBalance,
     approvalNeeded,
     streamingMonths,
+    flow,
   })
 
   const handleFund = async () => {
-    if (!authenticated) return login()
-    if (!isConnected) return connectWallet()
+    const hasOpenFlows = existingFlows?.filter((flow) => flow.isActive).length ?? 0 > 0
 
     const donationAmountBigInt = parseUnits(donationAmount, 18)
 
@@ -121,21 +107,23 @@ export function useFundFlow({
     const monthlyFlowRate = donationAmountBigInt / BigInt(streamingMonths)
 
     // For streaming tokens, handle approval and upgrade in batch
-    if (isStreamingToken && superTokenBalance !== undefined) {
+    if (isStreamingToken) {
       // Step 1: Handle approval if needed
       if (approvalNeeded && approvalAmount > 0n) {
         await approve(approvalAmount)
-        return // Wait for approval to complete before continuing
       }
     }
 
-    if (existingFlows?.length === 0) {
+    if (!hasOpenFlows) {
       // Use the batch operation to upgrade tokens and create flow in one transaction
-      await createFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
-      return
+      await createFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+    } else {
+      await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
     }
 
-    await updateFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+    if (onSuccess) {
+      onSuccess()
+    }
   }
 
   return {

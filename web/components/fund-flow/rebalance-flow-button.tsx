@@ -7,7 +7,6 @@ import { useMaxSafeFlowRate } from "@/lib/flows/hooks/use-max-flow-rate"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import { useIncreaseFlowRate } from "@/lib/flows/hooks/use-increase-flow-rate"
 import { formatUnits } from "viem"
-import { useRouter } from "next/navigation"
 import { TIME_UNIT } from "@/lib/erc20/super-token/operation-type"
 import { ArrowUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -31,28 +30,21 @@ export function RebalanceFlowButton({
   underlyingToken,
   className,
 }: RebalanceFlowButtonProps) {
-  const router = useRouter()
   const {
     actualFlowRate,
     isLoading: actualLoading,
-    refetch: mutateActual,
+    refetch: refetchActualFlowRate,
   } = useActualFlowRate(contract, chainId)
   const {
-    actualFlowRate: maxFlowRate,
+    maxSafeFlowRate,
     isLoading: maxLoading,
-    refetch: mutateMax,
+    refetch: refetchMaxSafeFlowRate,
   } = useMaxSafeFlowRate(contract, chainId)
-  const { data: existingFlows, isLoading: flowsLoading } = useExistingFlows(
-    address,
-    chainId,
-    receiver,
-  )
-
-  const onSuccess = () => {
-    mutateActual()
-    mutateMax()
-    router.refresh()
-  }
+  const {
+    data: existingFlows,
+    isLoading: flowsLoading,
+    mutate: mutateExistingFlows,
+  } = useExistingFlows(address, chainId, receiver)
 
   const { increaseFlowRate, isLoading: increaseLoading } = useIncreaseFlowRate({
     contract,
@@ -60,7 +52,11 @@ export function RebalanceFlowButton({
     superToken,
     underlyingToken,
     userAddress: address as `0x${string}`,
-    onSuccess,
+    onSuccess: () => {
+      mutateExistingFlows()
+      refetchActualFlowRate()
+      refetchMaxSafeFlowRate()
+    },
   })
 
   const isLoading = actualLoading || maxLoading || flowsLoading
@@ -69,8 +65,8 @@ export function RebalanceFlowButton({
   const userFlowRate =
     existingFlows?.reduce((total, flow) => total + BigInt(flow.flowRate), 0n) || 0n
 
-  const difference = maxFlowRate - actualFlowRate
-  const needsIncrease = difference > (maxFlowRate * 1n) / 100n
+  const difference = maxSafeFlowRate - actualFlowRate
+  const needsIncrease = difference > (maxSafeFlowRate * 1n) / 100n
 
   // Only show if not loading, should rebalance, and user has a flow
   const shouldShow = !isLoading && userFlowRate > 0n && needsIncrease
@@ -78,7 +74,7 @@ export function RebalanceFlowButton({
   if (!shouldShow) return null
 
   // Amount to rebalance: the minimum between what can be increased and what the user is sending
-  const amount = needsIncrease ? maxFlowRate - actualFlowRate : maxFlowRate - actualFlowRate
+  const amount = needsIncrease ? maxSafeFlowRate - actualFlowRate : maxSafeFlowRate - actualFlowRate
 
   if (amount === 0n) return null
 
@@ -109,7 +105,7 @@ export function RebalanceFlowButton({
           <div>
             <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">Rebalance flow</h4>
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              You can increase the flow rate
+              You should increase the flow rate
             </p>
           </div>
 

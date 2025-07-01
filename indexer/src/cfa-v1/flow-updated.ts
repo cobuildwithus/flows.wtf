@@ -26,7 +26,7 @@ ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
       deposit: "0", // Will be updated if FlowUpdatedExtension is emitted
       startTime: timestamp, // Will be preserved on conflict
       lastUpdate: timestamp,
-      closeTime: isClosing ? timestamp : undefined,
+      closeTime: isClosing ? timestamp : null,
     })
     .onConflictDoUpdate((row) => ({
       flowRate: flowRateStr,
@@ -35,6 +35,6 @@ ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
       // Preserve the original startTime from first creation
       startTime: row.startTime,
       // Set closeTime when flow stops, clear it if flow restarts
-      closeTime: isClosing ? timestamp : flowRate > 0n ? undefined : row.closeTime,
+      closeTime: isClosing ? timestamp : flowRate > 0n ? null : row.closeTime,
     }))
 })

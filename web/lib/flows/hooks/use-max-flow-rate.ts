@@ -1,18 +1,21 @@
 "use client"
 
-import { customFlowImplAbi } from "@/lib/abis"
-import { useReadContract } from "wagmi"
+import useSWR from "swr"
+import { getMaxSafeFlowRate } from "./get-max-safe-flow-rate"
 
 export function useMaxSafeFlowRate(contractAddress: `0x${string}`, chainId: number) {
-  const { data, error, isLoading, refetch } = useReadContract({
-    address: contractAddress,
-    abi: customFlowImplAbi,
-    functionName: "getMaxSafeFlowRate",
-    chainId,
-  })
+  const {
+    data: maxSafeFlowRate,
+    error,
+    isLoading,
+    mutate: refetch,
+  } = useSWR<bigint>(
+    contractAddress ? ["max-safe-flow-rate", contractAddress, chainId] : null,
+    () => getMaxSafeFlowRate(contractAddress, chainId),
+  )
 
   return {
-    actualFlowRate: data ?? 0n,
+    maxSafeFlowRate: maxSafeFlowRate ?? 0n,
     error,
     isLoading,
     refetch,

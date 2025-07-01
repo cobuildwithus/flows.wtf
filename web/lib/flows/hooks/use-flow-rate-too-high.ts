@@ -1,19 +1,20 @@
 "use client"
 
-import { customFlowImplAbi } from "@/lib/abis"
-import { useReadContract } from "wagmi"
+import useSWR from "swr"
+import { getFlowRateTooHigh } from "./get-flow-rate-too-high"
 
 export function useFlowRateTooHigh(flowId: `0x${string}`, chainId: number) {
-  // Returns { data, error, isLoading } for isFlowRateTooHigh
-  const { data, error, isLoading, refetch } = useReadContract({
-    address: flowId,
-    abi: customFlowImplAbi,
-    functionName: "isFlowRateTooHigh",
-    chainId,
-  })
+  const {
+    data: isFlowRateTooHigh,
+    error,
+    isLoading,
+    mutate: refetch,
+  } = useSWR<boolean>(flowId ? ["flow-rate-too-high", flowId, chainId] : null, () =>
+    getFlowRateTooHigh(flowId, chainId),
+  )
 
   return {
-    isFlowRateTooHigh: data ?? false,
+    isFlowRateTooHigh: isFlowRateTooHigh ?? false,
     error,
     isLoading,
     refetch,

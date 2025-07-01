@@ -2,6 +2,7 @@
 
 import { erc20Abi } from "viem"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
+import { getClient } from "@/lib/viem/client"
 
 export const useApproveErc20 = (args: {
   chainId: number
@@ -11,7 +12,7 @@ export const useApproveErc20 = (args: {
 }) => {
   const { chainId, tokenAddress, spenderAddress, onSuccess } = args
 
-  const { prepareWallet, writeContract, isLoading, isSuccess, isError, error } =
+  const { prepareWallet, writeContractAsync, isLoading, isSuccess, isError, error } =
     useContractTransaction({
       chainId,
       loading: "Approving token spend...",
@@ -22,12 +23,18 @@ export const useApproveErc20 = (args: {
   const approve = async (amount: bigint) => {
     await prepareWallet()
 
-    writeContract({
+    const hash = await writeContractAsync({
       address: tokenAddress,
       abi: erc20Abi,
       functionName: "approve",
       args: [spenderAddress, amount],
       chainId,
+    })
+
+    const client = getClient(chainId)
+
+    await client.waitForTransactionReceipt({
+      hash,
     })
   }
 

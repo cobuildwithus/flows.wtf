@@ -80,7 +80,7 @@ export const useContractTransaction = (args: {
     hash,
     error,
     account: address,
-    prepareWallet: async (toastId?: number | string) => {
+    prepareWallet: async (customToastId?: number | string) => {
       setCallbackHandled(false)
 
       if (!isConnected) return connectWallet()
@@ -95,7 +95,9 @@ export const useContractTransaction = (args: {
         }
       }
 
-      const newToastId = toast.loading(loading, { id: toastId, action: null })
+      // Use custom ID if provided, otherwise use existing state ID
+      const idToUse = customToastId || toastId || undefined
+      const newToastId = toast.loading(loading, { id: idToUse, action: null })
       setToastId(newToastId)
     },
     toastId,
