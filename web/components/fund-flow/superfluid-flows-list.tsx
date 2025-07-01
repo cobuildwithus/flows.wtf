@@ -156,6 +156,17 @@ function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowIte
             )}
           </div>
         </div>
+        {flow.isActive && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={deleteFlow}
+            disabled={isDeleting}
+          >
+            <XIcon className="h-4 w-4" />
+          </Button>
+        )}
       </CardContent>
     </Card>
   )
