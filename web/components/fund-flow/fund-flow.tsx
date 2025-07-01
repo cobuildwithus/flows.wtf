@@ -105,7 +105,7 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
         setDonationAmount("")
         router.refresh()
         setTab("manage")
-      }, 2000)
+      }, 3000)
     },
   })
 
