@@ -1,6 +1,5 @@
 import { parseUnits } from "viem"
 import { type Token } from "../libs/funding-token-lib"
-import { useLogin } from "@/lib/auth/use-login"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useApprovalAmount } from "./use-approval-amount"
 import { useFundButtonState } from "./use-fund-button-state"
@@ -9,6 +8,7 @@ import { useCreateFlow } from "@/lib/erc20/super-token/use-create-flow"
 import { Grant } from "@/lib/database/types"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import { useUpdateFlow } from "@/lib/erc20/super-token/use-update-flow"
+import { useAccount } from "wagmi"
 
 interface UseFundingProps {
   selectedToken: Token
@@ -33,7 +33,7 @@ export function useFundFlow({
   streamingMonths,
   onSuccess,
 }: UseFundingProps) {
-  const { authenticated, isConnected, login, connectWallet, address } = useLogin()
+  const { address } = useAccount()
   const { data: existingFlows, mutate: mutateExistingFlows } = useExistingFlows(
     address,
     flow.chainId,
@@ -99,8 +99,6 @@ export function useFundFlow({
   })
 
   const handleFund = async () => {
-    if (!authenticated) return login()
-    if (!isConnected) return connectWallet()
     const hasOpenFlows = existingFlows?.filter((flow) => flow.isActive).length ?? 0 > 0
 
     const donationAmountBigInt = parseUnits(donationAmount, 18)
@@ -124,7 +122,10 @@ export function useFundFlow({
     }
 
     await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
-    onSuccess?.()
+
+    if (onSuccess) {
+      onSuccess()
+    }
   }
 
   return {

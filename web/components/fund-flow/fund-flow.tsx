@@ -29,6 +29,7 @@ import { SuperfluidFlowsList } from "./superfluid-flows-list"
 import { FundingTokenSelector } from "./funding-token-selector"
 import { RebalanceFlowButton } from "./rebalance-flow-button"
 import { AuthButton } from "../ui/auth-button"
+import { useRouter } from "next/navigation"
 
 interface Props {
   flow: Pick<
@@ -47,6 +48,7 @@ interface Props {
 }
 
 export function FundFlow(props: Props & ComponentProps<typeof Button>) {
+  const router = useRouter()
   const { flow, ...buttonProps } = props
   const { title: name, underlyingERC20Token, chainId, superToken } = flow
   const [isOpen, setIsOpen] = useState(false)
@@ -97,6 +99,8 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
     streamingMonths,
     onSuccess: () => {
       setDonationAmount("")
+      console.log("onSuccess")
+      router.refresh()
     },
   })
 

@@ -1,19 +1,20 @@
 "use client"
 
-import { customFlowImplAbi } from "@/lib/abis"
-import { useReadContract } from "wagmi"
+import useSWR from "swr"
+import { getActualFlowRate } from "./get-actual-flow-rate"
 
 export function useActualFlowRate(contractAddress: `0x${string}`, chainId: number) {
-  // getActualFlowRate() returns int96, which wagmi/viem will decode as bigint
-  const { data, error, isLoading, refetch } = useReadContract({
-    address: contractAddress,
-    abi: customFlowImplAbi,
-    functionName: "getActualFlowRate",
-    chainId,
-  })
+  const {
+    data: actualFlowRate,
+    error,
+    isLoading,
+    mutate: refetch,
+  } = useSWR<bigint>(contractAddress ? ["actual-flow-rate", contractAddress, chainId] : null, () =>
+    getActualFlowRate(contractAddress, chainId),
+  )
 
   return {
-    actualFlowRate: data ?? 0n,
+    actualFlowRate: actualFlowRate ?? 0n,
     error,
     isLoading,
     refetch,

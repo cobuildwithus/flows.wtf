@@ -32,27 +32,13 @@ export function RebalanceFlowButton({
   className,
 }: RebalanceFlowButtonProps) {
   const router = useRouter()
-  const {
-    actualFlowRate,
-    isLoading: actualLoading,
-    refetch: mutateActual,
-  } = useActualFlowRate(contract, chainId)
-  const {
-    actualFlowRate: maxFlowRate,
-    isLoading: maxLoading,
-    refetch: mutateMax,
-  } = useMaxSafeFlowRate(contract, chainId)
+  const { actualFlowRate, isLoading: actualLoading } = useActualFlowRate(contract, chainId)
+  const { maxSafeFlowRate, isLoading: maxLoading } = useMaxSafeFlowRate(contract, chainId)
   const { data: existingFlows, isLoading: flowsLoading } = useExistingFlows(
     address,
     chainId,
     receiver,
   )
-
-  const onSuccess = () => {
-    mutateActual()
-    mutateMax()
-    router.refresh()
-  }
 
   const { increaseFlowRate, isLoading: increaseLoading } = useIncreaseFlowRate({
     contract,
@@ -60,7 +46,9 @@ export function RebalanceFlowButton({
     superToken,
     underlyingToken,
     userAddress: address as `0x${string}`,
-    onSuccess,
+    onSuccess: () => {
+      router.refresh()
+    },
   })
 
   const isLoading = actualLoading || maxLoading || flowsLoading
@@ -69,8 +57,8 @@ export function RebalanceFlowButton({
   const userFlowRate =
     existingFlows?.reduce((total, flow) => total + BigInt(flow.flowRate), 0n) || 0n
 
-  const difference = maxFlowRate - actualFlowRate
-  const needsIncrease = difference > (maxFlowRate * 1n) / 100n
+  const difference = maxSafeFlowRate - actualFlowRate
+  const needsIncrease = difference > (maxSafeFlowRate * 1n) / 100n
 
   // Only show if not loading, should rebalance, and user has a flow
   const shouldShow = !isLoading && userFlowRate > 0n && needsIncrease
@@ -78,7 +66,7 @@ export function RebalanceFlowButton({
   if (!shouldShow) return null
 
   // Amount to rebalance: the minimum between what can be increased and what the user is sending
-  const amount = needsIncrease ? maxFlowRate - actualFlowRate : maxFlowRate - actualFlowRate
+  const amount = needsIncrease ? maxSafeFlowRate - actualFlowRate : maxSafeFlowRate - actualFlowRate
 
   if (amount === 0n) return null
 

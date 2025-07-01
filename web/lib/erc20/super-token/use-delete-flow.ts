@@ -6,13 +6,14 @@ import { getCfaAddress, getHostAddress } from "./addresses"
 import { superfluidImplAbi, cfav1Abi } from "@/lib/abis"
 import { encodeFunctionData } from "viem"
 import { OPERATION_TYPE, prepareOperation } from "./operation-type"
+import { getClient } from "@/lib/viem/client"
 
 /**
  * Hook to delete a Superfluid flow
  * Uses Superfluid's batch call functionality
  */
 export function useDeleteFlow({ chainId, superTokenAddress, onSuccess }: FlowOperationConfig) {
-  const { prepareWallet, writeContract, isLoading, isSuccess, isError, error } =
+  const { prepareWallet, writeContractAsync, isLoading, isSuccess, isError, error } =
     useContractTransaction({
       chainId,
       ...getFlowOperationConfig("delete", onSuccess),
@@ -37,12 +38,18 @@ export function useDeleteFlow({ chainId, superTokenAddress, onSuccess }: FlowOpe
       }),
     ]
 
-    writeContract({
+    const hash = await writeContractAsync({
       address: getHostAddress(chainId),
       abi: superfluidImplAbi,
       functionName: "batchCall",
       args: [operations],
       chainId,
+    })
+
+    const client = getClient(chainId)
+
+    await client.waitForTransactionReceipt({
+      hash,
     })
   }
 
