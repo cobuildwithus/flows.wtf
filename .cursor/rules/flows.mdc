@@ -1,6 +1,7 @@
 ---
 description: Core platform documentation and concepts - reference for all development
 globs: *
+alwaysApply: false
 ---
 # Flows.wtf Platform Overview
 
@@ -17,10 +18,9 @@ Flows is a decentralized grant program that provides continuous funding to build
 - Maximum of 2 active grants per user
 
 ### Application Process
-- Builders apply through structured templates specific to each flow
 - Applications require:
   - Title
-  - Description (following flow-specific template)
+  - Description
   - Image
   - Optional tagline
 - Applications are publicly visible and can be discussed by the community
@@ -60,7 +60,7 @@ Flows is a decentralized grant program that provides continuous funding to build
 - Maximum 2 active grants per user address
 
 ## Grant Lifecycle
-- Application submission through flow-specific templates
+- Application submission
 - Community voting and feedback period
 - Continuous performance monitoring
 - Regular builder updates on Farcaster
@@ -87,14 +87,12 @@ Flows is a decentralized grant program that provides continuous funding to build
 - Grants are stored in onchain schema
 - Stories and derived data in web schema
 - Each grant has associated:
-  - Derived data (grades, templates, etc)
+  - Derived data (grades, impact, etc)
   - Stories (documentation of progress)
   - Votes (community feedback)
   - Builder updates (via Farcaster)
 
 ## Automation
-- Automatic template generation for flows
-- Story generation from builder updates
 - Embedding generation for content search
 - Automated performance grading
 - Streaming rate adjustments based on grades

@@ -50,11 +50,7 @@ export default async function ApplyFlowPage(props: Props) {
               flow={flow}
               isFlow={flow.isTopLevel}
               userActiveGrants={userActiveGrants}
-              template={
-                flow.isTopLevel
-                  ? defaultFlowTemplate
-                  : flow.derivedData?.template || defaultGrantTemplate
-              }
+              template={flow.isTopLevel ? defaultFlowTemplate : defaultGrantTemplate}
             />
           </CardContent>
         </Card>

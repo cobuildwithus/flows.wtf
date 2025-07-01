@@ -63,7 +63,6 @@ model DerivedData {
   overallGrade               Float?
   requirementsMetrics        Json?
   shortDescription           String?
-  template                   String?
   title                      String?
   tagline                    String?
   coverImage                 String?
