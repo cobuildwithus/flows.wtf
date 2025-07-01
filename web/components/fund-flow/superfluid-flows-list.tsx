@@ -9,6 +9,7 @@ import { XIcon } from "lucide-react"
 import { useDeleteFlow } from "@/lib/erc20/super-token/use-delete-flow"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
+import { EmptyState } from "../ui/empty-state"
 
 interface SuperfluidFlowsListProps {
   address: string | undefined
@@ -53,7 +54,7 @@ export function SuperfluidFlowsList({
   }
 
   if (displayFlows.length === 0) {
-    return null
+    return <EmptyState title="No flows found" description="You are not funding any flows yet" />
   }
 
   return (

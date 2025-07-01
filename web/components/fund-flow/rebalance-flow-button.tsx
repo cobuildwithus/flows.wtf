@@ -7,7 +7,6 @@ import { useMaxSafeFlowRate } from "@/lib/flows/hooks/use-max-flow-rate"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import { useIncreaseFlowRate } from "@/lib/flows/hooks/use-increase-flow-rate"
 import { formatUnits } from "viem"
-import { useRouter } from "next/navigation"
 import { TIME_UNIT } from "@/lib/erc20/super-token/operation-type"
 import { ArrowUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -31,14 +30,21 @@ export function RebalanceFlowButton({
   underlyingToken,
   className,
 }: RebalanceFlowButtonProps) {
-  const router = useRouter()
-  const { actualFlowRate, isLoading: actualLoading } = useActualFlowRate(contract, chainId)
-  const { maxSafeFlowRate, isLoading: maxLoading } = useMaxSafeFlowRate(contract, chainId)
-  const { data: existingFlows, isLoading: flowsLoading } = useExistingFlows(
-    address,
-    chainId,
-    receiver,
-  )
+  const {
+    actualFlowRate,
+    isLoading: actualLoading,
+    refetch: refetchActualFlowRate,
+  } = useActualFlowRate(contract, chainId)
+  const {
+    maxSafeFlowRate,
+    isLoading: maxLoading,
+    refetch: refetchMaxSafeFlowRate,
+  } = useMaxSafeFlowRate(contract, chainId)
+  const {
+    data: existingFlows,
+    isLoading: flowsLoading,
+    mutate: mutateExistingFlows,
+  } = useExistingFlows(address, chainId, receiver)
 
   const { increaseFlowRate, isLoading: increaseLoading } = useIncreaseFlowRate({
     contract,
@@ -47,7 +53,9 @@ export function RebalanceFlowButton({
     underlyingToken,
     userAddress: address as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
+      mutateExistingFlows()
+      refetchActualFlowRate()
+      refetchMaxSafeFlowRate()
     },
   })
 

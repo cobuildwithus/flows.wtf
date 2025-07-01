@@ -109,7 +109,6 @@ export function useIncreaseFlowRate({
       if (allowance < bufferAmount) {
         setIsApproving(true)
         await approve(bufferAmount)
-        return
       }
 
       setIsPreparing(true)
@@ -132,7 +131,6 @@ export function useIncreaseFlowRate({
         if (underlyingAllowance < tokensToUpgrade) {
           setIsApproving(true)
           await approveUnderlying(tokensToUpgrade)
-          return
         }
 
         const upgradeData = encodeFunctionData({
