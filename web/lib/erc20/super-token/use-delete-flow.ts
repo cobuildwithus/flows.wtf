@@ -7,8 +7,6 @@ import { superfluidImplAbi, cfav1Abi } from "@/lib/abis"
 import { encodeFunctionData } from "viem"
 import { OPERATION_TYPE, prepareOperation } from "./operation-type"
 
-interface UseDeleteFlowProps extends FlowOperationConfig {}
-
 /**
  * Hook to delete a Superfluid flow
  * Uses Superfluid's batch call functionality

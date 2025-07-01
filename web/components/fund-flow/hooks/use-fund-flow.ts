@@ -114,6 +114,7 @@ export function useFundFlow({
   const handleFund = async () => {
     if (!authenticated) return login()
     if (!isConnected) return connectWallet()
+    const hasOpenFlows = existingFlows?.filter((flow) => flow.isActive).length ?? 0 > 0
 
     const donationAmountBigInt = parseUnits(donationAmount, 18)
 
@@ -129,7 +130,7 @@ export function useFundFlow({
       }
     }
 
-    if (existingFlows?.length === 0) {
+    if (!hasOpenFlows) {
       // Use the batch operation to upgrade tokens and create flow in one transaction
       await createFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
       return
