@@ -1,8 +1,6 @@
 import { parseUnits } from "viem"
 import { type Token } from "../libs/funding-token-lib"
 import { useLogin } from "@/lib/auth/use-login"
-import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
-import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
 import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 import { useApprovalAmount } from "./use-approval-amount"
 import { useFundButtonState } from "./use-fund-button-state"
@@ -31,7 +29,6 @@ export function useFundFlow({
   donationAmount,
   flow,
   totalTokenBalance,
-  superTokenBalance: externalSuperTokenBalance,
   isStreamingToken,
   streamingMonths,
 }: UseFundingProps) {
@@ -39,27 +36,10 @@ export function useFundFlow({
   const { authenticated, isConnected, login, connectWallet, address } = useLogin()
   const { data: existingFlows, mutate } = useExistingFlows(address, flow.chainId, flow.recipient)
 
-  // Fetch token balances if not provided
-  const { balances } = useERC20Balances(
-    [flow.underlyingERC20Token as `0x${string}`, flow.superToken as `0x${string}`],
-    address,
-    flow.chainId,
-  )
-  const superTokenBalance = externalSuperTokenBalance ?? balances[1] ?? 0n
-
-  // Check allowance
-  const { allowance: currentAllowance } = useERC20Allowance(
-    flow.underlyingERC20Token,
-    address,
-    flow.superToken,
-    flow.chainId,
-  )
-
-  const { approvalNeeded, approvalAmount, amountNeededFromUnderlying } = useApprovalAmount({
+  const { approvalNeeded, approvalAmount, needFromUnderlying } = useApprovalAmount({
     donationAmount,
-    superTokenBalance,
-    currentAllowance,
     isNativeToken: selectedToken.isNative,
+    flow,
   })
 
   const { approve, isLoading: isApproving } = useApproveErc20({
@@ -106,9 +86,9 @@ export function useFundFlow({
     isUpdating,
     hasInsufficientBalance,
     isStreamingToken,
-    superTokenBalance,
     approvalNeeded,
     streamingMonths,
+    flow,
   })
 
   const handleFund = async () => {
@@ -122,7 +102,7 @@ export function useFundFlow({
     const monthlyFlowRate = donationAmountBigInt / BigInt(streamingMonths)
 
     // For streaming tokens, handle approval and upgrade in batch
-    if (isStreamingToken && superTokenBalance !== undefined) {
+    if (isStreamingToken) {
       // Step 1: Handle approval if needed
       if (approvalNeeded && approvalAmount > 0n) {
         await approve(approvalAmount)
@@ -132,11 +112,11 @@ export function useFundFlow({
 
     if (!hasOpenFlows) {
       // Use the batch operation to upgrade tokens and create flow in one transaction
-      await createFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+      await createFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
       return
     }
 
-    await updateFlow(amountNeededFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+    await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
   }
 
   return {

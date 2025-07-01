@@ -3,10 +3,10 @@
 import { customFlowImplAbi, superTokenAbi, superfluidImplAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { getClient } from "@/lib/viem/client"
 import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
-import { encodeFunctionData, erc20Abi, zeroAddress } from "viem"
+import { encodeFunctionData, erc20Abi } from "viem"
 import {
   OPERATION_TYPE,
   prepareOperation,
@@ -99,7 +99,11 @@ export function useIncreaseFlowRate({
     if (!userAddress) return
 
     try {
+      await prepareWallet()
+
+      // Get buffer amount
       const bufferAmount = await getBufferAmount(amount)
+      const currentSuperTokenBalance = superTokenBalances[0] || 0n
 
       // 1. If allowance for buffer is insufficient, initiate approval as a separate tx and exit early
       if (allowance < bufferAmount) {
@@ -110,8 +114,6 @@ export function useIncreaseFlowRate({
 
       setIsPreparing(true)
 
-      const currentSuperTokenBalance = superTokenBalances[0] || 0n
-
       const operations: Operation[] = []
 
       // 2. Upgrade underlying tokens to Super Tokens if balance is insufficient
@@ -119,7 +121,6 @@ export function useIncreaseFlowRate({
         const tokensToUpgrade = bufferAmount - currentSuperTokenBalance
 
         // Ensure underlying token approval
-
         const client = getClient(chainId)
         const underlyingAllowance = (await client.readContract({
           address: underlyingToken,
@@ -147,32 +148,25 @@ export function useIncreaseFlowRate({
             data: upgradeData,
           }),
         )
+
+        // Execute all operations atomically via Superfluid host
+        writeContract({
+          address: getHostAddress(chainId),
+          abi: superfluidImplAbi,
+          functionName: "batchCall",
+          args: [operations],
+          chainId,
+        })
+
+        return
       }
-
-      // 3. Call increaseFlowRate on the custom flow implementation
-      const increaseData = encodeFunctionData({
-        abi: customFlowImplAbi,
-        functionName: "increaseFlowRate",
-        args: [amount],
-      })
-
-      operations.push(
-        prepareOperation({
-          operationType: OPERATION_TYPE.SIMPLE_FORWARD_CALL,
-          target: contract,
-          data: increaseData,
-        }),
-      )
-
-      // Prepare wallet (connect, switch chain, etc.)
-      await prepareWallet()
 
       // Execute all operations atomically via Superfluid host
       writeContract({
-        address: getHostAddress(chainId),
-        abi: superfluidImplAbi,
-        functionName: "batchCall",
-        args: [operations],
+        address: contract,
+        abi: customFlowImplAbi,
+        functionName: "increaseFlowRate",
+        args: [amount],
         chainId,
       })
     } catch (err) {

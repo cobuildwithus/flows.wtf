@@ -2,6 +2,9 @@ import { useMemo } from "react"
 import { parseUnits } from "viem"
 import { type Token } from "../libs/funding-token-lib"
 import { useLogin } from "@/lib/auth/use-login"
+import { useERC20Balance } from "@/lib/erc20/use-erc20-balances"
+import { Grant } from "@/lib/database/types"
+import { useAccount } from "wagmi"
 
 interface UseFundButtonStateProps {
   // Input state
@@ -16,9 +19,10 @@ interface UseFundButtonStateProps {
   // Balance and approval state
   hasInsufficientBalance: boolean
   isStreamingToken?: boolean
-  superTokenBalance?: bigint
   approvalNeeded: boolean
   streamingMonths: number
+
+  flow: Pick<Grant, "superToken" | "chainId">
 }
 
 export function useFundButtonState({
@@ -29,11 +33,18 @@ export function useFundButtonState({
   isUpdating,
   hasInsufficientBalance,
   isStreamingToken,
-  superTokenBalance,
   approvalNeeded,
   streamingMonths,
+  flow,
 }: UseFundButtonStateProps) {
   const { authenticated, isConnected } = useLogin()
+  const { address } = useAccount()
+
+  const { balance: superTokenBalance } = useERC20Balance(
+    flow.superToken as `0x${string}`,
+    address,
+    flow.chainId,
+  )
 
   return useMemo(() => {
     // Calculate monthly amount for display
@@ -79,7 +90,7 @@ export function useFundButtonState({
     }
 
     // Approval checks for streaming tokens
-    if (isStreamingToken && superTokenBalance !== undefined) {
+    if (isStreamingToken) {
       try {
         const donationAmountBigInt = parseUnits(donationAmount, selectedToken.decimals)
         const needsApproval = donationAmountBigInt > superTokenBalance
