@@ -111,17 +111,15 @@ export function useFundFlow({
       // Step 1: Handle approval if needed
       if (approvalNeeded && approvalAmount > 0n) {
         await approve(approvalAmount)
-        return // Wait for approval to complete before continuing
       }
     }
 
     if (!hasOpenFlows) {
       // Use the batch operation to upgrade tokens and create flow in one transaction
       await createFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
-      return
+    } else {
+      await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
     }
-
-    await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
 
     if (onSuccess) {
       onSuccess()

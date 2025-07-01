@@ -57,7 +57,7 @@ export function SuperfluidFlowsList({
   }
 
   return (
-    <div className="mt-3 space-y-3 border-t pt-4">
+    <div className="space-y-3 border-t pt-4">
       {showTitle && (
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium">You are funding</h4>
@@ -129,7 +129,7 @@ function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowIte
             )}
             <div>
               <div className="text-xs text-muted-foreground">
-                {displayRate} {tokenSymbol}/mo
+                {displayRate} {tokenSymbol} per month
               </div>
             </div>
           </div>
