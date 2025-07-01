@@ -4,6 +4,10 @@ import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { XIcon } from "lucide-react"
+import { useLogin } from "@/lib/auth/use-login"
+import { useDeleteFlow } from "@/lib/erc20/super-token/use-delete-flow"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
 
@@ -26,7 +30,7 @@ export function SuperfluidFlowsList({
   showTitle = true,
   tokens = TOKENS,
 }: SuperfluidFlowsListProps) {
-  const { data: flows, isLoading, error } = useExistingFlows(address, chainId)
+  const { data: flows, error, mutate } = useExistingFlows(address, chainId)
 
   if (!address) return null
 
@@ -72,6 +76,8 @@ export function SuperfluidFlowsList({
             key={`${flow.token}-${flow.sender}-${flow.receiver}-${index}`}
             flow={flow}
             tokens={tokens}
+            address={address}
+            mutate={mutate}
           />
         ))}
       </div>
@@ -82,9 +88,18 @@ export function SuperfluidFlowsList({
 interface SuperfluidFlowItemProps {
   flow: SuperfluidFlowWithState
   tokens: Record<string, TokenInfo>
+  address: string
+  mutate: () => void
 }
 
-function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
+function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowItemProps) {
+  const { deleteFlow, isLoading: isDeleting } = useDeleteFlow({
+    chainId: flow.chainId,
+    superTokenAddress: flow.token as `0x${string}`,
+    sender: address as `0x${string}` | undefined,
+    receiver: flow.receiver as `0x${string}`,
+    onSuccess: () => mutate(),
+  })
   const flowRatePerSecond = BigInt(flow.flowRate)
   const flowRatePerMonth = flowRatePerSecond * BigInt(30 * 24 * 60 * 60) // 30 days in seconds
 
@@ -106,7 +121,7 @@ function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
   const displayRate = formatTokenAmount(flowRatePerMonth, tokenDecimals, tokenSymbol)
 
   return (
-    <Card className="border-l-4 border-l-primary transition-colors hover:bg-muted/50">
+    <Card className="group relative border-l-4 border-l-primary transition-colors hover:bg-muted/50">
       <CardContent className="p-2 md:p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -122,10 +137,23 @@ function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Badge variant={flow.isActive ? "default" : "secondary"} className="text-[10px]">
               {flow.isActive ? "Active" : "Closed"}
             </Badge>
+            {flow.isActive && (
+              <div className="grid grid-cols-[0fr] transition-all duration-200 group-hover:grid-cols-[1fr]">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 overflow-hidden opacity-0 transition-all duration-200 group-hover:opacity-100"
+                  onClick={deleteFlow}
+                  disabled={isDeleting}
+                >
+                  <XIcon className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

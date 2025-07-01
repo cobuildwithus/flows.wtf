@@ -18,6 +18,7 @@ interface RebalanceFlowButtonProps {
   address: string
   receiver: string
   superToken: `0x${string}`
+  underlyingToken: `0x${string}`
   className?: string
 }
 
@@ -27,6 +28,7 @@ export function RebalanceFlowButton({
   address,
   receiver,
   superToken,
+  underlyingToken,
   className,
 }: RebalanceFlowButtonProps) {
   const router = useRouter()
@@ -56,6 +58,7 @@ export function RebalanceFlowButton({
     contract,
     chainId,
     superToken,
+    underlyingToken,
     userAddress: address as `0x${string}`,
     onSuccess,
   })

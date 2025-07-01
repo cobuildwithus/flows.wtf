@@ -1,17 +1,25 @@
 "use client"
 
-import { customFlowImplAbi } from "@/lib/abis"
+import { customFlowImplAbi, superTokenAbi, superfluidImplAbi } from "@/lib/abis"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { useERC20Allowance } from "@/lib/erc20/use-erc20-allowance"
-import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import { getClient } from "@/lib/viem/client"
+import { useERC20Balances } from "@/lib/erc20/use-erc20-balances"
+import { encodeFunctionData, erc20Abi, zeroAddress } from "viem"
+import {
+  OPERATION_TYPE,
+  prepareOperation,
+  type Operation,
+} from "@/lib/erc20/super-token/operation-type"
+import { getHostAddress } from "@/lib/erc20/super-token/addresses"
+import { useApproveErc20 } from "@/lib/erc20/use-approve-erc20"
 
 interface UseIncreaseFlowRateProps {
   contract: `0x${string}`
   chainId: number
   superToken: `0x${string}`
+  underlyingToken: `0x${string}`
   userAddress: `0x${string}` | undefined
   onSuccess?: (hash: string) => void
 }
@@ -20,10 +28,11 @@ export function useIncreaseFlowRate({
   contract,
   chainId,
   superToken,
+  underlyingToken,
   userAddress,
   onSuccess,
 }: UseIncreaseFlowRateProps) {
-  const router = useRouter()
+  const [isPreparing, setIsPreparing] = useState(false)
   const [isApproving, setIsApproving] = useState(false)
 
   const { allowance, refetch: refetchAllowance } = useERC20Allowance(
@@ -32,17 +41,12 @@ export function useIncreaseFlowRate({
     contract,
     chainId,
   )
-
-  const { approve } = useApproveErc20({
+  // Fetch Super Token balance for the user
+  const { balances: superTokenBalances } = useERC20Balances(
+    [superToken as `0x${string}`],
+    userAddress,
     chainId,
-    tokenAddress: superToken,
-    spenderAddress: contract,
-    onSuccess: () => {
-      setIsApproving(false)
-      refetchAllowance()
-      router.refresh()
-    },
-  })
+  )
 
   const {
     writeContract,
@@ -58,6 +62,27 @@ export function useIncreaseFlowRate({
     onSuccess,
     loading: "Increasing flow rate...",
     success: "Flow rate increased successfully",
+  })
+
+  // Approve custom flow contract to pull buffer
+  const { approve } = useApproveErc20({
+    chainId,
+    tokenAddress: superToken,
+    spenderAddress: contract,
+    onSuccess: () => {
+      setIsApproving(false)
+      refetchAllowance()
+    },
+  })
+
+  // Approve SuperToken contract to pull underlying tokens for upgrade
+  const { approve: approveUnderlying } = useApproveErc20({
+    chainId,
+    tokenAddress: underlyingToken,
+    spenderAddress: superToken,
+    onSuccess: () => {
+      setIsApproving(false)
+    },
   })
 
   const getBufferAmount = async (amount: bigint): Promise<bigint> => {
@@ -76,23 +101,84 @@ export function useIncreaseFlowRate({
     try {
       const bufferAmount = await getBufferAmount(amount)
 
-      // Check if approval is needed for the buffer amount
+      // 1. If allowance for buffer is insufficient, initiate approval as a separate tx and exit early
       if (allowance < bufferAmount) {
         setIsApproving(true)
         await approve(bufferAmount)
         return
       }
 
-      await prepareWallet()
+      setIsPreparing(true)
 
-      writeContract({
-        address: contract,
+      const currentSuperTokenBalance = superTokenBalances[0] || 0n
+
+      const operations: Operation[] = []
+
+      // 2. Upgrade underlying tokens to Super Tokens if balance is insufficient
+      if (currentSuperTokenBalance < bufferAmount) {
+        const tokensToUpgrade = bufferAmount - currentSuperTokenBalance
+
+        // Ensure underlying token approval
+
+        const client = getClient(chainId)
+        const underlyingAllowance = (await client.readContract({
+          address: underlyingToken,
+          abi: erc20Abi,
+          functionName: "allowance",
+          args: [userAddress as `0x${string}`, superToken],
+        })) as bigint
+
+        if (underlyingAllowance < tokensToUpgrade) {
+          setIsApproving(true)
+          await approveUnderlying(tokensToUpgrade)
+          return
+        }
+
+        const upgradeData = encodeFunctionData({
+          abi: superTokenAbi,
+          functionName: "upgrade",
+          args: [tokensToUpgrade],
+        })
+
+        operations.push(
+          prepareOperation({
+            operationType: OPERATION_TYPE.SUPERTOKEN_UPGRADE,
+            target: superToken,
+            data: upgradeData,
+          }),
+        )
+      }
+
+      // 3. Call increaseFlowRate on the custom flow implementation
+      const increaseData = encodeFunctionData({
         abi: customFlowImplAbi,
         functionName: "increaseFlowRate",
         args: [amount],
       })
+
+      operations.push(
+        prepareOperation({
+          operationType: OPERATION_TYPE.SIMPLE_FORWARD_CALL,
+          target: contract,
+          data: increaseData,
+        }),
+      )
+
+      // Prepare wallet (connect, switch chain, etc.)
+      await prepareWallet()
+
+      // Execute all operations atomically via Superfluid host
+      writeContract({
+        address: getHostAddress(chainId),
+        abi: superfluidImplAbi,
+        functionName: "batchCall",
+        args: [operations],
+        chainId,
+      })
     } catch (err) {
-      console.error("Unable to fetch required buffer amount", err)
+      console.error("Unable to prepare batch operation", err)
+    } finally {
+      setIsPreparing(false)
     }
   }
 
@@ -101,7 +187,7 @@ export function useIncreaseFlowRate({
     isPending,
     isConfirming,
     isConfirmed,
-    isLoading: isLoading || isApproving,
+    isLoading: isLoading || isPreparing || isApproving,
     hash,
     error,
     allowance,

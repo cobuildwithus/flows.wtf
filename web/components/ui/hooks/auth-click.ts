@@ -19,6 +19,9 @@ export function useAuthClick(onConnect?: OnConnectCallback) {
         connectWallet()
       }
       onConnect?.()
+    } else if (!authenticated) {
+      e.preventDefault()
+      login()
     }
 
     return e

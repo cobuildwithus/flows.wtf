@@ -122,6 +122,7 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
           address={address as `0x${string}`}
           receiver={flow.recipient}
           superToken={superToken as `0x${string}`}
+          underlyingToken={underlyingERC20Token as `0x${string}`}
         />
 
         <div className="mt-6 space-y-6">
