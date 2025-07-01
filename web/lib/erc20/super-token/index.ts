@@ -1,6 +1,7 @@
 // Flow operation hooks
 export { useCreateFlow } from "./use-create-flow"
 export { useUpdateFlow } from "./use-update-flow"
+export { useDeleteFlow } from "./use-delete-flow"
 
 // Flow operation helpers
 export {

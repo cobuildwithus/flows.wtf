@@ -4,6 +4,10 @@ import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { XIcon } from "lucide-react"
+import { useLogin } from "@/lib/auth/use-login"
+import { useDeleteFlow } from "@/lib/erc20/super-token/use-delete-flow"
 import { TokenLogo } from "@/app/token/token-logo"
 import { formatTokenAmount, TOKENS, type TokenInfo } from "./libs/funding-token-lib"
 
@@ -85,6 +89,15 @@ interface SuperfluidFlowItemProps {
 }
 
 function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
+  const { address } = useLogin()
+  const { mutate } = useExistingFlows(address, flow.chainId)
+  const { deleteFlow, isLoading: isDeleting } = useDeleteFlow({
+    chainId: flow.chainId,
+    superTokenAddress: flow.token as `0x${string}`,
+    sender: address as `0x${string}` | undefined,
+    receiver: flow.receiver as `0x${string}`,
+    onSuccess: () => mutate(),
+  })
   const flowRatePerSecond = BigInt(flow.flowRate)
   const flowRatePerMonth = flowRatePerSecond * BigInt(30 * 24 * 60 * 60) // 30 days in seconds
 
@@ -106,7 +119,7 @@ function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
   const displayRate = formatTokenAmount(flowRatePerMonth, tokenDecimals, tokenSymbol)
 
   return (
-    <Card className="border-l-4 border-l-primary transition-colors hover:bg-muted/50">
+    <Card className="group relative border-l-4 border-l-primary transition-colors hover:bg-muted/50">
       <CardContent className="p-2 md:p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -128,6 +141,17 @@ function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
             </Badge>
           </div>
         </div>
+        {flow.isActive && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={deleteFlow}
+            disabled={isDeleting}
+          >
+            <XIcon className="h-4 w-4" />
+          </Button>
+        )}
       </CardContent>
     </Card>
   )
