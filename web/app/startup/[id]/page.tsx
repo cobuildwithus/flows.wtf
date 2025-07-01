@@ -28,6 +28,7 @@ import { SalesOverview } from "./components/sales-overview"
 import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
+import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -51,7 +52,7 @@ export default async function GrantPage(props: Props) {
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
 
-  const [teamMembers, user, impactFlow, orders] = await Promise.all([
+  const [teamMembers, user, impactFlow, orders, budgets] = await Promise.all([
     getTeamMembers(startup.id),
     getUser(),
     database.grant.findFirstOrThrow({
@@ -66,6 +67,7 @@ export default async function GrantPage(props: Props) {
       },
     }),
     getAllOrders(startup.shopify),
+    getStartupBudgets(startup.id),
   ])
 
   const [products, salesSummary] = await Promise.all([
@@ -78,6 +80,11 @@ export default async function GrantPage(props: Props) {
 
   const salesChange = thisMonth && lastMonth ? thisMonth.sales - lastMonth.sales : 0
   const ordersChange = thisMonth && lastMonth ? thisMonth.orders - lastMonth.orders : 0
+
+  const totalBudget = budgets
+    .map((b) => Number(b.monthlyIncomingFlowRate))
+    .reduce((a, b) => a + b, 0)
+  const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
 
   return (
     <>
@@ -152,7 +159,8 @@ export default async function GrantPage(props: Props) {
             title="Budget"
             value={
               <>
-                <Currency>{startup.monthlyIncomingFlowRate}</Currency>/mo
+                <Currency>{totalBudget}</Currency>
+                /mo
               </>
             }
             icon={Repeat}
@@ -160,12 +168,7 @@ export default async function GrantPage(props: Props) {
 
           <MetricCard
             title={`Funding from ${startup.accelerator.name}`}
-            value={
-              <AnimatedSalary
-                value={startup.totalEarned}
-                monthlyRate={startup.monthlyIncomingFlowRate}
-              />
-            }
+            value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
             icon={Banknote}
           />
         </div>

@@ -40,7 +40,7 @@ export function GrantsTable(props: Props) {
           <TableHead colSpan={2}>Name</TableHead>
           {!flow.isTopLevel && <TableHead>Builder</TableHead>}
           <TableHead className="text-center">Total earned</TableHead>
-          <TableHead className="text-center">Monthly support</TableHead>
+          <TableHead className="text-center">Monthly funding</TableHead>
           <TableHead className="text-center">Votes</TableHead>
           <TableHead className="text-right">{canManage ? "Manage" : "Your Vote"}</TableHead>
         </TableRow>

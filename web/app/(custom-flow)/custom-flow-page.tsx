@@ -52,7 +52,7 @@ export async function CustomFlowPage(props: Props) {
       ),
     },
     {
-      name: "Monthly support",
+      name: "Monthly funding",
       value: formatCurrency(
         getSum(relevantGrants, "monthly"),
         flow.underlyingTokenSymbol,
