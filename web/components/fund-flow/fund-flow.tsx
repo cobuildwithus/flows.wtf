@@ -95,6 +95,9 @@ export function FundFlow(props: Props & ComponentProps<typeof Button>) {
     superTokenBalance: superTokenBalance || 0n,
     isStreamingToken,
     streamingMonths,
+    onSuccess: () => {
+      setDonationAmount("")
+    },
   })
 
   const { handleInputChange, handleInputFocus, handleMaxClick } = useFundingInput({

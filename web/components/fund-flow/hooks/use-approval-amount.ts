@@ -17,20 +17,20 @@ interface UseApprovalAmountProps {
 export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseApprovalAmountProps) {
   const { address } = useAccount()
 
-  const { balance: superTokenBalance } = useERC20Balance(
+  const { balance: superTokenBalance, refetch: refetchSuperTokenBalance } = useERC20Balance(
     flow.superToken as `0x${string}`,
     address,
     flow.chainId,
   )
 
-  const { allowance: currentAllowance } = useERC20Allowance(
+  const { allowance: currentAllowance, refetch: refetchCurrentAllowance } = useERC20Allowance(
     flow.underlyingERC20Token,
     address,
     flow.superToken,
     flow.chainId,
   )
 
-  return useMemo(() => {
+  const { approvalNeeded, approvalAmount, needFromUnderlying } = useMemo(() => {
     // No approval needed for native tokens
     if (isNativeToken) {
       return {
@@ -66,4 +66,14 @@ export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseAp
       }
     }
   }, [donationAmount, superTokenBalance, currentAllowance, isNativeToken])
+
+  return {
+    approvalNeeded,
+    approvalAmount,
+    needFromUnderlying,
+    mutate: () => {
+      refetchSuperTokenBalance()
+      refetchCurrentAllowance()
+    },
+  }
 }

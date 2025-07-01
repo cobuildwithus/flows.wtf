@@ -109,7 +109,7 @@ export function RebalanceFlowButton({
           <div>
             <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">Rebalance flow</h4>
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              You can increase the flow rate
+              You should increase the flow rate
             </p>
           </div>
 

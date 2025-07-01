@@ -9,7 +9,6 @@ import { useCreateFlow } from "@/lib/erc20/super-token/use-create-flow"
 import { Grant } from "@/lib/database/types"
 import { useExistingFlows } from "@/lib/superfluid/use-existing-flows"
 import { useUpdateFlow } from "@/lib/erc20/super-token/use-update-flow"
-import { useRouter } from "next/navigation"
 
 interface UseFundingProps {
   selectedToken: Token
@@ -22,6 +21,7 @@ interface UseFundingProps {
   superTokenBalance?: bigint
   isStreamingToken?: boolean
   streamingMonths: number
+  onSuccess?: () => void
 }
 
 export function useFundFlow({
@@ -31,12 +31,21 @@ export function useFundFlow({
   totalTokenBalance,
   isStreamingToken,
   streamingMonths,
+  onSuccess,
 }: UseFundingProps) {
-  const router = useRouter()
   const { authenticated, isConnected, login, connectWallet, address } = useLogin()
-  const { data: existingFlows, mutate } = useExistingFlows(address, flow.chainId, flow.recipient)
+  const { data: existingFlows, mutate: mutateExistingFlows } = useExistingFlows(
+    address,
+    flow.chainId,
+    flow.recipient,
+  )
 
-  const { approvalNeeded, approvalAmount, needFromUnderlying } = useApprovalAmount({
+  const {
+    approvalNeeded,
+    approvalAmount,
+    needFromUnderlying,
+    mutate: mutateApprovalAmount,
+  } = useApprovalAmount({
     donationAmount,
     isNativeToken: selectedToken.isNative,
     flow,
@@ -47,7 +56,7 @@ export function useFundFlow({
     tokenAddress: flow.underlyingERC20Token as `0x${string}`,
     spenderAddress: flow.superToken as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
+      mutateApprovalAmount()
     },
   })
 
@@ -55,8 +64,7 @@ export function useFundFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.superToken as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
-      mutate()
+      mutateExistingFlows()
     },
   })
 
@@ -64,8 +72,7 @@ export function useFundFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.superToken as `0x${string}`,
     onSuccess: () => {
-      router.refresh()
-      mutate()
+      mutateExistingFlows()
     },
   })
 
@@ -117,6 +124,7 @@ export function useFundFlow({
     }
 
     await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+    onSuccess?.()
   }
 
   return {
