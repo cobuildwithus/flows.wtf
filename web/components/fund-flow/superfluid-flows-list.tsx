@@ -30,7 +30,7 @@ export function SuperfluidFlowsList({
   showTitle = true,
   tokens = TOKENS,
 }: SuperfluidFlowsListProps) {
-  const { data: flows, isLoading, error } = useExistingFlows(address, chainId)
+  const { data: flows, error, mutate } = useExistingFlows(address, chainId)
 
   if (!address) return null
 
@@ -76,6 +76,8 @@ export function SuperfluidFlowsList({
             key={`${flow.token}-${flow.sender}-${flow.receiver}-${index}`}
             flow={flow}
             tokens={tokens}
+            address={address}
+            mutate={mutate}
           />
         ))}
       </div>
@@ -86,11 +88,11 @@ export function SuperfluidFlowsList({
 interface SuperfluidFlowItemProps {
   flow: SuperfluidFlowWithState
   tokens: Record<string, TokenInfo>
+  address: string
+  mutate: () => void
 }
 
-function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
-  const { address } = useLogin()
-  const { mutate } = useExistingFlows(address, flow.chainId)
+function SuperfluidFlowItem({ flow, tokens, address, mutate }: SuperfluidFlowItemProps) {
   const { deleteFlow, isLoading: isDeleting } = useDeleteFlow({
     chainId: flow.chainId,
     superTokenAddress: flow.token as `0x${string}`,
@@ -135,23 +137,25 @@ function SuperfluidFlowItem({ flow, tokens }: SuperfluidFlowItemProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Badge variant={flow.isActive ? "default" : "secondary"} className="text-[10px]">
               {flow.isActive ? "Active" : "Closed"}
             </Badge>
+            {flow.isActive && (
+              <div className="grid grid-cols-[0fr] transition-all duration-200 group-hover:grid-cols-[1fr]">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6 overflow-hidden opacity-0 transition-all duration-200 group-hover:opacity-100"
+                  onClick={deleteFlow}
+                  disabled={isDeleting}
+                >
+                  <XIcon className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
-        {flow.isActive && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={deleteFlow}
-            disabled={isDeleting}
-          >
-            <XIcon className="h-4 w-4" />
-          </Button>
-        )}
       </CardContent>
     </Card>
   )
