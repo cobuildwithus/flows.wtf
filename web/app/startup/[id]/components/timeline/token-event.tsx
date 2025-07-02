@@ -3,7 +3,7 @@ import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { TimelineIndicator } from "./timeline-indicator"
 import { ProfileLink } from "@/components/user-profile/profile-link"
 import Link from "next/link"
-import { TokenEventData } from "./timeline"
+import { TokenEventData } from "@/lib/onchain-startup/types"
 import { explorerUrl } from "@/lib/utils"
 
 interface Props {
@@ -22,7 +22,7 @@ export async function TokenEvent({ payment, date }: Props) {
   // Get user profiles - if payment gateway, use beneficiary for both
   const [payerProfile, beneficiaryProfile] = await getProfiles(payer, beneficiary, isPaymentGateway)
 
-  const amount = payment.newlyIssuedTokenCount.div(10 ** 18)
+  const amount = Number(payment.newlyIssuedTokenCount) / 10 ** 18
   const symbol = payment.project?.erc20Symbol || "TOKEN"
   const showBeneficiary = payer !== beneficiary && !isPaymentGateway
 
@@ -40,7 +40,7 @@ export async function TokenEvent({ payment, date }: Props) {
             >
               {payerProfile.display_name}
             </ProfileLink>{" "}
-            got {amount.toDecimalPlaces(4).toString()} {symbol}
+            got {amount.toFixed(4)} {symbol}
             {showBeneficiary && (
               <>
                 {` for `}

@@ -5,6 +5,7 @@ export interface MonthlySales {
   month: string
   sales: number
   orders: number
+  date: Date
 }
 
 export const getSalesSummary = unstable_cache(
@@ -50,11 +51,10 @@ export const getSalesSummary = unstable_cache(
           month: getMonthLabel(date),
           sales: data ? data.sales : 0,
           orders: data ? data.orders : 0,
-          _date: date,
-        } as MonthlySales & { _date: Date }
+          date: date,
+        }
       })
-      .sort((a, b) => a._date.getTime() - b._date.getTime())
-      .map(({ month, sales, orders }) => ({ month, sales, orders }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
 
     return { totalSales, totalOrders, monthlySales }
   },

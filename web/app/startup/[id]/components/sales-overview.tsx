@@ -12,12 +12,19 @@ import { MonthlySales } from "@/lib/shopify/summary"
 import { Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts"
 
 import { BringRevenueOnchain } from "./bring-revenue-onchain"
+import { useETHPrice } from "@/app/token/hooks/useETHPrice"
+import { useFlowsPrice } from "@/lib/revnet/hooks/use-flows-price"
 
 interface Props {
   monthlySales: MonthlySales[]
   startupTitle: string
   projectId: bigint
   chainId: number
+  tokenPayments: {
+    timestamp: number
+    ethAmount: string | null
+    newlyIssuedTokenCount: string
+  }[]
 }
 
 const chartConfig = {
@@ -26,7 +33,16 @@ const chartConfig = {
 } as const
 
 export function SalesOverview(props: Props) {
-  const { monthlySales, startupTitle, projectId, chainId } = props
+  const { monthlySales, startupTitle, projectId, chainId, tokenPayments } = props
+  const { ethPrice } = useETHPrice()
+  const { flowsPrice } = useFlowsPrice()
+
+  const combinedData = combineMonthlySalesWithTokenPayments(
+    monthlySales,
+    tokenPayments,
+    ethPrice,
+    flowsPrice,
+  )
 
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
@@ -45,7 +61,7 @@ export function SalesOverview(props: Props) {
       </CardHeader>
       <CardContent className="pb-4 pt-2">
         <ChartContainer config={chartConfig} className="mt-4 h-[320px] w-full">
-          <ComposedChart data={monthlySales} accessibilityLayer>
+          <ComposedChart data={combinedData} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
             <YAxis
@@ -88,4 +104,57 @@ export function SalesOverview(props: Props) {
       </CardContent>
     </Card>
   )
+}
+
+function combineMonthlySalesWithTokenPayments(
+  monthlySales: MonthlySales[],
+  tokenPayments: {
+    timestamp: number
+    ethAmount: string | null
+    newlyIssuedTokenCount: string
+  }[],
+  ethPrice: number | null,
+  flowsPrice: number | null,
+) {
+  return monthlySales.map((month) => {
+    const monthDate = new Date(month.date)
+    const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
+    const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0)
+
+    // Filter token payments for this month
+    const monthTokenPayments = tokenPayments.filter((payment) => {
+      const paymentDate = new Date(payment.timestamp * 1000)
+      return paymentDate >= monthStart && paymentDate <= monthEnd
+    })
+
+    // Convert to USD using appropriate price
+    const revnetSalesUSD = monthTokenPayments.reduce((sum, payment) => {
+      if (payment.ethAmount && ethPrice) {
+        const flowsAmount = Number(payment.ethAmount) / 1e18
+        return sum + flowsAmount * ethPrice
+      } else if (!payment.ethAmount && flowsPrice) {
+        const flowsTokens = Number(payment.newlyIssuedTokenCount) / 1e18
+        return sum + flowsTokens * flowsPrice
+      }
+      return sum
+    }, 0)
+
+    // Count payments > $1 worth as orders
+    const revnetOrders = monthTokenPayments.filter((payment) => {
+      if (payment.ethAmount && ethPrice) {
+        const flowsAmount = Number(payment.ethAmount) / 1e18
+        return flowsAmount * ethPrice > 1
+      } else if (!payment.ethAmount && flowsPrice) {
+        const flowsTokens = Number(payment.newlyIssuedTokenCount) / 1e18
+        return flowsTokens * flowsPrice > 1
+      }
+      return false
+    }).length
+
+    return {
+      ...month,
+      sales: month.sales + revnetSalesUSD,
+      orders: month.orders + revnetOrders,
+    }
+  })
 }

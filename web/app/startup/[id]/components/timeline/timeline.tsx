@@ -1,35 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { farcasterDb } from "@/lib/database/farcaster-db"
-import database from "@/lib/database/flows-db"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
+import { getTokenPayments } from "@/lib/onchain-startup/token-payments"
 import { Order } from "@/lib/shopify/orders"
 import { MinimalCast } from "@/lib/types/cast"
 import { cn } from "@/lib/utils"
-import { JuiceboxPayEvent } from "@prisma/flows"
 import { CastEvent } from "./cast-event"
 import { OrderEvent } from "./order-event"
 import { TokenEvent } from "./token-event"
+import { TokenEventData } from "@/lib/onchain-startup/types"
 
 interface Props {
   orders: Order[]
   startup: Startup
   teamMembers: TeamMember[]
-}
-
-export type TokenEventData = Pick<
-  JuiceboxPayEvent,
-  | "txHash"
-  | "timestamp"
-  | "payer"
-  | "amount"
-  | "newlyIssuedTokenCount"
-  | "beneficiary"
-  | "chainId"
-  | "memo"
-> & {
-  project?: { erc20Symbol: string | null } | null
 }
 
 type TimelineEvent =
@@ -47,7 +33,9 @@ export async function Timeline(props: Props) {
   const { orders, startup, teamMembers } = props
 
   const [tokenPayments, casts] = await Promise.all([
-    getTokenPayments(Number(startup.revnetProjectIds.base)),
+    getTokenPayments(Number(startup.revnetProjectIds.base)).then((payments) =>
+      payments.slice(0, 30),
+    ),
     getTeamCasts(teamMembers.map((m) => m.fid).filter((fid) => fid !== undefined)),
   ])
 
@@ -108,25 +96,6 @@ export async function Timeline(props: Props) {
       </CardContent>
     </Card>
   )
-}
-
-const getTokenPayments = async (projectId: number) => {
-  return database.juiceboxPayEvent.findMany({
-    select: {
-      txHash: true,
-      timestamp: true,
-      payer: true,
-      amount: true,
-      newlyIssuedTokenCount: true,
-      beneficiary: true,
-      chainId: true,
-      memo: true,
-      project: { select: { erc20Symbol: true } },
-    },
-    where: { projectId, newlyIssuedTokenCount: { gt: 0 } },
-    orderBy: { timestamp: "desc" },
-    take: 30,
-  })
 }
 
 const getTeamCasts = async (teamMemberFids: number[]) => {

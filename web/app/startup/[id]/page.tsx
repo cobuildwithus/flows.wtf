@@ -12,6 +12,7 @@ import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { getStartup } from "@/lib/onchain-startup/startup"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
+import { getTokenPayments } from "@/lib/onchain-startup/token-payments"
 import { getAllOrders } from "@/lib/shopify/orders"
 import { getProducts } from "@/lib/shopify/products"
 import { getSalesSummary } from "@/lib/shopify/summary"
@@ -52,7 +53,7 @@ export default async function GrantPage(props: Props) {
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
 
-  const [teamMembers, user, impactFlow, orders, budgets] = await Promise.all([
+  const [teamMembers, user, impactFlow, orders, budgets, tokenPayments] = await Promise.all([
     getTeamMembers(startup.id),
     getUser(),
     database.grant.findFirstOrThrow({
@@ -68,6 +69,7 @@ export default async function GrantPage(props: Props) {
     }),
     getAllOrders(startup.shopify),
     getStartupBudgets(startup.id),
+    getTokenPayments(Number(startup.revnetProjectIds.base)),
   ])
 
   const [products, salesSummary] = await Promise.all([
@@ -135,6 +137,7 @@ export default async function GrantPage(props: Props) {
               startupTitle={startup.title}
               projectId={startup.revnetProjectIds.base}
               chainId={startup.chainId}
+              tokenPayments={tokenPayments}
             />
           </div>
 
