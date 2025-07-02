@@ -5,6 +5,7 @@ import { ProfileLink } from "@/components/user-profile/profile-link"
 import Link from "next/link"
 import { TokenEventData } from "@/lib/onchain-startup/types"
 import { explorerUrl } from "@/lib/utils"
+import { Currency } from "@/components/ui/currency"
 
 interface Props {
   payment: TokenEventData
@@ -40,7 +41,7 @@ export async function TokenEvent({ payment, date }: Props) {
             >
               {payerProfile.display_name}
             </ProfileLink>{" "}
-            got {amount.toFixed(4)} {symbol}
+            got <Currency flow={{ underlyingTokenSymbol: symbol }}>{amount}</Currency>
             {showBeneficiary && (
               <>
                 {` for `}

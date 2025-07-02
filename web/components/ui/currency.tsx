@@ -19,7 +19,9 @@ export const Currency = (props: PropsWithChildren<Props>) => {
 
   // If token overrides are provided, use them regardless of currency type
   if (tokenSymbol || tokenPrefix) {
-    const formattedCurrency = formatCurrency(value, tokenSymbol || "Token", tokenPrefix)
+    const formattedCurrency = formatCurrency(value, tokenSymbol || "Token", tokenPrefix, {
+      maximumFractionDigits: getCurrencyFractionDigits(value),
+    })
     return <Component {...rest}>{formattedCurrency}</Component>
   }
 

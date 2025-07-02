@@ -34,7 +34,7 @@ export function formatSuperTokenCurrency(
   }
 
   // Otherwise, use the symbol with a space
-  return `${tokenInfo.underlyingTokenSymbol} ${formattedNumber}`
+  return `${formattedNumber} ${tokenInfo.underlyingTokenSymbol}`
 }
 
 /**
