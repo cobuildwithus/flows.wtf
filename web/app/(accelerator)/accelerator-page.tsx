@@ -7,6 +7,7 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { getFlow } from "@/lib/database/queries/flow"
+import { getRevnetBalance } from "@/lib/revnet/hooks/get-revnet-balance"
 import { Accelerator } from "@/lib/onchain-startup/data/accelerators"
 import { getStartups } from "@/lib/onchain-startup/startup"
 import Image from "next/image"
@@ -21,14 +22,9 @@ export async function AcceleratorPage(props: Props) {
 
   const startups = getStartups(accelerator)
 
-  const [flow, user, balances, participants] = await Promise.all([
+  const [flow, user, participants, balanceResults] = await Promise.all([
     getFlow(accelerator.flowId),
     getUser(),
-    database.juiceboxProject.groupBy({
-      by: ["projectId"],
-      where: { projectId: { in: startups.map((s) => s.revnetProjectId) } },
-      _sum: { balance: true },
-    }),
     database.juiceboxParticipant.findMany({
       where: {
         projectId: { in: startups.map((s) => s.revnetProjectId) },
@@ -36,7 +32,19 @@ export async function AcceleratorPage(props: Props) {
       },
       select: { projectId: true, address: true },
     }),
+    Promise.all(
+      startups.map((startup) =>
+        getRevnetBalance(BigInt(startup.revnetProjectId), 8453),
+      ),
+    ),
   ])
+
+  const balances = Object.fromEntries(
+    startups.map((startup, i) => [
+      startup.revnetProjectId,
+      BigInt(balanceResults[i].balance ?? "0"),
+    ]),
+  )
 
   return (
     <AgentChatProvider
@@ -167,11 +175,7 @@ export async function AcceleratorPage(props: Props) {
                         <p className="text-xs text-card-foreground/80">Treasury</p>
                         <p className="mt-1 text-sm font-semibold text-card-foreground">
                           <EthInUsd
-                            amount={BigInt(
-                              balances
-                                .find((p) => p.projectId === startup.revnetProjectId)
-                                ?._sum.balance?.toNumber() ?? 0,
-                            )}
+                            amount={balances[startup.revnetProjectId] ?? 0n}
                           />
                         </p>
                       </div>
