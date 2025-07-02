@@ -8,7 +8,7 @@ interface Props {
 
 export function ProductsTitle({ startup, chainId }: Props) {
   const { data: tokenDetails, isLoading } = useRevnetTokenDetails(
-    BigInt(startup.revnetProjectId),
+    startup.revnetProjectIds.base,
     chainId,
   )
 

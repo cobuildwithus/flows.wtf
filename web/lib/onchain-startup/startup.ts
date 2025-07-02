@@ -8,7 +8,7 @@ const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
     ...vrbscoffee,
     title: "Vrbs Coffee",
-    revnetProjectIds: { base: 3n },
+    revnetProjectIds: { base: 104n },
   },
 } as const
 

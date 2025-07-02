@@ -2,7 +2,6 @@ import { StartupData } from "./interface"
 
 export const vrbscoffee = {
   acceleratorId: "vrbs",
-  revnetProjectId: 3,
   title: "VRBS Coffee",
   tagline: "Good Coffee for a Good Cause",
   image:

@@ -4,7 +4,6 @@ import { AcceleratorId } from "./accelerators"
 
 export interface StartupData {
   acceleratorId: AcceleratorId
-  revnetProjectId: number
   title: string
   tagline: string
   image: string

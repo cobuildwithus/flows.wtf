@@ -19,9 +19,9 @@ export function ProductsList(props: Props) {
   const { changeProductsVolumeEth, products, startup, chainId } = props
   const [quantity, setQuantity] = useState("1")
   const [touched, setTouched] = useState(false)
-  const projectId = startup.revnetProjectId
-  const { calculateTokensFromEth } = useRevnetTokenPrice(BigInt(projectId), chainId)
-  const { data: tokenDetails } = useRevnetTokenDetails(BigInt(projectId), chainId)
+  const projectId = startup.revnetProjectIds.base
+  const { calculateTokensFromEth } = useRevnetTokenPrice(projectId, chainId)
+  const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
 
   const tokenSymbol = tokenDetails?.symbol || ""
   const quantityNum = quantity === "" ? 0 : parseInt(quantity)

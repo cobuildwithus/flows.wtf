@@ -26,12 +26,12 @@ export async function AcceleratorPage(props: Props) {
     getUser(),
     database.juiceboxProject.groupBy({
       by: ["projectId"],
-      where: { projectId: { in: startups.map((s) => s.revnetProjectId) } },
+      where: { projectId: { in: startups.map((s) => Number(s.revnetProjectIds.base)) } },
       _sum: { balance: true },
     }),
     database.juiceboxParticipant.findMany({
       where: {
-        projectId: { in: startups.map((s) => s.revnetProjectId) },
+        projectId: { in: startups.map((s) => Number(s.revnetProjectIds.base)) },
         balance: { gt: 0 },
       },
       select: { projectId: true, address: true },
@@ -170,7 +170,7 @@ export async function AcceleratorPage(props: Props) {
                           <EthInUsd
                             amount={BigInt(
                               balances
-                                .find((p) => p.projectId === startup.revnetProjectId)
+                                .find((p) => p.projectId === Number(startup.revnetProjectIds.base))
                                 ?._sum.balance?.toNumber() ?? 0,
                             )}
                           />
@@ -180,8 +180,9 @@ export async function AcceleratorPage(props: Props) {
                         <p className="text-xs text-card-foreground/80">Supporters</p>
                         <p className="mt-1 text-sm font-semibold text-card-foreground">
                           {
-                            participants.filter((p) => p.projectId === startup.revnetProjectId)
-                              .length
+                            participants.filter(
+                              (p) => p.projectId === Number(startup.revnetProjectIds.base),
+                            ).length
                           }
                         </p>
                       </div>
