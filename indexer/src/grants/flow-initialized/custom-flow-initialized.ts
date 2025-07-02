@@ -65,6 +65,7 @@ async function handleFlowInitialized(params: {
     isTopLevel,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
+    activatedAt: Number(event.block.timestamp),
     isFlow: true,
     isRemoved: false,
     parentContract,

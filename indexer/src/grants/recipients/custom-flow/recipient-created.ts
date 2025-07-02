@@ -42,6 +42,7 @@ async function handleRecipientCreated(params: {
     recipientId: grantId,
     description: metadata.description,
     manager: "",
+    activatedAt: timestamp,
     image: metadata.image,
     tagline: metadata.tagline,
     url: metadata.url,
