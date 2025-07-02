@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge"
-import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
 import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import { Startup } from "@/lib/onchain-startup/startup"
 import Link from "next/link"
@@ -7,6 +6,7 @@ import { useEffect, useState, useRef, useMemo } from "react"
 import { useETHPrice } from "@/app/token/hooks/useETHPrice"
 import NumberFlow from "@number-flow/react"
 import { cn } from "@/lib/utils"
+import { useFlowsTreasuryBalance } from "@/lib/revnet/hooks/use-flows-revnet-balance"
 
 interface Props {
   startup: Startup
@@ -15,11 +15,12 @@ interface Props {
 }
 
 export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
-  const { data, isLoading, error } = useRevnetBalance(
+  const { ethPrice } = useETHPrice()
+
+  const { treasuryBalanceUSD, isLoading, error } = useFlowsTreasuryBalance(
     BigInt(startup.revnetProjectIds.base),
     chainId,
   )
-  const { ethPrice } = useETHPrice()
 
   const [isFlashing, setIsFlashing] = useState(false)
   const prevEthRaisedRef = useRef(ethRaised)
@@ -28,13 +29,12 @@ export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
     console.error("Error loading treasury balance:", error)
   }
 
-  const balance = data?.balance ? BigInt(data.balance) : BigInt(0)
-  const ethRaisedWei = BigInt(Math.floor(ethRaised * 1e18))
-
-  // Convert to USD for display
-  const balanceUSD = ethPrice ? (Number(balance) / 1e18) * ethPrice : 0
-  const ethRaisedUSD = ethPrice ? (Number(ethRaisedWei) / 1e18) * ethPrice : 0
-  const totalUSD = useMemo(() => balanceUSD + ethRaisedUSD, [balanceUSD, ethRaisedUSD])
+  // Convert ethRaised to USD for display
+  const ethRaisedUSD = ethPrice ? ethRaised * ethPrice : 0
+  const totalUSD = useMemo(
+    () => treasuryBalanceUSD + ethRaisedUSD,
+    [treasuryBalanceUSD, ethRaisedUSD],
+  )
 
   useEffect(() => {
     // Detect if ethRaised increased

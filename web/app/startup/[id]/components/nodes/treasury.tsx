@@ -1,6 +1,5 @@
 "use client"
 
-import { EthInUsd } from "@/components/global/eth-in-usd"
 import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
 import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import Link from "next/link"
@@ -17,7 +16,6 @@ export function Treasury({ projectId, chainId }: Props) {
     console.error("Error loading treasury balance:", error)
   }
 
-  const balance = data?.balance ? BigInt(data.balance) : BigInt(0)
   const participantsCount = isLoading ? " ... " : data?.participantsCount || 0
 
   return (
