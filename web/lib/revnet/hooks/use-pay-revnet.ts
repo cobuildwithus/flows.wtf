@@ -4,7 +4,8 @@ import { toast } from "sonner"
 import { parseEther } from "viem"
 import { base } from "../../../addresses"
 import { useContractTransaction } from "../../wagmi/use-contract-transaction"
-import { jbMultiTerminalAbi } from "../../abis"
+import { jbMultiTerminalAbi, jbDirectoryAbi } from "../../abis"
+import { useReadContract } from "wagmi"
 
 interface PayRevnetArgs {
   projectId: bigint
@@ -16,12 +17,23 @@ interface PayRevnetArgs {
   metadata?: `0x${string}`
 }
 
-export function usePayRevnet(chainId: number, onSuccess?: () => void) {
+const ETH_ADDRESS = "0x000000000000000000000000000000000000EEEe" as const
+
+export function usePayRevnet(projectId: bigint, chainId: number, onSuccess?: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess,
     loading: "Processing payment...",
     success: "Payment successful!",
+  })
+
+  // Fetch the primary terminal for this project
+  const { data: primaryTerminal } = useReadContract({
+    address: base.JBDirectory,
+    abi: jbDirectoryAbi,
+    functionName: "primaryTerminalOf",
+    args: [projectId, ETH_ADDRESS],
+    chainId,
   })
 
   return {
@@ -40,13 +52,16 @@ export function usePayRevnet(chainId: number, onSuccess?: () => void) {
           metadata = "0x0",
         } = args
 
-        const isETH = token === "0x000000000000000000000000000000000000EEEe"
+        const isETH = token === ETH_ADDRESS
         const value = isETH ? parseEther(amount) : 0n
         const payAmount = isETH ? value : parseEther(amount)
 
+        // Use fetched terminal or fallback to default JBMultiTerminal
+        const paymentTerminal = primaryTerminal || base.JBMultiTerminal
+
         writeContract({
           account,
-          address: base.JBMultiTerminal,
+          address: paymentTerminal,
           abi: jbMultiTerminalAbi,
           functionName: "pay",
           chainId,
@@ -61,4 +76,17 @@ export function usePayRevnet(chainId: number, onSuccess?: () => void) {
       }
     },
   }
+}
+
+// Export for other uses if needed
+export function usePrimaryNativeTerminal(projectId: bigint, chainId: number) {
+  const result = useReadContract({
+    address: base.JBDirectory,
+    abi: jbDirectoryAbi,
+    functionName: "primaryTerminalOf",
+    args: [projectId, ETH_ADDRESS],
+    chainId,
+  })
+
+  return result
 }

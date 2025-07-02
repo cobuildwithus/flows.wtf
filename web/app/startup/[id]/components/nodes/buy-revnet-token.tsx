@@ -18,7 +18,7 @@ interface Props {
 
 export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Props) {
   const { address } = useAccount()
-  const { payRevnet, isLoading } = usePayRevnet(chainId)
+  const { payRevnet, isLoading } = usePayRevnet(projectId, chainId)
   const {
     isLoading: isPriceLoading,
     calculateTokensFromEth,

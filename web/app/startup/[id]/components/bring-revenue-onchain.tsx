@@ -34,7 +34,7 @@ interface Props {
 export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const { address } = useAccount()
-  const { payRevnet, isLoading } = usePayRevnet(chainId, () => {
+  const { payRevnet, isLoading } = usePayRevnet(projectId, chainId, () => {
     // Reset form and close dialog on success
     setAmount("")
     setBeneficiary("")

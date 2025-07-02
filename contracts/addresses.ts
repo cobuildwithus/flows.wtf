@@ -31,6 +31,7 @@ export const base = {
   GroundsToken: "0xebf2d8b25d3dcc3371d54c6727c207c4f3080b8c",
   // Juicebox
   JBMultiTerminal: "0xdb9644369c79c3633cde70d2df50d827d7dc7dbc",
+  JBDirectory: "0x0bc9f153dee4d3d474ce0903775b9b2aaae9aa41",
 } as const
 
 export const optimism = {
