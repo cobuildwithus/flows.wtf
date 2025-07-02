@@ -1,7 +1,6 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
@@ -9,6 +8,8 @@ import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
 import { AuthButton } from "@/components/ui/auth-button"
 import { ArrowDown } from "lucide-react"
+import { TokenLogo } from "@/app/token/token-logo"
+import { getRevnetTokenLogo } from "@/app/token/get-revnet-token-logo"
 
 interface Props {
   projectId: bigint
@@ -93,7 +94,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Pro
             <Input
               id="pay"
               onFocus={() => setTouched(true)}
-              className="h-12 border-0 border-transparent bg-transparent p-0 text-xl shadow-none focus-visible:ring-0"
+              className="h-16 border-0 border-transparent bg-transparent p-0 text-2xl shadow-none focus-visible:ring-0"
               type="number"
               min={0.000001}
               step={0.00000000001}
@@ -101,9 +102,12 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Pro
               onChange={(e) => handlePayAmountChange(e.target.value)}
               placeholder="0"
             />
-            <span className="ml-3 rounded-md bg-background px-3 py-1.5 text-sm font-medium">
-              ETH
-            </span>
+            <div className="ml-3 flex items-center rounded-full bg-background px-3 py-1.5">
+              <div className="mr-2">
+                <TokenLogo src="/eth.png" alt="ETH" />
+              </div>
+              <span className="text-base font-medium">ETH</span>
+            </div>
           </div>
         </div>
 
@@ -122,7 +126,7 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Pro
           <div className="flex items-center justify-between">
             <Input
               id="receive"
-              className="h-12 border-0 border-transparent bg-transparent p-0 text-xl shadow-none focus-visible:ring-0"
+              className="h-16 border-0 border-transparent bg-transparent p-0 text-2xl shadow-none focus-visible:ring-0"
               type="number"
               min={0}
               step={0.01}
@@ -138,19 +142,22 @@ export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Pro
               readOnly={isPriceLoading}
               placeholder={isPriceLoading ? "..." : "0"}
             />
-            <span className="ml-3 rounded-md bg-background px-3 py-1.5 text-sm font-medium">
-              {tokenSymbol || "TOKEN"}
-            </span>
+            <div className="ml-3 flex items-center rounded-full bg-background px-3 py-1.5">
+              <div className="mr-2">
+                <TokenLogo src={getRevnetTokenLogo(tokenSymbol)} alt="TOKEN" />
+              </div>
+              <span className="text-base font-medium">{tokenSymbol || "TOKEN"}</span>
+            </div>
           </div>
         </div>
       </div>
 
       <AuthButton
         variant="default"
-        size="lg"
+        size="xl"
         type="submit"
         disabled={isLoading || !payAmount}
-        className="w-full rounded-lg text-base font-medium"
+        className="w-full rounded-2xl text-base font-medium"
       >
         {isLoading ? "Processing..." : `Buy`}
       </AuthButton>

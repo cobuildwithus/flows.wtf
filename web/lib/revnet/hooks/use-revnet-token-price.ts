@@ -5,11 +5,15 @@ import { getRevnetTokenPrice } from "./get-revnet-token-price"
 import { formatEther, parseEther } from "viem"
 import { useMemo } from "react"
 
-export function useRevnetTokenPrice(projectId: bigint, chainId: number) {
-  const result = useServerFunction(
+export function useRevnetTokenPrice(
+  projectId: bigint,
+  chainId: number,
+  isFlowsDenominated: boolean = true,
+) {
+  const { data, ...rest } = useServerFunction(
     getRevnetTokenPrice,
     "revnet-token-price",
-    [projectId, chainId],
+    [projectId, chainId, isFlowsDenominated],
     {
       refreshInterval: 30000, // Refresh every 30 seconds
       revalidateOnFocus: false,
@@ -17,7 +21,7 @@ export function useRevnetTokenPrice(projectId: bigint, chainId: number) {
   )
 
   const helpers = useMemo(() => {
-    const currentPrice = result.data?.currentPrice
+    const currentPrice = data?.currentPrice
 
     // Calculate tokens from ETH amount
     const calculateTokensFromEth = (ethAmount: string): string => {
@@ -36,6 +40,7 @@ export function useRevnetTokenPrice(projectId: bigint, chainId: number) {
         const rounded = Number.parseFloat(tokensFormatted).toFixed(2)
         return Number.parseFloat(rounded).toString()
       } catch (error) {
+        console.error("Error calculating tokens from eth:", error)
         return ""
       }
     }
@@ -56,6 +61,7 @@ export function useRevnetTokenPrice(projectId: bigint, chainId: number) {
         const rounded = Number.parseFloat(ethFormatted).toFixed(6)
         return Number.parseFloat(rounded).toString()
       } catch (error) {
+        console.error("Error calculating eth from tokens:", error)
         return ""
       }
     }
@@ -64,10 +70,11 @@ export function useRevnetTokenPrice(projectId: bigint, chainId: number) {
       calculateTokensFromEth,
       calculateEthFromTokens,
     }
-  }, [result.data?.currentPrice])
+  }, [data?.currentPrice])
 
   return {
-    ...result,
+    currentPrice: data?.currentPrice,
+    ...rest,
     ...helpers,
   }
 }

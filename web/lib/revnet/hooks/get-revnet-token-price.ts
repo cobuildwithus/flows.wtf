@@ -1,5 +1,6 @@
 "use server"
 
+import { FLOWS_REVNET_PROJECT_ID } from "@/lib/config"
 import database from "@/lib/database/flows-db"
 
 // Helper to calculate the decay factor based on weight cut and cycles passed
@@ -33,6 +34,7 @@ function adjustPriceForReserved(price: bigint, reservedPercent: number): bigint 
 export const getRevnetTokenPrice = async (
   projectId: bigint,
   chainId: number,
+  isFlowsDenominated: boolean = true,
 ): Promise<{
   currentPrice: string
 }> => {
@@ -97,6 +99,18 @@ export const getRevnetTokenPrice = async (
       basePricePerToken,
       activeRuleset.reservedPercent,
     )
+
+    if (isFlowsDenominated) {
+      const { currentPrice: ethPerFlows } = await getRevnetTokenPrice(
+        FLOWS_REVNET_PROJECT_ID,
+        chainId,
+        false,
+      )
+      const price = (Number(ethPerFlows) * Number(adjustedPricePerToken)) / 1e18
+      return {
+        currentPrice: price.toFixed(0).toString(),
+      }
+    }
 
     return {
       currentPrice: adjustedPricePerToken.toString(),

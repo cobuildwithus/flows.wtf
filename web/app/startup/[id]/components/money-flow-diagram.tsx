@@ -9,7 +9,6 @@ import { getIpfsUrl } from "@/lib/utils"
 import { Background, MarkerType, type Node, Position, ReactFlow } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 import Image from "next/image"
-import Link from "next/link"
 import { JoinStartupLink } from "./join-startup-link"
 import { TokenDAOLink } from "./token-dao-link"
 import { BuyRevnetToken } from "./nodes/buy-revnet-token"
@@ -20,7 +19,6 @@ import { Reviews } from "./nodes/reviews"
 import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
-import { ProductsTitle } from "./products-title"
 import { TreasuryTitle } from "./treasury-title"
 import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
 import { MoneyFlowSkeleton } from "./money-flow-skeleton"
@@ -73,7 +71,7 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         data: {
-          label: `Join ${startup.title} DAO`,
+          label: `Join ${startup.title}`,
           image: user?.avatar,
           handles: isMobile ? [{ type: "source", position: Position.Bottom }] : [],
         },
@@ -124,23 +122,6 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 1,
         row: 1,
-        height: 320,
-        id: "user_action",
-        title: <ProductsTitle startup={startup} chainId={startup.chainId} />,
-        className: "bg-background dark:bg-background/50 shadow",
-        content: (
-          <ProductsList
-            changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
-            products={products.slice(0, 10)}
-            startup={startup}
-            chainId={startup.chainId}
-          />
-        ),
-        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
-      },
-      {
-        col: 1,
-        row: 2,
         title: (
           <JoinStartupLink
             startupTitle={startup.title}
@@ -149,11 +130,28 @@ export function MoneyFlowDiagram(props: Props) {
           />
         ),
         id: "user_token",
-        height: 250,
+        height: 285,
         content: (
           <BuyRevnetToken
             projectId={startup.revnetProjectIds.base}
             changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
+            chainId={startup.chainId}
+          />
+        ),
+        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
+      },
+      {
+        col: 1,
+        row: 2,
+        height: 320,
+        id: "user_action",
+        title: "Earn",
+        className: "bg-background dark:bg-background/50 shadow",
+        content: (
+          <ProductsList
+            changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
+            products={products.slice(0, 10)}
+            startup={startup}
             chainId={startup.chainId}
           />
         ),
