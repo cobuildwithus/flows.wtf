@@ -11,18 +11,20 @@ interface Props {
   date: Date
 }
 
+const PAYMENT_GATEWAY_ADDRESS = "0x8292bbac0a2bb14f2f40a68af1fa8fd89fb6fa5b"
+
 export async function TokenEvent({ payment, date }: Props) {
   if (!payment.payer || !payment.newlyIssuedTokenCount) return null
 
   const { beneficiary, payer } = payment
+  const isPaymentGateway = payer.toLowerCase() === PAYMENT_GATEWAY_ADDRESS
 
-  const [payerProfile, beneficiaryProfile] = await Promise.all([
-    getUserProfile(payer as `0x${string}`),
-    getUserProfile(beneficiary as `0x${string}`),
-  ])
+  // Get user profiles - if payment gateway, use beneficiary for both
+  const [payerProfile, beneficiaryProfile] = await getProfiles(payer, beneficiary, isPaymentGateway)
 
   const amount = payment.newlyIssuedTokenCount.div(10 ** 18)
   const symbol = payment.project?.erc20Symbol || "TOKEN"
+  const showBeneficiary = payer !== beneficiary && !isPaymentGateway
 
   return (
     <>
@@ -39,7 +41,7 @@ export async function TokenEvent({ payment, date }: Props) {
               {payerProfile.display_name}
             </ProfileLink>{" "}
             got {amount.toDecimalPlaces(4).toString()} {symbol}
-            {payer !== beneficiary && (
+            {showBeneficiary && (
               <>
                 {` for `}
                 <ProfileLink
@@ -66,4 +68,16 @@ export async function TokenEvent({ payment, date }: Props) {
       </div>
     </>
   )
+}
+
+async function getProfiles(payer: string, beneficiary: string, isPaymentGateway: boolean) {
+  if (isPaymentGateway) {
+    const profile = await getUserProfile(beneficiary as `0x${string}`)
+    return [profile, profile]
+  }
+
+  return await Promise.all([
+    getUserProfile(payer as `0x${string}`),
+    getUserProfile(beneficiary as `0x${string}`),
+  ])
 }
