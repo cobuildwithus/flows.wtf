@@ -1,5 +1,4 @@
 import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
-import { Startup } from "@/lib/onchain-startup/startup"
 import { useMemo } from "react"
 import { useETHPrice } from "@/app/token/hooks/useETHPrice"
 import { FLOWS_REVNET_PROJECT_ID, FLOWS_TOKEN } from "@/lib/config"

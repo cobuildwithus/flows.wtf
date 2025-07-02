@@ -9,6 +9,8 @@ import database from "@/lib/database/flows-db"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Accelerator } from "@/lib/onchain-startup/data/accelerators"
 import { getStartups } from "@/lib/onchain-startup/startup"
+import { getFlowsTreasuryBalance } from "@/lib/revnet/hooks/get-flows-revnet-balance"
+import { base } from "viem/chains"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -21,22 +23,23 @@ export async function AcceleratorPage(props: Props) {
 
   const startups = getStartups(accelerator)
 
-  const [flow, user, balances, participants] = await Promise.all([
+  const [flow, user, ...treasuryBalances] = await Promise.all([
     getFlow(accelerator.flowId),
     getUser(),
-    database.juiceboxProject.groupBy({
-      by: ["projectId"],
-      where: { projectId: { in: startups.map((s) => Number(s.revnetProjectIds.base)) } },
-      _sum: { balance: true },
-    }),
-    database.juiceboxParticipant.findMany({
-      where: {
-        projectId: { in: startups.map((s) => Number(s.revnetProjectIds.base)) },
-        balance: { gt: 0 },
-      },
-      select: { projectId: true, address: true },
-    }),
+    ...startups.map((startup) =>
+      getFlowsTreasuryBalance(BigInt(startup.revnetProjectIds.base), base.id),
+    ),
   ])
+
+  // Create a map of project ID to treasury data for easy lookup
+  const treasuryDataMap = new Map(
+    startups.map((startup, index) => [
+      Number(startup.revnetProjectIds.base),
+      treasuryBalances[index],
+    ]),
+  )
+
+  console.log(treasuryDataMap)
 
   return (
     <AgentChatProvider
@@ -88,7 +91,13 @@ export async function AcceleratorPage(props: Props) {
               <dl className="mt-12 grid grid-cols-2 items-start gap-8 lg:max-w-3xl lg:grid-cols-4">
                 {[
                   { name: "Projects", value: startups.length },
-                  { name: "Supporters", value: participants.length },
+                  {
+                    name: "Backers",
+                    value: treasuryBalances.reduce(
+                      (sum, treasury) => sum + treasury.participantsCount,
+                      0,
+                    ),
+                  },
                   {
                     name: "Earned so far",
                     value: Intl.NumberFormat("en", {
@@ -167,23 +176,21 @@ export async function AcceleratorPage(props: Props) {
                       <div>
                         <p className="text-xs text-card-foreground/80">Treasury</p>
                         <p className="mt-1 text-sm font-semibold text-card-foreground">
-                          <EthInUsd
-                            amount={BigInt(
-                              balances
-                                .find((p) => p.projectId === Number(startup.revnetProjectIds.base))
-                                ?._sum.balance?.toNumber() ?? 0,
-                            )}
-                          />
+                          {Intl.NumberFormat("en", {
+                            style: "currency",
+                            currency: "USD",
+                            maximumFractionDigits: 0,
+                          }).format(
+                            treasuryDataMap.get(Number(startup.revnetProjectIds.base))
+                              ?.treasuryBalanceUSD ?? 0,
+                          )}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-card-foreground/80">Supporters</p>
                         <p className="mt-1 text-sm font-semibold text-card-foreground">
-                          {
-                            participants.filter(
-                              (p) => p.projectId === Number(startup.revnetProjectIds.base),
-                            ).length
-                          }
+                          {treasuryDataMap.get(Number(startup.revnetProjectIds.base))
+                            ?.participantsCount ?? 0}
                         </p>
                       </div>
                     </div>
