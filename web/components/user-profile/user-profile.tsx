@@ -15,7 +15,7 @@ type Props = {
 }
 
 export const UserProfile = async (props: Props) => {
-  const { address, children, hideLink = false } = props
+  const { address, children } = props
 
   return (
     <Suspense fallback={children({ address, display_name: getShortEthAddress(address) })}>
@@ -29,20 +29,21 @@ const UserProfileInner = async (props: Props) => {
 
   const profile = await getUserProfile(address)
 
+  const content = hideLink ? (
+    children(profile)
+  ) : (
+    <ProfileLink username={profile.username} address={profile.address} chainId={base.id}>
+      {children(profile)}
+    </ProfileLink>
+  )
+
   if (withPopover) {
     return (
       <UserProfilePopover profile={profile}>
-        <div className="flex">
-          {!hideLink && (
-            <ProfileLink username={profile.username} address={profile.address} chainId={base.id}>
-              {children(profile)}
-            </ProfileLink>
-          )}
-          {hideLink && children(profile)}
-        </div>
+        <div className="flex">{content}</div>
       </UserProfilePopover>
     )
   }
 
-  return children(profile)
+  return content
 }

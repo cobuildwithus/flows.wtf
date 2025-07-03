@@ -1,4 +1,4 @@
-"use client"
+"use server"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -11,13 +11,14 @@ import type { FlowWithGrants } from "@/lib/database/queries/flow"
 import { explorerUrl } from "@/lib/utils"
 import Link from "next/link"
 import { Separator } from "@radix-ui/react-select"
+import { IncomingFlowsList } from "@/components/global/incoming-flows"
 
 interface Props {
   flow: FlowWithGrants
   totalAllocationWeight: number
 }
 
-export const BudgetDialog = (props: Props) => {
+export const BudgetDialog = async (props: Props) => {
   const { flow, totalAllocationWeight } = props
   const tokenVoteWeight = 1000
 
@@ -123,32 +124,39 @@ export const BudgetDialog = (props: Props) => {
         <Card>
           <CardContent className="space-y-6">
             {/* Total Flows Section */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
-                  <ArrowDownIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Link
+              className="text-sm underline"
+              href={explorerUrl(flow.recipient, flow.chainId, "address")}
+              target="_blank"
+            >
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
+                    <ArrowDownIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Incoming Flow</p>
+                    <p className="text-xl font-bold">
+                      <Currency flow={flow}>{flow.monthlyIncomingFlowRate || 0}</Currency>
+                      /month
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Incoming Flow</p>
-                  <p className="text-xl font-bold">
-                    <Currency flow={flow}>{flow.monthlyIncomingFlowRate || 0}</Currency>
-                    /month
-                  </p>
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/30">
+                    <ArrowUpIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Outgoing Flow</p>
+                    <p className="text-xl font-bold">
+                      <Currency flow={flow}>{flow.monthlyOutgoingFlowRate || 0}</Currency>
+                      /month
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/30">
-                  <ArrowUpIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Outgoing Flow</p>
-                  <p className="text-xl font-bold">
-                    <Currency flow={flow}>{flow.monthlyOutgoingFlowRate || 0}</Currency>
-                    /month
-                  </p>
-                </div>
-              </div>
-            </div>
+            </Link>
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <TooltipProvider delayDuration={0}>
@@ -214,13 +222,8 @@ export const BudgetDialog = (props: Props) => {
           </CardContent>
         </Card>
 
-        <Link
-          className="text-base underline"
-          href={explorerUrl(flow.recipient, flow.chainId, "address")}
-          target="_blank"
-        >
-          View on Explorer
-        </Link>
+        {/* Show funding contributors */}
+        <IncomingFlowsList parentFlow={flow} maxItems={6} showTitle={true} />
       </DialogContent>
     </Dialog>
   )
