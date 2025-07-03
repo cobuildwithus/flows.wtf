@@ -106,7 +106,7 @@ export function StreamingDurationSelector({
   }
 
   return (
-    <div className="space-y-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-border/50 dark:bg-zinc-900/50">
+    <div className="space-y-4 rounded-lg border border-zinc-300 p-4 duration-300 hover:border-zinc-500 dark:border-border/50 dark:hover:border-border">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Duration</label>
         <div className="flex items-center gap-1">
