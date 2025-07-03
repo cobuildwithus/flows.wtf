@@ -26,7 +26,7 @@ interface Props {
 }
 
 export function MultimodalInput(props: Props) {
-  const { rows = 3, placeholder = "Ask anything", className, onSubmit, autoFocus = false } = props
+  const { rows = 1, placeholder = "Ask anything", className, onSubmit, autoFocus = false } = props
   const { input, setInput, isLoading, stop, attachments, setAttachments, handleSubmit, user } =
     useAgentChat()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -36,15 +36,15 @@ export function MultimodalInput(props: Props) {
   const { uploadQueue, uploadFiles, progressMap, uploadingMap } = useFileUploads()
 
   useEffect(() => {
-    if (textareaRef.current) adjustHeight()
-  }, [])
+    if (textareaRef.current && input.trim()) adjustHeight()
+  }, [input])
 
   const disabled = !user
 
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
   }
 
@@ -159,68 +159,71 @@ export function MultimodalInput(props: Props) {
           </div>
         )}
 
-        <Textarea
-          autoFocus={autoFocus}
-          ref={textareaRef}
-          placeholder={placeholder}
-          value={input}
-          disabled={disabled}
-          onChange={handleInput}
-          className="max-h-48 min-h-6 resize-none overflow-hidden rounded-xl border-none bg-card p-4 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary"
-          rows={rows}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault()
+        <div className="flex flex-col rounded-3xl border-none bg-card p-2 pb-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary">
+          <Textarea
+            autoFocus={autoFocus}
+            ref={textareaRef}
+            placeholder={placeholder}
+            value={input}
+            disabled={disabled}
+            onChange={handleInput}
+            className="max-h-32 min-h-6 resize-none overflow-scroll rounded-xl border-none bg-card p-4 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary"
+            rows={rows}
+            style={{ height: "auto" }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault()
 
-              if (isLoading) {
-                toast.error("Please wait for the model to finish its response!")
-              } else if (!input.trim()) {
-                return
-              } else {
-                submitForm()
+                if (isLoading) {
+                  toast.error("Please wait for the model to finish its response!")
+                } else if (!input.trim()) {
+                  return
+                } else {
+                  submitForm()
+                }
               }
-            }
-          }}
-        />
-        <div className="absolute bottom-2 right-4 flex items-center gap-2">
-          <Button
-            className="h-fit rounded-full p-2"
-            onClick={(event) => {
-              event.preventDefault()
-              fileInputRef.current?.click()
             }}
-            variant="outline"
-            disabled={isLoading || disabled}
-            type="button"
-          >
-            <Paperclip size={20} />
-          </Button>
-
-          {isLoading ? (
+          />
+          <div className="flex w-full items-center justify-end gap-2 p-4 pt-0">
             <Button
               className="h-fit rounded-full p-2"
+              onClick={(event) => {
+                event.preventDefault()
+                fileInputRef.current?.click()
+              }}
+              variant="outline"
+              disabled={isLoading || disabled}
               type="button"
-              disabled={disabled}
-              onClick={(event) => {
-                event.preventDefault()
-                stop()
-              }}
             >
-              <StopCircle size={20} />
+              <Paperclip size={18} />
             </Button>
-          ) : (
-            <Button
-              className="h-fit rounded-full p-2"
-              onClick={(event) => {
-                event.preventDefault()
-                submitForm()
-              }}
-              disabled={!input.trim() || uploadQueue.length > 0 || disabled}
-              type="submit"
-            >
-              <ArrowUp size={20} />
-            </Button>
-          )}
+
+            {isLoading ? (
+              <Button
+                className="h-fit rounded-full p-2"
+                type="button"
+                disabled={disabled}
+                onClick={(event) => {
+                  event.preventDefault()
+                  stop()
+                }}
+              >
+                <StopCircle size={18} />
+              </Button>
+            ) : (
+              <Button
+                className="h-fit rounded-full p-2"
+                onClick={(event) => {
+                  event.preventDefault()
+                  submitForm()
+                }}
+                disabled={!input.trim() || uploadQueue.length > 0 || disabled}
+                type="submit"
+              >
+                <ArrowUp size={18} />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </form>
