@@ -22,7 +22,7 @@ export const Markdown = (props: Props) => {
               className: cn({
                 "underline break-words hover:text-primary transition-colors underline-offset-4":
                   links === "underline",
-                "items-center rounded-full transition-colors font-medium py-1 px-2 text-[10px] uppercase bg-secondary text-secondary-foreground dark:bg-accent dark:text-accent-foreground hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground":
+                "items-center w-fit rounded-full transition-colors font-medium py-1 px-2 text-[10px] uppercase bg-secondary text-secondary-foreground dark:bg-accent dark:text-accent-foreground hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground":
                   links === "pill",
               }),
             },

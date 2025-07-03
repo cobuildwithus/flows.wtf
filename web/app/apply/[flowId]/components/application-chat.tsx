@@ -83,7 +83,7 @@ export function ApplicationChat(props: Props) {
                 appendData({ opportunityId, startupId })
                 append({
                   role: "user",
-                  content: `Hi, I'm interested in applying for this opportunity: ${position}`,
+                  content: `Hi, I'm interested in applying for this opportunity: [${position}](${opportunityId})`,
                 })
               } else {
                 append({

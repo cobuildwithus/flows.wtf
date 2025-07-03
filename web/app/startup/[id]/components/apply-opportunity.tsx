@@ -30,7 +30,7 @@ export function ApplyOpportunity(props: Props) {
           setMessages([
             {
               role: "user",
-              content: `Hi, I'm interested in applying for this opportunity: ${position}`,
+              content: `Hi, I'm interested in applying for this opportunity: [${position}](${opportunityId})`,
               id: "1",
             },
           ])
