@@ -14,7 +14,7 @@ export function Builder(props: Props) {
   const { bio, links, recipient } = props
 
   return (
-    <UserProfile address={recipient} withPopover={false}>
+    <UserProfile hideLink address={recipient} withPopover={false}>
       {(profile) => (
         <Dialog>
           <DialogTrigger>
