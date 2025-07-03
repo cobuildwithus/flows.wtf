@@ -4,22 +4,22 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { ArrowDownIcon, ArrowUpIcon, InfoIcon } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Currency } from "@/components/ui/currency"
-import type { FlowWithGrants } from "@/lib/database/queries/flow"
+import type { DerivedData, Grant } from "@prisma/flows"
 import { explorerUrl } from "@/lib/utils"
 import Link from "next/link"
 import { Separator } from "@radix-ui/react-select"
 import { IncomingFlowsList } from "@/components/global/incoming-flows"
 
 interface Props {
-  flow: FlowWithGrants
+  flow: Grant & { derivedData: Pick<DerivedData, "minimumSalary"> | null }
   totalAllocationWeight: number
+  children: React.ReactNode
 }
 
 export const BudgetDialog = async (props: Props) => {
-  const { flow, totalAllocationWeight } = props
+  const { flow, totalAllocationWeight, children } = props
   const tokenVoteWeight = 1000
 
   const managerFlowRatePercent = Number(flow.managerRewardPoolFlowRatePercent)
@@ -48,21 +48,13 @@ export const BudgetDialog = async (props: Props) => {
 
   const hasMinimumSalary = (flow.derivedData?.minimumSalary || 0) > 0
   const hasQuorum = (flow.bonusPoolQuorum || 0) > 0
-
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Badge className="cursor-help">
-          <Currency flow={flow}>
-            {(flow.subgrants.length > 0
-              ? flow.monthlyOutgoingFlowRate
-              : flow.monthlyIncomingFlowRate
-            ).toString()}
-          </Currency>{" "}
-          /mo
-        </Badge>
+      <DialogTrigger className="cursor-pointer" asChild>
+        {children}
       </DialogTrigger>
       <DialogContent className="p-12 md:min-w-[600px]">
+        <DialogTitle className="hidden">Budget Details</DialogTitle>
         {hasMinimumSalary ||
           (hasQuorum && (
             <Card>
@@ -124,11 +116,7 @@ export const BudgetDialog = async (props: Props) => {
         <Card>
           <CardContent className="space-y-6">
             {/* Total Flows Section */}
-            <Link
-              className="text-sm underline"
-              href={explorerUrl(flow.recipient, flow.chainId, "address")}
-              target="_blank"
-            >
+            <Link href={explorerUrl(flow.recipient, flow.chainId, "address")} target="_blank">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center space-x-4">
                   <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">

@@ -13,9 +13,11 @@ import Image from "next/image"
 import { FlowSubmenu } from "../flow/[flowId]/components/flow-submenu"
 import { CustomFlow } from "./custom-flows"
 import { AllocationBar } from "@/components/global/allocation-bar"
-import { Grant } from "@prisma/flows"
+import type { Grant } from "@prisma/flows"
 import { zeroAddress } from "viem"
 import FlowsList from "../components/flows-list"
+import { BudgetDialog } from "../flow/[flowId]/components/budget-dialog"
+import { getTotalAllocationWeight } from "@/lib/allocation/get-total-allocation-weight"
 
 interface Props {
   customFlow: CustomFlow
@@ -27,14 +29,17 @@ export async function CustomFlowPage(props: Props) {
 
   const [user, { subgrants, ...flow }] = await Promise.all([getUser(), getFlowWithGrants(flowId)])
 
-  const grants = await Promise.all(
-    subgrants
-      .filter((g) => g.isActive)
-      .map(async (g) => ({
-        ...g,
-        profile: await getUserProfile(getEthAddress(g.recipient)),
-      })),
-  )
+  const [grants, totalAllocationWeight] = await Promise.all([
+    Promise.all(
+      subgrants
+        .filter((g) => g.isActive)
+        .map(async (g) => ({
+          ...g,
+          profile: await getUserProfile(getEthAddress(g.recipient)),
+        })),
+    ),
+    getTotalAllocationWeight(flow.allocationStrategies, flow.chainId),
+  ])
 
   const isTopLevel = flow.parentContract === zeroAddress
   const canManage = user?.address === flow.manager
@@ -53,6 +58,7 @@ export async function CustomFlowPage(props: Props) {
     },
     {
       name: "Monthly funding",
+      budgetDialog: true,
       value: formatCurrency(
         getSum(relevantGrants, "monthly"),
         flow.underlyingTokenSymbol,
@@ -97,14 +103,18 @@ export async function CustomFlowPage(props: Props) {
                   </p>
 
                   <dl className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
-                    {stats.map((stat) => (
-                      <div key={stat.name} className="flex flex-col-reverse gap-1">
-                        <dt className="text-xs text-muted-foreground md:text-sm">{stat.name}</dt>
-                        <dd className="text-xl font-medium tracking-tight text-muted-foreground lg:text-2xl">
-                          {stat.value}
-                        </dd>
-                      </div>
-                    ))}
+                    {stats.map((stat) =>
+                      stat.budgetDialog ? (
+                        <BudgetDialog
+                          totalAllocationWeight={Number(totalAllocationWeight)}
+                          flow={flow}
+                        >
+                          <Stat key={stat.name} stat={stat} />
+                        </BudgetDialog>
+                      ) : (
+                        <Stat key={stat.name} stat={stat} />
+                      ),
+                    )}
                   </dl>
                 </div>
               </div>
@@ -163,4 +173,15 @@ function getSum(
         return sum
     }
   }, 0)
+}
+
+function Stat({ stat }: { stat: { name: string; value: number | string } }) {
+  return (
+    <div className="flex flex-col-reverse gap-1">
+      <dt className="text-xs text-muted-foreground md:text-sm">{stat.name}</dt>
+      <dd className="text-xl font-medium tracking-tight text-muted-foreground lg:text-2xl">
+        {stat.value}
+      </dd>
+    </div>
+  )
 }

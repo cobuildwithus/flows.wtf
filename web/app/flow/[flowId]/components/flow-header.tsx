@@ -1,16 +1,17 @@
 "use server"
 
 import { Badge } from "@/components/ui/badge"
-import type { FlowWithGrants } from "@/lib/database/queries/flow"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { BudgetDialog } from "./budget-dialog"
-import { getTotalAllocationWeight } from "./get-total-allocation-weight"
+import { getTotalAllocationWeight } from "@/lib/allocation/get-total-allocation-weight"
+import { Currency } from "@/components/ui/currency"
+import type { DerivedData, Grant } from "@prisma/flows"
 
 interface Props {
-  flow: FlowWithGrants
+  flow: Grant & { derivedData: Pick<DerivedData, "minimumSalary"> | null }
 }
 
 export const FlowHeader = async (props: Props) => {
@@ -41,7 +42,17 @@ export const FlowHeader = async (props: Props) => {
                 {flow.title}
               </Link>
               <div className="text-sm max-sm:text-xs md:text-center">
-                <BudgetDialog totalAllocationWeight={Number(totalAllocationWeight)} flow={flow} />
+                <BudgetDialog totalAllocationWeight={Number(totalAllocationWeight)} flow={flow}>
+                  <Badge className="cursor-help">
+                    <Currency flow={flow}>
+                      {(flow.activeRecipientCount > 0
+                        ? flow.monthlyOutgoingFlowRate
+                        : flow.monthlyIncomingFlowRate
+                      ).toString()}
+                    </Currency>{" "}
+                    /mo
+                  </Badge>
+                </BudgetDialog>
               </div>
             </div>
             {flow.status === Status.ClearingRequested && (

@@ -55,7 +55,15 @@ export function SuperfluidFlowsList({
   }
 
   if (displayFlows.length === 0) {
-    return <EmptyState title="No flows found" description="You are not funding any flows yet" />
+    return (
+      <div className="mt-10">
+        <EmptyState
+          size={100}
+          title="No flows found"
+          description="You are not funding any flows yet"
+        />
+      </div>
+    )
   }
 
   return (

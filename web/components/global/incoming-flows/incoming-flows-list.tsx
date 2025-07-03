@@ -3,51 +3,48 @@
 import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { EmptyState } from "@/components/ui/empty-state"
 import { UserProfile } from "@/components/user-profile/user-profile"
-import {
-  formatTokenAmount,
-  TOKENS,
-  type TokenInfo,
-} from "@/components/fund-flow/libs/funding-token-lib"
 import { getIncomingFlows } from "@/lib/superfluid/get-incoming-flows"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { FlowWithGrants } from "@/lib/database/queries/flow"
 import { Currency } from "@/components/ui/currency"
+import { Grant } from "@prisma/flows"
 
 interface IncomingFlowsListProps {
-  parentFlow: FlowWithGrants
+  parentFlow: Grant
   maxItems?: number
   showTitle?: boolean
-  tokens?: Record<string, TokenInfo>
 }
 
 export async function IncomingFlowsList({
   parentFlow,
   maxItems = 10,
   showTitle = true,
-  tokens = TOKENS,
 }: IncomingFlowsListProps) {
   const { recipient: flowContract, chainId } = parentFlow
   const flows = await getIncomingFlows(flowContract, chainId)
 
-  const activeFlows = flows?.filter((flow) => flow.isActive) || []
+  const activeFlows =
+    flows
+      ?.filter((flow) => flow.isActive)
+      .sort((a, b) => {
+        // Sort by flow rate descending (highest first)
+        const aFlowRate = BigInt(a.flowRate)
+        const bFlowRate = BigInt(b.flowRate)
+        if (aFlowRate > bFlowRate) return -1
+        if (aFlowRate < bFlowRate) return 1
+        return 0
+      }) || []
   const displayFlows = activeFlows.slice(0, maxItems)
 
   if (displayFlows.length === 0) {
-    return (
-      <EmptyState
-        title="No funding contributors"
-        description="This flow has no active contributors yet"
-      />
-    )
+    return null
   }
 
   return (
     <div className="space-y-3 border-t pt-4">
       {showTitle && (
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium">Funding Contributors</h4>
+          <h4 className="text-sm font-medium">Backers</h4>
           {activeFlows.length > maxItems && (
             <Badge variant="secondary" className="text-xs">
               +{activeFlows.length - maxItems} more
@@ -74,15 +71,10 @@ function IncomingFlowItem({
   parentFlow,
 }: {
   flow: SuperfluidFlowWithState
-  parentFlow: FlowWithGrants
+  parentFlow: Grant
 }) {
   const flowRatePerSecond = BigInt(flow.flowRate)
   const flowRatePerMonth = flowRatePerSecond * BigInt(30 * 24 * 60 * 60) // 30 days in seconds
-
-  const symbol = parentFlow.underlyingTokenSymbol
-  const decimals = parentFlow.underlyingTokenDecimals
-
-  const displayRate = formatTokenAmount(flowRatePerMonth, decimals, symbol)
 
   return (
     <Card className="group relative border-l-4 border-l-primary transition-colors hover:bg-muted/50">

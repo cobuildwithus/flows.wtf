@@ -11,7 +11,13 @@ export const getFlowWithGrants = cache(async (id: string) => {
         omit: { description: true },
         include: {
           derivedData: {
-            select: { lastBuilderUpdate: true, overallGrade: true, title: true, coverImage: true },
+            select: {
+              lastBuilderUpdate: true,
+              overallGrade: true,
+              title: true,
+              coverImage: true,
+              minimumSalary: true,
+            },
           },
         },
         orderBy: { monthlyIncomingFlowRate: "desc" },
