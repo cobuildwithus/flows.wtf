@@ -106,6 +106,7 @@ export async function CustomFlowPage(props: Props) {
                     {stats.map((stat) =>
                       stat.budgetDialog ? (
                         <BudgetDialog
+                          key={stat.name}
                           totalAllocationWeight={Number(totalAllocationWeight)}
                           flow={flow}
                         >
