@@ -1,4 +1,4 @@
-import { http } from "viem"
+import { http, webSocket } from "viem"
 import { base, optimism } from "viem/chains"
 import { mainnet } from "viem/chains"
 
@@ -22,27 +22,36 @@ const getPrefix = (chain: "base" | "eth" | "arbitrum" | "optimism") => {
   }
 }
 
-const constructUrl = (prefix: string) =>
-  http(`https://${prefix}.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`)
-
-const rpcUrl = (chain: "base" | "eth" | "arbitrum" | "optimism") => {
+const createAlchemyUrl = (
+  chain: "base" | "eth" | "arbitrum" | "optimism",
+  protocol: "https" | "wss"
+) => {
   const prefix = getPrefix(chain)
-  return constructUrl(prefix)
+  const baseUrl = `${prefix}.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+
+  if (protocol === "https") {
+    return http(`https://${baseUrl}`)
+  } else {
+    return webSocket(`wss://${baseUrl}`)
+  }
 }
 
 export const getChainsAndRpcUrls = () => {
   return {
     base: {
       id: base.id,
-      rpc: rpcUrl("base"),
+      rpc: createAlchemyUrl("base", "https"),
+      ws: createAlchemyUrl("base", "wss"),
     },
     ethereum: {
       id: mainnet.id,
-      rpc: rpcUrl("eth"),
+      rpc: createAlchemyUrl("eth", "https"),
+      ws: createAlchemyUrl("eth", "wss"),
     },
     optimism: {
       id: optimism.id,
-      rpc: rpcUrl("optimism"),
+      rpc: createAlchemyUrl("optimism", "https"),
+      ws: createAlchemyUrl("optimism", "wss"),
     },
   }
 }
