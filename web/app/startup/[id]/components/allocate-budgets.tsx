@@ -77,11 +77,6 @@ export function AllocateBudgets(props: Props) {
                   variant={selectedFlowIndex === index ? "default" : "outline"}
                 >
                   {flow.title}
-                  {selectedFlowIndex === index && (
-                    <span className="ml-2 text-xs">
-                      - <Currency>{flow.monthlyIncomingFlowRate}</Currency>/mo
-                    </span>
-                  )}
                 </Button>
               ))}
             </div>

@@ -13,8 +13,6 @@ interface Props {
   impactId: string | undefined
 }
 
-const numRows = 4
-
 const itemSize = {
   mobile: 120,
   desktop: 200,
@@ -48,6 +46,14 @@ export async function FlowImpactSummary(props: Props) {
     }
   })
 
+  // Calculate optimal number of rows based on the number of items
+  // Assuming a typical viewport can fit ~8-10 items horizontally at desktop size
+  const itemsPerRowEstimate = 10 // Rough estimate of items that fit in one row
+  const totalItems = impacts.length
+
+  // If items can fit in a single row, use 1 row. Otherwise use 4 rows for hexagonal layout
+  const numRows = totalItems <= itemsPerRowEstimate ? 1 : 4
+
   return (
     <>
       <div className="container mb-6 max-w-6xl">
@@ -68,7 +74,10 @@ export async function FlowImpactSummary(props: Props) {
             "--hex-spacing-y": "0.77",
             "--item-size-mobile": `${itemSize.mobile}px`,
             "--item-size-desktop": `${itemSize.desktop}px`,
-            height: "calc(var(--item-size) + var(--item-size) * 0.9 * (var(--num-rows) - 1))",
+            height:
+              numRows === 1
+                ? "calc(var(--item-size) * 1.3)"
+                : "calc(var(--item-size) + var(--item-size) * 0.9 * (var(--num-rows) - 1))",
           } as React.CSSProperties
         }
       >
@@ -76,7 +85,8 @@ export async function FlowImpactSummary(props: Props) {
           const col = Math.floor(index / numRows)
           const row = index % numRows
 
-          const x = col + (row % 2) * 0.5
+          // For single row layout, don't apply hexagonal offset
+          const x = numRows === 1 ? col : col + (row % 2) * 0.5
           const y = row
           const delay = index * 0.025
 
