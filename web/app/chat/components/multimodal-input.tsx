@@ -167,7 +167,7 @@ export function MultimodalInput(props: Props) {
             value={input}
             disabled={disabled}
             onChange={handleInput}
-            className="max-h-32 min-h-6 resize-none overflow-scroll rounded-xl border-none bg-card p-4 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary"
+            className="max-h-40 min-h-6 resize-none overflow-scroll rounded-xl border-none bg-card p-2.5 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary"
             rows={rows}
             style={{ height: "auto" }}
             onKeyDown={(event) => {
@@ -184,7 +184,7 @@ export function MultimodalInput(props: Props) {
               }
             }}
           />
-          <div className="flex w-full items-center justify-end gap-2 p-4 pt-0">
+          <div className="flex w-full items-center justify-end gap-2 p-2.5 pt-0">
             <Button
               className="h-fit rounded-full p-2"
               onClick={(event) => {

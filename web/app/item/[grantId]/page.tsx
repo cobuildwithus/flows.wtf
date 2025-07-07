@@ -126,7 +126,7 @@ export default async function GrantPage(props: Props) {
               data={{ grantId: grant.id }}
               identityToken={await getPrivyIdToken()}
             >
-              <GrantChat grant={grant} user={user} canEdit={canEdit} />
+              <GrantChat user={user} canEdit={canEdit} />
               {title && coverImage && tagline && (
                 <div className="relative col-span-full lg:col-span-7">
                   <GrantStatus grant={grant} flow={flow} />

@@ -6,17 +6,15 @@ import { MultimodalInput } from "@/app/chat/components/multimodal-input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { User } from "@/lib/auth/user"
-import { Grant } from "@prisma/flows"
 import { RotateCcw } from "lucide-react"
 
 interface Props {
   user?: User
-  grant: Grant
   canEdit: boolean
 }
 
 export function GrantChat(props: Props) {
-  const { user, grant, canEdit } = props
+  const { user, canEdit } = props
   const { messages, restart, isOpen, setIsOpen } = useAgentChat()
 
   return (
@@ -32,7 +30,7 @@ export function GrantChat(props: Props) {
       >
         <MultimodalInput
           rows={1}
-          className="max-w-[90vw] rounded-2xl border border-background md:max-w-2xl"
+          className="max-w-[90vw] md:max-w-2xl"
           placeholder={canEdit ? `Edit this grant...` : `Ask about this grant...`}
           onSubmit={() => {
             if (!isOpen) setIsOpen(true)
