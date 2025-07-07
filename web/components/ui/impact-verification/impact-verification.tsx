@@ -140,13 +140,17 @@ const VerificationStatus = ({
   isForDifferentGrant: boolean
   grantTitle?: string
 }) => {
+  let { score } = verification
+  // hot fix for bad AI data
+  if (score > 0 && score < 1) score = score * 100
+
   return (
     <div className="group flex items-center gap-2">
       {isGrantUpdate ? (
         <>
           <CircleCheckBig className="size-4 text-green-400/75" />
           <span className="text-xs font-medium text-muted-foreground">
-            {verification.score}%
+            {score}%
             <span className="opacity-0 transition-opacity group-hover:opacity-100"> confident</span>
           </span>
         </>
