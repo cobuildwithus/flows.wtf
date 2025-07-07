@@ -154,7 +154,12 @@ async function getOpportunitiesWithProfiles(startupId: string) {
           return { ...draft, profile }
         }),
       )
-      return { ...opportunity, applications: applicationsWithProfiles }
+      return {
+        ...opportunity,
+        applications: applicationsWithProfiles.sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+        ),
+      }
     }),
   )
 }
