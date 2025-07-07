@@ -1,23 +1,19 @@
 import { createPublicClient, http } from "viem"
 import { base, mainnet, optimism } from "viem/chains"
+import { getAlchemyKey } from "../wagmi/config"
 
-export const mainnetClient = createPublicClient({
-  chain: mainnet,
-  transport: http(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
-  batch: { multicall: true },
-})
+function makeClient(chain: typeof base | typeof mainnet | typeof optimism) {
+  return createPublicClient({
+    chain,
+    transport: http(`https://eth-mainnet.g.alchemy.com/v2/${getAlchemyKey()}`),
+    batch: { multicall: true },
+  })
+}
 
-const baseClient = createPublicClient({
-  chain: base,
-  transport: http(`https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
-  batch: { multicall: true },
-})
-
-const optimismClient = createPublicClient({
-  chain: optimism,
-  transport: http(`https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`),
-  batch: { multicall: true },
-})
+// Browser-safe clients
+export const mainnetClient = makeClient(mainnet)
+export const baseClient = makeClient(base)
+export const optimismClient = makeClient(optimism)
 
 export const getClient = (chainId: number) => {
   switch (chainId) {

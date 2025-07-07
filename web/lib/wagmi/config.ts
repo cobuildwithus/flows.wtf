@@ -22,9 +22,17 @@ export const config = createConfig({
   batch: { multicall: { wait: 32, batchSize: 2048 } },
 })
 
+/** Returns the proper Alchemy key for the current runtime. */
+export function getAlchemyKey() {
+  // Runs at *runtime*, so the secret never lands in the JS bundle.
+  return typeof window === "undefined"
+    ? process.env.ALCHEMY_ID_SERVERSIDE
+    : process.env.NEXT_PUBLIC_ALCHEMY_ID
+}
+
 export function getRpcUrl(chain: Chain, type: "http" | "ws") {
-  const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID
-  if (!alchemyId) throw new Error("ALCHEMY_ID is not set")
+  const alchemyId = getAlchemyKey()
+  if (!alchemyId) throw new Error("Missing Alchemy env var")
 
   const protocol = type === "http" ? "https" : "wss"
 
