@@ -49,13 +49,13 @@ export function AllocateBudgets(props: Props) {
   }, 0)
 
   if (!isAllocator && !isManager) {
-    return <div className="contents">{children}</div>
+    return <div className="flex shrink-0 space-x-4">{children}</div>
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="contents cursor-pointer space-x-4">{children}</div>
+        <div className="flex shrink-0 cursor-pointer space-x-4">{children}</div>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
         <DialogHeader>
