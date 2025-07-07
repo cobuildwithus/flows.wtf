@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -37,15 +38,10 @@ export function SalesOverview(props: Props) {
   const { ethPrice } = useETHPrice()
   const { flowsPrice } = useFlowsPrice()
 
-  const combinedData = combineMonthlySalesWithTokenPayments(
-    monthlySales,
-    tokenPayments,
-    ethPrice,
-    flowsPrice,
-  )
-
-  console.log(combinedData)
-  console.log(tokenPayments)
+  const combinedData = useMemo(() => {
+    if (ethPrice == null && flowsPrice == null) return monthlySales
+    return combineMonthlySalesWithTokenPayments(monthlySales, tokenPayments, ethPrice, flowsPrice)
+  }, [monthlySales, tokenPayments, ethPrice, flowsPrice])
 
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
@@ -64,7 +60,11 @@ export function SalesOverview(props: Props) {
       </CardHeader>
       <CardContent className="pb-4 pt-2">
         <ChartContainer config={chartConfig} className="mt-4 h-[320px] w-full">
-          <ComposedChart data={combinedData} accessibilityLayer>
+          <ComposedChart
+            key={`${ethPrice ?? "noEth"}-${flowsPrice ?? "noFlows"}`}
+            data={combinedData}
+            accessibilityLayer
+          >
             <CartesianGrid vertical={false} />
             <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
             <YAxis
