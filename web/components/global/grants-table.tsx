@@ -48,7 +48,7 @@ export function GrantsTable(props: Props) {
       <TableBody>
         {grants.map((grant) => {
           const isRemovalRequested = grant.status === Status.ClearingRequested
-          const lastUpdate = grant.derivedData?.lastBuilderUpdate || new Date(0)
+          const lastUpdate = new Date(grant.derivedData?.lastBuilderUpdate || 0)
 
           const hasUpdate = lastUpdate.getTime() > 0
           const lastUpdateTime = hasUpdate ? lastUpdate.getTime() / 1000 : 0
