@@ -116,6 +116,7 @@ export default async function GrantPage(props: Props) {
           members={teamMembers}
           user={user}
           startup={startup}
+          totalBudget={totalBudget}
           impactGrants={{
             grants: impactFlow.subgrants,
             monthlyFlowRate: Number(impactFlow.monthlyOutgoingFlowRate),

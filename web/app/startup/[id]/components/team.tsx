@@ -7,7 +7,7 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { User } from "@/lib/auth/user"
 import database from "@/lib/database/flows-db"
 import { isAdmin } from "@/lib/database/helpers"
-import { BudgetWithProfiles, getBudgetsWithGrants } from "@/lib/onchain-startup/budgets-with-grants"
+import { BudgetWithGrants, getBudgetsWithGrants } from "@/lib/onchain-startup/budgets-with-grants"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { cn } from "@/lib/utils"
@@ -101,7 +101,7 @@ async function OpportunitiesSection({
   user,
 }: {
   canManage: boolean
-  budgets: BudgetWithProfiles[]
+  budgets: BudgetWithGrants[]
   startupId: string
   user: User | undefined
 }) {

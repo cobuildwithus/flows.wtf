@@ -56,9 +56,4 @@ export const vrbscoffee = {
       description: "Beans ready for your cup of espresso or pour over",
     },
   },
-  splits: {
-    team: 0.8,
-    support: 0.1,
-    treasury: 0.1,
-  },
 } as StartupData

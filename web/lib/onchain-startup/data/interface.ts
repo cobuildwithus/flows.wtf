@@ -18,9 +18,4 @@ export interface StartupData {
     action: { name: string; description?: string }
     receive: { name: string; description?: string }
   }
-  splits: {
-    team: number
-    support: number
-    treasury: number
-  }
 }

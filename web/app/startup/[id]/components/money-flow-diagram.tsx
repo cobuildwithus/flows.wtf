@@ -37,6 +37,7 @@ interface Props {
   members: Array<TeamMember>
   user: User | undefined
   startup: Startup
+  totalBudget: number
   impactGrants: {
     grants: Pick<Grant, "id" | "title" | "image">[]
     monthlyFlowRate: number
@@ -45,7 +46,7 @@ interface Props {
 }
 
 export function MoneyFlowDiagram(props: Props) {
-  const { products, members, user, startup, impactGrants } = props
+  const { products, members, user, startup, impactGrants, totalBudget } = props
   const { width } = useWindowSize()
   const {
     productsVolumeEth,
@@ -55,7 +56,6 @@ export function MoneyFlowDiagram(props: Props) {
     totalRevnetTokens,
   } = useFundraiseIllustration(startup.revnetProjectIds.base, startup.chainId)
 
-  // return <MoneyFlowSkeleton />
   if (!width)
     return (
       <div className="mb-6 mt-1.5 px-2">
@@ -63,7 +63,7 @@ export function MoneyFlowDiagram(props: Props) {
       </div>
     )
 
-  const { splits, diagram } = startup
+  const { diagram } = startup
   const isMobile = checkMobile(width)
 
   const { nodes, height } = generateDiagram(
@@ -163,11 +163,7 @@ export function MoneyFlowDiagram(props: Props) {
         id: "team",
         height: 100,
         title: (
-          <TitleWithFlowRate
-            title="Team"
-            flowId={startup.impactFlowId}
-            monthlyFlowRate={Number(startup.monthlyOutgoingFlowRate)}
-          />
+          <TitleWithFlowRate title="Team" flowId={startup.impactFlowId} totalBudget={totalBudget} />
         ),
         content: <ShortTeam members={members} />,
       },
@@ -215,7 +211,7 @@ export function MoneyFlowDiagram(props: Props) {
           <TitleWithFlowRate
             title="Real world impact"
             flowId={impactGrants.flowId}
-            monthlyFlowRate={impactGrants.monthlyFlowRate}
+            totalBudget={impactGrants.monthlyFlowRate}
           />
         ),
         content: <ImpactGrants grants={impactGrants.grants} />,
