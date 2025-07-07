@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
   TableBody,
@@ -29,62 +30,68 @@ export async function ProductsTable(props: Props) {
         </div>
       </CardHeader>
       <CardContent className="py-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Sales</TableHead>
-              <TableHead />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="truncate p-0">
-                  <a
-                    href={product.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-4 pl-0 transition-colors"
-                  >
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      width={40}
-                      height={40}
-                      className="rounded-md object-cover max-sm:size-8"
-                    />
-                    <div className="flex flex-col gap-1">
-                      <h3 className="line-clamp-1 truncate text-xs font-medium leading-tight sm:text-sm">
-                        {product.name}
-                      </h3>
-                      <p className="text-[10px] leading-tight text-muted-foreground">
-                        {product.stock} in stock
-                      </p>
-                    </div>
-                  </a>
-                </TableCell>
-                <TableCell className="text-xs">{product.price}</TableCell>
-                <TableCell className="text-xs">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-medium leading-tight">{product.totalSales}</span>
-                    <span className="text-[10px] leading-tight text-muted-foreground">
-                      {product.orders} orders
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button asChild size="xs" className="bg-green-600 text-white hover:bg-green-700">
-                    <a href={product.url} target="_blank" rel="noopener noreferrer">
-                      Order
-                    </a>
-                  </Button>
-                </TableCell>
+        <ScrollArea className="h-[300px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Sales</TableHead>
+                <TableHead />
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="truncate p-0">
+                    <a
+                      href={product.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-4 pl-0 transition-colors"
+                    >
+                      <Image
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        width={40}
+                        height={40}
+                        className="rounded-md object-cover max-sm:size-8"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <h3 className="line-clamp-1 truncate text-xs font-medium leading-tight sm:text-sm">
+                          {product.name}
+                        </h3>
+                        <p className="text-[10px] leading-tight text-muted-foreground">
+                          {product.stock} in stock
+                        </p>
+                      </div>
+                    </a>
+                  </TableCell>
+                  <TableCell className="text-xs">{product.price}</TableCell>
+                  <TableCell className="text-xs">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium leading-tight">{product.totalSales}</span>
+                      <span className="text-[10px] leading-tight text-muted-foreground">
+                        {product.orders} orders
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      asChild
+                      size="xs"
+                      className="bg-green-600 text-white hover:bg-green-700"
+                    >
+                      <a href={product.url} target="_blank" rel="noopener noreferrer">
+                        Order
+                      </a>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </CardContent>
     </Card>
   )
