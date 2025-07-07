@@ -1,11 +1,11 @@
 import { createPublicClient, http } from "viem"
 import { base, mainnet, optimism } from "viem/chains"
-import { getAlchemyKey } from "../wagmi/config"
+import { getRpcUrl } from "../wagmi/config"
 
 function makeClient(chain: typeof base | typeof mainnet | typeof optimism) {
   return createPublicClient({
     chain,
-    transport: http(`https://eth-mainnet.g.alchemy.com/v2/${getAlchemyKey()}`),
+    transport: http(getRpcUrl(chain, "http")),
     batch: { multicall: true },
   })
 }

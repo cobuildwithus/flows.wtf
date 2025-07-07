@@ -20,7 +20,6 @@ export async function getCombinedSalesMetrics(
 ): Promise<SalesMetrics> {
   // Get combined data with token payments included
   const combinedData = await combineMonthlySalesWithTokenPayments(monthlySales, tokenPayments)
-  console.log({ combinedData })
 
   // Calculate total sales and orders from all combined data
   const totalSales = combinedData.reduce((sum, month) => sum + month.sales, 0)
