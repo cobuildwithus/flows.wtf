@@ -1,6 +1,6 @@
 import "server-only"
 import { NextResponse } from "next/server"
-import { fetchAndSetEthRates } from "@/app/token/ethPrice"
+import { fetchAndSetEthRates } from "@/app/token/eth-price"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 300

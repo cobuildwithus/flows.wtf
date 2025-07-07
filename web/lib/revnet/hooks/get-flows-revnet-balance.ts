@@ -2,7 +2,7 @@
 
 import { getRevnetBalance } from "./get-revnet-balance"
 import { getERC20Supply } from "@/lib/tcr/get-erc20-supply"
-import { getConversionRates } from "@/app/token/ethPrice"
+import { getConversionRates } from "@/app/token/eth-price"
 import { FLOWS_REVNET_PROJECT_ID, FLOWS_TOKEN } from "@/lib/config"
 
 export async function getFlowsTreasuryBalance(

@@ -133,13 +133,15 @@ export default async function GrantPage(props: Props) {
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <div className="flex flex-col space-y-6">
             <Mission startup={startup} />
-            <SalesOverview
-              monthlySales={salesSummary.monthlySales}
-              startupTitle={startup.title}
-              projectId={startup.revnetProjectIds.base}
-              chainId={startup.chainId}
-              tokenPayments={tokenPayments}
-            />
+            <Suspense fallback={<div className="h-[450px] animate-pulse rounded-lg bg-muted" />}>
+              <SalesOverview
+                monthlySales={salesSummary.monthlySales}
+                tokenPayments={tokenPayments}
+                startupTitle={startup.title}
+                projectId={startup.revnetProjectIds.base}
+                chainId={startup.chainId}
+              />
+            </Suspense>
           </div>
 
           <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />

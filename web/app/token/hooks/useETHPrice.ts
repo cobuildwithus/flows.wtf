@@ -1,5 +1,5 @@
 import useSWR from "swr"
-import { getConversionRates } from "../ethPrice"
+import { getConversionRates } from "../eth-price"
 
 export function useETHPrice(skip?: boolean) {
   const { data, ...rest } = useSWR(skip ? undefined : "eth_price", getConversionRates)
