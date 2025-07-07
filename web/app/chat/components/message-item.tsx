@@ -46,7 +46,11 @@ export const MessageItem = (props: Props) => {
             </div>
           )}
 
-          <div className="flex w-full flex-col gap-2 rounded-xl p-3 shadow group-data-[role=assistant]/message:bg-primary/10 group-data-[role=user]/message:bg-card dark:group-data-[role=user]/message:border md:px-5 md:py-3.5">
+          <div
+            className={cn(
+              "flex w-full flex-col gap-2 rounded-3xl p-3 shadow group-data-[role=assistant]/message:bg-primary/10 group-data-[role=user]/message:bg-card dark:group-data-[role=user]/message:border md:px-5 md:py-3.5",
+            )}
+          >
             {content && (
               <div className="flex flex-col gap-4 whitespace-pre-wrap break-words text-sm leading-6">
                 {typeof content === "string" ? (

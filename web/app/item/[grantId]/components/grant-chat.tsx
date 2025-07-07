@@ -39,7 +39,7 @@ export function GrantChat(props: Props) {
         />
       </div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-screen-md pb-0 max-sm:px-0">
+        <DialogContent className="h-full max-w-screen-md pb-0 max-sm:px-0">
           <DialogHeader className="max-sm:px-4">
             <DialogTitle className="flex items-center justify-between">
               <span className="truncate py-1">
@@ -57,7 +57,7 @@ export function GrantChat(props: Props) {
               </Button>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex h-[calc(100dvh-100px)] min-w-0 flex-col">
+          <div className="flex h-[calc(100dvh-100px)] min-w-0 flex-col justify-end">
             {user && messages.length > 0 && <Messages />}
             <MultimodalInput className="bg-background p-2" autoFocus />
           </div>
