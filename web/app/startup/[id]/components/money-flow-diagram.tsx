@@ -145,7 +145,7 @@ export function MoneyFlowDiagram(props: Props) {
         row: 2,
         height: 320,
         id: "user_action",
-        title: "Earn",
+        title: "Shop to earn",
         className: "bg-background dark:bg-background/50 shadow",
         content: (
           <ProductsList

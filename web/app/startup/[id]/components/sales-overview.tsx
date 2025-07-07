@@ -44,6 +44,9 @@ export function SalesOverview(props: Props) {
     flowsPrice,
   )
 
+  console.log(combinedData)
+  console.log(tokenPayments)
+
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardHeader className="pb-2">

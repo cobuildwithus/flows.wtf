@@ -16,7 +16,7 @@ export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
     <>
       <div className="flex w-full items-center justify-between gap-1 text-base">
         <div onClick={() => setIsDialogOpen(true)} className="cursor-pointer hover:underline">
-          Buy
+          Buy in
         </div>
         <button
           type="button"
