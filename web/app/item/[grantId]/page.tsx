@@ -236,7 +236,6 @@ export default async function GrantPage(props: Props) {
                     activatedAt={new Date((grant.activatedAt || 0) * 1000)}
                     canEdit={canEdit}
                     impactId={impactId}
-                    disableMetricsWarning={grant.flowId === NOUNS_ART}
                   />
                 </div>
               </Suspense>
