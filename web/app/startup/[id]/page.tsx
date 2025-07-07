@@ -30,6 +30,7 @@ import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
 import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
+import { getCombinedSalesMetrics } from "@/lib/onchain-startup/sales-metrics"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -77,11 +78,8 @@ export default async function GrantPage(props: Props) {
     getSalesSummary(orders),
   ])
 
-  const thisMonth = salesSummary.monthlySales[0]
-  const lastMonth = salesSummary.monthlySales[1]
-
-  const salesChange = thisMonth && lastMonth ? thisMonth.sales - lastMonth.sales : 0
-  const ordersChange = thisMonth && lastMonth ? thisMonth.orders - lastMonth.orders : 0
+  // Get combined sales metrics including token payments
+  const combinedMetrics = await getCombinedSalesMetrics(salesSummary.monthlySales, tokenPayments)
 
   const totalBudget = budgets
     .map((b) => Number(b.monthlyIncomingFlowRate))
@@ -150,15 +148,15 @@ export default async function GrantPage(props: Props) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Sales Volume"
-            value={`$${salesSummary.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            value={`$${combinedMetrics.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             icon={DollarSign}
-            change={salesChange}
+            change={combinedMetrics.salesChange}
           />
           <MetricCard
             title="Total Orders"
-            value={salesSummary.totalOrders.toLocaleString()}
+            value={combinedMetrics.totalOrders.toLocaleString()}
             icon={ShoppingBag}
-            change={ordersChange}
+            change={combinedMetrics.ordersChange}
           />
 
           <MetricCard

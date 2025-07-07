@@ -22,10 +22,10 @@ export function MetricCard({ title, value, change, icon: Icon }: MetricCardProps
         {change && (
           <CardDescription className="mt-1.5 text-xs">
             <span className={cn(change > 0 ? "text-green-500" : "text-red-500")}>
-              {change > 0 ? "+" : "-"}
-              {change}%
+              {change > 0 ? "+" : ""}
+              {change.toFixed(2)}%
             </span>{" "}
-            from last month
+            since last month
           </CardDescription>
         )}
       </CardContent>
