@@ -22,7 +22,7 @@ export function GrantChat(props: Props) {
       <div
         className="fixed bottom-4 left-0 right-0 z-40"
         onClick={(e) => {
-          if (messages.length > 0 && !isOpen && user) {
+          if (user) {
             e.stopPropagation()
             setIsOpen(true)
           }
@@ -32,6 +32,7 @@ export function GrantChat(props: Props) {
           rows={1}
           className="max-w-[90vw] md:max-w-2xl"
           placeholder={canEdit ? `Edit this grant...` : `Ask about this grant...`}
+          hideButtons
           onSubmit={() => {
             if (!isOpen) setIsOpen(true)
           }}

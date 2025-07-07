@@ -230,7 +230,7 @@ export default async function GrantPage(props: Props) {
               initialMessages={[]}
             >
               <Suspense fallback={<div className="h-[300px]" />}>
-                <div className="mb-24 mt-12">
+                <div className="mb-36 mt-12">
                   <ImpactChain
                     impacts={impacts}
                     activatedAt={new Date((grant.activatedAt || 0) * 1000)}

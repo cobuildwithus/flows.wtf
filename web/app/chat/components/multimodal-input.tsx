@@ -23,10 +23,18 @@ interface Props {
   className?: string
   onSubmit?: () => void
   autoFocus?: boolean
+  hideButtons?: boolean
 }
 
 export function MultimodalInput(props: Props) {
-  const { rows = 1, placeholder = "Ask anything", className, onSubmit, autoFocus = false } = props
+  const {
+    rows = 1,
+    placeholder = "Ask anything",
+    className,
+    onSubmit,
+    autoFocus = false,
+    hideButtons = false,
+  } = props
   const { input, setInput, isLoading, stop, attachments, setAttachments, handleSubmit, user } =
     useAgentChat()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -35,22 +43,10 @@ export function MultimodalInput(props: Props) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const { uploadQueue, uploadFiles, progressMap, uploadingMap } = useFileUploads()
 
-  useEffect(() => {
-    if (textareaRef.current && input.trim()) adjustHeight()
-  }, [input])
-
   const disabled = !user
-
-  const adjustHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-    }
-  }
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value)
-    adjustHeight()
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -159,7 +155,12 @@ export function MultimodalInput(props: Props) {
           </div>
         )}
 
-        <div className="flex flex-col rounded-3xl border-none bg-card p-2 pb-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary">
+        <div
+          className={cn(
+            "flex flex-col rounded-3xl border-none bg-card p-4 pb-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary",
+            hideButtons && "pb-3",
+          )}
+        >
           <Textarea
             autoFocus={autoFocus}
             ref={textareaRef}
@@ -167,9 +168,8 @@ export function MultimodalInput(props: Props) {
             value={input}
             disabled={disabled}
             onChange={handleInput}
-            className="max-h-40 min-h-6 resize-none overflow-scroll rounded-xl border-none bg-card p-2.5 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 dark:bg-secondary"
+            className="min-h-[24px] resize-none overflow-hidden border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100"
             rows={rows}
-            style={{ height: "auto" }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault()
@@ -184,46 +184,48 @@ export function MultimodalInput(props: Props) {
               }
             }}
           />
-          <div className="flex w-full items-center justify-end gap-2 p-2.5 pt-0">
-            <Button
-              className="h-fit rounded-full p-2"
-              onClick={(event) => {
-                event.preventDefault()
-                fileInputRef.current?.click()
-              }}
-              variant="outline"
-              disabled={isLoading || disabled}
-              type="button"
-            >
-              <Paperclip size={18} />
-            </Button>
-
-            {isLoading ? (
+          {!hideButtons && (
+            <div className="flex w-full items-center justify-end gap-2 px-2.5 pb-2.5">
               <Button
                 className="h-fit rounded-full p-2"
+                onClick={(event) => {
+                  event.preventDefault()
+                  fileInputRef.current?.click()
+                }}
+                variant="outline"
+                disabled={isLoading || disabled}
                 type="button"
-                disabled={disabled}
-                onClick={(event) => {
-                  event.preventDefault()
-                  stop()
-                }}
               >
-                <StopCircle size={18} />
+                <Paperclip size={18} />
               </Button>
-            ) : (
-              <Button
-                className="h-fit rounded-full p-2"
-                onClick={(event) => {
-                  event.preventDefault()
-                  submitForm()
-                }}
-                disabled={!input.trim() || uploadQueue.length > 0 || disabled}
-                type="submit"
-              >
-                <ArrowUp size={18} />
-              </Button>
-            )}
-          </div>
+
+              {isLoading ? (
+                <Button
+                  className="h-fit rounded-full p-2"
+                  type="button"
+                  disabled={disabled}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    stop()
+                  }}
+                >
+                  <StopCircle size={18} />
+                </Button>
+              ) : (
+                <Button
+                  className="h-fit rounded-full p-2"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    submitForm()
+                  }}
+                  disabled={!input.trim() || uploadQueue.length > 0 || disabled}
+                  type="submit"
+                >
+                  <ArrowUp size={18} />
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </form>
