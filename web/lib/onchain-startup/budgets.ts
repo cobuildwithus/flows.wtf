@@ -38,5 +38,6 @@ export const getStartupBudgets = unstable_cache(
   ["startup-budgets"],
   {
     tags: ["startup-budgets"],
+    revalidate: 15 * 60, // 15 minutes
   },
 )
