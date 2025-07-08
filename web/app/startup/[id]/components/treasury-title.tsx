@@ -70,8 +70,8 @@ export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
             format={{
               currency: "USD",
               style: "currency",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
             }}
             locales="en-US"
             trend={isFlashing ? 1 : 0}

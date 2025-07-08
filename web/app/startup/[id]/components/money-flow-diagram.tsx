@@ -16,15 +16,15 @@ import DashboardNode, { IDashboardNode } from "./nodes/dashboard-node"
 import GroupNode, { GroupAnchorNode, IGroupAnchorNode, IGroupNode } from "./nodes/group-node"
 import { ProductsList } from "./nodes/products-list"
 import { Reviews } from "./nodes/reviews"
-import { ShortTeam } from "./nodes/short-team"
 import { TokenRewards } from "./nodes/token-rewards"
 import { Treasury } from "./nodes/treasury"
 import { TreasuryTitle } from "./treasury-title"
 import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
 import { MoneyFlowSkeleton } from "./money-flow-skeleton"
 import { ImpactGrants } from "./nodes/impact-grants"
-import { TitleWithFlowRate } from "./title-with-flow-rate"
-import { Revenue } from "@/lib/onchain-startup/types"
+import { TitleWithCurrency } from "./title-with-currency"
+import { Revenue as RevenueType } from "@/lib/onchain-startup/types"
+import { Revenue } from "./nodes/revenue"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -44,7 +44,7 @@ interface Props {
     monthlyFlowRate: number
     flowId: string
   }
-  revenue: Revenue
+  revenue: RevenueType
 }
 
 export function MoneyFlowDiagram(props: Props) {
@@ -99,13 +99,24 @@ export function MoneyFlowDiagram(props: Props) {
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent/80 to-accent dark:from-transparent dark:via-black/60 dark:to-black/75" />
 
-              <div className="relative">
-                <h3 className="text-2xl font-bold tracking-tight text-accent-foreground dark:text-white sm:text-3xl">
-                  {startup.title}
-                </h3>
-                <div className="mt-1 text-sm text-accent-foreground/90 dark:text-white/90 sm:text-base">
-                  {startup.mission}
+              <div className="pointer-events-auto relative flex w-full flex-row items-start justify-between">
+                <div className="relative">
+                  <h3 className="text-2xl font-bold tracking-tight text-accent-foreground dark:text-white sm:text-3xl">
+                    {startup.title}
+                  </h3>
+                  <div className="mt-1 text-sm text-accent-foreground/90 dark:text-white/90 sm:text-base">
+                    {startup.mission}
+                  </div>
+                  {/* <div className="mx-3 rounded-md bg-white/20 px-2 py-1 backdrop-blur-sm">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <PercentChange value={revenue.salesChange} className="text-sm" />
+                      </TooltipTrigger>
+                      <TooltipContent>Monthly revenue growth</TooltipContent>
+                    </Tooltip>
+                  </div> */}
                 </div>
+                {/* <div className="pr-2.5 pt-1"></div> */}
               </div>
             </div>
           ),
@@ -162,28 +173,14 @@ export function MoneyFlowDiagram(props: Props) {
       {
         col: 2,
         row: 1,
-        id: "team",
-        height: 100,
-        title: (
-          <TitleWithFlowRate title="Team" flowId={startup.impactFlowId} totalBudget={totalBudget} />
-        ),
-        content: <ShortTeam members={members} />,
+        id: "revenue",
+        title: <TitleWithCurrency title="Revenue" value={revenue.totalSales} />,
+        height: 90,
+        content: <Revenue revenue={revenue} />,
       },
-      // {
-      //   col: 2,
-      //   row: 2,
-      //   id: "public_goods",
-      //   title: ["Public Good", `$${splits.support * 100}/mo`],
-      //   height: 90,
-      //   content: (
-      //     <div className="text-pretty text-sm text-muted-foreground">
-      //       Profits support community impact
-      //     </div>
-      //   ),
-      // },
       {
         col: 2,
-        row: 3,
+        row: 2,
         id: "treasury",
         title: (
           <TreasuryTitle
@@ -195,6 +192,14 @@ export function MoneyFlowDiagram(props: Props) {
         height: 90,
         content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
       },
+      // {
+      //   col: 2,
+      //   row: 1,
+      //   id: "team",
+      //   height: 100,
+      //   title: "Team",
+      //   content: <ShortTeam members={members} />,
+      // },
       {
         col: 3,
         row: 1,
@@ -204,21 +209,21 @@ export function MoneyFlowDiagram(props: Props) {
         content: <Reviews reviews={startup.reviews} />,
         handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
       },
-      {
-        col: 3,
-        row: 2,
-        id: "impact",
-        height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
-        title: (
-          <TitleWithFlowRate
-            title="Real world impact"
-            flowId={impactGrants.flowId}
-            totalBudget={impactGrants.monthlyFlowRate}
-          />
-        ),
-        content: <ImpactGrants grants={impactGrants.grants} />,
-        handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-      },
+      // {
+      //   col: 3,
+      //   row: 2,
+      //   id: "impact",
+      //   height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
+      //   title: (
+      //     <TitleWithCurrency
+      //       title="Real world impact"
+      //       href={`/flow/${impactGrants.flowId}`}
+      //       flowRate={impactGrants.monthlyFlowRate}
+      //     />
+      //   ),
+      //   content: <ImpactGrants grants={impactGrants.grants} />,
+      //   handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
+      // },
       {
         col: 3,
         row: 3,
