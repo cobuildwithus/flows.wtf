@@ -43,7 +43,6 @@ interface Props {
 export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   const [recipientInput, setRecipientInput] = useState("")
   const [debouncedInput, setDebouncedInput] = useState("")
-  const [normalizedENS, setNormalizedENS] = useState<string | undefined>()
   const [selectedProfile, setSelectedProfile] = useState<FarcasterProfile | null>(null)
   const [selectedFlow, setSelectedFlow] = useState<FlowSearchResult | null>(null)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
@@ -73,16 +72,13 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   const isUsername =
     !isAddressLike && !isENS && debouncedInput.length >= 2 && !debouncedInput.includes(".")
 
-  // Normalize ENS name
-  useEffect(() => {
-    if (isENS) {
-      try {
-        setNormalizedENS(normalize(debouncedInput))
-      } catch {
-        setNormalizedENS(undefined)
-      }
-    } else {
-      setNormalizedENS(undefined)
+  // Normalized ENS name derived from input (memoized)
+  const normalizedENS = useMemo(() => {
+    if (!isENS) return undefined
+    try {
+      return normalize(debouncedInput)
+    } catch {
+      return undefined
     }
   }, [isENS, debouncedInput])
 
@@ -111,7 +107,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
     excludeFlowId: flow.id,
   })
 
-  const verifiedProfiles = profiles.filter(hasVerifiedAddress)
+  const verifiedProfiles = useMemo(() => profiles.filter(hasVerifiedAddress), [profiles])
 
   // Auto-open popover when we have search results
   useEffect(() => {

@@ -1,11 +1,9 @@
 import { Input } from "@/components/ui/input"
 import { Circle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { forwardRef } from "react"
 import {
   getRecipientStatus,
   getRecipientStatusColor,
-  getRecipientStatusMessage,
   type ValidationState,
 } from "@/lib/recipient/validation-utils"
 
@@ -21,7 +19,6 @@ interface Props {
 export const RecipientInput = forwardRef<HTMLInputElement, Props>(
   ({ value, onChange, disabled, validationState, placeholder, autoFocus }, ref) => {
     const status = getRecipientStatus(validationState)
-    const shouldShowTooltip = status === "loading" || status === "error"
     const showStatus =
       value === validationState.debouncedInput &&
       validationState.debouncedInput !== "" &&
@@ -45,20 +42,7 @@ export const RecipientInput = forwardRef<HTMLInputElement, Props>(
           />
 
           {/* Status Indicator */}
-          {showStatus && shouldShowTooltip ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Circle
-                    className={`absolute right-4 h-2 w-2 fill-current ${getRecipientStatusColor(status)}`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{getRecipientStatusMessage(validationState)}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : showStatus ? (
+          {showStatus ? (
             <Circle
               className={`absolute right-4 h-2 w-2 fill-current ${getRecipientStatusColor(status)}`}
             />
