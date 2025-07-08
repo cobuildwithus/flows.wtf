@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { PercentChange } from "@/components/ui/percent-change"
 import type { LucideIcon } from "lucide-react"
 import { ReactNode } from "react"
 
@@ -19,13 +19,9 @@ export function MetricCard({ title, value, change, icon: Icon }: MetricCardProps
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-semibold tracking-tight">{value}</div>
-        {change && (
+        {change !== undefined && (
           <CardDescription className="mt-1.5 text-xs">
-            <span className={cn(change > 0 ? "text-green-500" : "text-red-500")}>
-              {change > 0 ? "+" : ""}
-              {change.toFixed(2)}%
-            </span>{" "}
-            since last month
+            <PercentChange value={change} className="text-xs" /> since last month
           </CardDescription>
         )}
       </CardContent>

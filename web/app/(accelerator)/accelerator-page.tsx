@@ -10,6 +10,7 @@ import { getStartups } from "@/lib/onchain-startup/startup"
 import Image from "next/image"
 import Link from "next/link"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
+import { PercentChange } from "@/components/ui/percent-change"
 
 interface Props {
   accelerator: Accelerator
@@ -84,24 +85,21 @@ export async function AcceleratorPage(props: Props) {
                   },
                   {
                     name: "monthly growth",
-                    value: `${revenue.salesChange >= 0 ? "+" : ""}${revenue.salesChange.toFixed(1)}%`,
+                    value: revenue.salesChange,
                     change: revenue.salesChange,
                   },
                 ].map((stat) => (
                   <div key={stat.name} className="flex flex-col-reverse gap-1">
                     <dt className="text-sm leading-7 text-white/80 md:text-base">{stat.name}</dt>
                     <dd className="flex items-end gap-2 text-2xl font-medium tracking-tight text-white lg:text-3xl">
-                      <span
-                        className={
-                          stat.change !== undefined
-                            ? stat.change >= 0
-                              ? "text-green-300"
-                              : "text-red-300"
-                            : "text-white"
-                        }
-                      >
-                        {stat.value}
-                      </span>
+                      {stat.change !== undefined ? (
+                        <PercentChange
+                          value={stat.value}
+                          className="text-2xl font-medium tracking-tight text-green-300 data-[negative=true]:text-red-300 lg:text-3xl"
+                        />
+                      ) : (
+                        <span className="text-white">{stat.value}</span>
+                      )}
                     </dd>
                   </div>
                 ))}
@@ -165,7 +163,6 @@ export async function AcceleratorPage(props: Props) {
                         {startup.tagline}
                       </p>
                     </div>
-
                     <div className="border-t pt-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -180,17 +177,10 @@ export async function AcceleratorPage(props: Props) {
                         </div>
                         <div>
                           <p className="text-xs text-card-foreground/80">Growth</p>
-                          <p
-                            className={`mt-1 text-sm font-semibold ${
-                              (revenueData?.salesChange ?? 0) >= 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {revenueData?.salesChange !== undefined
-                              ? `${revenueData.salesChange >= 0 ? "+" : ""}${revenueData.salesChange.toFixed(1)}%`
-                              : "0.0%"}
-                          </p>
+                          <PercentChange
+                            value={revenueData?.salesChange ?? 0}
+                            className="mt-1 text-sm"
+                          />
                         </div>
                       </div>
                     </div>
