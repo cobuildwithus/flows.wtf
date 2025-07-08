@@ -30,9 +30,9 @@ const createAlchemyUrl = (
   const baseUrl = `${prefix}.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
 
   if (protocol === "https") {
-    return http(`https://${baseUrl}`)
+    return `https://${baseUrl}`
   } else {
-    return webSocket(`wss://${baseUrl}`)
+    return `wss://${baseUrl}`
   }
 }
 

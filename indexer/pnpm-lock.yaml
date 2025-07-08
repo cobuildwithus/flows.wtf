@@ -21,8 +21,8 @@ importers:
         specifier: ^8.13.3
         version: 8.13.3
       ponder:
-        specifier: ^0.11.24
-        version: 0.11.24(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))
+        specifier: ^0.11.26
+        version: 0.11.26(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))
       viem:
         specifier: ^2.23.13
         version: 2.23.13(typescript@5.7.2)
@@ -1350,8 +1350,8 @@ packages:
     resolution: {integrity: sha512-ip4qdzjkAyDDZklUaZkcRFb2iA118H9SgRh8yzTkSQK8HilsOJF7rSY8HoW5+I0M46AZgX/pxbprf2vvzQCE0Q==}
     hasBin: true
 
-  ponder@0.11.24:
-    resolution: {integrity: sha512-82EOud1l0DqVX5k6apdEBIwJ2K72lO0N3fhYHtGGsJ3dvxQZJSwOZT431nhSJI0y1xw78bNRa8H2jZVCzqpfPQ==}
+  ponder@0.11.26:
+    resolution: {integrity: sha512-BZVzfvt3MvRKoTbaNxvMj4XDLsEGzNXGnRdJ7Wamc+O+oY7ixaBfhQmHARU1p7zzFZjdIVpHQZQjMCSSKJ1isg==}
     engines: {node: '>=18.14'}
     hasBin: true
     peerDependencies:
@@ -2859,7 +2859,7 @@ snapshots:
       sonic-boom: 3.8.1
       thread-stream: 2.7.0
 
-  ponder@0.11.24(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2)):
+  ponder@0.11.26(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2)):
     dependencies:
       '@babel/code-frame': 7.26.2
       '@commander-js/extra-typings': 12.1.0(commander@12.1.0)
