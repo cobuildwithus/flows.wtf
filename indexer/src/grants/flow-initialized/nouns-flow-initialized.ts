@@ -64,6 +64,7 @@ async function handleFlowInitialized(params: {
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     isFlow: true,
+    isSiblingFlow: false,
     isRemoved: false,
     parentContract,
     rootContract,

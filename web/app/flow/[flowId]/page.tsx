@@ -1,5 +1,3 @@
-import "server-only"
-
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { EmptyState } from "@/components/ui/empty-state"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
@@ -22,9 +20,8 @@ export default async function FlowPage(props: Props) {
   const { flowId } = await props.params
   const { date, impactId } = await props.searchParams
 
-  const { subgrants, ...flow } = await getFlowWithGrants(flowId)
-
-  const user = await getUser()
+  const [flowWithGrants, user] = await Promise.all([getFlowWithGrants(flowId), getUser()])
+  const { subgrants, ...flow } = flowWithGrants
 
   const grants = await Promise.all(
     subgrants
@@ -62,11 +59,7 @@ export default async function FlowPage(props: Props) {
         {!subgrants || subgrants.length === 0 ? (
           <EmptyState title="No grants found" description="There are no approved grants yet" />
         ) : (
-          <GrantsList
-            flow={flow}
-            grants={grants.sort(sortGrants)}
-            canManage={isManager}
-          />
+          <GrantsList flow={flow} grants={grants.sort(sortGrants)} canManage={isManager} />
         )}
       </div>
 

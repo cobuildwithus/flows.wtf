@@ -12,6 +12,7 @@ export const grants = onchainTable(
     rootContract: t.text().notNull(),
     isTopLevel: t.boolean().notNull(),
     isFlow: t.boolean().notNull(),
+    isSiblingFlow: t.boolean().notNull(),
     title: t.text().notNull(),
     description: t.text().notNull(),
     image: t.text().notNull(),

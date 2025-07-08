@@ -35,6 +35,8 @@ async function handleRecipientCreated(params: {
     return
   }
 
+  const existingRecipient = await context.db.find(grants, { id: recipient })
+
   const grant = await context.db.insert(grants).values({
     id: grantId,
     chainId: context.chain.id,
@@ -57,6 +59,7 @@ async function handleRecipientCreated(params: {
     baselinePoolFlowRatePercent: 0,
     isTopLevel: false,
     isFlow: false,
+    isSiblingFlow: existingRecipient?.isFlow ? true : false,
     isRemoved: false,
     allocationsCount: "0",
     isOnchainStartup: isOnchainStartup(flowAddress),

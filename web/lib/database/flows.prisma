@@ -140,6 +140,7 @@ view Grant {
   rootContract                     String  @map("root_contract")
   isTopLevel                       Boolean @map("is_top_level")
   isFlow                           Boolean @map("is_flow")
+  isSiblingFlow                    Boolean @map("is_sibling_flow")
   title                            String
   description                      String
   image                            String

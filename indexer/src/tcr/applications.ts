@@ -64,6 +64,7 @@ async function handleItemSubmitted(params: {
     rootContract,
     isTopLevel: false,
     isFlow: recipientType === RecipientType.FlowContract,
+    isSiblingFlow: false,
     isRemoved: false,
     allocationsCount: "0",
     bonusPoolQuorum: 0,

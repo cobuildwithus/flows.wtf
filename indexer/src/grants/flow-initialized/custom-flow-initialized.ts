@@ -9,7 +9,6 @@ import {
 } from "ponder:schema"
 import { calculateRootContract } from "../grant-helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { accelerators, customFlows } from "../../../addresses"
 import { isAccelerator } from "../recipients/helpers"
 import { fetchTokenInfo } from "../../utils/token-utils"
 
@@ -63,6 +62,7 @@ async function handleFlowInitialized(params: {
     recipientId: "",
     allocationStrategies: strategies.map((strategy) => strategy.toLowerCase()),
     isTopLevel,
+    isSiblingFlow: false,
     baselinePool: baselinePool.toLowerCase(),
     bonusPool: bonusPool.toLowerCase(),
     activatedAt: Number(event.block.timestamp),
