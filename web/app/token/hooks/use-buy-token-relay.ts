@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { toast } from "sonner"
-import { Address, createWalletClient, custom } from "viem"
-import { base, mainnet } from "viem/chains"
+import { Address, createWalletClient, custom, EIP1193Provider } from "viem"
 import { useAccount } from "wagmi"
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { createRelayClient } from "@/lib/relay/client"
@@ -47,7 +46,7 @@ export const useBuyTokenRelay = () => {
 
     const wallet = createWalletClient({
       chain: getChain(chainId),
-      transport: custom(window.ethereum!),
+      transport: custom(window.ethereum as EIP1193Provider),
     })
 
     const relayClient = createRelayClient(chainId)

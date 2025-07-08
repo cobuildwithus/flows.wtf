@@ -24,6 +24,7 @@ import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
 import { MoneyFlowSkeleton } from "./money-flow-skeleton"
 import { ImpactGrants } from "./nodes/impact-grants"
 import { TitleWithFlowRate } from "./title-with-flow-rate"
+import { Revenue } from "@/lib/onchain-startup/types"
 
 const COLUMN_WIDTH = 340
 const COLUMN_SPACING = 180
@@ -43,10 +44,11 @@ interface Props {
     monthlyFlowRate: number
     flowId: string
   }
+  revenue: Revenue
 }
 
 export function MoneyFlowDiagram(props: Props) {
-  const { products, members, user, startup, impactGrants, totalBudget } = props
+  const { products, members, user, startup, impactGrants, totalBudget, revenue } = props
   const { width } = useWindowSize()
   const {
     productsVolumeEth,

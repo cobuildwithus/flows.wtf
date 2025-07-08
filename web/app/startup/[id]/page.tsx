@@ -30,7 +30,7 @@ import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
 import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
-import { getCombinedSalesMetrics } from "@/lib/onchain-startup/sales-metrics"
+import { getRevenueMetrics } from "@/lib/onchain-startup/revenue-metrics"
 import { calculateTotalBudget } from "@/lib/grant-utils"
 
 interface Props {
@@ -80,7 +80,7 @@ export default async function GrantPage(props: Props) {
   ])
 
   // Get combined sales metrics including token payments
-  const combinedMetrics = await getCombinedSalesMetrics(salesSummary.monthlySales, tokenPayments)
+  const revenue = await getRevenueMetrics(salesSummary.monthlySales, tokenPayments)
 
   const totalBudget = calculateTotalBudget(budgets)
   const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
@@ -111,6 +111,7 @@ export default async function GrantPage(props: Props) {
         <MoneyFlowDiagram
           products={products}
           members={teamMembers}
+          revenue={revenue}
           user={user}
           startup={startup}
           totalBudget={totalBudget}
@@ -147,15 +148,15 @@ export default async function GrantPage(props: Props) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Revenue"
-            value={`$${combinedMetrics.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            value={`$${revenue.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             icon={DollarSign}
-            change={combinedMetrics.salesChange}
+            change={revenue.salesChange}
           />
           <MetricCard
             title="Orders"
-            value={combinedMetrics.totalOrders.toLocaleString()}
+            value={revenue.totalOrders.toLocaleString()}
             icon={ShoppingBag}
-            change={combinedMetrics.ordersChange}
+            change={revenue.ordersChange}
           />
 
           <MetricCard

@@ -2,22 +2,16 @@
 
 import type { MonthlySales } from "@/lib/shopify/summary"
 import { combineMonthlySalesWithTokenPayments } from "./sales-data"
+import { Revenue } from "./types"
 
-export interface SalesMetrics {
-  totalSales: number
-  totalOrders: number
-  salesChange: number
-  ordersChange: number
-}
-
-export async function getCombinedSalesMetrics(
+export async function getRevenueMetrics(
   monthlySales: MonthlySales[],
   tokenPayments: {
     timestamp: number
     ethAmount: string | null
     newlyIssuedTokenCount: string
   }[],
-): Promise<SalesMetrics> {
+): Promise<Revenue> {
   // Get combined data with token payments included
   const combinedData = await combineMonthlySalesWithTokenPayments(monthlySales, tokenPayments)
 
