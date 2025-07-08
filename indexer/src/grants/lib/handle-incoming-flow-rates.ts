@@ -77,5 +77,20 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
       monthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
       monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
     })
+
+    const siblingFlow = await db.find(grants, { id: sibling.recipient })
+    if (!!siblingFlow) {
+      await db.update(grants, { id: sibling.id }).set((row) => ({
+        monthlyIncomingFlowRate: (
+          Number(row.monthlyIncomingFlowRate) + monthlyIncomingFlowRate
+        ).toString(),
+        monthlyIncomingBaselineFlowRate: (
+          Number(row.monthlyIncomingBaselineFlowRate) + monthlyIncomingBaselineFlowRate
+        ).toString(),
+        monthlyIncomingBonusFlowRate: (
+          Number(row.monthlyIncomingBonusFlowRate) + monthlyIncomingBonusFlowRate
+        ).toString(),
+      }))
+    }
   }
 }

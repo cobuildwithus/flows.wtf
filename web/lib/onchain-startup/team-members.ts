@@ -19,7 +19,11 @@ export async function getTeamMembers(id: string): Promise<TeamMember[]> {
       totalEarned: true,
       tagline: true,
     },
-    where: { parentContract: { in: budgets.map((b) => b.id) }, isActive: true },
+    where: {
+      parentContract: { in: budgets.map((b) => b.id) },
+      isActive: true,
+      isSiblingFlow: false,
+    },
   })
 
   const uniqueMembers = Object.values(
