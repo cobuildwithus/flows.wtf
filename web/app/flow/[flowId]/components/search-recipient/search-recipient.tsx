@@ -18,9 +18,9 @@ import {
   getRecipientTitle,
   type ValidationState,
 } from "@/lib/recipient/validation-utils"
-import { RecipientInput } from "../recipient-input"
-import { SearchResultsPopover } from "../search-results-popover"
-import { RecipientStatusDisplay } from "../recipient-status-display"
+import { RecipientInput } from "./recipient-input"
+import { SearchResultsPopover } from "./search-results-popover"
+import { RecipientStatusDisplay } from "./recipient-status-display"
 
 interface Props {
   flow: {
@@ -116,7 +116,8 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   // Auto-open popover when we have search results
   useEffect(() => {
     const hasResults = verifiedProfiles.length > 0 || flows.length > 0
-    const shouldOpen = isUsername && hasResults && !selectedProfile && !selectedFlow
+    const isLoading = isLoadingProfiles || isLoadingFlows
+    const shouldOpen = isUsername && (hasResults || isLoading) && !selectedProfile && !selectedFlow
 
     if (shouldOpen !== isPopoverOpen) {
       setIsPopoverOpen(shouldOpen)
@@ -136,6 +137,8 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
     selectedProfile,
     selectedFlow,
     isPopoverOpen,
+    isLoadingProfiles,
+    isLoadingFlows,
   ])
 
   // Get final recipient address

@@ -16,7 +16,7 @@ import { Plus } from "lucide-react"
 import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-flow-button"
 import { Grant } from "@/lib/database/types"
 import { ComponentProps } from "react"
-import { SearchRecipient } from "./search-recipient"
+import { SearchRecipient } from "./search-recipient/search-recipient"
 
 interface Props {
   flow: Pick<Grant, "id" | "chainId" | "recipient" | "superToken">
