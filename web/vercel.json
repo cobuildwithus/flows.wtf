@@ -15,6 +15,10 @@
     {
       "path": "/crons/conversion-rates",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/crons/connect-pool-sibling-flows",
+      "schedule": "*/1 * * * *"
     }
   ]
 }
