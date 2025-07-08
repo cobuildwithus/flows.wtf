@@ -6,7 +6,9 @@ export interface ValidationState {
   selectedProfile: FarcasterProfile | null
   selectedFlow: FlowSearchResult | null
   debouncedInput: string
-  isLoading: boolean
+  isLoadingENS: boolean
+  isLoadingProfiles: boolean
+  isLoadingFlows: boolean
   ensAddress: string | null | undefined
   verifiedProfiles: FarcasterProfile[]
   flows: FlowSearchResult[]
@@ -19,7 +21,9 @@ export function getRecipientStatus(state: ValidationState) {
     selectedProfile,
     selectedFlow,
     debouncedInput,
-    isLoading,
+    isLoadingENS,
+    isLoadingProfiles,
+    isLoadingFlows,
     ensAddress,
     verifiedProfiles,
     flows,
@@ -35,7 +39,7 @@ export function getRecipientStatus(state: ValidationState) {
   }
 
   if (!debouncedInput) return null
-  if (isLoading) return "loading"
+  if (isLoadingENS || isLoadingProfiles || isLoadingFlows) return "loading"
 
   const isENS =
     debouncedInput.includes(".") && !debouncedInput.includes(" ") && debouncedInput.length > 4
@@ -45,7 +49,7 @@ export function getRecipientStatus(state: ValidationState) {
 
   if (isSearchQuery) {
     if (verifiedProfiles.length > 0 || flows.length > 0) return null // Don't show status while dropdown is visible
-    return isLoading ? "loading" : "error"
+    return isLoadingProfiles || isLoadingFlows ? "loading" : "error"
   }
 
   if (isENS && !ensAddress) return "error"
@@ -65,7 +69,9 @@ export function getRecipientStatusMessage(state: ValidationState) {
     selectedProfile,
     selectedFlow,
     debouncedInput,
-    isLoading,
+    isLoadingENS,
+    isLoadingProfiles,
+    isLoadingFlows,
     ensAddress,
     verifiedProfiles,
     flows,
@@ -83,7 +89,8 @@ export function getRecipientStatusMessage(state: ValidationState) {
   }
 
   if (!debouncedInput) return ""
-  if (isLoading) return "Searching..."
+  if (isLoadingENS) return "Resolving ENS name..."
+  if (isLoadingProfiles || isLoadingFlows) return "Searching..."
 
   const isENS =
     debouncedInput.includes(".") && !debouncedInput.includes(" ") && debouncedInput.length > 4
@@ -94,7 +101,13 @@ export function getRecipientStatusMessage(state: ValidationState) {
   if (isENS && ensAddress) return `Resolved to: ${ensAddress.slice(0, 6)}...${ensAddress.slice(-4)}`
   if (isENS && !ensAddress) return "ENS name not found"
   if (recipientAddress && isAddress(recipientAddress)) return "Valid Ethereum address"
-  if (isSearchQuery && verifiedProfiles.length === 0 && flows.length === 0 && !isLoading)
+  if (
+    isSearchQuery &&
+    verifiedProfiles.length === 0 &&
+    flows.length === 0 &&
+    !isLoadingProfiles &&
+    !isLoadingFlows
+  )
     return "No results found"
   return "Invalid address format"
 }
@@ -103,7 +116,8 @@ export function getRecipientErrorMessage(state: ValidationState) {
   const {
     selectedProfile,
     debouncedInput,
-    isLoading,
+    isLoadingProfiles,
+    isLoadingFlows,
     ensAddress,
     verifiedProfiles,
     flows,
@@ -124,7 +138,13 @@ export function getRecipientErrorMessage(state: ValidationState) {
     !isAddressLike && !isENS && debouncedInput.length >= 2 && !debouncedInput.includes(".")
 
   if (isENS && !ensAddress) return "ENS name not found"
-  if (isSearchQuery && verifiedProfiles.length === 0 && flows.length === 0 && !isLoading)
+  if (
+    isSearchQuery &&
+    verifiedProfiles.length === 0 &&
+    flows.length === 0 &&
+    !isLoadingProfiles &&
+    !isLoadingFlows
+  )
     return "No results found"
   if (!isSearchQuery && !isENS && recipientAddress && !isAddress(recipientAddress))
     return "Invalid address format"
