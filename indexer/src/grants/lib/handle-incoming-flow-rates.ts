@@ -1,5 +1,9 @@
 import type { Context } from "ponder:registry"
-import { grants, parentFlowToChildren } from "ponder:schema"
+import {
+  grants,
+  parentFlowToChildren,
+  siblingFlowAndParentToPreviousFlowRates,
+} from "ponder:schema"
 
 async function getRelevantGrants(db: Context["db"], parentContract: string) {
   const res = await db.find(parentFlowToChildren, { parentFlowContract: parentContract })
@@ -78,19 +82,66 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
       monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
     })
 
-    const siblingFlow = await db.find(grants, { id: sibling.recipient })
-    if (!!siblingFlow) {
-      await db.update(grants, { id: sibling.id }).set((row) => ({
-        monthlyIncomingFlowRate: (
-          Number(row.monthlyIncomingFlowRate) + monthlyIncomingFlowRate
-        ).toString(),
-        monthlyIncomingBaselineFlowRate: (
-          Number(row.monthlyIncomingBaselineFlowRate) + monthlyIncomingBaselineFlowRate
-        ).toString(),
-        monthlyIncomingBonusFlowRate: (
-          Number(row.monthlyIncomingBonusFlowRate) + monthlyIncomingBonusFlowRate
-        ).toString(),
-      }))
-    }
+    // if the flow is being paid to another flow that is not a direct child of the parent
+    // we need to update its flow rates
+    await updateSiblingFlowRates(
+      db,
+      sibling.recipient,
+      parentContract,
+      monthlyIncomingFlowRate,
+      monthlyIncomingBaselineFlowRate,
+      monthlyIncomingBonusFlowRate
+    )
   }
+}
+
+async function updateSiblingFlowRates(
+  db: Context["db"],
+  recipientId: string,
+  parentContract: string,
+  monthlyIncomingFlowRate: number,
+  monthlyIncomingBaselineFlowRate: number,
+  monthlyIncomingBonusFlowRate: number
+) {
+  const siblingFlow = await db.find(grants, { id: recipientId })
+  if (!siblingFlow) return
+
+  const previousFlowRates = await db.find(siblingFlowAndParentToPreviousFlowRates, {
+    siblingFlowAndParent: `${recipientId}-${parentContract}`,
+  })
+
+  const netMonthlyIncomingFlowRate =
+    monthlyIncomingFlowRate - Number(previousFlowRates?.previousMonthlyIncomingFlowRate || 0)
+  const netMonthlyIncomingBaselineFlowRate =
+    monthlyIncomingBaselineFlowRate -
+    Number(previousFlowRates?.previousMonthlyIncomingBaselineFlowRate || 0)
+  const netMonthlyIncomingBonusFlowRate =
+    monthlyIncomingBonusFlowRate -
+    Number(previousFlowRates?.previousMonthlyIncomingBonusFlowRate || 0)
+
+  await db.update(grants, { id: recipientId }).set((row) => ({
+    monthlyIncomingFlowRate: (
+      Number(row.monthlyIncomingFlowRate) + netMonthlyIncomingFlowRate
+    ).toString(),
+    monthlyIncomingBaselineFlowRate: (
+      Number(row.monthlyIncomingBaselineFlowRate) + netMonthlyIncomingBaselineFlowRate
+    ).toString(),
+    monthlyIncomingBonusFlowRate: (
+      Number(row.monthlyIncomingBonusFlowRate) + netMonthlyIncomingBonusFlowRate
+    ).toString(),
+  }))
+
+  await db
+    .insert(siblingFlowAndParentToPreviousFlowRates)
+    .values({
+      siblingFlowAndParent: `${recipientId}-${parentContract}`,
+      previousMonthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
+      previousMonthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
+      previousMonthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
+    })
+    .onConflictDoUpdate((row) => ({
+      previousMonthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
+      previousMonthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
+      previousMonthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
+    }))
 }

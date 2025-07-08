@@ -328,6 +328,17 @@ export const flowContractAndRecipientIdToGrantId = onchainTable(
   (table) => ({})
 )
 
+export const siblingFlowAndParentToPreviousFlowRates = onchainTable(
+  "_kv_SiblingFlowAndParentToPreviousFlowRates",
+  (t) => ({
+    siblingFlowAndParent: t.text().primaryKey(),
+    previousMonthlyIncomingFlowRate: t.text().notNull(),
+    previousMonthlyIncomingBaselineFlowRate: t.text().notNull(),
+    previousMonthlyIncomingBonusFlowRate: t.text().notNull(),
+  }),
+  (table) => ({})
+)
+
 export const bonusPoolToGrantId = onchainTable(
   "_kv_BonusPoolToGrantId",
   (t) => ({
