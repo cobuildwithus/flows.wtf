@@ -14,15 +14,12 @@ interface Props {
   validationState: ValidationState
   placeholder?: string
   autoFocus?: boolean
+  showStatus?: boolean
 }
 
 export const RecipientInput = forwardRef<HTMLInputElement, Props>(
-  ({ value, onChange, disabled, validationState, placeholder, autoFocus }, ref) => {
+  ({ value, onChange, disabled, validationState, placeholder, autoFocus, showStatus }, ref) => {
     const status = getRecipientStatus(validationState)
-    const showStatus =
-      value === validationState.debouncedInput &&
-      validationState.debouncedInput !== "" &&
-      status !== null
 
     return (
       <div className="dark:hover-border-border relative rounded-lg border border-zinc-300 p-4 duration-300 focus-within:border-zinc-500 hover:border-zinc-500 dark:border-border/50 dark:focus-within:border-border">

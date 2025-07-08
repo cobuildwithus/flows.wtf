@@ -256,6 +256,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
           validationState={validationState}
           placeholder="0x..., ENS, Farcaster, or Flow"
           autoFocus={!disabled}
+          showStatus={shouldShowStatus}
         />
 
         {/* Search Results Popover */}
