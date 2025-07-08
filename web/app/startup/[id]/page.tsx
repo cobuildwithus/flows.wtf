@@ -31,6 +31,7 @@ import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
 import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
 import { getCombinedSalesMetrics } from "@/lib/onchain-startup/sales-metrics"
+import { calculateTotalBudget } from "@/lib/grant-utils"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -81,9 +82,7 @@ export default async function GrantPage(props: Props) {
   // Get combined sales metrics including token payments
   const combinedMetrics = await getCombinedSalesMetrics(salesSummary.monthlySales, tokenPayments)
 
-  const totalBudget = budgets
-    .map((b) => Number(b.monthlyIncomingFlowRate))
-    .reduce((a, b) => a + b, 0)
+  const totalBudget = calculateTotalBudget(budgets)
   const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
 
   return (

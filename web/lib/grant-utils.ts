@@ -46,3 +46,35 @@ export function getGrantUrl(grant: {
   }
   return `/item/${grant.id}`
 }
+
+export function calculateTotalBudget(
+  budgets: Array<{
+    id: string
+    monthlyOutgoingFlowRate: string | number
+    subgrants?: Array<{
+      recipient: string
+      monthlyIncomingFlowRate?: string | number | null
+    }>
+  }>,
+) {
+  return budgets
+    .map((budget) => {
+      const flowRate = Number(budget.monthlyOutgoingFlowRate)
+
+      const subgrantFlowToOtherBudgets =
+        budget.subgrants
+          ?.filter((subgrant) => {
+            const isOtherBudget = budgets.some((b) => b.id === subgrant.recipient)
+            return isOtherBudget
+          })
+          .reduce((sum, subgrant) => {
+            const subgrantFlow = Number(subgrant.monthlyIncomingFlowRate || 0)
+            return sum + subgrantFlow
+          }, 0) || 0
+
+      const netBudget = flowRate - subgrantFlowToOtherBudgets
+
+      return netBudget
+    })
+    .reduce((a, b) => a + b, 0)
+}
