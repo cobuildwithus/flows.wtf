@@ -1,26 +1,13 @@
 "use client"
 
-import { useState, useRef, useEffect, useMemo } from "react"
-import { useEnsAddress } from "wagmi"
-import { isAddress } from "viem"
-import { normalize } from "viem/ens"
-import {
-  type FarcasterProfile,
-  getProfileAddress,
-  getProfileDisplayName,
-  hasVerifiedAddress,
-  useSearchUsernames,
-} from "@/lib/farcaster"
-import { useSearchFlows, type FlowSearchResult } from "@/lib/flows"
-import {
-  getRecipientDescription,
-  getRecipientStatus,
-  getRecipientTitle,
-  type ValidationState,
-} from "@/lib/recipient/validation-utils"
+import { useState, useRef, useEffect } from "react"
+import { type FarcasterProfile, getProfileDisplayName } from "@/lib/farcaster"
+import { type FlowSearchResult } from "@/lib/flows"
 import { RecipientInput } from "./recipient-input"
 import { SearchResultsPopover } from "./search-results-popover"
 import { RecipientStatusDisplay } from "./recipient-status-display"
+import { useSearch } from "./use-search"
+import { useRecipientValidation } from "./use-recipient-validation"
 
 interface Props {
   flow: {
@@ -42,7 +29,6 @@ interface Props {
 
 export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   const [recipientInput, setRecipientInput] = useState("")
-  const [debouncedInput, setDebouncedInput] = useState("")
   const [selectedProfile, setSelectedProfile] = useState<FarcasterProfile | null>(null)
   const [selectedFlow, setSelectedFlow] = useState<FlowSearchResult | null>(null)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
@@ -53,7 +39,6 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   useEffect(() => {
     if (disabled) {
       setRecipientInput("")
-      setDebouncedInput("")
       setSelectedProfile(null)
       setSelectedFlow(null)
       setIsPopoverOpen(false)
@@ -61,60 +46,33 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
     }
   }, [disabled])
 
-  // Debounce input for search
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedInput(recipientInput), 500)
-    return () => clearTimeout(timer)
-  }, [recipientInput])
+  // Use centralized search hook
+  const { debouncedInput, isUsername, ensAddress, verifiedProfiles, flows, isLoading, hasResults } =
+    useSearch({
+      input: recipientInput,
+      flowConfig: {
+        superToken: flow.superToken,
+        chainId: flow.chainId,
+        excludeFlowId: flow.id,
+      },
+    })
 
-  // Determine input type
-  const isENS =
-    debouncedInput.includes(".") && !debouncedInput.includes(" ") && debouncedInput.length > 4
-  const isAddressLike = debouncedInput.startsWith("0x") && debouncedInput.length >= 10
-  const isUsername =
-    !isAddressLike && !isENS && debouncedInput.length >= 1 && !debouncedInput.includes(".")
-
-  // Normalized ENS name derived from input (memoized)
-  const normalizedENS = useMemo(() => {
-    if (!isENS) return undefined
-    try {
-      return normalize(debouncedInput)
-    } catch {
-      return undefined
-    }
-  }, [isENS, debouncedInput])
-
-  // ENS resolution (always on mainnet)
-  const { data: ensAddress, isLoading: isLoadingENS } = useEnsAddress({
-    name: normalizedENS,
-    chainId: 1,
+  // Use centralized validation hook
+  const { validationState, shouldShowStatus, recipient } = useRecipientValidation({
+    recipientInput,
+    selectedProfile,
+    selectedFlow,
+    debouncedInput,
+    isLoading,
+    ensAddress,
+    verifiedProfiles,
+    flows,
+    isUsername,
+    searchStarted,
   })
-
-  // Farcaster username search
-  const { profiles, isLoading: isLoadingProfiles } = useSearchUsernames({
-    query: debouncedInput,
-    limit: 20,
-    debounceMs: 200,
-    enabled: isUsername,
-  })
-
-  // Flow search
-  const { flows, isLoading: isLoadingFlows } = useSearchFlows({
-    query: debouncedInput,
-    limit: 10,
-    debounceMs: 200,
-    enabled: isUsername,
-    superToken: flow.superToken,
-    chainId: flow.chainId,
-    excludeFlowId: flow.id,
-  })
-
-  const verifiedProfiles = useMemo(() => profiles.filter(hasVerifiedAddress), [profiles])
 
   // Auto-open popover when we have search results
   useEffect(() => {
-    const hasResults = verifiedProfiles.length > 0 || flows.length > 0
-    const isLoading = isLoadingProfiles || isLoadingFlows
     const shouldOpen = isUsername && (hasResults || isLoading) && !selectedProfile && !selectedFlow
 
     if (shouldOpen !== isPopoverOpen) {
@@ -128,16 +86,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
         }, 0)
       }
     }
-  }, [
-    isUsername,
-    verifiedProfiles.length,
-    flows.length,
-    selectedProfile,
-    selectedFlow,
-    isPopoverOpen,
-    isLoadingProfiles,
-    isLoadingFlows,
-  ])
+  }, [isUsername, hasResults, isLoading, selectedProfile, selectedFlow, isPopoverOpen])
 
   // Track when search has actually started for username queries
   useEffect(() => {
@@ -152,69 +101,10 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
     }
   }, [isUsername, debouncedInput])
 
-  // Get final recipient address
-  const getRecipientAddress = () => {
-    if (selectedProfile) return getProfileAddress(selectedProfile)
-    if (selectedFlow) return selectedFlow.recipient
-    if (isENS) return ensAddress
-    return debouncedInput
-  }
-
-  const recipientAddress = getRecipientAddress()
-  const isValidAddress = recipientAddress ? isAddress(recipientAddress) : false
-
-  // Create validation state object for utils functions (memoized to prevent unnecessary re-renders)
-  const validationState: ValidationState = useMemo(
-    () => ({
-      selectedProfile,
-      selectedFlow,
-      debouncedInput,
-      isLoadingENS,
-      isLoadingProfiles,
-      isLoadingFlows,
-      ensAddress,
-      verifiedProfiles,
-      flows,
-      recipientAddress,
-      recipientInput,
-    }),
-    [
-      selectedProfile,
-      selectedFlow,
-      debouncedInput,
-      isLoadingENS,
-      isLoadingProfiles,
-      isLoadingFlows,
-      ensAddress,
-      verifiedProfiles,
-      flows,
-      recipientAddress,
-      recipientInput,
-    ],
-  )
-
-  // Status helpers using utils
-  const status = getRecipientStatus(validationState)
-  const showStatus = recipientInput === debouncedInput && debouncedInput !== "" && status !== null
-
-  // Only suppress "no results" error for username searches that haven't started
-  const shouldShowStatus = showStatus && !(status === "error" && isUsername && !searchStarted)
-
   // Notify parent of changes
   useEffect(() => {
-    if (isValidAddress && recipientAddress) {
-      onRecipientChange({
-        address: recipientAddress,
-        title: getRecipientTitle(validationState),
-        image: selectedProfile?.avatar_url || selectedFlow?.image || "",
-        tagline: selectedFlow?.tagline || "",
-        description: getRecipientDescription(validationState),
-      })
-    } else {
-      onRecipientChange(null)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isValidAddress, recipientAddress, selectedProfile, selectedFlow])
+    onRecipientChange(recipient)
+  }, [recipient, onRecipientChange])
 
   // Handlers
   const handleSelectProfile = (profile: FarcasterProfile) => {
@@ -267,7 +157,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
           flows={flows}
           onSelectProfile={handleSelectProfile}
           onSelectFlow={handleSelectFlow}
-          isLoading={isLoadingProfiles || isLoadingFlows}
+          isLoading={isLoading}
         />
 
         {/* Status Messages */}
