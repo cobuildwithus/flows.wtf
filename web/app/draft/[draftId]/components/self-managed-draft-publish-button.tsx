@@ -24,6 +24,7 @@ import type { User } from "@/lib/auth/user"
 import SignInWithNeynar from "@/components/global/signin-with-neynar"
 import { AuthButton } from "@/components/ui/auth-button"
 import { AddFlowToFlowButton } from "@/components/global/add-flow-to-flow-button"
+import { publishDraft } from "../publish-draft"
 
 interface Props {
   draft: Draft
@@ -79,19 +80,35 @@ export function ManagedFlowDraftPublishButton(props: Props) {
           <div className="flex justify-end">
             {flow.isAccelerator ? (
               <AddFlowToFlowButton
-                draft={draft}
+                flow={{
+                  title: draft.title,
+                  description: draft.description,
+                  image: draft.image,
+                  tagline: draft.tagline || "",
+                  manager: draft.users[0],
+                }}
                 contract={flow.recipient as `0x${string}`}
                 chainId={flow.chainId}
-                onSuccess={() => {
+                buttonText={draft.opportunityId ? "Hire" : "Create flow"}
+                onSuccess={async (hash) => {
+                  await publishDraft(draft.id, hash)
                   ref.current?.click() // close dialog
                 }}
               />
             ) : (
               <AddRecipientToFlowButton
-                draft={draft}
+                recipient={{
+                  address: draft.users[0],
+                  title: draft.title,
+                  description: draft.description,
+                  image: draft.image,
+                  tagline: draft.tagline || "",
+                }}
                 contract={flow.recipient as `0x${string}`}
                 chainId={flow.chainId}
-                onSuccess={() => {
+                buttonText={draft.opportunityId ? "Hire" : "Add to flow"}
+                onSuccess={async (hash) => {
+                  await publishDraft(draft.id, hash)
                   ref.current?.click() // close dialog
                 }}
               />

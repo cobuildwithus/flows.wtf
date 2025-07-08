@@ -11,6 +11,7 @@ import { getEthAddress } from "@/lib/utils"
 import Link from "next/link"
 import { AllocationToggle } from "./allocation-toggle"
 import { getUser } from "@/lib/auth/user"
+import { AddRecipientModal } from "./add-recipient-modal"
 
 interface Props {
   flowId: string
@@ -46,7 +47,6 @@ export const FlowSubmenu = async (props: Props) => {
   const hasTcr = !!flow.tcr
   const isFlow = flow.isFlow
   const isManager = flow.manager === user?.address
-  const canSuggest = hasTcr || isManager
   const showDrafts = (isFlow && (hasTcr || isManager)) || !flow.isTopLevel
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
@@ -98,6 +98,9 @@ export const FlowSubmenu = async (props: Props) => {
             </Link>
           )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
+          {!isFlowRemoved && isFlow && isManager && (
+            <AddRecipientModal flow={flow} variant="outline" />
+          )}
           <FundFlow variant="default" flow={flow} />
         </div>
       </div>
