@@ -1,6 +1,5 @@
 "use server"
 
-import type { SuperfluidFlowWithState } from "@/lib/superfluid/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { UserProfile } from "@/components/user-profile/user-profile"
@@ -8,23 +7,26 @@ import { getIncomingFlows } from "@/lib/superfluid/get-incoming-flows"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Currency } from "@/components/ui/currency"
 import { Grant } from "@prisma/flows"
+import { getIncomingFlowFromSiblings } from "@/lib/superfluid/get-sibling-flow-connections"
 
 interface IncomingFlowsListProps {
-  parentFlow: Grant
+  flow: Grant
   maxItems?: number
   showTitle?: boolean
 }
 
 export async function IncomingFlowsList({
-  parentFlow,
+  flow,
   maxItems = 10,
   showTitle = true,
 }: IncomingFlowsListProps) {
-  const { recipient: flowContract, chainId } = parentFlow
-  const flows = await getIncomingFlows(flowContract, chainId)
+  const { recipient: flowContract, chainId, id } = flow
+  const superfluidFlows = await getIncomingFlows(flowContract, chainId)
+  const siblingFlows = await getIncomingFlowFromSiblings(flowContract, id, chainId)
 
+  // Filter and sort active superfluid flows
   const activeFlows =
-    flows
+    superfluidFlows
       ?.filter((flow) => flow.isActive)
       .sort((a, b) => {
         // Sort by flow rate descending (highest first)
@@ -36,7 +38,19 @@ export async function IncomingFlowsList({
       }) || []
   const displayFlows = activeFlows.slice(0, maxItems)
 
-  if (displayFlows.length === 0) {
+  // Sibling flows: sort by flowRate descending, slice to maxItems
+  const sortedSiblingFlows =
+    siblingFlows?.sort((a, b) => {
+      const aFlowRate = Number(a.flowRate)
+      const bFlowRate = Number(b.flowRate)
+      if (aFlowRate > bFlowRate) return -1
+      if (aFlowRate < bFlowRate) return 1
+      return 0
+    }) || []
+  const displaySiblingFlows = sortedSiblingFlows.slice(0, maxItems)
+
+  // If both lists are empty, return null
+  if (displayFlows.length === 0 && displaySiblingFlows.length === 0) {
     return null
   }
 
@@ -45,20 +59,27 @@ export async function IncomingFlowsList({
       {showTitle && (
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium">Backers</h4>
-          {activeFlows.length > maxItems && (
+          {(activeFlows.length > maxItems || sortedSiblingFlows.length > maxItems) && (
             <Badge variant="secondary" className="text-xs">
-              +{activeFlows.length - maxItems} more
+              +{activeFlows.length + sortedSiblingFlows.length - maxItems} more
             </Badge>
           )}
         </div>
       )}
 
       <div className="space-y-2">
-        {displayFlows.map((flow, index) => (
-          <IncomingFlowItem
-            key={`${flow.token}-${flow.sender}-${flow.receiver}-${index}`}
-            flow={flow}
-            parentFlow={parentFlow}
+        {displayFlows.map((superfluidFlow, index) => (
+          <IncomingSuperfluidFlowItem
+            key={`sf-${superfluidFlow.token}-${superfluidFlow.sender}-${superfluidFlow.receiver}-${index}`}
+            flow={superfluidFlow}
+            parentFlow={flow}
+          />
+        ))}
+        {displaySiblingFlows.map((siblingFlow, index) => (
+          <IncomingSiblingFlowItem
+            key={`sib-${siblingFlow.id}-${index}`}
+            flow={siblingFlow}
+            parentFlow={flow}
           />
         ))}
       </div>
@@ -66,11 +87,16 @@ export async function IncomingFlowsList({
   )
 }
 
-function IncomingFlowItem({
+function IncomingSuperfluidFlowItem({
   flow,
   parentFlow,
 }: {
-  flow: SuperfluidFlowWithState
+  flow: {
+    token: string
+    sender: string
+    receiver: string
+    flowRate: string
+  }
   parentFlow: Grant
 }) {
   const flowRatePerSecond = BigInt(flow.flowRate)
@@ -102,6 +128,52 @@ function IncomingFlowItem({
 
           <Badge variant="default" className="text-[10px]">
             Active
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function IncomingSiblingFlowItem({
+  flow: { id, title, image, flowRate },
+  parentFlow,
+}: {
+  flow: {
+    id: string
+    title: string
+    image?: string | null
+    flowRate: string
+  }
+  parentFlow: Grant
+}) {
+  return (
+    <Card className="group relative border-l-4 border-l-primary/60 transition-colors hover:bg-muted/50">
+      <CardContent className="p-2 md:p-3">
+        <div className="flex items-center justify-between space-x-3">
+          <div className="flex items-center gap-3">
+            <Avatar className="size-7">
+              {image ? (
+                <AvatarImage src={image} />
+              ) : (
+                <AvatarFallback>{title ? title.slice(0, 2) : "SB"}</AvatarFallback>
+              )}
+            </Avatar>
+            <div className="flex flex-col">
+              <a
+                href={`/flow/${id}`}
+                className="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium outline-none hover:underline focus:underline"
+              >
+                {title || "Sibling Flow"}
+              </a>
+              <div className="text-xs text-muted-foreground">
+                <Currency flow={parentFlow}>{flowRate}</Currency>
+                /mo
+              </div>
+            </div>
+          </div>
+          <Badge variant="secondary" className="text-[10px]">
+            Flow
           </Badge>
         </div>
       </CardContent>

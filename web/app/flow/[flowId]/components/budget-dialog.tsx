@@ -211,7 +211,7 @@ export const BudgetDialog = async (props: Props) => {
         </Card>
 
         {/* Show funding contributors */}
-        <IncomingFlowsList parentFlow={flow} maxItems={6} showTitle={true} />
+        <IncomingFlowsList flow={flow} maxItems={6} showTitle={true} />
       </DialogContent>
     </Dialog>
   )
