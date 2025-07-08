@@ -21,6 +21,7 @@ import { GrantLogoCell } from "@/components/global/grant-logo-cell"
 import { AllocationInput } from "@/components/global/allocation-input"
 import { LimitedGrant } from "@/lib/database/types"
 import { RemoveRecipientButton } from "./remove-recipient-button"
+import { getGrantUrl } from "@/lib/grant-utils"
 
 interface Props {
   flow: LimitedGrant
@@ -62,11 +63,7 @@ export function GrantsTable(props: Props) {
               <TableCell className="space-y-1">
                 <div className="max-w-64 overflow-hidden text-ellipsis max-sm:truncate">
                   <Link
-                    href={
-                      flow.isTopLevel && grant.isFlow && !isRemovalRequested
-                        ? `/flow/${grant.id}`
-                        : `/item/${grant.id}`
-                    }
+                    href={getGrantUrl(grant)}
                     className="text-sm font-medium duration-100 ease-out hover:text-primary md:whitespace-normal"
                     tabIndex={-1}
                   >

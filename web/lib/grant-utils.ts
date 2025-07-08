@@ -1,5 +1,6 @@
 import type { Grant } from "@prisma/flows"
 import { Status } from "./enums"
+import { LimitedGrant } from "./database/types"
 
 const DAYS_TO_BE_NEW = 10
 
@@ -25,4 +26,23 @@ export function sortGrants(a: Omit<Grant, "description">, b: Omit<Grant, "descri
     return 1
   }
   return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
+}
+
+export function getGrantUrl(grant: {
+  isOnchainStartup: boolean
+  isFlow: boolean
+  isSiblingFlow: boolean
+  id: string
+  recipient: string
+}) {
+  if (grant.isOnchainStartup) {
+    return `/startup/${grant.id}`
+  }
+  if (grant.isFlow || grant.isSiblingFlow) {
+    if (grant.isSiblingFlow) {
+      return `/flow/${grant.recipient}`
+    }
+    return `/flow/${grant.id}`
+  }
+  return `/item/${grant.id}`
 }

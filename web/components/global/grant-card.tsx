@@ -10,7 +10,7 @@ import { getIpfsUrl } from "@/lib/utils"
 import type { DerivedData } from "@prisma/flows"
 import Link from "next/dist/client/link"
 import Image from "next/image"
-import { isGrantNew } from "@/lib/grant-utils"
+import { getGrantUrl, isGrantNew } from "@/lib/grant-utils"
 import { LimitedGrant } from "@/lib/database/types"
 
 interface Props {
@@ -78,26 +78,4 @@ function DisputedGrantTag() {
       <TooltipContent>This grant has been disputed and is under review.</TooltipContent>
     </Tooltip>
   )
-}
-
-// Simplified helper for url creation
-function getGrantUrl(
-  grant: LimitedGrant & {
-    isOnchainStartup: boolean
-    isFlow: boolean
-    isSiblingFlow: boolean
-    id: string
-    recipient: string
-  },
-) {
-  if (grant.isOnchainStartup) {
-    return `/startup/${grant.id}`
-  }
-  if (grant.isFlow || grant.isSiblingFlow) {
-    if (grant.isSiblingFlow) {
-      return `/flow/${grant.recipient}`
-    }
-    return `/flow/${grant.id}`
-  }
-  return `/item/${grant.id}`
 }
