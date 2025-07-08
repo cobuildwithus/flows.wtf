@@ -146,13 +146,13 @@ export default async function GrantPage(props: Props) {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
-            title="Sales Volume"
+            title="Revenue"
             value={`$${combinedMetrics.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             icon={DollarSign}
             change={combinedMetrics.salesChange}
           />
           <MetricCard
-            title="Total Orders"
+            title="Orders"
             value={combinedMetrics.totalOrders.toLocaleString()}
             icon={ShoppingBag}
             change={combinedMetrics.ordersChange}

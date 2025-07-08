@@ -1,9 +1,10 @@
 "use server"
 
+import { unstable_cache } from "next/cache"
 import database from "@/lib/database/flows-db"
 import { FLOWS_REVNET_PROJECT_ID } from "../config"
 
-export async function getTokenPayments(projectId: number) {
+async function _getTokenPayments(projectId: number) {
   const payments = await database.juiceboxPayEvent.findMany({
     select: {
       txHash: true,
@@ -68,3 +69,8 @@ export async function getTokenPayments(projectId: number) {
 
   return serializedPayments
 }
+
+export const getTokenPayments = unstable_cache(_getTokenPayments, ["token-payments"], {
+  revalidate: 60, // Cache for 60 seconds
+  tags: ["token-payments"],
+})

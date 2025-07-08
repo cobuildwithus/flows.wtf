@@ -1,18 +1,15 @@
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { FundFlow } from "@/components/fund-flow/fund-flow"
-import { EthInUsd } from "@/components/global/eth-in-usd"
 import { Submenu } from "@/components/global/submenu"
 import { Button } from "@/components/ui/button"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/flows-db"
 import { getFlow } from "@/lib/database/queries/flow"
 import { Accelerator } from "@/lib/onchain-startup/data/accelerators"
 import { getStartups } from "@/lib/onchain-startup/startup"
-import { getFlowsTreasuryBalance } from "@/lib/revnet/hooks/get-flows-revnet-balance"
-import { base } from "viem/chains"
 import Image from "next/image"
 import Link from "next/link"
+import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 
 interface Props {
   accelerator: Accelerator
@@ -22,24 +19,11 @@ export async function AcceleratorPage(props: Props) {
   const { accelerator } = props
 
   const startups = getStartups(accelerator)
-
-  const [flow, user, ...treasuryBalances] = await Promise.all([
+  const [flow, user, revenue] = await Promise.all([
     getFlow(accelerator.flowId),
     getUser(),
-    ...startups.map((startup) =>
-      getFlowsTreasuryBalance(BigInt(startup.revnetProjectIds.base), base.id),
-    ),
+    getTotalRevenue(startups),
   ])
-
-  // Create a map of project ID to treasury data for easy lookup
-  const treasuryDataMap = new Map(
-    startups.map((startup, index) => [
-      Number(startup.revnetProjectIds.base),
-      treasuryBalances[index],
-    ]),
-  )
-
-  console.log(treasuryDataMap)
 
   return (
     <AgentChatProvider
@@ -60,7 +44,7 @@ export async function AcceleratorPage(props: Props) {
             width="1500"
             height="500"
             priority
-            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-70 mix-blend-multiply grayscale"
+            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-70 mix-blend-multiply blur-[3px] grayscale"
           />
 
           <div className="mx-auto max-w-7xl px-4 lg:px-6">
@@ -90,27 +74,34 @@ export async function AcceleratorPage(props: Props) {
               </div>
               <dl className="mt-12 grid grid-cols-2 items-start gap-8 lg:max-w-3xl lg:grid-cols-4">
                 {[
-                  { name: "Projects", value: startups.length },
                   {
-                    name: "Backers",
-                    value: treasuryBalances.reduce(
-                      (sum, treasury) => sum + treasury.participantsCount,
-                      0,
-                    ),
-                  },
-                  {
-                    name: "Earned so far",
+                    name: "in revenue",
                     value: Intl.NumberFormat("en", {
                       style: "currency",
                       currency: "USD",
                       maximumFractionDigits: 0,
-                    }).format(Number(flow.totalEarned)),
+                    }).format(revenue.totalRevenue),
+                  },
+                  {
+                    name: "monthly growth",
+                    value: `${revenue.salesChange >= 0 ? "+" : ""}${revenue.salesChange.toFixed(1)}%`,
+                    change: revenue.salesChange,
                   },
                 ].map((stat) => (
                   <div key={stat.name} className="flex flex-col-reverse gap-1">
                     <dt className="text-sm leading-7 text-white/80 md:text-base">{stat.name}</dt>
-                    <dd className="text-2xl font-medium tracking-tight text-white lg:text-3xl">
-                      {stat.value}
+                    <dd className="flex items-end gap-2 text-2xl font-medium tracking-tight text-white lg:text-3xl">
+                      <span
+                        className={
+                          stat.change !== undefined
+                            ? stat.change >= 0
+                              ? "text-green-300"
+                              : "text-red-300"
+                            : "text-white"
+                        }
+                      >
+                        {stat.value}
+                      </span>
                     </dd>
                   </div>
                 ))}
@@ -140,65 +131,74 @@ export async function AcceleratorPage(props: Props) {
         </div>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {startups.map((startup) => (
-            <article
-              className="group relative flex aspect-[3/4] w-full shrink-0 flex-col justify-end overflow-hidden rounded-xl border"
-              key={`${startup.id}${startup.title}`}
-            >
-              <Image
-                alt={startup.title}
-                src={startup.image}
-                className="absolute inset-x-0 top-0 aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                width={384}
-                height={384}
-              />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 rounded-xl bg-gradient-to-t from-card from-25%"
-              />
+          {startups.map((startup) => {
+            const projectId = Number(startup.revnetProjectIds.base)
+            const revenueData = revenue.revenueByProjectId.get(projectId)
 
-              <Link
-                href={`/startup/${startup.id}`}
-                className="relative flex h-full flex-col justify-end overflow-hidden p-5"
+            return (
+              <article
+                className="group relative flex aspect-[3/4] w-full shrink-0 flex-col justify-end overflow-hidden rounded-xl border"
+                key={`${startup.id}${startup.title}`}
               >
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-balance text-lg font-semibold tracking-tight text-card-foreground">
-                      {startup.title}
-                    </h3>
-                    <p className="mt-1 text-pretty text-sm leading-relaxed tracking-tight text-card-foreground/80">
-                      {startup.tagline}
-                    </p>
-                  </div>
+                <Image
+                  alt={startup.title}
+                  src={startup.image}
+                  className="absolute inset-x-0 top-0 aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  width={384}
+                  height={384}
+                />
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 rounded-xl bg-gradient-to-t from-card from-25%"
+                />
 
-                  <div className="border-t pt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-xs text-card-foreground/80">Treasury</p>
-                        <p className="mt-1 text-sm font-semibold text-card-foreground">
-                          {Intl.NumberFormat("en", {
-                            style: "currency",
-                            currency: "USD",
-                            maximumFractionDigits: 0,
-                          }).format(
-                            treasuryDataMap.get(Number(startup.revnetProjectIds.base))
-                              ?.treasuryBalanceUSD ?? 0,
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-card-foreground/80">Supporters</p>
-                        <p className="mt-1 text-sm font-semibold text-card-foreground">
-                          {treasuryDataMap.get(Number(startup.revnetProjectIds.base))
-                            ?.participantsCount ?? 0}
-                        </p>
+                <Link
+                  href={`/startup/${startup.id}`}
+                  className="relative flex h-full flex-col justify-end overflow-hidden p-5"
+                >
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-balance text-lg font-semibold tracking-tight text-card-foreground">
+                        {startup.title}
+                      </h3>
+                      <p className="mt-1 text-pretty text-sm leading-relaxed tracking-tight text-card-foreground/80">
+                        {startup.tagline}
+                      </p>
+                    </div>
+
+                    <div className="border-t pt-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-card-foreground/80">Revenue</p>
+                          <p className="mt-1 text-sm font-semibold text-card-foreground">
+                            {Intl.NumberFormat("en", {
+                              style: "currency",
+                              currency: "USD",
+                              maximumFractionDigits: 0,
+                            }).format(revenueData?.totalSales ?? 0)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-card-foreground/80">Growth</p>
+                          <p
+                            className={`mt-1 text-sm font-semibold ${
+                              (revenueData?.salesChange ?? 0) >= 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {revenueData?.salesChange !== undefined
+                              ? `${revenueData.salesChange >= 0 ? "+" : ""}${revenueData.salesChange.toFixed(1)}%`
+                              : "0.0%"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </article>
-          ))}
+                </Link>
+              </article>
+            )
+          })}
         </div>
       </div>
     </AgentChatProvider>
