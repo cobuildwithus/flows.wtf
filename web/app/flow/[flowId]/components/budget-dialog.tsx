@@ -11,6 +11,7 @@ import { explorerUrl } from "@/lib/utils"
 import Link from "next/link"
 import { Separator } from "@radix-ui/react-select"
 import { IncomingFlowsList } from "@/components/global/incoming-flows"
+import { RebalanceFlowSection } from "./rebalance-flow-section"
 
 interface Props {
   flow: Grant & { derivedData: Pick<DerivedData, "minimumSalary"> | null }
@@ -212,6 +213,13 @@ export const BudgetDialog = async (props: Props) => {
 
         {/* Show funding contributors */}
         <IncomingFlowsList flow={flow} maxItems={6} showTitle={true} />
+
+        <RebalanceFlowSection
+          contract={flow.recipient as `0x${string}`}
+          chainId={flow.chainId}
+          superToken={flow.superToken as `0x${string}`}
+          underlyingToken={flow.underlyingERC20Token as `0x${string}`}
+        />
       </DialogContent>
     </Dialog>
   )
