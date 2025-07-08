@@ -16,6 +16,7 @@ import {
 import { Profile } from "@/components/user-profile/get-user-profile"
 import { Draft } from "@prisma/flows"
 import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-flow-button"
+import { publishDraft } from "@/app/draft/[draftId]/publish-draft"
 
 export interface ApplicationWithProfile extends Draft {
   profile: Profile
@@ -111,10 +112,20 @@ export function ViewApplications(props: Props) {
                       <div className="flex items-center justify-end space-x-2">
                         {!application.isOnchain && (
                           <AddRecipientToFlowButton
-                            draft={application}
+                            recipient={{
+                              address: application.users[0],
+                              title: application.title,
+                              description: application.description,
+                              image: application.image,
+                              tagline: application.tagline || "",
+                            }}
                             contract={flowContract}
                             chainId={chainId}
                             size="sm"
+                            buttonText="Hire"
+                            onSuccess={async (hash) => {
+                              await publishDraft(application.id, hash)
+                            }}
                           />
                         )}
                         <Button variant="outline" size="sm" asChild>

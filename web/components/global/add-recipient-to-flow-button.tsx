@@ -1,26 +1,42 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { customFlowImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import type { Draft } from "@prisma/flows"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { encodeAbiParameters, keccak256 } from "viem"
 import { useAccount } from "wagmi"
-import { publishDraft } from "../../app/draft/[draftId]/publish-draft"
-import { useRouter } from "next/navigation"
+import { Button } from "../ui/button"
+
+export interface RecipientData {
+  address: string
+  title: string
+  description: string
+  image: string
+  tagline: string
+}
 
 interface Props {
-  draft: Draft
+  recipient: RecipientData
   contract: `0x${string}`
   chainId: number
-  size?: "default" | "sm"
-  onSuccess?: () => void
+  size?: "default" | "sm" | "xl"
+  onSuccess?: (hash: string) => void | Promise<void>
+  disabled?: boolean
+  buttonText?: string
 }
 
 export function AddRecipientToFlowButton(props: Props) {
-  const { draft, contract, chainId, size = "default", onSuccess } = props
+  const {
+    recipient,
+    contract,
+    chainId,
+    size = "default",
+    onSuccess,
+    disabled,
+    buttonText = "Add Recipient",
+  } = props
   const { address } = useAccount()
   const router = useRouter()
 
@@ -28,21 +44,22 @@ export function AddRecipientToFlowButton(props: Props) {
     chainId,
     success: "Recipient added to flow!",
     onSuccess: async (hash) => {
-      await publishDraft(draft.id, hash)
-      onSuccess?.()
+      await onSuccess?.(hash)
       router.refresh()
     },
   })
 
   return (
     <Button
-      disabled={isLoading}
+      disabled={isLoading || disabled}
       loading={isLoading}
       size={size}
       type="button"
       onClick={async () => {
         try {
           await prepareWallet()
+
+          console.log("recipient", recipient)
 
           writeContract({
             account: address,
@@ -60,15 +77,21 @@ export function AddRecipientToFlowButton(props: Props) {
                     { name: "tagline", type: "string" },
                     { name: "url", type: "string" },
                   ],
-                  [draft.title, draft.description, draft.image, draft.tagline || "", ""],
+                  [
+                    recipient.title,
+                    recipient.description,
+                    recipient.image,
+                    recipient.tagline || "",
+                    "",
+                  ],
                 ),
               ),
-              getEthAddress(draft.users[0]),
+              getEthAddress(recipient.address),
               {
-                title: draft.title,
-                description: draft.description,
-                image: draft.image,
-                tagline: draft.tagline || "",
+                title: recipient.title,
+                description: recipient.description,
+                image: recipient.image,
+                tagline: recipient.tagline || "",
                 url: "",
               },
             ],
@@ -79,7 +102,7 @@ export function AddRecipientToFlowButton(props: Props) {
         }
       }}
     >
-      {draft.opportunityId ? "Hire" : "Add to flow"}
+      {buttonText}
     </Button>
   )
 }

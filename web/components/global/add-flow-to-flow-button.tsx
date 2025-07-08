@@ -4,32 +4,38 @@ import { Button } from "@/components/ui/button"
 import { customFlowImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
-import type { Draft } from "@prisma/flows"
 import { toast } from "sonner"
 import { encodeAbiParameters, keccak256, zeroAddress } from "viem"
 import { useAccount } from "wagmi"
-import { publishDraft } from "../../app/draft/[draftId]/publish-draft"
 import { useRouter } from "next/navigation"
 
+export interface FlowData {
+  title: string
+  description: string
+  image: string
+  tagline: string
+  manager: string
+}
+
 interface Props {
-  draft: Draft
+  flow: FlowData
   contract: `0x${string}`
   chainId: number
   size?: "default" | "sm"
-  onSuccess?: () => void
+  onSuccess?: (hash: string) => void | Promise<void>
+  buttonText?: string
 }
 
 export function AddFlowToFlowButton(props: Props) {
-  const { draft, contract, chainId, size = "default", onSuccess } = props
+  const { flow, contract, chainId, size = "default", onSuccess, buttonText = "Create flow" } = props
   const { address } = useAccount()
   const router = useRouter()
 
   const { prepareWallet, writeContract, toastId, isLoading } = useContractTransaction({
     chainId,
-    success: "Recipient added to flow!",
+    success: "Flow added successfully!",
     onSuccess: async (hash) => {
-      await publishDraft(draft.id, hash)
-      onSuccess?.()
+      await onSuccess?.(hash)
       router.refresh()
     },
   })
@@ -60,17 +66,17 @@ export function AddFlowToFlowButton(props: Props) {
                     { name: "tagline", type: "string" },
                     { name: "url", type: "string" },
                   ],
-                  [draft.title, draft.description, draft.image, draft.tagline || "", ""],
+                  [flow.title, flow.description, flow.image, flow.tagline || "", ""],
                 ),
               ),
               {
-                title: draft.title,
-                description: draft.description,
-                image: draft.image,
-                tagline: draft.tagline || "",
+                title: flow.title,
+                description: flow.description,
+                image: flow.image,
+                tagline: flow.tagline || "",
                 url: "",
               },
-              getEthAddress(draft.users[0]), // flow's manager
+              getEthAddress(flow.manager), // flow's manager
               zeroAddress, // manager reward pool
               ["0xb9d3bcc9d5107ca0febd05123bd4b484e5163cfa"], // custom single allocator TODO update before deploy
             ],
@@ -81,7 +87,7 @@ export function AddFlowToFlowButton(props: Props) {
         }
       }}
     >
-      {draft.opportunityId ? "Hire" : "Create flow"}
+      {buttonText}
     </Button>
   )
 }
