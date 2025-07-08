@@ -45,7 +45,9 @@ export function RebalanceFlowSection({
   // Amount to rebalance: the difference between max safe flow rate and actual flow rate
   const amount = maxSafeFlowRate - actualFlowRate
 
-  if (amount === 0n) return null
+  const needsIncrease = amount > (maxSafeFlowRate * 1n) / 1000n
+
+  if (amount === 0n || !needsIncrease) return null
 
   // Format for display
   const displayAmount = Number(formatUnits(amount * BigInt(TIME_UNIT.month), 18)).toFixed(0)
