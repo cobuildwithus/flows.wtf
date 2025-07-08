@@ -46,6 +46,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   const [selectedProfile, setSelectedProfile] = useState<FarcasterProfile | null>(null)
   const [selectedFlow, setSelectedFlow] = useState<FlowSearchResult | null>(null)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const [searchStarted, setSearchStarted] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Clear all state when disabled (modal closed)
@@ -56,6 +57,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
       setSelectedProfile(null)
       setSelectedFlow(null)
       setIsPopoverOpen(false)
+      setSearchStarted(false)
     }
   }, [disabled])
 
@@ -70,7 +72,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
     debouncedInput.includes(".") && !debouncedInput.includes(" ") && debouncedInput.length > 4
   const isAddressLike = debouncedInput.startsWith("0x") && debouncedInput.length >= 10
   const isUsername =
-    !isAddressLike && !isENS && debouncedInput.length >= 2 && !debouncedInput.includes(".")
+    !isAddressLike && !isENS && debouncedInput.length >= 1 && !debouncedInput.includes(".")
 
   // Normalized ENS name derived from input (memoized)
   const normalizedENS = useMemo(() => {
@@ -137,6 +139,19 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
     isLoadingFlows,
   ])
 
+  // Track when search has actually started for username queries
+  useEffect(() => {
+    if (isUsername && debouncedInput) {
+      // Give search hooks time to start (they have 200ms debounce)
+      const timer = setTimeout(() => {
+        setSearchStarted(true)
+      }, 300)
+      return () => clearTimeout(timer)
+    } else {
+      setSearchStarted(false)
+    }
+  }, [isUsername, debouncedInput])
+
   // Get final recipient address
   const getRecipientAddress = () => {
     if (selectedProfile) return getProfileAddress(selectedProfile)
@@ -181,6 +196,9 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   // Status helpers using utils
   const status = getRecipientStatus(validationState)
   const showStatus = recipientInput === debouncedInput && debouncedInput !== "" && status !== null
+
+  // Only suppress "no results" error for username searches that haven't started
+  const shouldShowStatus = showStatus && !(status === "error" && isUsername && !searchStarted)
 
   // Notify parent of changes
   useEffect(() => {
@@ -255,7 +273,7 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
         <RecipientStatusDisplay
           validationState={validationState}
           chainId={flow.chainId}
-          showStatus={showStatus}
+          showStatus={shouldShowStatus}
         />
       </div>
     </div>

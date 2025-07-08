@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { RemoveScroll } from "react-remove-scroll"
-import { useRef } from "react"
+import { useMemo, useRef } from "react"
 import { type FarcasterProfile } from "@/lib/farcaster"
 import type { FlowSearchResult } from "@/lib/flows/types"
 import { Badge } from "@/components/ui/badge"
@@ -29,7 +29,7 @@ export function SearchResultsPopover({
 }: Props) {
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
-  const hasResults = profiles.length > 0 || flows.length > 0
+  const hasResults = useMemo(() => profiles.length > 0 || flows.length > 0, [profiles, flows])
 
   return (
     <RemoveScroll shards={[popoverRef]}>
