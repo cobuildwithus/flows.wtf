@@ -10,7 +10,6 @@ import { TIME_UNIT } from "@/lib/erc20/super-token/operation-type"
 import { ArrowUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAccount } from "wagmi"
-import { useMemo } from "react"
 
 interface RebalanceFlowButtonProps {
   contract: `0x${string}`
@@ -44,15 +43,12 @@ export function RebalanceFlowSection({
   })
 
   // Amount to rebalance: the difference between max safe flow rate and actual flow rate
-  const amount = useMemo(() => maxSafeFlowRate - actualFlowRate, [maxSafeFlowRate, actualFlowRate])
+  const amount = maxSafeFlowRate - actualFlowRate
 
   if (amount === 0n) return null
 
   // Format for display
-  const displayAmount = useMemo(
-    () => Number(formatUnits(amount * BigInt(TIME_UNIT.month), 18)).toFixed(0),
-    [amount],
-  )
+  const displayAmount = Number(formatUnits(amount * BigInt(TIME_UNIT.month), 18)).toFixed(0)
 
   // Determine button text based on state
   const getButtonText = () => {
