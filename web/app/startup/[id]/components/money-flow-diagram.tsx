@@ -21,7 +21,6 @@ import { Treasury } from "./nodes/treasury"
 import { TreasuryTitle } from "./treasury-title"
 import { useFundraiseIllustration } from "../hooks/use-fundraise-illustration"
 import { MoneyFlowSkeleton } from "./money-flow-skeleton"
-import { ImpactGrants } from "./nodes/impact-grants"
 import { TitleWithCurrency } from "./title-with-currency"
 import { Revenue as RevenueType } from "@/lib/onchain-startup/types"
 import { Revenue } from "./nodes/revenue"
@@ -58,17 +57,17 @@ export function MoneyFlowDiagram(props: Props) {
     totalRevnetTokens,
   } = useFundraiseIllustration(startup.revnetProjectIds.base, startup.chainId)
 
+  const shopify = startup.shopify
+
   if (!width)
     return (
       <div className="mb-6 mt-1.5 px-2">
-        <MoneyFlowSkeleton />
+        <MoneyFlowSkeleton hasImpactFlow={impactGrants.grants.length > 0} hasShopify={!!shopify} />
       </div>
     )
 
   const { diagram } = startup
   const isMobile = checkMobile(width)
-
-  const shopify = startup.shopify
 
   const items: ItemProps[] = [
     {
@@ -328,9 +327,11 @@ function generateDiagram(
     y += GROUP_PADDING
 
     if (isMobile) {
+      // on mobile we stack columns vertically, so increment cumulatively
       height += y + 16
     } else {
-      if (itemsHeight > height) height = y
+      // for desktop take the tallest column including its paddings/spacings
+      if (y > height) height = y
     }
   }
 

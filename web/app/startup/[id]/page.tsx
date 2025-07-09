@@ -56,21 +56,12 @@ export default async function GrantPage(props: Props) {
   if (!startup) throw new Error("Startup not found")
 
   const shopify = startup.shopify
+  const impactFlowId = startup.impactFlowId
 
   const [teamMembers, user, impactFlow, orders, budgets, tokenPayments] = await Promise.all([
     getTeamMembers(startup.id),
     getUser(),
-    database.grant.findFirstOrThrow({
-      where: { isActive: true, id: startup.impactFlowId },
-      select: {
-        id: true,
-        monthlyOutgoingFlowRate: true,
-        title: true,
-        image: true,
-        tagline: true,
-        subgrants: { select: { id: true, title: true, image: true } },
-      },
-    }),
+    impactFlowId ? getImpactFlow(impactFlowId) : Promise.resolve(null),
     shopify ? getAllOrders(shopify) : Promise.resolve([]),
     getStartupBudgets(startup.id),
     getTokenPayments(Number(startup.revnetProjectIds.base)),
@@ -118,9 +109,9 @@ export default async function GrantPage(props: Props) {
           startup={startup}
           totalBudget={totalBudget}
           impactGrants={{
-            grants: impactFlow.subgrants,
-            monthlyFlowRate: Number(impactFlow.monthlyOutgoingFlowRate),
-            flowId: impactFlow.id,
+            grants: impactFlow?.subgrants ?? [],
+            monthlyFlowRate: Number(impactFlow?.monthlyOutgoingFlowRate ?? 0),
+            flowId: impactFlow?.id ?? "",
           }}
         />
       </div>
@@ -193,4 +184,18 @@ export default async function GrantPage(props: Props) {
       </div>
     </>
   )
+}
+
+async function getImpactFlow(impactFlowId: string) {
+  return database.grant.findFirst({
+    where: { id: impactFlowId },
+    select: {
+      id: true,
+      monthlyOutgoingFlowRate: true,
+      title: true,
+      image: true,
+      tagline: true,
+      subgrants: { select: { id: true, title: true, image: true } },
+    },
+  })
 }

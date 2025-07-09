@@ -2,7 +2,13 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 
-export function MoneyFlowSkeleton() {
+export function MoneyFlowSkeleton({
+  hasImpactFlow,
+  hasShopify,
+}: {
+  hasImpactFlow: boolean
+  hasShopify: boolean
+}) {
   return (
     <>
       {/* Desktop Layout */}
@@ -15,23 +21,25 @@ export function MoneyFlowSkeleton() {
               {/* Header */}
               <Skeleton height={32} />
 
-              {/* Products Section */}
-              <div className="rounded-lg border p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <Skeleton height={20} width="115px" />
-                  <Skeleton height={20} width="77px" />
-                </div>
-                <Skeleton height={194} />
-              </div>
-
               {/* Buy Token Section */}
               <div className="rounded-lg border p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <Skeleton height={20} width="115px" />
                   <Skeleton height={20} width="77px" />
                 </div>
-                <Skeleton height={141} />
+                <Skeleton height={161} />
               </div>
+
+              {/* Shopify Section */}
+              {hasShopify && (
+                <div className="rounded-lg border p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <Skeleton height={20} width="115px" />
+                    <Skeleton height={20} width="77px" />
+                  </div>
+                  <Skeleton height={214} />
+                </div>
+              )}
             </div>
 
             {/* Column 2 */}
@@ -45,22 +53,13 @@ export function MoneyFlowSkeleton() {
                 </div>
               </div>
 
-              {/* Team Section */}
+              {/* Revenue Section */}
               <div className="rounded-lg border p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <Skeleton height={20} width="115px" />
                   <Skeleton height={20} width="77px" />
                 </div>
                 <Skeleton height={27} />
-              </div>
-
-              {/* Public Good Section */}
-              <div className="rounded-lg border p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <Skeleton height={20} width="115px" />
-                  <Skeleton height={20} width="77px" />
-                </div>
-                <Skeleton height={23} />
               </div>
 
               {/* Treasury Section */}
@@ -87,21 +86,23 @@ export function MoneyFlowSkeleton() {
               </div>
 
               {/* Impact Section */}
-              <div className="rounded-lg border p-4">
-                <div className="mb-3">
-                  <Skeleton height={20} width="144px" />
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2.5">
-                    <Skeleton height={40} width="48px" className="rounded-md" />
-                    <Skeleton height={16} className="flex-1" />
+              {hasImpactFlow && (
+                <div className="rounded-lg border p-4">
+                  <div className="mb-3">
+                    <Skeleton height={20} width="144px" />
                   </div>
-                  <div className="flex items-center gap-2.5">
-                    <Skeleton height={40} width="48px" className="rounded-md" />
-                    <Skeleton height={16} className="flex-1" />
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2.5">
+                      <Skeleton height={40} width="48px" className="rounded-md" />
+                      <Skeleton height={16} className="flex-1" />
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Skeleton height={40} width="48px" className="rounded-md" />
+                      <Skeleton height={16} className="flex-1" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Token Rewards Section */}
               <div className="rounded-lg border p-4">
