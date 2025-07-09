@@ -245,38 +245,36 @@ export function SearchRecipient({ flow, disabled, onRecipientChange }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="relative">
-        {/* Input Field */}
-        <RecipientInput
-          ref={inputRef}
-          value={recipientInput}
-          onChange={handleInputChange}
-          disabled={disabled}
-          validationState={validationState}
-          placeholder="0x..., ENS, Farcaster, or Flow"
-          autoFocus={!disabled}
-          showStatus={shouldShowStatus}
-        />
+    <div className="relative">
+      {/* Input Field */}
+      <RecipientInput
+        ref={inputRef}
+        value={recipientInput}
+        onChange={handleInputChange}
+        disabled={disabled}
+        validationState={validationState}
+        placeholder="0x..., ENS, Farcaster, or Flow"
+        autoFocus={!disabled}
+        showStatus={shouldShowStatus}
+      />
 
-        {/* Search Results Popover */}
-        <SearchResultsPopover
-          isOpen={isPopoverOpen}
-          onOpenChange={setIsPopoverOpen}
-          profiles={verifiedProfiles}
-          flows={flows}
-          onSelectProfile={handleSelectProfile}
-          onSelectFlow={handleSelectFlow}
-          isLoading={isLoadingProfiles || isLoadingFlows}
-        />
+      {/* Search Results Popover */}
+      <SearchResultsPopover
+        isOpen={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+        profiles={verifiedProfiles}
+        flows={flows}
+        onSelectProfile={handleSelectProfile}
+        onSelectFlow={handleSelectFlow}
+        isLoading={isLoadingProfiles || isLoadingFlows}
+      />
 
-        {/* Status Messages */}
-        <RecipientStatusDisplay
-          validationState={validationState}
-          chainId={flow.chainId}
-          showStatus={shouldShowStatus}
-        />
-      </div>
+      {/* Status Messages */}
+      <RecipientStatusDisplay
+        validationState={validationState}
+        chainId={flow.chainId}
+        showStatus={shouldShowStatus}
+      />
     </div>
   )
 }

@@ -10,6 +10,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { AuthButton } from "@/components/ui/auth-button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { FileInput } from "@/components/ui/file-input"
+import { Textarea } from "@/components/ui/textarea"
 import { useLogin } from "@/lib/auth/use-login"
 import { useState } from "react"
 import { Plus } from "lucide-react"
@@ -17,6 +21,7 @@ import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-f
 import { Grant } from "@/lib/database/types"
 import { ComponentProps } from "react"
 import { SearchRecipient } from "./search-recipient/search-recipient"
+import { RemoveScroll } from "react-remove-scroll"
 
 interface Props {
   flow: Pick<Grant, "id" | "chainId" | "recipient" | "superToken">
@@ -43,6 +48,11 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
     }, 3000)
   }
 
+  // Handler for form field changes
+  const handleFieldChange = (field: string, value: string) => {
+    setRecipient((prev) => (prev ? { ...prev, [field]: value } : null))
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -52,17 +62,66 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
         </AuthButton>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Add Recipient</DialogTitle>
+          <DialogTitle>Add builder</DialogTitle>
           <DialogDescription className="text-zinc-500 dark:text-muted-foreground">
-            Add a new recipient to this flow
+            Pay a new builder
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Search Recipient Component */}
           <SearchRecipient flow={flow} disabled={!isConnected} onRecipientChange={setRecipient} />
+
+          {/* Form to edit recipient details */}
+          {recipient && (
+            <div className="space-y-4 border-t pt-4">
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    id="title"
+                    value={recipient.title}
+                    onChange={(e) => handleFieldChange("title", e.target.value)}
+                    placeholder="Enter builder title"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="image">Image (square)</Label>
+                  <FileInput
+                    name="image"
+                    accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                    onSuccess={(url: string) => handleFieldChange("image", url)}
+                    existingImage={recipient.image}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="tagline">Tagline</Label>
+                  <Input
+                    id="tagline"
+                    value={recipient.tagline}
+                    onChange={(e) => handleFieldChange("tagline", e.target.value)}
+                    placeholder="Short and sweet"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="description">Description</Label>
+
+                  <Textarea
+                    id="description"
+                    value={recipient.description}
+                    onChange={(e) => handleFieldChange("description", e.target.value)}
+                    placeholder="What the builder is working on..."
+                    style={{ minHeight: 200 }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Add Recipient Button */}
           <AddRecipientToFlowButton

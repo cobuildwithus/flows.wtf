@@ -30,19 +30,17 @@ export function RecipientStatusDisplay({ validationState, chainId, showStatus }:
 
       {/* Valid Address Display */}
       {isValidAddress && recipientAddress && (
-        <div className="mt-2">
-          <a
-            href={explorerUrl(recipientAddress, chainId, "address")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center space-x-2 text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-          >
-            <span className="font-mono text-sm">
-              {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-4)}
-            </span>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
+        <a
+          href={explorerUrl(recipientAddress, chainId, "address")}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center space-x-2 text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+        >
+          <span className="font-mono text-xs">
+            {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-4)}
+          </span>
+          <ExternalLink className="h-3 w-3" />
+        </a>
       )}
     </>
   )

@@ -6,7 +6,11 @@ import type { FarcasterProfile } from "./search-usernames"
  */
 export function getProfileAddress(profile: FarcasterProfile): string | null {
   if (profile.verified_addresses && profile.verified_addresses.length > 0) {
-    return profile.verified_addresses[0]
+    // Filter for Ethereum addresses (42 characters starting with 0x)
+    const ethAddresses = profile.verified_addresses.filter(
+      (address) => address.startsWith("0x") && address.length === 42,
+    )
+    return ethAddresses.length > 0 ? ethAddresses[0] : null
   }
   return null
 }
