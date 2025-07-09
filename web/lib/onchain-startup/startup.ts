@@ -3,11 +3,17 @@ import database from "../database/flows-db"
 import { Accelerator, getAccelerator } from "./data/accelerators"
 import { vrbscoffee } from "./data/vrbscoffee"
 import { getAllocator } from "../allocation/allocation-data/get-allocator"
+import { straystrong } from "./data/straystrong"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
     ...vrbscoffee,
     title: "Vrbs Coffee",
+    revnetProjectIds: { base: 104n },
+  },
+  "0x16f7997240d763e1396e8ad33c8a32dbff708c56": {
+    ...straystrong,
+    title: "Stray Strong",
     revnetProjectIds: { base: 104n },
   },
 } as const

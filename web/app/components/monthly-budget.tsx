@@ -28,49 +28,18 @@ interface Props {
 
 export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
   const monthlyOutgoingFlowRate = Number(flow.monthlyOutgoingFlowRate)
-  const monthlyIncomingFlowRate = Number(flow.monthlyIncomingFlowRate)
   const isFlow = flow.isFlow
-
-  const isGoingNegative = monthlyOutgoingFlowRate > monthlyIncomingFlowRate
-
-  const isNotStreamingEnough = isFlow && monthlyIncomingFlowRate * 0.99 > monthlyOutgoingFlowRate
-
-  const absDifference = Math.abs(monthlyOutgoingFlowRate - monthlyIncomingFlowRate)
-  const isGoingNegativeSignificant =
-    isGoingNegative && absDifference / monthlyOutgoingFlowRate > 0.001
 
   return (
     <Tooltip>
       <TooltipTrigger tabIndex={-1}>
-        <Badge variant={isGoingNegative ? "warning" : "default"}>
+        <Badge variant="default">
           <Currency flow={flow}>{Math.ceil(Number(display))}</Currency>
           /mo
         </Badge>
       </TooltipTrigger>
       <TooltipContent>
-        {isGoingNegative ? (
-          <>
-            Warning: More outgoing funds than incoming.{" "}
-            <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency> vs{" "}
-            <Currency flow={flow}>{monthlyIncomingFlowRate}</Currency>.
-            {isGoingNegativeSignificant && (
-              <>
-                <br /> This will be automatically fixed within 1 minute.
-              </>
-            )}
-          </>
-        ) : isNotStreamingEnough ? (
-          <>
-            Warning: Not streaming enough funds.{" "}
-            <Currency flow={flow}>{monthlyIncomingFlowRate}</Currency> vs{" "}
-            <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency>.
-            {isGoingNegativeSignificant && (
-              <>
-                <br /> This will be automatically fixed within 1 minute.
-              </>
-            )}
-          </>
-        ) : approvedGrants ? (
+        {approvedGrants ? (
           <>
             Streaming <Currency flow={flow}>{monthlyOutgoingFlowRate}</Currency>
             /mo to {approvedGrants} {pluralize("builder", approvedGrants)}.

@@ -11,19 +11,30 @@ export async function getFlowMetadataAndRewardPool(
   managerRewardPool: `0x${string}`,
   superToken: `0x${string}`
 ) {
+  // custom flows don't have a typical manager reward pool, they just send to an EOA most of the time
+  const getManagerRewardSuperfluidPool = async () => {
+    if (managerRewardPool === zeroAddress) {
+      return zeroAddress
+    }
+
+    try {
+      return await context.client.readContract({
+        address: managerRewardPool,
+        abi: rewardPoolImplAbi,
+        functionName: "rewardPool",
+      })
+    } catch {
+      return zeroAddress
+    }
+  }
+
   const [metadata, managerRewardSuperfluidPool, underlyingERC20Token] = await Promise.all([
     context.client.readContract({
       address: contract,
       abi: customFlowImplAbi,
       functionName: "flowMetadata",
     }),
-    managerRewardPool !== zeroAddress
-      ? context.client.readContract({
-          address: managerRewardPool,
-          abi: rewardPoolImplAbi,
-          functionName: "rewardPool",
-        })
-      : Promise.resolve(zeroAddress),
+    getManagerRewardSuperfluidPool(),
     context.client.readContract({
       address: superToken,
       abi: superTokenAbi,
