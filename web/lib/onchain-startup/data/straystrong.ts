@@ -5,7 +5,7 @@ export const straystrong = {
   title: "Stray Strong",
   image:
     "https://revolution.mypinata.cloud/ipfs/bafybeigmeh2oqgbkeenfl7lbx6pajmqebhx23scanjw6qb3awnzseppy6e",
-  shortMission: "Feeding strays for life.",
+  shortMission: "Feeding strays for life",
   longMission: `
   We turn recycled plastic into playful feeders that spark care on every corner. Fueling a forever cycle of street art, animal love and return for the initiatives that support us.`,
   // shopify: {

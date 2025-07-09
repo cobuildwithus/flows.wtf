@@ -4,7 +4,9 @@ import { getRevenueMetrics } from "./revenue-metrics"
 import { Startup } from "./startup"
 import { getTokenPayments } from "./token-payments"
 
-export async function getTotalRevenue(startups: Pick<Startup, "shopify" | "revnetProjectIds">[]) {
+export async function getTotalRevenue(
+  startups: Pick<Startup, "shopify" | "revnetProjectIds" | "id">[],
+) {
   const results = await Promise.all(
     startups.map(async (startup, index) => {
       const [orders, tokenPayments] = await Promise.all([
@@ -18,6 +20,7 @@ export async function getTotalRevenue(startups: Pick<Startup, "shopify" | "revne
       const combinedMetrics = await getRevenueMetrics(salesSummary.monthlySales, tokenPayments)
 
       return {
+        startupId: startup.id,
         startupIndex: index,
         projectId: Number(startup.revnetProjectIds.base),
         totalSales: combinedMetrics.totalSales,
@@ -34,10 +37,10 @@ export async function getTotalRevenue(startups: Pick<Startup, "shopify" | "revne
         totalRevenue
       : 0
 
-  // Create a map of project ID to revenue data for easy lookup
+  // Create a map of startup ID to revenue data for easy lookup
   const revenueByProjectId = new Map(
     results.map((result) => [
-      result.projectId,
+      result.startupId,
       {
         totalSales: result.totalSales,
         salesChange: result.salesChange,
