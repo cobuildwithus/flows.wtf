@@ -4,7 +4,7 @@ import { waitForTransactionReceipt } from "viem/actions"
 import database from "@/lib/database/flows-db"
 import { getClient } from "@/lib/viem/client"
 import { getBalanceFlowRatesWalletClient } from "@/lib/viem/walletClient"
-import { gdav1ForwarderAbi, gdav1ForwarderAddress } from "@/lib/abis"
+import { customFlowImplAbi, gdav1ForwarderAbi, gdav1ForwarderAddress } from "@/lib/abis"
 import { saveOrGet } from "@/lib/kv/kvStore"
 
 export const dynamic = "force-dynamic"
@@ -37,11 +37,9 @@ export async function GET() {
 
     let nUpdated = 0
 
-    console.log({ siblingFlows })
-
     for (const flow of siblingFlows) {
       // Use a unique key for this flow to track if we've already worked on it
-      const kvKey = `connect-pool-sibling-flows-v2:${flow.recipient}`
+      const kvKey = `connect-pool-sibling-flows-v3:${flow.recipient}`
       const alreadyProcessed = await saveOrGet(kvKey, false)
       if (alreadyProcessed) {
         continue
@@ -77,13 +75,20 @@ export async function GET() {
             //todo update to use another walelt client in future
             const walletClient = getBalanceFlowRatesWalletClient(flow.chainId)
             const tx = await walletClient.writeContract({
-              address: gdav1Forwarder,
-              abi: gdav1ForwarderAbi,
+              address: flowAddress,
+              abi: customFlowImplAbi,
               functionName: "connectPool",
-              args: [poolAddress as `0x${string}`, flowAddress],
+              args: [poolAddress as `0x${string}`],
             })
             await waitForTransactionReceipt(walletClient, { hash: tx })
             didConnect = true
+
+            // Mark this flow as processed in kv so we skip it next time
+            await saveOrGet(kvKey, true)
+          } else {
+            console.log("Flow", flow.recipient, "is already connected to pool", poolAddress)
+            // Mark this flow as processed in kv so we skip it next time
+            await saveOrGet(kvKey, true)
           }
         } catch (error) {
           console.error(
@@ -97,9 +102,6 @@ export async function GET() {
       if (didConnect) {
         nUpdated++
       }
-
-      // Mark this flow as processed in kv so we skip it next time
-      await saveOrGet(kvKey, true)
     }
 
     return NextResponse.json({ success: true, nUpdated })
