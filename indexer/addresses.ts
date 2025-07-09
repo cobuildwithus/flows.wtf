@@ -21,7 +21,7 @@ export const base = {
   BonusPool: "0xf3af0da167ca2309a95dbe1238f60c3b3f6be0b5",
   BaselinePool: "0xa3aa0cc5be9f041f989b9460ccc27310035f7a2a",
   // Flow Extensions
-  CustomFlowImpl: "0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b",
+  CustomFlowImpl: "0x94a724d604a3d173e33a60aa0239bdab43667316",
   // Allocation Strategies
   ERC721VotesStrategyImpl: "0xb90aced3a46ee8a323ece70efa1c5d3d8c8a5b9e",
   SingleAllocatorStrategyImpl: "0x785daf3ddf565c652e3489d33ff7d57b81554dfc",
@@ -37,7 +37,7 @@ export const base = {
 } as const
 
 export const optimism = {
-  CustomFlowImpl: "0x0bc08d5432159f568bb6d7cc68d07b61d02f2462",
+  CustomFlowImpl: "0x81d88b89b4fdb8cc041429fc40d256d72f8a5633",
 } as const
 
 export const customFlows = {
@@ -53,4 +53,6 @@ export const accelerators = {
 export const oldCustomFlowImpl = [
   "0x793767fc568a223b3f52887efb07eb64cc7557a4", // base v0
   "0x9a6032569e50d6864106911884510c2aa6fa033d", // op v0
+  "0x0bc08d5432159f568bb6d7cc68d07b61d02f2462", // op v1
+  "0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b", // base v1
 ] as const

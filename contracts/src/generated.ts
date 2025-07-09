@@ -897,7 +897,7 @@ export const cfav1ForwarderConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x94a724d604a3d173e33a60aa0239bdab43667316)
  */
 export const customFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -921,6 +921,7 @@ export const customFlowImplAbi = [
   { type: 'error', inputs: [], name: 'INVALID_STRATEGIES' },
   { type: 'error', inputs: [], name: 'INVALID_VOTE_WEIGHT' },
   { type: 'error', inputs: [], name: 'NOT_ABLE_TO_ALLOCATE' },
+  { type: 'error', inputs: [], name: 'NOT_ALLOWED_TO_CONNECT_POOL' },
   { type: 'error', inputs: [], name: 'NOT_AN_INCREASE' },
   { type: 'error', inputs: [], name: 'NOT_APPROVED_RECIPIENT' },
   { type: 'error', inputs: [], name: 'NOT_A_VALID_CHILD_FLOW' },
@@ -1092,6 +1093,25 @@ export const customFlowImplAbi = [
       },
     ],
     name: 'BufferMultiplierUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'oldConnectPoolAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newConnectPoolAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ConnectPoolAdminUpdated',
   },
   {
     type: 'event',
@@ -1619,6 +1639,13 @@ export const customFlowImplAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'connectPoolAdmin',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'decreaseFlowRate',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -1720,6 +1747,7 @@ export const customFlowImplAbi = [
       },
       { name: 'outflowCapPct', internalType: 'uint32', type: 'uint32' },
       { name: 'PERCENTAGE_SCALE', internalType: 'uint32', type: 'uint32' },
+      { name: 'connectPoolAdmin', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'view',
   },
@@ -1890,6 +1918,7 @@ export const customFlowImplAbi = [
       { name: '_manager', internalType: 'address', type: 'address' },
       { name: '_managerRewardPool', internalType: 'address', type: 'address' },
       { name: '_parent', internalType: 'address', type: 'address' },
+      { name: '_connectPoolAdmin', internalType: 'address', type: 'address' },
       {
         name: '_flowParams',
         internalType: 'struct IFlow.FlowParams',
@@ -2040,6 +2069,15 @@ export const customFlowImplAbi = [
     type: 'function',
     inputs: [{ name: '_quorumBps', internalType: 'uint32', type: 'uint32' }],
     name: 'setBonusPoolQuorum',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_connectPoolAdmin', internalType: 'address', type: 'address' },
+    ],
+    name: 'setConnectPoolAdmin',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -2214,14 +2252,14 @@ export const customFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x94a724d604a3d173e33a60aa0239bdab43667316)
  */
 export const customFlowImplAddress = {
-  8453: '0x233Ed8Be4E5ee1c57Be03De38377Bb2d2c25FD2B',
+  8453: '0x94a724D604A3d173E33a60aa0239BdaB43667316',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x94a724d604a3d173e33a60aa0239bdab43667316)
  */
 export const customFlowImplConfig = {
   address: customFlowImplAddress,
