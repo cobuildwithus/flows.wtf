@@ -5,11 +5,9 @@ import { AcceleratorId } from "./accelerators"
 export interface StartupData {
   acceleratorId: AcceleratorId
   title: string
-  tagline: string
   image: string
-  mission: string
+  shortMission: string
   longMission: string
-  deliverables: string[]
   shopify: StoreConfig
   impactFlowId: `0x${string}`
   socialUsernames: SocialProfileUsernames

@@ -160,7 +160,7 @@ export async function AcceleratorPage(props: Props) {
                         {startup.title}
                       </h3>
                       <p className="mt-1 text-pretty text-sm leading-relaxed tracking-tight text-card-foreground/80">
-                        {startup.tagline}
+                        {startup.shortMission}
                       </p>
                     </div>
                     <div className="border-t pt-4">

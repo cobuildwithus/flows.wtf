@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { getBalanceFlowRatesWalletClient } from "@/lib/viem/walletClient"
-import { NOUNS_FLOW } from "@/lib/config"
 import { waitForTransactionReceipt } from "viem/actions"
 import { nounsFlowImplAbi } from "@/lib/abis"
 import { getContract } from "viem"
@@ -13,41 +12,57 @@ export const maxDuration = 300
 
 export async function GET() {
   try {
-    const { chainId } = await database.grant.findFirstOrThrow({
-      where: { id: NOUNS_FLOW },
-      select: { chainId: true },
+    const flows = await database.grant.findMany({
+      where: {
+        isFlow: true,
+        isActive: true,
+        monthlyOutgoingFlowRate: {
+          not: "0",
+        },
+      },
     })
-
-    const client = getBalanceFlowRatesWalletClient(chainId)
 
     let nUpdated = 0
 
-    const contract = getContract({
-      address: NOUNS_FLOW,
-      abi: nounsFlowImplAbi,
-      client: getClient(chainId),
-    })
+    // Process each flow using its chainId
+    for (const flow of flows) {
+      console.log("Working on flow", flow.title)
+      const client = getBalanceFlowRatesWalletClient(flow.chainId)
 
-    // Read the number of child flows that are out of sync
-    const childFlowRatesOutOfSync = await contract.read.childFlowRatesOutOfSync()
+      try {
+        const contract = getContract({
+          address: flow.id as `0x${string}`,
+          abi: nounsFlowImplAbi,
+          client: getClient(flow.chainId),
+        })
 
-    if (childFlowRatesOutOfSync > 0) {
-      // Limit to max 5 updates
-      const updateCount = childFlowRatesOutOfSync > BigInt(5) ? BigInt(5) : childFlowRatesOutOfSync
+        // Read the number of child flows that are out of sync
+        const childFlowRatesOutOfSync = await contract.read.childFlowRatesOutOfSync()
 
-      // Call workOnChildFlowsToUpdate with the count
-      const tx = await client.writeContract({
-        address: contract.address,
-        abi: nounsFlowImplAbi,
-        functionName: "workOnChildFlowsToUpdate",
-        args: [updateCount],
-      })
+        if (childFlowRatesOutOfSync > 0) {
+          console.log("Flow", flow.title, "has", childFlowRatesOutOfSync, "child flows out of sync")
+          // Limit to max 5 updates
+          const updateCount =
+            childFlowRatesOutOfSync > BigInt(5) ? BigInt(5) : childFlowRatesOutOfSync
 
-      await waitForTransactionReceipt(client, {
-        hash: tx,
-      })
+          // Call workOnChildFlowsToUpdate with the count
+          const tx = await client.writeContract({
+            address: contract.address,
+            abi: nounsFlowImplAbi,
+            functionName: "workOnChildFlowsToUpdate",
+            args: [updateCount],
+          })
 
-      nUpdated += Number(updateCount)
+          await waitForTransactionReceipt(client, {
+            hash: tx,
+          })
+
+          nUpdated += Number(updateCount)
+        }
+      } catch (flowError: any) {
+        console.error(`Error processing flow ${flow.id}:`, flowError)
+        // Continue processing other flows even if one fails
+      }
     }
 
     return NextResponse.json({ success: true, nUpdated })

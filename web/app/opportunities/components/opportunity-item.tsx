@@ -39,10 +39,10 @@ export function OpportunityItem(props: Props) {
             >
               {startup.title}
             </Link>
-            {startup.tagline && (
+            {startup.shortMission && (
               <>
                 <span>•</span>
-                <span className="line-clamp-1 truncate">{startup.tagline}</span>
+                <span className="line-clamp-1 truncate">{startup.shortMission}</span>
               </>
             )}
           </div>

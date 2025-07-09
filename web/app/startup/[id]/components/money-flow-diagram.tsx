@@ -105,7 +105,7 @@ export function MoneyFlowDiagram(props: Props) {
                     {startup.title}
                   </h3>
                   <div className="mt-1 text-sm text-accent-foreground/90 dark:text-white/90 sm:text-base">
-                    {startup.mission}
+                    {startup.shortMission}
                   </div>
                   {/* <div className="mx-3 rounded-md bg-white/20 px-2 py-1 backdrop-blur-sm">
                     <Tooltip>

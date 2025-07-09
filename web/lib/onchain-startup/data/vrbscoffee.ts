@@ -3,14 +3,12 @@ import { StartupData } from "./interface"
 export const vrbscoffee = {
   acceleratorId: "vrbs",
   title: "VRBS Coffee",
-  tagline: "Good Coffee for a Good Cause",
   image:
     "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/716dbbeb-c537-4b65-a843-6f96f39a7200/original",
-  mission: "Caffeinate your calling",
+  shortMission: "Caffeinate your calling",
   longMission: `
   Vrbs Coffee exists to fuel people on a mission. Whether that's chasing a creative idea, training for a race, or giving back to the world.
   We craft great coffee that powers purpose, and we use our profits to support causes that matter.`,
-  deliverables: ["Ground coffee", "Community", "Positive impact"],
   shopify: {
     url: "8fab74-1b.myshopify.com",
     adminApiAccessToken: `${process.env.SHOPIFY_VRBS_COFFEE}`,
