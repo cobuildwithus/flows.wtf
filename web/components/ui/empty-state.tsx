@@ -2,10 +2,23 @@ interface Props {
   title: string
   description: string
   size?: number
+  textSize?: "sm" | "md" | "lg"
 }
 
 export function EmptyState(props: Props) {
-  const { title, description, size = 200 } = props
+  const { title, description, size = 200, textSize = "md" } = props
+
+  const titleClasses = {
+    sm: "mt-6 text-sm font-semibold md:text-base",
+    md: "mt-8 text-base font-semibold md:text-lg",
+    lg: "mt-10 text-lg font-semibold md:text-xl",
+  }
+
+  const descriptionClasses = {
+    sm: "mt-1 text-xs text-muted-foreground md:text-sm",
+    md: "mt-2 text-sm text-muted-foreground md:text-base",
+    lg: "mt-3 text-base text-muted-foreground md:text-lg",
+  }
   return (
     <div className="flex flex-col items-center justify-center text-primary">
       <svg
@@ -131,8 +144,8 @@ export function EmptyState(props: Props) {
           transform="translate(-324.64481 -166.00708)"
         />
       </svg>
-      <h2 className="mt-8 text-base font-semibold md:text-lg">{title}</h2>
-      <p className="mt-2 text-sm text-muted-foreground md:text-base">{description}</p>
+      <h2 className={titleClasses[textSize]}>{title}</h2>
+      <p className={descriptionClasses[textSize]}>{description}</p>
     </div>
   )
 }

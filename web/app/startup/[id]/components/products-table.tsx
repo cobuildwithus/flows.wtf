@@ -26,12 +26,15 @@ export async function ProductsTable(props: Props) {
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Products</CardTitle>
         </CardHeader>
-        <CardContent className="py-16">
-          <EmptyState
-            size={100}
-            title="No products yet"
-            description="Check back later for updates."
-          />
+        <CardContent>
+          <div className="my-12">
+            <EmptyState
+              size={100}
+              title="No products yet"
+              description="Check back later for updates."
+              textSize="sm"
+            />
+          </div>
         </CardContent>
       </Card>
     )

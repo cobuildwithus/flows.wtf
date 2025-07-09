@@ -191,7 +191,6 @@ export function MoneyFlowDiagram(props: Props) {
         col: 1,
         data: {
           label: `Join ${startup.title}`,
-          image: user?.avatar,
           handles: isMobile ? [{ type: "source", position: Position.Bottom }] : [],
         },
       },

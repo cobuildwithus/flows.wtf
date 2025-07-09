@@ -19,35 +19,30 @@ export const straystrong = {
   },
   reviews: [
     {
-      url: "https://farcaster.xyz/coolbeans1r/0x084e82f6",
+      url: "https://farcaster.xyz/nickhaaz/0x92ccfe42",
       image:
-        "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3097ea4c-a919-4f0a-3738-8f1ecdef5000/rectcontain3",
+        "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/b1f260f3-6bef-4249-9c0f-1dbb41b05000/rectcontain3",
     },
     {
-      url: "https://farcaster.xyz/rocketman/0x136e36aa",
+      url: "https://farcaster.xyz/nickhaaz/0x0c960885",
       image:
-        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/cc70cf70-395c-4937-cfca-15618fe0d900/original",
+        "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/551f230d-ffd4-4eb1-790e-c60c58039000/rectcontain3",
     },
     {
-      url: "https://farcaster.xyz/coolbeans1r.eth/0x5ef9a347",
+      url: "https://farcaster.xyz/nickhaaz/0x95d06fe2",
       image:
-        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/1c6f7f8b-a8c2-49d0-14ca-3b434c0aed00/original",
+        "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/054585df-2f1d-47ce-fa73-fa50ffa2e200/rectcontain3",
     },
     {
-      url: "https://farcaster.xyz/rocketman/0x139bb055",
+      url: "https://farcaster.xyz/nickhaaz/0x9fc015e2",
       image:
-        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/a85b8da4-b246-4ae2-175c-e14539c46500/original",
-    },
-    {
-      url: "https://farcaster.xyz/coolbeans1r.eth/0x64ad0e4e",
-      image:
-        "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/5e973b20-0817-4da4-2c35-2ca29e89d000/original",
+        "https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/c3314210-21cb-4475-6466-1fbd664faa00/rectcontain3",
     },
   ],
   diagram: {
     action: { name: "Order feeder" },
     receive: {
-      name: "Recycled plastic feeder",
+      name: "Recycled feeders",
       description: "Playful feeders that spark care on every corner",
     },
   },

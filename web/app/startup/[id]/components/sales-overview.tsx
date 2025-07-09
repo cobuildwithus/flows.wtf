@@ -3,6 +3,7 @@ import { MonthlySales } from "@/lib/shopify/summary"
 import { BringRevenueOnchain } from "./bring-revenue-onchain"
 import { SalesChart } from "./sales-chart"
 import { combineMonthlySalesWithTokenPayments } from "@/lib/onchain-startup/sales-data"
+import { EmptyState } from "@/components/ui/empty-state"
 
 interface Props {
   monthlySales: MonthlySales[]
@@ -23,7 +24,7 @@ export async function SalesOverview(props: Props) {
   const combinedData = await combineMonthlySalesWithTokenPayments(monthlySales, tokenPayments)
 
   return (
-    <Card className="border border-border/40 bg-card/80 shadow-sm">
+    <Card className="flex h-full flex-col border border-border/40 bg-card/80 shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex w-full flex-row items-center justify-between">
           <div>
@@ -37,8 +38,19 @@ export async function SalesOverview(props: Props) {
           />
         </div>
       </CardHeader>
-      <CardContent className="pb-4 pt-2">
-        <SalesChart data={combinedData} />
+      <CardContent className="flex flex-1 flex-col pb-4 pt-2">
+        {combinedData.length > 0 ? (
+          <SalesChart data={combinedData} />
+        ) : (
+          <div className="my-12 flex-1">
+            <EmptyState
+              size={100}
+              title="No revenue"
+              description="Check back later for updates."
+              textSize="sm"
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   )
