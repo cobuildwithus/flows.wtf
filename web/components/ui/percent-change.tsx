@@ -5,15 +5,17 @@ interface PercentChangeProps {
   value: number
   className?: string
   showSign?: boolean
+  showColor?: boolean
 }
 
 const PercentChange = React.forwardRef<HTMLSpanElement, PercentChangeProps>(
-  ({ value, className, showSign = true, ...props }, ref) => (
+  ({ value, className, showSign = true, showColor = true, ...props }, ref) => (
     <span
       ref={ref}
       className={cn(
         "font-semibold",
-        value > 0 ? "text-green-600" : value < 0 ? "text-red-400" : "text-muted-foreground",
+        showColor &&
+          (value > 0 ? "text-green-600" : value < 0 ? "text-red-400" : "text-muted-foreground"),
         className,
       )}
       {...props}

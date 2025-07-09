@@ -15,7 +15,7 @@ const accelerators: Accelerator[] = [
     id: "vrbs",
     name: "Vrbs",
     flowId: acceleratorAddresses.vrbs,
-    coverImage: "/vrbs-bg.jpg",
+    coverImage: "/vrbs-bg.png",
     color: "#22c55e",
   },
 ] as const

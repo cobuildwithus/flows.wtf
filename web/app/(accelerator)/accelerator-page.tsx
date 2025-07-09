@@ -11,6 +11,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { PercentChange } from "@/components/ui/percent-change"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Props {
   accelerator: Accelerator
@@ -45,7 +46,7 @@ export async function AcceleratorPage(props: Props) {
             width="1500"
             height="500"
             priority
-            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-70 mix-blend-multiply blur-[3px] grayscale"
+            className="pointer-events-none absolute inset-0 -z-10 size-full select-none object-cover opacity-70 mix-blend-multiply blur-[6px] grayscale"
           />
 
           <div className="mx-auto max-w-7xl px-4 lg:px-6">
@@ -73,7 +74,7 @@ export async function AcceleratorPage(props: Props) {
                   </Link>
                 ))}
               </div>
-              <dl className="mt-12 grid grid-cols-2 items-start gap-8 lg:max-w-3xl lg:grid-cols-4">
+              <dl className="mt-12 grid grid-cols-1 items-start gap-8 md:grid-cols-2 lg:max-w-3xl lg:grid-cols-4">
                 {[
                   {
                     name: "in revenue",
@@ -82,26 +83,39 @@ export async function AcceleratorPage(props: Props) {
                       currency: "USD",
                       maximumFractionDigits: 0,
                     }).format(revenue.totalRevenue),
+                    tooltip: "Revnet token purchases and Shopify sales",
                   },
                   {
-                    name: "monthly growth",
+                    name: "growth rate",
                     value: revenue.salesChange,
                     change: revenue.salesChange,
+                    tooltip: "Month over month change in revenue",
                   },
                 ].map((stat) => (
-                  <div key={stat.name} className="flex flex-col-reverse gap-1">
-                    <dt className="text-sm leading-7 text-white/80 md:text-base">{stat.name}</dt>
-                    <dd className="flex items-end gap-2 text-2xl font-medium tracking-tight text-white lg:text-3xl">
-                      {stat.change !== undefined ? (
-                        <PercentChange
-                          value={stat.value}
-                          className="text-2xl font-medium tracking-tight lg:text-3xl"
-                        />
-                      ) : (
-                        <span className="text-white">{stat.value}</span>
-                      )}
-                    </dd>
-                  </div>
+                  <Tooltip key={stat.name}>
+                    <TooltipTrigger asChild>
+                      <div className="relative flex cursor-help flex-col-reverse gap-1 overflow-hidden rounded-lg bg-white/10 p-4 backdrop-blur-sm">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50" />
+                        <dt className="relative text-sm leading-7 text-white/90 md:text-base">
+                          {stat.name}
+                        </dt>
+                        <dd className="relative flex items-end gap-2 text-2xl font-medium tracking-tight text-white lg:text-3xl">
+                          {stat.change !== undefined ? (
+                            <PercentChange
+                              value={stat.value}
+                              className="text-2xl font-medium tracking-tight lg:text-3xl"
+                              showColor={false}
+                            />
+                          ) : (
+                            <span className="text-white">{stat.value}</span>
+                          )}
+                        </dd>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{stat.tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 ))}
               </dl>
             </div>
@@ -175,7 +189,7 @@ export async function AcceleratorPage(props: Props) {
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-card-foreground/80">Growth</p>
+                          <p className="text-xs text-card-foreground/80">Growth rate</p>
                           <PercentChange
                             value={revenueData?.salesChange ?? 0}
                             className="mt-1 text-sm"
