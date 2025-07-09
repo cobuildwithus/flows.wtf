@@ -324,8 +324,7 @@ export const flowContractAndRecipientIdToGrantId = onchainTable(
   (t) => ({
     flowContractAndRecipientId: t.text().primaryKey(),
     grantId: t.text().notNull(),
-  }),
-  (table) => ({})
+  })
 )
 
 export const siblingFlowAndParentToPreviousFlowRates = onchainTable(
@@ -335,8 +334,22 @@ export const siblingFlowAndParentToPreviousFlowRates = onchainTable(
     previousMonthlyIncomingFlowRate: t.text().notNull(),
     previousMonthlyIncomingBaselineFlowRate: t.text().notNull(),
     previousMonthlyIncomingBonusFlowRate: t.text().notNull(),
+  })
+)
+
+export const senderAndReceiverToPreviousFlowRate = onchainTable(
+  "_kv_SenderAndReceiverToPreviousFlowRate",
+  (t) => ({
+    sender: t.text().notNull(),
+    receiver: t.text().notNull(),
+    previousFlowRate: t.text().notNull(),
+    chainId: t.integer().notNull(),
   }),
-  (table) => ({})
+  (table) => ({
+    senderReceiverChainIdIdx: primaryKey({
+      columns: [table.sender, table.receiver, table.chainId],
+    }),
+  })
 )
 
 export const bonusPoolToGrantId = onchainTable(
