@@ -82,7 +82,7 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
       monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
     })
 
-    // if the flow is being paid to another flow that is not a direct child of the parent
+    // if the flow is being paid to another flow
     // we need to update its flow rates
     await updateSiblingFlowRates(
       db,
@@ -104,7 +104,9 @@ async function updateSiblingFlowRates(
   monthlyIncomingBonusFlowRate: number
 ) {
   const siblingFlow = await db.find(grants, { id: recipientId })
-  if (!siblingFlow) return
+  // if the flow is being paid to another flow that is not a direct child of the parent
+  // we need to update its flow rates
+  if (!siblingFlow || siblingFlow?.parentContract == parentContract) return
 
   const previousFlowRates = await db.find(siblingFlowAndParentToPreviousFlowRates, {
     siblingFlowAndParent: `${recipientId}-${parentContract}`,
