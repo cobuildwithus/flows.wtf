@@ -1,6 +1,7 @@
 "use server"
 
 import database from "@/lib/database/flows-db"
+import { isAdmin } from "@/lib/database/helpers"
 import { updateDraftEmbedding } from "@/lib/embedding/embed-drafts"
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
@@ -17,7 +18,10 @@ export async function updateDraft(id: number, formData: FormData, user?: `0x${st
     const draft = await database.draft.findUnique({ where: { id, isOnchain: false } })
     if (!draft) throw new Error("Draft not found")
 
-    if (!draft.users.some((address) => address.toLowerCase() === user?.toLowerCase())) {
+    if (
+      !draft.users.some((address) => address.toLowerCase() === user?.toLowerCase()) &&
+      !isAdmin(user)
+    ) {
       throw new Error("Failed to update draft")
     }
 

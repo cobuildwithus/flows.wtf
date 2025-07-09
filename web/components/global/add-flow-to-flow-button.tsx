@@ -77,8 +77,8 @@ export function AddFlowToFlowButton(props: Props) {
                 url: "",
               },
               getEthAddress(flow.manager), // flow's manager
-              zeroAddress, // manager reward pool
-              ["0xb9d3bcc9d5107ca0febd05123bd4b484e5163cfa"], // custom single allocator TODO update before deploy
+              "0xc4079dc1F8F84711eee0942c192829f473Fc3C28", //cobuild safe
+              ["0x69a4212c9eec10b09d9635e224c626e81e50986b"], // custom single allocator TODO update before deploy
             ],
           })
         } catch (e: unknown) {
