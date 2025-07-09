@@ -10,7 +10,7 @@ import { useERC20Balance } from "@/lib/erc20/use-erc20-balances"
 interface UseApprovalAmountProps {
   donationAmount: string
 
-  flow: Pick<Grant, "underlyingERC20Token" | "superToken" | "chainId">
+  flow: Pick<Grant, "underlyingERC20Token" | "superToken" | "chainId" | "underlyingTokenDecimals">
   isNativeToken: boolean
 }
 
@@ -43,9 +43,13 @@ export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseAp
     try {
       const donationAmountBigInt = parseUnits(donationAmount || "0", 18) // assume super token decimals is 18
 
+      const converted = convertSuperTokenToUnderlyingToken(
+        donationAmountBigInt - superTokenBalance,
+        flow.underlyingTokenDecimals,
+      )
+
       // Calculate how much we need from underlying token
-      const needFromUnderlying =
-        donationAmountBigInt > superTokenBalance ? donationAmountBigInt - superTokenBalance : 0n
+      const needFromUnderlying = donationAmountBigInt > superTokenBalance ? converted : 0n
 
       // Check if approval is needed
       const approvalNeeded = needFromUnderlying > 0n && currentAllowance < needFromUnderlying
@@ -76,4 +80,13 @@ export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseAp
       refetchCurrentAllowance()
     },
   }
+}
+
+const convertSuperTokenToUnderlyingToken = (
+  superTokenAmount: bigint,
+  underlyingTokenDecimals: number,
+) => {
+  // if underlying token decimals is 18, nothing happens
+  // for tokens like usdc, we need to convert requested approval amount to underlying token amount by eg dividing by 10^(18-6)
+  return superTokenAmount / BigInt(10 ** (18 - underlyingTokenDecimals))
 }

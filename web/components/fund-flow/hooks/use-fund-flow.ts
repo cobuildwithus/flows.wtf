@@ -15,7 +15,13 @@ interface UseFundingProps {
   donationAmount: string
   flow: Pick<
     Grant,
-    "id" | "title" | "chainId" | "underlyingERC20Token" | "superToken" | "recipient"
+    | "id"
+    | "title"
+    | "chainId"
+    | "underlyingERC20Token"
+    | "superToken"
+    | "recipient"
+    | "underlyingTokenDecimals"
   >
   totalTokenBalance: bigint
   superTokenBalance?: bigint
