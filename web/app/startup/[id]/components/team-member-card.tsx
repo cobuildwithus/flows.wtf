@@ -1,10 +1,10 @@
 "use server"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Currency } from "@/components/ui/currency"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { cn } from "@/lib/utils"
-import Image from "next/image"
 import { TeamMemberLink } from "./team-member-link"
 
 export async function TeamMemberCard(props: { member: TeamMember; isAllocator: boolean }) {
@@ -21,13 +21,10 @@ export async function TeamMemberCard(props: { member: TeamMember; isAllocator: b
         },
       )}
     >
-      <Image
-        src={pfp_url || ""}
-        alt={display_name}
-        width={64}
-        height={64}
-        className="z-20 size-16 rounded-full"
-      />
+      <Avatar className="z-20 size-16">
+        <AvatarImage src={pfp_url || ""} alt={display_name} />
+        <AvatarFallback>{display_name.charAt(0).toUpperCase()}</AvatarFallback>
+      </Avatar>
       <div className="flex flex-col">
         <div>
           <Badge variant="secondary">

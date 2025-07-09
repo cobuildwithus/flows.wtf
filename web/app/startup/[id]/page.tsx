@@ -55,6 +55,8 @@ export default async function GrantPage(props: Props) {
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
 
+  const shopify = startup.shopify
+
   const [teamMembers, user, impactFlow, orders, budgets, tokenPayments] = await Promise.all([
     getTeamMembers(startup.id),
     getUser(),
@@ -69,13 +71,13 @@ export default async function GrantPage(props: Props) {
         subgrants: { select: { id: true, title: true, image: true } },
       },
     }),
-    getAllOrders(startup.shopify),
+    shopify ? getAllOrders(shopify) : Promise.resolve([]),
     getStartupBudgets(startup.id),
     getTokenPayments(Number(startup.revnetProjectIds.base)),
   ])
 
   const [products, salesSummary] = await Promise.all([
-    getProducts(startup.shopify, orders),
+    shopify ? getProducts(shopify, orders) : Promise.resolve([]),
     getSalesSummary(orders),
   ])
 
@@ -185,7 +187,7 @@ export default async function GrantPage(props: Props) {
           </Suspense>
         </div>
 
-        <OrdersTable orders={orders} products={products} />
+        {orders.length > 0 && <OrdersTable orders={orders} products={products} />}
       </div>
     </>
   )

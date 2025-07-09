@@ -7,16 +7,18 @@ import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { useEffect, useState } from "react"
 import { Minus, Plus } from "lucide-react"
+import { StoreConfig } from "@/lib/shopify/stores"
 
 interface Props {
   changeProductsVolumeEth: (eth: number) => void
   products: Array<{ name: string; image: string; url: string }>
   startup: Startup
+  shopify: StoreConfig
   chainId: number
 }
 
 export function ProductsList(props: Props) {
-  const { changeProductsVolumeEth, products, startup, chainId } = props
+  const { changeProductsVolumeEth, products, startup, chainId, shopify } = props
   const [quantity, setQuantity] = useState("1")
   const [touched, setTouched] = useState(false)
   const projectId = startup.revnetProjectIds.base
@@ -144,7 +146,7 @@ export function ProductsList(props: Props) {
       </div>
 
       <Button variant="outline" size="lg" asChild>
-        <a href={`https://${startup.shopify.url}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${shopify.url}`} target="_blank" rel="noopener noreferrer">
           Shop
         </a>
       </Button>

@@ -21,7 +21,6 @@ import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-f
 import { Grant } from "@/lib/database/types"
 import { ComponentProps } from "react"
 import { SearchRecipient } from "./search-recipient/search-recipient"
-import { RemoveScroll } from "react-remove-scroll"
 
 interface Props {
   flow: Pick<Grant, "id" | "chainId" | "recipient" | "superToken">

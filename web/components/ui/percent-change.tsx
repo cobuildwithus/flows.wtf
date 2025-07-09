@@ -11,10 +11,14 @@ const PercentChange = React.forwardRef<HTMLSpanElement, PercentChangeProps>(
   ({ value, className, showSign = true, ...props }, ref) => (
     <span
       ref={ref}
-      className={cn("font-semibold", value >= 0 ? "text-green-600" : "text-red-400", className)}
+      className={cn(
+        "font-semibold",
+        value > 0 ? "text-green-600" : value < 0 ? "text-red-400" : "text-muted-foreground",
+        className,
+      )}
       {...props}
     >
-      {showSign && value >= 0 ? "+" : ""}
+      {showSign && value > 0 ? "+" : ""}
       {value.toFixed(1)}%
     </span>
   ),

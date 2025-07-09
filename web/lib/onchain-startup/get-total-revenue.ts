@@ -8,7 +8,7 @@ export async function getTotalRevenue(startups: Pick<Startup, "shopify" | "revne
   const results = await Promise.all(
     startups.map(async (startup, index) => {
       const [orders, tokenPayments] = await Promise.all([
-        getAllOrders(startup.shopify),
+        startup.shopify ? getAllOrders(startup.shopify) : Promise.resolve([]),
         getTokenPayments(Number(startup.revnetProjectIds.base)),
       ])
 

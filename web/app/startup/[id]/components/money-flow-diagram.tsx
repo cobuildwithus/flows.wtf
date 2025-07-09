@@ -68,6 +68,123 @@ export function MoneyFlowDiagram(props: Props) {
   const { diagram } = startup
   const isMobile = checkMobile(width)
 
+  const shopify = startup.shopify
+
+  const items: ItemProps[] = [
+    {
+      col: 1,
+      row: 1,
+      title: (
+        <JoinStartupLink
+          startupTitle={startup.title}
+          projectId={startup.revnetProjectIds.base}
+          chainId={startup.chainId}
+        />
+      ),
+      id: "user_token",
+      height: 285,
+      content: (
+        <BuyRevnetToken
+          projectId={startup.revnetProjectIds.base}
+          changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
+          chainId={startup.chainId}
+        />
+      ),
+      handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
+    },
+    {
+      col: 2,
+      row: 1,
+      id: "revenue",
+      title: <TitleWithCurrency title="Revenue" value={revenue.totalSales} />,
+      height: 90,
+      content: <Revenue revenue={revenue} />,
+    },
+    {
+      col: 2,
+      row: 2,
+      id: "treasury",
+      title: (
+        <TreasuryTitle
+          startup={startup}
+          chainId={startup.chainId}
+          ethRaised={productsVolumeEth + tokenVolume}
+        />
+      ),
+      height: 90,
+      content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
+    },
+    {
+      col: 3,
+      row: 1,
+      id: "product",
+      title: diagram.receive.name,
+      height: startup.reviews.length > 0 ? 200 : 106,
+      content: <Reviews reviews={startup.reviews} />,
+      handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
+    },
+    // {
+    //   col: 3,
+    //   row: 2,
+    //   id: "impact",
+    //   height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
+    //   title: (
+    //     <TitleWithCurrency
+    //       title="Real world impact"
+    //       href={`/flow/${impactGrants.flowId}`}
+    //       flowRate={impactGrants.monthlyFlowRate}
+    //     />
+    //   ),
+    //   content: <ImpactGrants grants={impactGrants.grants} />,
+    //   handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
+    // },
+    {
+      col: 3,
+      row: 3,
+      id: "token",
+      title: (
+        <TokenDAOLink
+          startupTitle={startup.title}
+          projectId={startup.revnetProjectIds.base}
+          chainId={startup.chainId}
+          tokenAmount={Number(totalRevnetTokens)}
+        />
+      ),
+      handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
+      height: Number(totalRevnetTokens) > 0 ? 145 : 95,
+      content: (
+        <TokenRewards
+          projectId={startup.revnetProjectIds.base}
+          chainId={startup.chainId}
+          userAddress={user?.address}
+          extraRevnetTokens={totalRevnetTokens}
+          startupTitle={startup.title}
+        />
+      ),
+    },
+  ]
+
+  if (shopify) {
+    items.push({
+      col: 1,
+      row: 2,
+      height: 320,
+      id: "user_action",
+      title: "Shop to earn",
+      className: "bg-background dark:bg-background/50 shadow",
+      content: (
+        <ProductsList
+          changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
+          products={products.slice(0, 10)}
+          startup={startup}
+          chainId={startup.chainId}
+          shopify={shopify}
+        />
+      ),
+      handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
+    })
+  }
+
   const { nodes, height } = generateDiagram(
     [
       {
@@ -107,16 +224,7 @@ export function MoneyFlowDiagram(props: Props) {
                   <div className="mt-1 text-sm text-accent-foreground/90 dark:text-white/90 sm:text-base">
                     {startup.shortMission}
                   </div>
-                  {/* <div className="mx-3 rounded-md bg-white/20 px-2 py-1 backdrop-blur-sm">
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <PercentChange value={revenue.salesChange} className="text-sm" />
-                      </TooltipTrigger>
-                      <TooltipContent>Monthly revenue growth</TooltipContent>
-                    </Tooltip>
-                  </div> */}
                 </div>
-                {/* <div className="pr-2.5 pt-1"></div> */}
               </div>
             </div>
           ),
@@ -131,124 +239,7 @@ export function MoneyFlowDiagram(props: Props) {
         },
       },
     ],
-    [
-      {
-        col: 1,
-        row: 1,
-        title: (
-          <JoinStartupLink
-            startupTitle={startup.title}
-            projectId={startup.revnetProjectIds.base}
-            chainId={startup.chainId}
-          />
-        ),
-        id: "user_token",
-        height: 285,
-        content: (
-          <BuyRevnetToken
-            projectId={startup.revnetProjectIds.base}
-            changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
-            chainId={startup.chainId}
-          />
-        ),
-        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
-      },
-      {
-        col: 1,
-        row: 2,
-        height: 320,
-        id: "user_action",
-        title: "Shop to earn",
-        className: "bg-background dark:bg-background/50 shadow",
-        content: (
-          <ProductsList
-            changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
-            products={products.slice(0, 10)}
-            startup={startup}
-            chainId={startup.chainId}
-          />
-        ),
-        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
-      },
-      {
-        col: 2,
-        row: 1,
-        id: "revenue",
-        title: <TitleWithCurrency title="Revenue" value={revenue.totalSales} />,
-        height: 90,
-        content: <Revenue revenue={revenue} />,
-      },
-      {
-        col: 2,
-        row: 2,
-        id: "treasury",
-        title: (
-          <TreasuryTitle
-            startup={startup}
-            chainId={startup.chainId}
-            ethRaised={productsVolumeEth + tokenVolume}
-          />
-        ),
-        height: 90,
-        content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
-      },
-      // {
-      //   col: 2,
-      //   row: 1,
-      //   id: "team",
-      //   height: 100,
-      //   title: "Team",
-      //   content: <ShortTeam members={members} />,
-      // },
-      {
-        col: 3,
-        row: 1,
-        id: "product",
-        title: diagram.receive.name,
-        height: startup.reviews.length > 0 ? 200 : 106,
-        content: <Reviews reviews={startup.reviews} />,
-        handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-      },
-      // {
-      //   col: 3,
-      //   row: 2,
-      //   id: "impact",
-      //   height: impactGrants.grants.length > 0 ? 52 + impactGrants.grants.length * 56 : 90,
-      //   title: (
-      //     <TitleWithCurrency
-      //       title="Real world impact"
-      //       href={`/flow/${impactGrants.flowId}`}
-      //       flowRate={impactGrants.monthlyFlowRate}
-      //     />
-      //   ),
-      //   content: <ImpactGrants grants={impactGrants.grants} />,
-      //   handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-      // },
-      {
-        col: 3,
-        row: 3,
-        id: "token",
-        title: (
-          <TokenDAOLink
-            startupTitle={startup.title}
-            projectId={startup.revnetProjectIds.base}
-            chainId={startup.chainId}
-            tokenAmount={Number(totalRevnetTokens)}
-          />
-        ),
-        handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-        height: Number(totalRevnetTokens) > 0 ? 145 : 95,
-        content: (
-          <TokenRewards
-            projectId={startup.revnetProjectIds.base}
-            chainId={startup.chainId}
-            userAddress={user?.address}
-            extraRevnetTokens={totalRevnetTokens}
-            startupTitle={startup.title}
-          />
-        ),
-      },
-    ],
+    items,
     width - 34,
   )
 

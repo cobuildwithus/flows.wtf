@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Product } from "@/lib/shopify/products"
+import { EmptyState } from "@/components/ui/empty-state"
 import Image from "next/image"
 
 interface Props {
@@ -18,6 +19,23 @@ interface Props {
 
 export async function ProductsTable(props: Props) {
   const { products } = props
+
+  if (products.length === 0) {
+    return (
+      <Card className="border border-border/40 bg-card/80 shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Products</CardTitle>
+        </CardHeader>
+        <CardContent className="py-16">
+          <EmptyState
+            size={100}
+            title="No products yet"
+            description="Check back later for updates."
+          />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">

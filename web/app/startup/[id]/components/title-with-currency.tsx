@@ -19,12 +19,12 @@ export function TitleWithCurrency({ title, href, value, flowRate }: Props) {
       ) : (
         <span>{title}</span>
       )}
-      {value && (
+      {(value ?? 0) > 0 && (
         <Badge className="text-sm" variant="secondary">
           <Currency>{value}</Currency>
         </Badge>
       )}
-      {flowRate && (
+      {(flowRate ?? 0) > 0 && (
         <Badge className="text-sm" variant="secondary">
           <Currency>{flowRate}</Currency>/mo
         </Badge>
