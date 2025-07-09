@@ -30,13 +30,13 @@ export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseAp
     flow.chainId,
   )
 
-  const { approvalNeeded, approvalAmount, needFromUnderlying } = useMemo(() => {
+  const { approvalNeeded, approvalAmount, upgradeAmount } = useMemo(() => {
     // No approval needed for native tokens
     if (isNativeToken) {
       return {
         approvalNeeded: false,
         approvalAmount: 0n,
-        needFromUnderlying: 0n,
+        upgradeAmount: 0n,
       }
     }
 
@@ -49,24 +49,33 @@ export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseAp
       )
 
       // Calculate how much we need from underlying token
-      const needFromUnderlying = donationAmountBigInt > superTokenBalance ? converted : 0n
+      const underlyingTokenNeeded = donationAmountBigInt > superTokenBalance ? converted : 0n
 
       // Check if approval is needed
-      const approvalNeeded = needFromUnderlying > 0n && currentAllowance < needFromUnderlying
+      const underlyingTokenApprovalNeeded =
+        underlyingTokenNeeded > 0n && currentAllowance < underlyingTokenNeeded
 
       // Calculate the approval amount (approve exactly what's needed)
-      const approvalAmount = approvalNeeded ? (needFromUnderlying * 102n) / 100n : 0n
+      const underlyingTokenApprovalAmount = underlyingTokenApprovalNeeded
+        ? (underlyingTokenNeeded * 102n) / 100n
+        : 0n
+
+      // upgradeTo takes the amount of supertokens you want, not the underlying token amount
+      const upgradeAmount = convertUnderlyingTokenToSuperToken(
+        underlyingTokenNeeded,
+        flow.underlyingTokenDecimals,
+      )
 
       return {
-        approvalNeeded,
-        approvalAmount,
-        needFromUnderlying,
+        approvalNeeded: underlyingTokenApprovalNeeded,
+        approvalAmount: underlyingTokenApprovalAmount,
+        upgradeAmount,
       }
     } catch (e) {
       return {
         approvalNeeded: false,
         approvalAmount: 0n,
-        needFromUnderlying: 0n,
+        upgradeAmount: 0n,
       }
     }
   }, [donationAmount, superTokenBalance, currentAllowance, isNativeToken])
@@ -74,7 +83,7 @@ export function useApprovalAmount({ donationAmount, flow, isNativeToken }: UseAp
   return {
     approvalNeeded,
     approvalAmount,
-    needFromUnderlying,
+    upgradeAmount,
     mutate: () => {
       refetchSuperTokenBalance()
       refetchCurrentAllowance()
@@ -89,4 +98,11 @@ const convertSuperTokenToUnderlyingToken = (
   // if underlying token decimals is 18, nothing happens
   // for tokens like usdc, we need to convert requested approval amount to underlying token amount by eg dividing by 10^(18-6)
   return superTokenAmount / BigInt(10 ** (18 - underlyingTokenDecimals))
+}
+
+const convertUnderlyingTokenToSuperToken = (
+  underlyingTokenAmount: bigint,
+  underlyingTokenDecimals: number,
+) => {
+  return underlyingTokenAmount * BigInt(10 ** (18 - underlyingTokenDecimals))
 }

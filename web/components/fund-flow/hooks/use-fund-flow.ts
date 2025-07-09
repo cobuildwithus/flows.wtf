@@ -49,7 +49,7 @@ export function useFundFlow({
   const {
     approvalNeeded,
     approvalAmount,
-    needFromUnderlying,
+    upgradeAmount, // in supertoken 18 decimals
     mutate: mutateApprovalAmount,
   } = useApprovalAmount({
     donationAmount,
@@ -122,9 +122,9 @@ export function useFundFlow({
 
     if (!hasOpenFlows) {
       // Use the batch operation to upgrade tokens and create flow in one transaction
-      await createFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+      await createFlow(upgradeAmount, flow.recipient as `0x${string}`, monthlyFlowRate)
     } else {
-      await updateFlow(needFromUnderlying, flow.recipient as `0x${string}`, monthlyFlowRate)
+      await updateFlow(upgradeAmount, flow.recipient as `0x${string}`, monthlyFlowRate)
     }
 
     if (onSuccess) {
