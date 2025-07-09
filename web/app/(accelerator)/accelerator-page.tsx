@@ -95,7 +95,7 @@ export async function AcceleratorPage(props: Props) {
                       {stat.change !== undefined ? (
                         <PercentChange
                           value={stat.value}
-                          className="text-2xl font-medium tracking-tight text-green-300 data-[negative=true]:text-red-300 lg:text-3xl"
+                          className="text-2xl font-medium tracking-tight lg:text-3xl"
                         />
                       ) : (
                         <span className="text-white">{stat.value}</span>
