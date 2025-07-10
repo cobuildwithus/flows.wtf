@@ -3,8 +3,18 @@
 import { unstable_cache } from "next/cache"
 import database from "@/lib/database/flows-db"
 import { FLOWS_REVNET_PROJECT_ID } from "../config"
+import { base } from "viem/chains"
 
 async function _getTokenPayments(projectId: number) {
+  const project = await database.juiceboxProject.findUniqueOrThrow({
+    where: { chainId_projectId: { chainId: base.id, projectId } },
+    select: { suckerGroupId: true },
+  })
+
+  if (!project.suckerGroupId) {
+    return []
+  }
+
   const payments = await database.juiceboxPayEvent.findMany({
     select: {
       txHash: true,
@@ -17,9 +27,11 @@ async function _getTokenPayments(projectId: number) {
       memo: true,
       project: { select: { erc20Symbol: true } },
     },
-    where: { projectId, newlyIssuedTokenCount: { gt: 0 } },
+    where: { suckerGroupId: project.suckerGroupId, newlyIssuedTokenCount: { gt: 0 } },
     orderBy: { timestamp: "desc" },
   })
+
+  console.log({ payments, projectId })
 
   // Get associated FLOWS payments for the same transactions
   const txHashes = payments.map((p) => p.txHash)

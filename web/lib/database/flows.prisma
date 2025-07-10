@@ -560,6 +560,7 @@ view JuiceboxPayEvent {
   amount                Decimal @db.Decimal(78, 0)
   newlyIssuedTokenCount Decimal @map("newly_issued_token_count") @db.Decimal(78, 0)
   memo                  String
+  suckerGroupId         String? @map("sucker_group_id")
 
   metadata String @db.VarChar(66)
 

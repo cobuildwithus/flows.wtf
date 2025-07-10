@@ -14,7 +14,7 @@ const startups = {
   "0x16f7997240d763e1396e8ad33c8a32dbff708c56": {
     ...straystrong,
     title: "Stray Strong",
-    revnetProjectIds: { base: 104n },
+    revnetProjectIds: { base: 108n },
   },
 } as const
 

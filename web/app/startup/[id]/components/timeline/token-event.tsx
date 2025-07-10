@@ -34,7 +34,7 @@ export async function TokenEvent({ payment, date }: Props) {
         <div className="flex w-full items-center justify-between">
           <p className="text-sm text-muted-foreground">
             <ProfileLink
-              address={payment.payer as `0x${string}`}
+              address={payment.beneficiary as `0x${string}`}
               username={payerProfile.username}
               className="font-medium text-foreground hover:text-primary"
               chainId={payment.chainId}
