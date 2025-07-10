@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function SocialIcon({ url, style }: Props) {
-  if (url.includes("warpcast")) {
+  if (url.includes("warpcast") || url.includes("farcaster")) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer">
         <div
