@@ -45,6 +45,17 @@ export function MultimodalInput(props: Props) {
 
   const disabled = !user
 
+  // Auto-resize textarea based on content
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = "auto"
+      // Set height to scrollHeight
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }, [input])
+
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value)
   }
@@ -168,7 +179,8 @@ export function MultimodalInput(props: Props) {
             value={input}
             disabled={disabled}
             onChange={handleInput}
-            className="min-h-[24px] resize-none overflow-hidden border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100"
+            className="!min-h-[unset] resize-none overflow-y-hidden border-none bg-transparent p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100"
+            style={{ minHeight: "24px" }}
             rows={rows}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
