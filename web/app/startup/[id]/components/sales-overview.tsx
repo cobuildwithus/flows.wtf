@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MonthlySales } from "@/lib/shopify/summary"
 import { BringRevenueOnchain } from "./bring-revenue-onchain"
 import { SalesChart } from "./sales-chart"
-import { combineMonthlySalesWithTokenPayments } from "@/lib/onchain-startup/sales-data"
+import { combineMonthlySalesWithTokenPayments } from "@/lib/onchain-startup/revenue-data"
 import { EmptyState } from "@/components/ui/empty-state"
 
 interface Props {

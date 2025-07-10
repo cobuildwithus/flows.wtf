@@ -1,7 +1,7 @@
 "use server"
 
 import type { MonthlySales } from "@/lib/shopify/summary"
-import { combineMonthlySalesWithTokenPayments } from "./sales-data"
+import { combineMonthlySalesWithTokenPayments } from "./revenue-data"
 import { Revenue } from "./types"
 
 export async function getRevenueMetrics(
