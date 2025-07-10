@@ -8,7 +8,7 @@ export interface MonthlySales {
   date: Date
 }
 
-export const getSalesSummary = unstable_cache(
+const _getSalesSummary = unstable_cache(
   async (orders: Order[]) => {
     let totalOrders = 0
     let totalSales = 0
@@ -44,23 +44,39 @@ export const getSalesSummary = unstable_cache(
       current.setMonth(current.getMonth() + 1)
     }
 
-    const monthlySales: MonthlySales[] = months
+    const monthlySales = months
       .map(({ key, date }) => {
         const data = monthlyMap.get(key)
         return {
           month: getMonthLabel(date),
           sales: data ? data.sales : 0,
           orders: data ? data.orders : 0,
-          date: date,
+          date: date.toISOString(),
         }
       })
-      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
     return { totalSales, totalOrders, monthlySales }
   },
   ["shopify", "sales-summary"],
   { revalidate: 60 * 30 },
 )
+
+export async function getSalesSummary(orders: Order[]) {
+  const cached = await _getSalesSummary(orders)
+
+  // Convert date strings back to Date objects
+  const monthlySales: MonthlySales[] = cached.monthlySales.map((item) => ({
+    ...item,
+    date: new Date(item.date),
+  }))
+
+  return {
+    totalSales: cached.totalSales,
+    totalOrders: cached.totalOrders,
+    monthlySales,
+  }
+}
 
 function getMonthKey(date: Date): string {
   return `${date.getFullYear()}-${date.getMonth() + 1}`
