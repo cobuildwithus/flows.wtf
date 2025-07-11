@@ -3,7 +3,7 @@ export const PRIVACY_CONTENT = `
 
 **Effective Date:** July 11, 2025  
 **Snapshot:** "Privacy-first approach for non-custodial streaming funding."  
-**Commit Hash:** 0000000000000000000000000000000000000000 
+**Commit Hash:** 6a8ca5daa71f96bab4e25897349c44346eaf6270 
 
 This Privacy Policy (the “Policy”) explains how Just Cobuild, Co., a Delaware C-Corporation (“Cobuild”, the “Company”, “we”, “us”, or “our”) collects, uses, and shares data in connection with the flows.wtf platform, including the Interface, smart contracts, and related services (collectively, the “Services”). Your use of the Services is subject to this Policy as well as our [Terms of Service](/terms).
 
