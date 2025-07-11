@@ -3,7 +3,7 @@ export const TERMS_CONTENT = `
 
 **Effective Date:** July 11, 2025  
 **Snapshot:** "Continuous funding for grassroots projects via streaming smart-contracts."  
-**Commit Hash:** 0000000000000000000000000000000000000000
+**Commit Hash:** 6a8ca5daa71f96bab4e25897349c44346eaf6270
 
 ### IMPORTANT NOTICE
 
