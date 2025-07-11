@@ -1,6 +1,7 @@
 import { StartupData } from "./interface"
 
 export const straystrong = {
+  slug: "straystrong",
   acceleratorId: "vrbs",
   title: "Stray Strong",
   image:

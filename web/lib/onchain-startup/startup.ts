@@ -18,6 +18,10 @@ const startups = {
   },
 } as const
 
+const startupIdBySlug = Object.fromEntries(
+  Object.entries(startups).map(([id, startup]) => [startup.slug, id]),
+) as Record<string, string>
+
 export async function getStartup(id: string) {
   const startup = getStartupData(id)
 
@@ -36,7 +40,14 @@ export async function getStartup(id: string) {
     accelerator,
     allocator,
     id,
+    slug: startup.slug,
   }
+}
+
+export function getStartupIdFromSlug(slug: string) {
+  const id = startupIdBySlug[slug]
+  if (!id) throw new Error("Startup not found")
+  return id
 }
 
 export type Startup = Awaited<ReturnType<typeof getStartup>>

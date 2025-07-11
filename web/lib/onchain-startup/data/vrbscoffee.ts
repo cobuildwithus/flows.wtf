@@ -1,6 +1,7 @@
 import { StartupData } from "./interface"
 
 export const vrbscoffee = {
+  slug: "vrbscoffee",
   acceleratorId: "vrbs",
   title: "VRBS Coffee",
   image:
