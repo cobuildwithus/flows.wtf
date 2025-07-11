@@ -44,9 +44,10 @@ export async function getStartup(id: string) {
   }
 }
 
-export function getStartupIdFromSlug(slug: string) {
+export function getStartupIdFromSlug(slug: string): string | null {
   const id = startupIdBySlug[slug]
-  if (!id) throw new Error("Startup not found")
+  if (!id) return null
+
   return id
 }
 
