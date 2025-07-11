@@ -92,17 +92,16 @@ export default async function Footer() {
             <nav className="flex flex-col space-y-2 text-sm text-muted-foreground">
               <Link
                 target="_blank"
-                href="https://www.youtube.com/watch?v=lOzCA7bZG_k"
-                className="hover:underline"
-              >
-                What is Nouns?
-              </Link>
-              <Link
-                target="_blank"
                 href="https://farcaster.xyz/rocketman"
                 className="hover:underline"
               >
                 Contact
+              </Link>
+              <Link target="_blank" href="/legal/terms" className="hover:underline">
+                Terms of Service
+              </Link>
+              <Link target="_blank" href="/legal/privacy" className="hover:underline">
+                Privacy Policy
               </Link>
               <HelpCenterItem user={user} identityToken={identityToken} />
             </nav>
