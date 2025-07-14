@@ -3,7 +3,7 @@ import { StartupData } from "./interface"
 export const vrbscoffee = {
   slug: "vrbscoffee",
   acceleratorId: "vrbs",
-  title: "VRBS Coffee",
+  title: "Vrbs Coffee",
   image:
     "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/716dbbeb-c537-4b65-a843-6f96f39a7200/original",
   shortMission: "Caffeinate your calling",

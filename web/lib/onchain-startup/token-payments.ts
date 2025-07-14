@@ -31,8 +31,6 @@ async function _getTokenPayments(projectId: number) {
     orderBy: { timestamp: "desc" },
   })
 
-  console.log({ payments, projectId })
-
   // Get associated FLOWS payments for the same transactions
   const txHashes = payments.map((p) => p.txHash)
   const flowsPayments =

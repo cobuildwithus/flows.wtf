@@ -4,17 +4,20 @@ import { Accelerator, getAccelerator } from "./data/accelerators"
 import { vrbscoffee } from "./data/vrbscoffee"
 import { getAllocator } from "../allocation/allocation-data/get-allocator"
 import { straystrong } from "./data/straystrong"
+import { tropicalbody } from "./data/tropicalbody"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
     ...vrbscoffee,
-    title: "Vrbs Coffee",
     revnetProjectIds: { base: 104n },
   },
   "0x16f7997240d763e1396e8ad33c8a32dbff708c56": {
     ...straystrong,
-    title: "Stray Strong",
     revnetProjectIds: { base: 108n },
+  },
+  "0x674c0dbe85b3dee2a9cd63fe0dc7d8b9f724335a": {
+    ...tropicalbody,
+    revnetProjectIds: { base: 112n },
   },
 } as const
 

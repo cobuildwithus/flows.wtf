@@ -70,7 +70,7 @@ export function ManagedFlowDraftPublishButton(props: Props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add to the {flow.title} flow</DialogTitle>
+          <DialogTitle>Add to flow</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
