@@ -25,6 +25,7 @@ import SignInWithNeynar from "@/components/global/signin-with-neynar"
 import { AuthButton } from "@/components/ui/auth-button"
 import { AddFlowToFlowButton } from "@/components/global/add-flow-to-flow-button"
 import { publishDraft } from "../publish-draft"
+import { useRouter } from "next/navigation"
 
 interface Props {
   draft: Draft
@@ -36,6 +37,7 @@ interface Props {
 export function ManagedFlowDraftPublishButton(props: Props) {
   const { draft, flow, size = "default", user } = props
   const ref = useRef<HTMLButtonElement>(null)
+  const router = useRouter()
 
   if (!hasFarcasterAccount(user)) {
     return (
@@ -93,6 +95,7 @@ export function ManagedFlowDraftPublishButton(props: Props) {
                 onSuccess={async (hash) => {
                   await publishDraft(draft.id, hash)
                   ref.current?.click() // close dialog
+                  router.push(`/flow/${flow.id}`)
                 }}
               />
             ) : (
@@ -109,7 +112,8 @@ export function ManagedFlowDraftPublishButton(props: Props) {
                 buttonText={draft.opportunityId ? "Hire" : "Add to flow"}
                 onSuccess={async (hash) => {
                   await publishDraft(draft.id, hash)
-                  ref.current?.click() // close dialog
+                  ref.current?.click() //  close dialog
+                  router.push(`/flow/${flow.id}`)
                 }}
               />
             )}

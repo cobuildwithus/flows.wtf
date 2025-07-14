@@ -49,9 +49,8 @@ export function TokenRewards({
     return (
       <div className="flex flex-col">
         <div className="text-pretty text-sm text-muted-foreground">Earn on every order</div>
-        {Number(extraRevnetTokens) > 0 && (
-          <AnimatedBenefits startupTitle={startupTitle} projectId={projectId} chainId={chainId} />
-        )}
+
+        <AnimatedBenefits startupTitle={startupTitle} projectId={projectId} chainId={chainId} />
       </div>
     )
   }
@@ -90,9 +89,7 @@ export function TokenRewards({
           )}{" "}
         </div>
       </Link>
-      {Number(extraRevnetTokens) > 0 && (
-        <AnimatedBenefits startupTitle={startupTitle} projectId={projectId} chainId={chainId} />
-      )}
+      <AnimatedBenefits startupTitle={startupTitle} projectId={projectId} chainId={chainId} />
     </div>
   )
 }

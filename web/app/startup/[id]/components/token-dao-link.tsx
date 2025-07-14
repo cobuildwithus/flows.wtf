@@ -20,19 +20,24 @@ export function TokenDAOLink({ startupTitle, projectId, chainId, tokenAmount }: 
     return "..."
   }
 
+  const hasToken = tokenAmount > 0
+
   return (
     <>
       <div className="flex w-full items-center justify-between gap-1 text-base">
         <div onClick={() => setIsDialogOpen(true)} className="cursor-pointer">
-          <NumberFlow
-            value={tokenAmount}
-            format={{
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }}
-            locales="en-US"
-          />{" "}
+          {hasToken && (
+            <NumberFlow
+              value={tokenAmount}
+              format={{
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }}
+              locales="en-US"
+            />
+          )}{" "}
           {tokenDetails?.symbol}
+          {!hasToken && " tokens"}
         </div>
         <button
           type="button"
