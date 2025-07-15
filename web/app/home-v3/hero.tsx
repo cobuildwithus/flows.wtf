@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { AnimatedSalary } from "@/components/global/animated-salary"
 import { useEffect, useState } from "react"
+import Globe from "./globe"
 
 interface Props {
   totalEarned: number
@@ -45,8 +46,11 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
   }
 
   return (
-    <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-gradient-to-b from-stone-50 to-white">
-      <div className="container mx-auto px-4 py-20">
+    <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-gradient-to-b">
+      {/* Globe positioned on the right side */}
+      <Globe className="pointer-events-auto absolute right-0 top-1/2 z-20 h-full w-1/2 -translate-y-1/4 translate-x-1/4 scale-[1.5] lg:w-[45%] lg:translate-x-1/3 lg:scale-[2]" />
+
+      <div className="container relative z-30 mx-auto px-4 py-20">
         <div>
           {/* Left side - Content */}
           <motion.div
@@ -54,8 +58,8 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="max-w-5xl text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-              A startup accelerator owned by{" "}
+            <h1 className="max-w-5xl text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
+              A startup accelerator <span className="block sm:inline">owned by </span>
               <span className="inline-block w-full overflow-visible bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text pb-2 text-transparent sm:w-auto sm:leading-normal">
                 {text || "\u00A0"}
               </span>
@@ -75,7 +79,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
               </Link>
               <Link
                 href="/explore"
-                className="inline-flex items-center justify-center rounded-md border-2 border-emerald-600 px-8 py-4 text-lg font-medium text-emerald-600 transition-all duration-200 hover:bg-emerald-50"
+                className="inline-flex items-center justify-center rounded-md border-2 border-emerald-600 px-8 py-4 text-lg font-medium text-emerald-600 transition-all duration-200 hover:bg-emerald-50 dark:hover:bg-emerald-950"
               >
                 Join or invest
               </Link>
