@@ -33,6 +33,8 @@ export default async function ApplyPage() {
         monthlyIncomingFlowRate: true,
         activeRecipientCount: true,
         monthlyOutgoingFlowRate: true,
+        underlyingTokenDecimals: true,
+        underlyingTokenSymbol: true,
       },
       orderBy: [{ title: "asc" }],
     }),
