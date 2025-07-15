@@ -32,7 +32,7 @@ const vertex = `
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
     // Size of each point sprite (in screen pixels)
-    gl_PointSize = 7.0;
+    gl_PointSize = 5.0;
   }
 `
 
@@ -96,10 +96,7 @@ export default function Globe({ className = "" }: Props) {
     controls.minPolarAngle = Math.PI / 2 - 0.5
     controls.maxPolarAngle = Math.PI / 2 + 0.5
 
-    const pointLight = new THREE.PointLight(0x1a4d80, 20, 200)
-    pointLight.position.set(-50, 0, 60)
-    scene.add(pointLight)
-    scene.add(new THREE.HemisphereLight(0x87ceeb, 0x0066cc, 2))
+    // Removed dynamic lighting; using flat colour on ocean sphere so no lights needed
 
     const raycaster = new THREE.Raycaster()
     const mouse = new THREE.Vector2()
@@ -110,8 +107,9 @@ export default function Globe({ className = "" }: Props) {
 
     // Base sphere
     const baseSphere = new THREE.SphereGeometry(19.5, 35, 35)
-    const baseMaterial = new THREE.MeshStandardMaterial({
-      color: theme === "dark" ? 0x001a33 : 0x2e5c8a,
+    const baseMaterial = new THREE.MeshBasicMaterial({
+      // Darker shades to improve contrast against page background after lighting removal
+      color: theme === "dark" ? 0x001133 : 0x183064,
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     scene.add(baseMesh)
@@ -231,16 +229,91 @@ export default function Globe({ className = "" }: Props) {
       const scaleX = rect.width / offsetWidth
       const scaleY = rect.height / offsetHeight
       const scale = Math.min(scaleX, scaleY) // Use min to avoid distortion if non-isotropic
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 4))
+      // Cap at 2× to avoid expensive supersampling on very high-DPI screens
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 2))
       renderer.setSize(offsetWidth, offsetHeight, false)
       canvas.style.width = `${offsetWidth}px`
       canvas.style.height = `${offsetHeight}px`
       camera.aspect = offsetWidth / offsetHeight
       camera.updateProjectionMatrix()
     }
+
     updateSize()
     const resizeObserver = new ResizeObserver(updateSize)
     resizeObserver.observe(containerRef.current)
+
+    // -------------------------------
+    // P4 PERFORMANCE FIXES
+    // -------------------------------
+
+    // 1. Pause the render loop when the globe is off-screen or the tab is hidden
+    let animationFrameId: number | null = null
+    let isInViewport = true
+
+    const render = () => {
+      material.uniforms.u_time.value += twinkleTime
+
+      controls.update()
+      renderer.render(scene, camera)
+      animationFrameId = requestAnimationFrame(render)
+    }
+
+    const startRendering = () => {
+      if (animationFrameId === null) animationFrameId = requestAnimationFrame(render)
+    }
+
+    const stopRendering = () => {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId)
+        animationFrameId = null
+      }
+    }
+
+    // Start immediately (component is initially on-screen)
+    startRendering()
+
+    // Handle tab visibility change
+    const visibilityHandler = () => {
+      if (document.visibilityState === "hidden") {
+        stopRendering()
+      } else if (isInViewport) {
+        startRendering()
+      }
+    }
+    document.addEventListener("visibilitychange", visibilityHandler)
+
+    // Observe when the globe scrolls into / out of view
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target === containerRef.current) {
+            isInViewport = entry.isIntersecting
+            if (isInViewport && document.visibilityState === "visible") {
+              startRendering()
+            } else {
+              stopRendering()
+            }
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+    intersectionObserver.observe(containerRef.current)
+
+    // 2. Avoid ray-casting on every global mouse move – only listen while the pointer is over the canvas
+    const mouseenter = () => {
+      canvas.addEventListener("mousemove", mousemove)
+    }
+
+    const mouseleaveWrapper = () => {
+      canvas.removeEventListener("mousemove", mousemove)
+      mouseleave()
+    }
+
+    canvas.addEventListener("mouseenter", mouseenter)
+    canvas.addEventListener("mouseleave", mouseleaveWrapper)
+
+    // Click handlers will be attached after their functions are defined
 
     // Event handlers
     const mousemove = (event: MouseEvent) => {
@@ -293,27 +366,23 @@ export default function Globe({ className = "" }: Props) {
       grabbing = false
     }
 
-    canvas.addEventListener("mousemove", mousemove)
+    // Attach click handlers now that they are defined
     canvas.addEventListener("mousedown", mousedown)
     canvas.addEventListener("mouseup", mouseup)
-    canvas.addEventListener("mouseleave", mouseleave)
 
     // Render loop
-    const render = () => {
-      material.uniforms.u_time.value += twinkleTime
-
-      controls.update()
-      renderer.render(scene, camera)
-      requestAnimationFrame(render)
-    }
-    render()
+    // The render function is now managed by the P4 performance fixes
 
     // Cleanup
     return () => {
+      canvas.removeEventListener("mouseenter", mouseenter)
+      canvas.removeEventListener("mouseleave", mouseleaveWrapper)
       canvas.removeEventListener("mousemove", mousemove)
       canvas.removeEventListener("mousedown", mousedown)
       canvas.removeEventListener("mouseup", mouseup)
-      canvas.removeEventListener("mouseleave", mouseleave)
+      document.removeEventListener("visibilitychange", visibilityHandler)
+      intersectionObserver.disconnect()
+      stopRendering()
       resizeObserver.disconnect()
 
       if (containerRef.current && renderer.domElement) {
