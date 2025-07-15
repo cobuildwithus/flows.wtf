@@ -53,6 +53,7 @@
     "compressorjs": "^1.2.1",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.7.4",
+    "gsap": "^3.13.0",
     "jose": "^5.9.6",
     "lucide-react": "^0.468.0",
     "markdown-to-jsx": "^7.7.3",
@@ -70,6 +71,7 @@
     "swr": "^2.3.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.178.0",
     "viem": "~2.31.7",
     "wagmi": "^2.15.6",
     "zod": "^3.24.1"
@@ -82,6 +84,7 @@
     "@types/pluralize": "^0.0.33",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
+    "@types/three": "^0.178.1",
     "dotenv": "^16.4.7",
     "eslint": "9.29.0",
     "eslint-config-next": "15.3.4",
