@@ -87,6 +87,13 @@ export async function getStartups(accelerator: Accelerator) {
   })
 }
 
+export function getAllStartupsWithIds() {
+  return Object.entries(startups).map(([id, startup]) => ({
+    ...startup,
+    id,
+  }))
+}
+
 export const getStartupData = cache((id: string) => {
   const startup = startups[id as keyof typeof startups]
   if (!startup) throw new Error("Startup not found")
