@@ -34,6 +34,7 @@ export default async function ApplyPage() {
         activeRecipientCount: true,
         monthlyOutgoingFlowRate: true,
         underlyingTokenDecimals: true,
+        underlyingTokenPrefix: true,
         underlyingTokenSymbol: true,
       },
       orderBy: [{ title: "asc" }],
