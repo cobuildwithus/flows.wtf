@@ -74,9 +74,10 @@ export default function Globe({ className = "" }: Props) {
     })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(sizes.width, sizes.height)
-    containerRef.current.appendChild(renderer.domElement)
+    const canvas = renderer.domElement
+    containerRef.current.appendChild(canvas)
 
-    const controls = new OrbitControls(camera, renderer.domElement)
+    const controls = new OrbitControls(camera, canvas)
     controls.autoRotate = true
     controls.autoRotateSpeed = -1.2
     controls.enableDamping = true
@@ -214,28 +215,31 @@ export default function Globe({ className = "" }: Props) {
       setDots()
     }
 
-    // Event handlers
-    const resize = () => {
-      sizes.width = containerRef.current!.offsetWidth
-      sizes.height = containerRef.current!.offsetHeight
-
-      const distance = sizes.width > 700 ? 100 : 140
-      camera.position.set(
-        0,
-        distance * Math.cos(initialPolarAngle),
-        distance * Math.sin(initialPolarAngle),
-      )
-      camera.aspect = sizes.width / sizes.height
+    const updateSize = () => {
+      const offsetWidth = containerRef.current!.offsetWidth
+      const offsetHeight = containerRef.current!.offsetHeight
+      const rect = containerRef.current!.getBoundingClientRect()
+      const scaleX = rect.width / offsetWidth
+      const scaleY = rect.height / offsetHeight
+      const scale = Math.min(scaleX, scaleY) // Use min to avoid distortion if non-isotropic
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 4))
+      renderer.setSize(offsetWidth, offsetHeight, false)
+      canvas.style.width = `${offsetWidth}px`
+      canvas.style.height = `${offsetHeight}px`
+      camera.aspect = offsetWidth / offsetHeight
       camera.updateProjectionMatrix()
-
-      renderer.setSize(sizes.width, sizes.height)
     }
+    updateSize()
+    const resizeObserver = new ResizeObserver(updateSize)
+    resizeObserver.observe(containerRef.current)
 
+    // Event handlers
     const mousemove = (event: MouseEvent) => {
-      isIntersecting = false
+      const rect = canvas.getBoundingClientRect()
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
 
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+      isIntersecting = false
 
       raycaster.setFromCamera(mouse, camera)
 
@@ -279,10 +283,15 @@ export default function Globe({ className = "" }: Props) {
       document.body.style.cursor = isIntersecting ? "pointer" : "default"
     }
 
-    window.addEventListener("resize", resize)
-    window.addEventListener("mousemove", mousemove)
-    window.addEventListener("mousedown", mousedown)
-    window.addEventListener("mouseup", mouseup)
+    const mouseleave = () => {
+      document.body.style.cursor = "default"
+      grabbing = false
+    }
+
+    canvas.addEventListener("mousemove", mousemove)
+    canvas.addEventListener("mousedown", mousedown)
+    canvas.addEventListener("mouseup", mouseup)
+    canvas.addEventListener("mouseleave", mouseleave)
 
     // Render loop
     const render = () => {
@@ -298,10 +307,11 @@ export default function Globe({ className = "" }: Props) {
 
     // Cleanup
     return () => {
-      window.removeEventListener("resize", resize)
-      window.removeEventListener("mousemove", mousemove)
-      window.removeEventListener("mousedown", mousedown)
-      window.removeEventListener("mouseup", mouseup)
+      canvas.removeEventListener("mousemove", mousemove)
+      canvas.removeEventListener("mousedown", mousedown)
+      canvas.removeEventListener("mouseup", mouseup)
+      canvas.removeEventListener("mouseleave", mouseleave)
+      resizeObserver.disconnect()
 
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement)
