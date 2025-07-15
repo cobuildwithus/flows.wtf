@@ -9,36 +9,45 @@ interface Props {
 }
 
 const vertex = `
-  #ifdef GL_ES
   precision mediump float;
-  #endif
+
+  // Per-instance random offset so each dot twinkles at a different phase
+  attribute float aOffset;
 
   uniform float u_time;
   uniform float u_maxExtrusion;
 
-  void main() {
-    vec3 newPosition = position;
-    if(u_maxExtrusion > 1.0) newPosition.xyz = newPosition.xyz * u_maxExtrusion + sin(u_time);
-    else newPosition.xyz = newPosition.xyz * u_maxExtrusion;
+  varying float vPct;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+  void main() {
+    // Compute per-dot twinkle percentage and forward to fragment shader
+    vPct = abs(sin(u_time + aOffset));
+
+    vec3 newPosition = position;
+    if (u_maxExtrusion > 1.0) {
+      newPosition = newPosition * u_maxExtrusion + sin(u_time + aOffset);
+    } else {
+      newPosition = newPosition * u_maxExtrusion;
+    }
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    // Size of each point sprite (in screen pixels)
+    gl_PointSize = 7.0;
   }
 `
 
 const fragment = `
-  #ifdef GL_ES
   precision mediump float;
-  #endif
 
-  uniform float u_time;
-
-  vec3 colorA = vec3(0.1, 0.4, 0.9);
-  vec3 colorB = vec3(0.05, 0.2, 0.7);
+  varying float vPct;
 
   void main() {
-    vec3 color = vec3(0.0);
-    float pct = abs(sin(u_time));
-    color = mix(colorA, colorB, pct);
+    vec3 colorA = vec3(0.1, 0.4, 0.9);
+    vec3 colorB = vec3(0.05, 0.2, 0.7);
+    vec3 color = mix(colorA, colorB, vPct);
+
+    // Make points round instead of square
+    if (length(gl_PointCoord - vec2(0.5)) > 0.5) discard;
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -107,18 +116,21 @@ export default function Globe({ className = "" }: Props) {
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     scene.add(baseMesh)
 
-    // Shader material
+    // Shader material (single instance for every dot)
     let twinkleTime = 0.03
-    const materials: THREE.ShaderMaterial[] = []
     const material = new THREE.ShaderMaterial({
-      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false,
       uniforms: {
-        u_time: { value: 1.0 },
+        u_time: { value: 0.0 },
         u_maxExtrusion: { value: 1.0 },
       },
       vertexShader: vertex,
       fragmentShader: fragment,
     })
+
+    // Will hold the Points object so we can dispose it later
+    let pointsMesh: THREE.Points | null = null
 
     // Map setup
     let activeLatLon: { [key: number]: number[] } = {}
@@ -164,38 +176,35 @@ export default function Globe({ className = "" }: Props) {
       return new THREE.Vector3(x, y, z)
     }
 
-    const createMaterial = (timeValue: number) => {
-      const mat = material.clone()
-      mat.uniforms.u_time.value = timeValue * Math.sin(Math.random())
-      materials.push(mat)
-      return mat
-    }
-
     const setDots = () => {
       const dotDensity = 2.5
       const vector = new THREE.Vector3()
 
-      for (let lat = 90, i = 0; lat > -90; lat--, i++) {
+      // Arrays to store per-dot data
+      const positions: number[] = []
+      const offsets: number[] = []
+
+      for (let lat = 90; lat > -90; lat--) {
         const radius = Math.cos(Math.abs(lat) * (Math.PI / 180)) * dotSphereRadius
         const circumference = radius * Math.PI * 2
         const dotsForLat = circumference * dotDensity
 
         for (let x = 0; x < dotsForLat; x++) {
-          const long = -180 + (x * 360) / dotsForLat
+          const lon = -180 + (x * 360) / dotsForLat
+          if (!visibilityForCoordinate(lon, lat)) continue
 
-          if (!visibilityForCoordinate(long, lat)) continue
-
-          vector.copy(calcPosFromLatLonRad(long, lat))
-
-          const dotGeometry = new THREE.CircleGeometry(0.1, 5)
-          dotGeometry.lookAt(vector)
-          dotGeometry.translate(vector.x, vector.y, vector.z)
-
-          const m = createMaterial(i)
-          const mesh = new THREE.Mesh(dotGeometry, m)
-          scene.add(mesh)
+          vector.copy(calcPosFromLatLonRad(lon, lat))
+          positions.push(vector.x, vector.y, vector.z)
+          offsets.push(Math.random() * 6.28318530718) // 0-2π random phase
         }
       }
+
+      const geometry = new THREE.BufferGeometry()
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
+      geometry.setAttribute("aOffset", new THREE.Float32BufferAttribute(offsets, 1))
+
+      pointsMesh = new THREE.Points(geometry, material)
+      scene.add(pointsMesh)
     }
 
     const image = new Image()
@@ -255,9 +264,7 @@ export default function Globe({ className = "" }: Props) {
     const mousedown = () => {
       if (!isIntersecting) return
 
-      materials.forEach((el) => {
-        gsap.to(el.uniforms.u_maxExtrusion, { value: 1.07 })
-      })
+      gsap.to(material.uniforms.u_maxExtrusion, { value: 1.07 })
 
       mouseDown = true
       minMouseDownFlag = false
@@ -275,9 +282,7 @@ export default function Globe({ className = "" }: Props) {
       mouseDown = false
       if (!minMouseDownFlag) return
 
-      materials.forEach((el) => {
-        gsap.to(el.uniforms.u_maxExtrusion, { value: 1.0, duration: 0.15 })
-      })
+      gsap.to(material.uniforms.u_maxExtrusion, { value: 1.0, duration: 0.15 })
 
       grabbing = false
       document.body.style.cursor = isIntersecting ? "pointer" : "default"
@@ -295,9 +300,7 @@ export default function Globe({ className = "" }: Props) {
 
     // Render loop
     const render = () => {
-      materials.forEach((el) => {
-        el.uniforms.u_time.value += twinkleTime
-      })
+      material.uniforms.u_time.value += twinkleTime
 
       controls.update()
       renderer.render(scene, camera)
@@ -320,7 +323,10 @@ export default function Globe({ className = "" }: Props) {
       renderer.dispose()
       baseSphere.dispose()
       baseMaterial.dispose()
-      materials.forEach((mat) => mat.dispose())
+      material.dispose()
+      if (pointsMesh) {
+        pointsMesh.geometry.dispose()
+      }
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose()

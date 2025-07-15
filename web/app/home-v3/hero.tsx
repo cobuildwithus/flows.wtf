@@ -97,8 +97,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
                 <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
               </span>
               <span className="text-base md:text-lg">
-                <AnimatedSalary value={totalEarned} monthlyRate={monthlyFlowRate} /> earned
-                <span className="hidden sm:inline"> by builders</span> so far
+                <AnimatedSalary value={totalEarned} monthlyRate={monthlyFlowRate} /> earned so far
               </span>
             </motion.div>
 
