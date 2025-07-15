@@ -62,7 +62,7 @@ export async function AcceleratorPage(props: Props) {
             <div className="mt-8 lg:mt-10">
               <div className="flex flex-col max-md:gap-y-4 md:flex-row md:gap-x-12">
                 {[
-                  // { name: "Get hired", href: `/opportunities` },
+                  { name: "Get hired", href: `/apply` },
                   { name: `Apply for funding`, href: `/apply/${accelerator.flowId}` },
                 ].map((link) => (
                   <Link

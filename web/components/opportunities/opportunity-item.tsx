@@ -21,7 +21,7 @@ export function OpportunityItem(props: Props) {
   const startup = getStartupData(startupId)
 
   return (
-    <Card key={id} className="transition-all hover:shadow-md">
+    <Card key={id} className="shadow-none transition-all hover:shadow-md">
       <CardContent className="flex items-center gap-6 p-6">
         <Image
           src={getIpfsUrl(startup.image, "pinata")}
