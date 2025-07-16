@@ -146,11 +146,9 @@ export default function Globe({ className = "" }: Props) {
     globeGroup.add(pointsMesh)
 
     const chooseDotCount = () => {
-      const cores = Math.max(4, navigator.hardwareConcurrency ?? 8)
       const dpr = window.devicePixelRatio || 1
-      if (cores <= 4) return Math.floor(12000 * Math.min(dpr, 1.5))
-      if (cores < 8) return Math.floor(24000 * Math.min(dpr, 2))
-      return Math.floor(70000 * Math.min(dpr, 2))
+      const base = window.innerWidth < 768 ? 24000 : 70000
+      return Math.floor(base * Math.min(dpr, 2))
     }
 
     const worker = new Worker(new URL("./globe.worker.ts", import.meta.url), { type: "module" })
