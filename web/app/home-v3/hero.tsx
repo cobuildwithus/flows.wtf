@@ -65,7 +65,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
               </span>
             </h1>
             <p className="mt-6 max-w-xl text-base sm:text-muted-foreground md:text-2xl">
-              The AI driven startup accelerator. Fueled by global talent, coordinated by AI, owned
+              The AI powered startup accelerator. Fueled by global talent, coordinated by AI, owned
               by you.
             </p>
 
