@@ -175,26 +175,42 @@ export default function Globe({ className = "" }: Props) {
     }
 
     const setDots = () => {
-      const dotDensity = 2.5
+      // Sunflower (phyllotaxis) distribution for uniform point spacing
+      const DOT_COUNT = 35000 // Adjust for desired resolution
+      const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)) // ~2.39996323
+
       const vector = new THREE.Vector3()
 
       // Arrays to store per-dot data
       const positions: number[] = []
       const offsets: number[] = []
 
-      for (let lat = 90; lat > -90; lat--) {
-        const radius = Math.cos(Math.abs(lat) * (Math.PI / 180)) * dotSphereRadius
-        const circumference = radius * Math.PI * 2
-        const dotsForLat = circumference * dotDensity
+      for (let i = 0; i < DOT_COUNT; i++) {
+        // Phyllotaxis spherical coordinates
+        const y = 1 - (i / (DOT_COUNT - 1)) * 2 // y ∈ [1,-1]
+        const radiusAtY = Math.sqrt(1 - y * y)
+        const theta = GOLDEN_ANGLE * i
 
-        for (let x = 0; x < dotsForLat; x++) {
-          const lon = -180 + (x * 360) / dotsForLat
-          if (!visibilityForCoordinate(lon, lat)) continue
+        // Convert to degrees for land-mask lookup
+        const phi = Math.acos(y) // polar angle [0,π]
+        const latDeg = 90 - (phi * 180) / Math.PI
 
-          vector.copy(calcPosFromLatLonRad(lon, lat))
-          positions.push(vector.x, vector.y, vector.z)
-          offsets.push(Math.random() * 6.28318530718) // 0-2π random phase
-        }
+        // Ensure longitude in [-180,180]
+        const lonRad = theta % (2 * Math.PI)
+        const lonDeg = (lonRad * 180) / Math.PI - 180
+
+        // Skip ocean points early for fewer vertices
+        if (!visibilityForCoordinate(lonDeg, Math.round(latDeg))) continue
+
+        // Convert to Cartesian coordinates on sphere surface
+        vector.set(
+          -(dotSphereRadius * radiusAtY * Math.cos(theta)),
+          dotSphereRadius * y,
+          dotSphereRadius * radiusAtY * Math.sin(theta),
+        )
+
+        positions.push(vector.x, vector.y, vector.z)
+        offsets.push(Math.random() * 6.28318530718) // 0-2π random phase
       }
 
       const geometry = new THREE.BufferGeometry()
