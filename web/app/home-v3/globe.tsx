@@ -192,11 +192,13 @@ export default function Globe({ className = "" }: Props) {
 
       const vector = new THREE.Vector3()
 
-      // Arrays to store per-dot data
-      // Pre-allocate typed arrays to avoid repeated reallocations
-      const positionsArray: number[] = []
-      const sinOffsets: number[] = []
-      const cosOffsets: number[] = []
+      // Pre-allocate typed arrays with maximum possible size to avoid reallocation
+      const positions = new Float32Array(DOT_COUNT * 3)
+      const sinOffsets = new Float32Array(DOT_COUNT)
+      const cosOffsets = new Float32Array(DOT_COUNT)
+
+      // Keep track of how many points actually pass the visibility test
+      let pointIndex = 0
 
       for (let i = 0; i < DOT_COUNT; i++) {
         // Phyllotaxis spherical coordinates
@@ -222,16 +224,33 @@ export default function Globe({ className = "" }: Props) {
           dotSphereRadius * radiusAtY * Math.sin(theta),
         )
 
-        positionsArray.push(vector.x, vector.y, vector.z)
+        // Write directly to typed arrays using index
+        const posOffset = pointIndex * 3
+        positions[posOffset] = vector.x
+        positions[posOffset + 1] = vector.y
+        positions[posOffset + 2] = vector.z
+
         const randPhase = Math.random() * 6.28318530718 // 0-2π
-        sinOffsets.push(Math.sin(randPhase))
-        cosOffsets.push(Math.cos(randPhase))
+        sinOffsets[pointIndex] = Math.sin(randPhase)
+        cosOffsets[pointIndex] = Math.cos(randPhase)
+
+        pointIndex++
       }
 
+      // Create geometry with only the used portion of the arrays
       const geometry = new THREE.BufferGeometry()
-      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positionsArray, 3))
-      geometry.setAttribute("aSinOffset", new THREE.Float32BufferAttribute(sinOffsets, 1))
-      geometry.setAttribute("aCosOffset", new THREE.Float32BufferAttribute(cosOffsets, 1))
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions.subarray(0, pointIndex * 3), 3),
+      )
+      geometry.setAttribute(
+        "aSinOffset",
+        new THREE.Float32BufferAttribute(sinOffsets.subarray(0, pointIndex), 1),
+      )
+      geometry.setAttribute(
+        "aCosOffset",
+        new THREE.Float32BufferAttribute(cosOffsets.subarray(0, pointIndex), 1),
+      )
 
       pointsMesh = new THREE.Points(geometry, material)
       globeGroup.add(pointsMesh)
