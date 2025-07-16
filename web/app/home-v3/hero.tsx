@@ -26,7 +26,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
   }, [text, isDeleting, currentWord])
 
   const tick = () => {
-    const fullText = builders[currentWord]
+    const fullText = projects[currentWord]
     const updatedText = isDeleting
       ? fullText.substring(0, text.length - 1)
       : fullText.substring(0, text.length + 1)
@@ -38,7 +38,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
       setDelta(2000) // Pause before deleting
     } else if (isDeleting && updatedText === "") {
       setIsDeleting(false)
-      setCurrentWord((prev) => (prev + 1) % builders.length)
+      setCurrentWord((prev) => (prev + 1) % projects.length)
       setDelta(200)
     } else {
       setDelta(isDeleting ? 50 : 100)
@@ -59,13 +59,14 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
             transition={{ duration: 0.6 }}
           >
             <h1 className="max-w-5xl text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
-              A startup accelerator <span className="block sm:inline">owned by </span>
+              The growth engine <span className="block sm:inline">for your </span>
               <span className="inline-block w-full overflow-visible bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text pb-2 text-transparent sm:w-auto sm:leading-normal">
                 {text || "\u00A0"}
-              </span>
+              </span>{" "}
+              project
             </h1>
             <p className="mt-6 max-w-xl text-base sm:text-muted-foreground md:text-2xl">
-              The AI powered startup accelerator. Fueled by global talent, coordinated by AI, owned
+              The AI-powered project accelerator. Fueled by global talent, coordinated by AI, owned
               by you.
             </p>
 
@@ -75,7 +76,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
                 href="/apply"
                 className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
               >
-                Start a venture
+                Grow your project
               </Link>
               <Link
                 href="/explore"
@@ -113,28 +114,27 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
 
 export default Hero
 
-const builders = [
-  "builders",
-  "founders",
-  "designers",
-  "hackers",
-  "scientists",
-  "creators",
-  "marketers",
-  "engineers",
-  "inventors",
-  "makers",
-  "visionaries",
-  "leaders",
-  "dreamers",
-  "innovators",
-  "artists",
-  "entrepreneurs",
-  "educators",
-  "writers",
-  "activists",
-  "developers",
-  "architects",
-  "organizers",
-  "you",
+const projects = [
+  "Software",
+  "AI",
+  "Hardware",
+  "Open Source",
+  "Crypto",
+  "Community",
+  "Sports",
+  "Art",
+  "Tech",
+  "Health",
+  "Charity",
+  "Nature",
+  "Gaming",
+  "Education",
+  "Finance",
+  "Music",
+  "Film",
+  "Fashion",
+  "Food",
+  "Travel",
+  "Fitness",
+  "Science",
 ]
