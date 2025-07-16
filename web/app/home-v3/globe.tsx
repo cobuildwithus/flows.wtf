@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
-import { OrbitControls } from "three/addons/controls/OrbitControls.js"
 import { useTheme } from "next-themes"
-import gsap from "gsap"
 
 interface Props {
   className?: string
@@ -76,6 +74,8 @@ export default function Globe({ className = "" }: Props) {
       distance * Math.cos(initialPolarAngle),
       distance * Math.sin(initialPolarAngle),
     )
+    // Point the camera toward the centre of the scene (where the globe sits)
+    camera.lookAt(new THREE.Vector3(0, 0, 0))
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -86,24 +86,13 @@ export default function Globe({ className = "" }: Props) {
     const canvas = renderer.domElement
     containerRef.current.appendChild(canvas)
 
-    const controls = new OrbitControls(camera, canvas)
-    controls.autoRotate = true
-    controls.autoRotateSpeed = -1.2
-    controls.enableDamping = true
-    controls.enableRotate = true
-    controls.enablePan = false
-    controls.enableZoom = false
-    controls.minPolarAngle = Math.PI / 2 - 0.5
-    controls.maxPolarAngle = Math.PI / 2 + 0.5
+    // Create a group that will hold all globe geometry so we can rotate it each frame
+    const globeGroup = new THREE.Group()
+    scene.add(globeGroup)
 
     // Removed dynamic lighting; using flat colour on ocean sphere so no lights needed
 
-    const raycaster = new THREE.Raycaster()
-    const mouse = new THREE.Vector2()
-    let isIntersecting = false
-    let mouseDown = false
-    let minMouseDownFlag = false
-    let grabbing = false
+    // Mouse interaction removed – no ray-casting or click handling needed
 
     // Base sphere
     const baseSphere = new THREE.SphereGeometry(19.5, 35, 35)
@@ -112,7 +101,7 @@ export default function Globe({ className = "" }: Props) {
       color: theme === "dark" ? 0x001133 : 0x183064,
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
-    scene.add(baseMesh)
+    globeGroup.add(baseMesh)
 
     // Shader material (single instance for every dot)
     let twinkleTime = 0.03
@@ -163,17 +152,6 @@ export default function Globe({ className = "" }: Props) {
       return visible
     }
 
-    const calcPosFromLatLonRad = (lon: number, lat: number) => {
-      const phi = (90 - lat) * (Math.PI / 180)
-      const theta = (lon + 180) * (Math.PI / 180)
-
-      const x = -(dotSphereRadius * Math.sin(phi) * Math.cos(theta))
-      const z = dotSphereRadius * Math.sin(phi) * Math.sin(theta)
-      const y = dotSphereRadius * Math.cos(phi)
-
-      return new THREE.Vector3(x, y, z)
-    }
-
     const setDots = () => {
       // Sunflower (phyllotaxis) distribution for uniform point spacing
       const DOT_COUNT = 35000 // Adjust for desired resolution
@@ -218,7 +196,7 @@ export default function Globe({ className = "" }: Props) {
       geometry.setAttribute("aOffset", new THREE.Float32BufferAttribute(offsets, 1))
 
       pointsMesh = new THREE.Points(geometry, material)
-      scene.add(pointsMesh)
+      globeGroup.add(pointsMesh)
     }
 
     const image = new Image()
@@ -268,8 +246,7 @@ export default function Globe({ className = "" }: Props) {
 
     const render = () => {
       material.uniforms.u_time.value += twinkleTime
-
-      controls.update()
+      globeGroup.rotation.y += 0.002 // simple auto-rotation
       renderer.render(scene, camera)
       animationFrameId = requestAnimationFrame(render)
     }
@@ -316,86 +293,14 @@ export default function Globe({ className = "" }: Props) {
     )
     intersectionObserver.observe(containerRef.current)
 
-    // 2. Avoid ray-casting on every global mouse move – only listen while the pointer is over the canvas
-    const mouseenter = () => {
-      canvas.addEventListener("mousemove", mousemove)
-    }
-
-    const mouseleaveWrapper = () => {
-      canvas.removeEventListener("mousemove", mousemove)
-      mouseleave()
-    }
-
-    canvas.addEventListener("mouseenter", mouseenter)
-    canvas.addEventListener("mouseleave", mouseleaveWrapper)
-
-    // Click handlers will be attached after their functions are defined
-
-    // Event handlers
-    const mousemove = (event: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect()
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-      isIntersecting = false
-
-      raycaster.setFromCamera(mouse, camera)
-
-      const intersects = raycaster.intersectObject(baseMesh)
-      if (intersects[0]) {
-        isIntersecting = true
-        if (!grabbing) document.body.style.cursor = "pointer"
-      } else {
-        if (!grabbing) document.body.style.cursor = "default"
-      }
-    }
-
-    const mousedown = () => {
-      if (!isIntersecting) return
-
-      gsap.to(material.uniforms.u_maxExtrusion, { value: 1.07 })
-
-      mouseDown = true
-      minMouseDownFlag = false
-
-      setTimeout(() => {
-        minMouseDownFlag = true
-        if (!mouseDown) mouseup()
-      }, 500)
-
-      document.body.style.cursor = "grabbing"
-      grabbing = true
-    }
-
-    const mouseup = () => {
-      mouseDown = false
-      if (!minMouseDownFlag) return
-
-      gsap.to(material.uniforms.u_maxExtrusion, { value: 1.0, duration: 0.15 })
-
-      grabbing = false
-      document.body.style.cursor = isIntersecting ? "pointer" : "default"
-    }
-
-    const mouseleave = () => {
-      document.body.style.cursor = "default"
-      grabbing = false
-    }
-
-    // Attach click handlers now that they are defined
-    canvas.addEventListener("mousedown", mousedown)
-    canvas.addEventListener("mouseup", mouseup)
+    // Mouse interaction removed – no event listeners attached
 
     // Render loop
     // The render function is now managed by the P4 performance fixes
 
     // Cleanup
     return () => {
-      canvas.removeEventListener("mouseenter", mouseenter)
-      canvas.removeEventListener("mouseleave", mouseleaveWrapper)
-      canvas.removeEventListener("mousemove", mousemove)
-      canvas.removeEventListener("mousedown", mousedown)
-      canvas.removeEventListener("mouseup", mouseup)
+      // Mouse listeners were never attached, nothing to remove
       document.removeEventListener("visibilitychange", visibilityHandler)
       intersectionObserver.disconnect()
       stopRendering()
