@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { useTheme } from "next-themes"
+import type { WorkerResponse, WorkerRequest } from "./globe.worker"
 
 interface Props {
   className?: string
@@ -149,159 +150,36 @@ export default function Globe({ className = "" }: Props) {
       fragmentShader: fragment,
     })
 
-    // Will hold the Points object so we can dispose it later
-    let pointsMesh: THREE.Points | null = null
+    // Geometry placeholder
+    const geometry = new THREE.BufferGeometry()
+    const pointsMesh = new THREE.Points(geometry, material)
+    globeGroup.add(pointsMesh)
 
-    // Map setup
-    let activeLatLon: { [key: number]: number[] } = {}
-    const dotSphereRadius = 20
-
-    const readImageData = (imageData: Uint8ClampedArray) => {
-      for (let i = 0, lon = -180, lat = 90; i < imageData.length; i += 4, lon++) {
-        if (!activeLatLon[lat]) activeLatLon[lat] = []
-
-        const red = imageData[i]
-        const green = imageData[i + 1]
-        const blue = imageData[i + 2]
-
-        if (red < 80 && green < 80 && blue < 80) activeLatLon[lat].push(lon)
-
-        if (lon === 180) {
-          lon = -180
-          lat--
-        }
-      }
-    }
-
-    const visibilityForCoordinate = (lon: number, lat: number) => {
-      let visible = false
-      if (!activeLatLon[lat] || !activeLatLon[lat].length) return visible
-
-      const closest = activeLatLon[lat].reduce((prev, curr) => {
-        return Math.abs(curr - lon) < Math.abs(prev - lon) ? curr : prev
-      })
-
-      if (Math.abs(lon - closest) < 0.5) visible = true
-      return visible
-    }
-
-    // Adaptive dot count based on device capabilities
+    /** Pick dot count based on cores + DPR (same logic you had) */
     const chooseDotCount = () => {
       const cores = navigator.hardwareConcurrency || 4
       const dpr = window.devicePixelRatio || 1
-
-      // Base counts adjusted by device pixel ratio for sharp rendering on high-DPI screens
-      if (cores <= 4) {
-        return Math.floor(12000 * Math.min(dpr, 1.5)) // Cap DPR effect on low-end devices
-      } else if (cores < 8) {
-        return Math.floor(24000 * Math.min(dpr, 2))
-      } else {
-        return Math.floor(70000 * Math.min(dpr, 2)) // Keep 70k for high-end devices
-      }
+      if (cores <= 4) return Math.floor(12000 * Math.min(dpr, 1.5))
+      if (cores < 8) return Math.floor(24000 * Math.min(dpr, 2))
+      return Math.floor(70000 * Math.min(dpr, 2))
     }
 
-    const setDots = () => {
-      // Sunflower (phyllotaxis) distribution for uniform point spacing
-      const DOT_COUNT = chooseDotCount()
-      console.log(
-        `Globe: Using ${DOT_COUNT} dots (${navigator.hardwareConcurrency || 4} cores, ${window.devicePixelRatio || 1}x DPR)`,
-      )
-      const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)) // ~2.39996323
-      const RAD_TO_DEG = 180 / Math.PI
-      const TWO_PI = 2 * Math.PI
+    /* ---------- Web Worker ---------- */
+    const worker = new Worker(new URL("./globe.worker.ts", import.meta.url), { type: "module" })
 
-      const vector = new THREE.Vector3()
+    worker.postMessage({
+      imgUrl: "/world_alpha_mini.jpg",
+      dotCount: chooseDotCount(),
+      radius: 20,
+    } satisfies WorkerRequest)
 
-      // Pre-allocate typed arrays with maximum possible size to avoid reallocation
-      const positions = new Float32Array(DOT_COUNT * 3)
-      const sinOffsets = new Float32Array(DOT_COUNT)
-      const cosOffsets = new Float32Array(DOT_COUNT)
-
-      // Pre-compute sqrt lookup table for radiusAtY = sqrt(1 - y²)
-      const sqrtLUT = new Float32Array(DOT_COUNT)
-      for (let i = 0; i < DOT_COUNT; i++) {
-        const y = 1 - (i / (DOT_COUNT - 1)) * 2
-        sqrtLUT[i] = Math.sqrt(1 - y * y)
-      }
-
-      // Keep track of how many points actually pass the visibility test
-      let pointIndex = 0
-
-      for (let i = 0; i < DOT_COUNT; i++) {
-        // Phyllotaxis spherical coordinates
-        const y = 1 - (i / (DOT_COUNT - 1)) * 2 // y ∈ [1,-1]
-        const radiusAtY = sqrtLUT[i] // Use pre-computed value
-        const theta = GOLDEN_ANGLE * i
-
-        // Direct latitude calculation: y = sin(latitude in radians)
-        // So latitude in degrees = asin(y) * 180/PI
-        const latDeg = Math.asin(y) * RAD_TO_DEG
-
-        // Ensure longitude in [-180,180]
-        const lonRad = theta % TWO_PI
-        const lonDeg = lonRad * RAD_TO_DEG - 180
-
-        // Skip ocean points early for fewer vertices
-        if (!visibilityForCoordinate(lonDeg, Math.round(latDeg))) continue
-
-        // Pre-compute sin/cos for theta
-        const cosTheta = Math.cos(theta)
-        const sinTheta = Math.sin(theta)
-
-        // Convert to Cartesian coordinates on sphere surface
-        vector.set(
-          -(dotSphereRadius * radiusAtY * cosTheta),
-          dotSphereRadius * y,
-          dotSphereRadius * radiusAtY * sinTheta,
-        )
-
-        // Write directly to typed arrays using index
-        const posOffset = pointIndex * 3
-        positions[posOffset] = vector.x
-        positions[posOffset + 1] = vector.y
-        positions[posOffset + 2] = vector.z
-
-        const randPhase = Math.random() * TWO_PI
-        sinOffsets[pointIndex] = Math.sin(randPhase)
-        cosOffsets[pointIndex] = Math.cos(randPhase)
-
-        pointIndex++
-      }
-
-      // Create geometry with only the used portion of the arrays
-      const geometry = new THREE.BufferGeometry()
-      geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(positions.subarray(0, pointIndex * 3), 3),
-      )
-      geometry.setAttribute(
-        "aSinOffset",
-        new THREE.Float32BufferAttribute(sinOffsets.subarray(0, pointIndex), 1),
-      )
-      geometry.setAttribute(
-        "aCosOffset",
-        new THREE.Float32BufferAttribute(cosOffsets.subarray(0, pointIndex), 1),
-      )
-
-      pointsMesh = new THREE.Points(geometry, material)
-      globeGroup.add(pointsMesh)
-    }
-
-    const image = new Image()
-    image.src = "/world_alpha_mini.jpg"
-    image.onload = () => {
-      const imageCanvas = document.createElement("canvas")
-      imageCanvas.width = image.width
-      imageCanvas.height = image.height
-
-      const context = imageCanvas.getContext("2d")
-      if (!context) return
-      context.drawImage(image, 0, 0)
-
-      const imageData = context.getImageData(0, 0, imageCanvas.width, imageCanvas.height)
-      readImageData(imageData.data)
-
-      setDots()
+    worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
+      geometry.setAttribute("position", new THREE.BufferAttribute(data.positions, 3))
+      geometry.setAttribute("aSinOffset", new THREE.BufferAttribute(data.sinArr, 1))
+      geometry.setAttribute("aCosOffset", new THREE.BufferAttribute(data.cosArr, 1))
+      geometry.computeBoundingSphere()
+      // Now that geometry exists, start rendering if not already.
+      startRendering()
     }
 
     const updateSize = () => {
@@ -354,7 +232,7 @@ export default function Globe({ className = "" }: Props) {
     }
 
     // Start immediately (component is initially on-screen)
-    startRendering()
+    // startRendering() // This line is removed as per the edit hint.
 
     // Handle tab visibility change
     const visibilityHandler = () => {
@@ -396,6 +274,7 @@ export default function Globe({ className = "" }: Props) {
       intersectionObserver.disconnect()
       stopRendering()
       resizeObserver.disconnect()
+      worker.terminate()
 
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement)
