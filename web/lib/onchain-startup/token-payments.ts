@@ -80,6 +80,8 @@ async function _getTokenPayments(projectId: number) {
   return serializedPayments
 }
 
+export type TokenPayment = Awaited<ReturnType<typeof _getTokenPayments>>[0]
+
 export const getTokenPayments = unstable_cache(_getTokenPayments, ["token-payments"], {
   revalidate: 60, // Cache for 60 seconds
   tags: ["token-payments"],
