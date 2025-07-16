@@ -59,7 +59,7 @@ const fragment = `
 `
 
 // Base pixel size for point sprites (will be multiplied by devicePixelRatio)
-const BASE_POINT_SCALE = 250.0
+const BASE_POINT_SCALE = 125.0
 
 // Positive values rotate the globe eastward (degrees converted to radians)
 const INITIAL_LONGITUDE_OFFSET = -Math.PI / 4
@@ -173,7 +173,7 @@ export default function Globe({ className = "" }: Props) {
 
     const setDots = () => {
       // Sunflower (phyllotaxis) distribution for uniform point spacing
-      const DOT_COUNT = 35000 // Adjust for desired resolution
+      const DOT_COUNT = 70000 // Adjust for desired resolution
       const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)) // ~2.39996323
 
       const vector = new THREE.Vector3()
