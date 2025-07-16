@@ -62,14 +62,14 @@ function buildDots(raster: Uint8Array, dotCount: number, radius: number) {
     const lon = (th % TWO_PI) * RAD2DEG - 180 // [-180,180]
 
     //   lat index 0…179  ,  lon index 0…359
-    const latIdx = Math.min(179, Math.max(0, Math.round(lat + 90)))
+    const latIdx = Math.min(179, Math.max(0, Math.round(90 - lat)))
     const lonIdx = Math.min(359, Math.max(0, Math.round(lon + 180)))
     if (!raster[latIdx * 360 + lonIdx]) continue
 
     const cosT = Math.cos(th)
     const sinT = Math.sin(th)
 
-    positions[n * 3] = radius * rAt * cosT
+    positions[n * 3] = -radius * rAt * cosT
     positions[n * 3 + 1] = radius * y
     positions[n * 3 + 2] = radius * rAt * sinT
 
