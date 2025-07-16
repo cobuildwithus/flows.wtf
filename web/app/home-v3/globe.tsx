@@ -77,7 +77,7 @@ const INITIAL_LONGITUDE_OFFSET = -Math.PI / 3
 
 export default function Globe({ className = "" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { theme } = useTheme()
+  const { resolvedTheme: theme } = useTheme()
 
   useEffect(() => {
     if (!containerRef.current) return
