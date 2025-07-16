@@ -185,10 +185,30 @@ export default function Globe({ className = "" }: Props) {
       return visible
     }
 
+    // Adaptive dot count based on device capabilities
+    const chooseDotCount = () => {
+      const cores = navigator.hardwareConcurrency || 4
+      const dpr = window.devicePixelRatio || 1
+
+      // Base counts adjusted by device pixel ratio for sharp rendering on high-DPI screens
+      if (cores <= 4) {
+        return Math.floor(12000 * Math.min(dpr, 1.5)) // Cap DPR effect on low-end devices
+      } else if (cores < 8) {
+        return Math.floor(24000 * Math.min(dpr, 2))
+      } else {
+        return Math.floor(70000 * Math.min(dpr, 2)) // Keep 70k for high-end devices
+      }
+    }
+
     const setDots = () => {
       // Sunflower (phyllotaxis) distribution for uniform point spacing
-      const DOT_COUNT = 70000 // Adjust for desired resolution
+      const DOT_COUNT = chooseDotCount()
+      console.log(
+        `Globe: Using ${DOT_COUNT} dots (${navigator.hardwareConcurrency || 4} cores, ${window.devicePixelRatio || 1}x DPR)`,
+      )
       const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)) // ~2.39996323
+      const RAD_TO_DEG = 180 / Math.PI
+      const TWO_PI = 2 * Math.PI
 
       const vector = new THREE.Vector3()
 
@@ -197,31 +217,42 @@ export default function Globe({ className = "" }: Props) {
       const sinOffsets = new Float32Array(DOT_COUNT)
       const cosOffsets = new Float32Array(DOT_COUNT)
 
+      // Pre-compute sqrt lookup table for radiusAtY = sqrt(1 - y²)
+      const sqrtLUT = new Float32Array(DOT_COUNT)
+      for (let i = 0; i < DOT_COUNT; i++) {
+        const y = 1 - (i / (DOT_COUNT - 1)) * 2
+        sqrtLUT[i] = Math.sqrt(1 - y * y)
+      }
+
       // Keep track of how many points actually pass the visibility test
       let pointIndex = 0
 
       for (let i = 0; i < DOT_COUNT; i++) {
         // Phyllotaxis spherical coordinates
         const y = 1 - (i / (DOT_COUNT - 1)) * 2 // y ∈ [1,-1]
-        const radiusAtY = Math.sqrt(1 - y * y)
+        const radiusAtY = sqrtLUT[i] // Use pre-computed value
         const theta = GOLDEN_ANGLE * i
 
-        // Convert to degrees for land-mask lookup
-        const phi = Math.acos(y) // polar angle [0,π]
-        const latDeg = 90 - (phi * 180) / Math.PI
+        // Direct latitude calculation: y = sin(latitude in radians)
+        // So latitude in degrees = asin(y) * 180/PI
+        const latDeg = Math.asin(y) * RAD_TO_DEG
 
         // Ensure longitude in [-180,180]
-        const lonRad = theta % (2 * Math.PI)
-        const lonDeg = (lonRad * 180) / Math.PI - 180
+        const lonRad = theta % TWO_PI
+        const lonDeg = lonRad * RAD_TO_DEG - 180
 
         // Skip ocean points early for fewer vertices
         if (!visibilityForCoordinate(lonDeg, Math.round(latDeg))) continue
 
+        // Pre-compute sin/cos for theta
+        const cosTheta = Math.cos(theta)
+        const sinTheta = Math.sin(theta)
+
         // Convert to Cartesian coordinates on sphere surface
         vector.set(
-          -(dotSphereRadius * radiusAtY * Math.cos(theta)),
+          -(dotSphereRadius * radiusAtY * cosTheta),
           dotSphereRadius * y,
-          dotSphereRadius * radiusAtY * Math.sin(theta),
+          dotSphereRadius * radiusAtY * sinTheta,
         )
 
         // Write directly to typed arrays using index
@@ -230,7 +261,7 @@ export default function Globe({ className = "" }: Props) {
         positions[posOffset + 1] = vector.y
         positions[posOffset + 2] = vector.z
 
-        const randPhase = Math.random() * 6.28318530718 // 0-2π
+        const randPhase = Math.random() * TWO_PI
         sinOffsets[pointIndex] = Math.sin(randPhase)
         cosOffsets[pointIndex] = Math.cos(randPhase)
 
