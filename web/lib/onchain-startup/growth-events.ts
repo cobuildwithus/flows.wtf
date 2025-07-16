@@ -5,29 +5,30 @@ import { getTokenPayments, type TokenPayment } from "./token-payments"
 import { getHiringEvents, type HiringEvent } from "./hiring-events"
 import { getAllStartupsWithIds } from "./startup"
 
-// Define a unified growth event type
 export type GrowthEvent =
   | {
       type: "token-payment"
       data: TokenPayment & {
-        startup: {
+        flow: {
           name: string
-          slug: string
+          id: string
         }
       }
       timestamp: number
-      address: string // beneficiary
+      address: string
     }
   | {
       type: "hiring"
       data: HiringEvent & {
-        startup: {
+        flow: {
+          underlyingTokenSymbol?: string
+          underlyingTokenPrefix?: string
           name: string
-          slug: string
+          id: string
         }
       }
       timestamp: number
-      address: string // recipient
+      address: string
     }
 
 async function _getGrowthEvents() {
@@ -44,9 +45,9 @@ async function _getGrowthEvents() {
             type: "token-payment",
             data: {
               ...payment,
-              startup: {
+              flow: {
                 name: startup.title,
-                slug: startup.slug,
+                id: startup.slug,
               },
             },
             timestamp: payment.timestamp,
@@ -55,26 +56,25 @@ async function _getGrowthEvents() {
         )
       }),
     ),
-    // Fetch hiring events
-    Promise.all(
-      startups.map(async (startup) => {
-        const hiringEvents = await getHiringEvents(startup.id)
-        return hiringEvents.map(
-          (event): GrowthEvent => ({
-            type: "hiring",
-            data: {
-              ...event,
-              startup: {
-                name: startup.title,
-                slug: startup.slug,
-              },
+    (async () => {
+      const hiringEvents = await getHiringEvents()
+      return hiringEvents.map(
+        (event): GrowthEvent => ({
+          type: "hiring",
+          data: {
+            ...event,
+            flow: {
+              name: event.startupName,
+              id: event.startupSlug,
+              underlyingTokenSymbol: event.underlyingTokenSymbol,
+              underlyingTokenPrefix: event.underlyingTokenPrefix,
             },
-            timestamp: event.hiredAt / 1000, // Convert to seconds
-            address: event.recipient,
-          }),
-        )
-      }),
-    ),
+          },
+          timestamp: event.hiredAt / 1000, // Convert to seconds
+          address: event.recipient,
+        }),
+      )
+    })(),
   ])
 
   // Flatten and combine all events

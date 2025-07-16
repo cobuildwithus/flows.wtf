@@ -13,7 +13,7 @@ export type CustomFlow = {
   }
 }
 
-const customFlows: CustomFlow[] = [
+export const customFlows: CustomFlow[] = [
   {
     id: "grounds",
     name: "Grounds",

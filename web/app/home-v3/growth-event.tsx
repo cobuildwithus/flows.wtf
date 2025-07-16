@@ -44,20 +44,20 @@ export function GrowthEvent({ event }: Props) {
                 <>
                   <span className="text-muted-foreground">backed</span>
                   <Link
-                    href={`/startup/${event.data.startup.slug}`}
+                    href={`/${event.data.flow.id}`}
                     className="max-w-[130px] truncate font-medium text-foreground hover:text-primary"
                   >
-                    {event.data.startup.name}
+                    {event.data.flow.name}
                   </Link>
                 </>
               ) : (
                 <>
                   <span className="text-muted-foreground">joined</span>
                   <Link
-                    href={`/startup/${event.data.startup.slug}`}
+                    href={`/${event.data.flow.id}`}
                     className="max-w-[130px] truncate font-medium text-foreground hover:text-primary"
                   >
-                    {event.data.startup.name}
+                    {event.data.flow.name}
                   </Link>
                 </>
               )}
@@ -74,7 +74,7 @@ export function GrowthEvent({ event }: Props) {
               ) : (
                 <>
                   <span className="font-semibold text-emerald-600">
-                    <Currency>{event.data.monthlyFlowRate}</Currency>/mo
+                    <Currency flow={event.data.flow}>{event.data.monthlyFlowRate}</Currency>/mo
                   </span>
                   <span className="text-muted-foreground">•</span>
                 </>

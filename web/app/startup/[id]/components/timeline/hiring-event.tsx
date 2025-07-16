@@ -27,7 +27,16 @@ export async function HiringEvent({ hiringEvent, date }: Props) {
           >
             {profile.display_name}
           </ProfileLink>{" "}
-          joined the team - <Currency>{hiringEvent.monthlyFlowRate}</Currency> /mo
+          joined the team -{" "}
+          <Currency
+            flow={{
+              underlyingTokenSymbol: hiringEvent.underlyingTokenSymbol,
+              underlyingTokenPrefix: hiringEvent.underlyingTokenPrefix,
+            }}
+          >
+            {hiringEvent.monthlyFlowRate}
+          </Currency>
+          /mo
         </p>
         <DateTime date={date} relative short className="text-xs text-muted-foreground" />
       </div>
