@@ -265,9 +265,9 @@ export default function Globe({ className = "" }: Props) {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 2))
       // Update point sprite base size when pixel ratio or screen changes
       material.uniforms.u_pointScale.value = getPointScale()
+      // The third parameter 'false' prevents renderer.setSize from updating the canvas style
+      // which is what we want since the canvas already scales via CSS
       renderer.setSize(offsetWidth, offsetHeight, false)
-      canvas.style.width = `${offsetWidth}px`
-      canvas.style.height = `${offsetHeight}px`
       camera.aspect = offsetWidth / offsetHeight
       camera.updateProjectionMatrix()
     }
