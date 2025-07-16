@@ -6,31 +6,38 @@ interface Props {
   className?: string
 }
 
+// Vertex shader – variable point size & pre-computed sin(time)
 const vertex = `
   precision mediump float;
 
-  // Per-instance random offset so each dot twinkles at a different phase
-  attribute float aOffset;
+  // Pre-computed per-instance values so we avoid sin()/cos() every frame
+  attribute float aSinOffset;
+  attribute float aCosOffset;
 
-  uniform float u_time;
+  uniform float u_timeSin;
+  uniform float u_timeCos;
   uniform float u_maxExtrusion;
+  uniform float u_pointScale;
 
   varying float vPct;
 
   void main() {
-    // Compute per-dot twinkle percentage and forward to fragment shader
-    vPct = abs(sin(u_time + aOffset));
+    // sin(x + y) = sinx * cosy + cosx * siny
+    float sine = u_timeSin * aCosOffset + u_timeCos * aSinOffset;
+
+    vPct = abs(sine);
 
     vec3 newPosition = position;
     if (u_maxExtrusion > 1.0) {
-      newPosition = newPosition * u_maxExtrusion + sin(u_time + aOffset);
+      newPosition = newPosition * u_maxExtrusion + sine;
     } else {
       newPosition = newPosition * u_maxExtrusion;
     }
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-    // Size of each point sprite (in screen pixels)
-    gl_PointSize = 5.0;
+    vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    // Point size scales with distance and device pixel ratio (passed via u_pointScale)
+    gl_PointSize = u_pointScale * (1.0 / -mvPosition.z);
   }
 `
 
@@ -50,6 +57,9 @@ const fragment = `
     gl_FragColor = vec4(color, 1.0);
   }
 `
+
+// Base pixel size for point sprites (will be multiplied by devicePixelRatio)
+const BASE_POINT_SCALE = 250.0
 
 export default function Globe({ className = "" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -103,14 +113,18 @@ export default function Globe({ className = "" }: Props) {
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     globeGroup.add(baseMesh)
 
+    // Helper util so we avoid duplicating the expression in multiple places
+    const getPointScale = () => BASE_POINT_SCALE * window.devicePixelRatio
+
     // Shader material (single instance for every dot)
-    let twinkleTime = 0.03
     const material = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
       uniforms: {
-        u_time: { value: 0.0 },
+        u_timeSin: { value: 0.0 },
+        u_timeCos: { value: 1.0 },
         u_maxExtrusion: { value: 1.0 },
+        u_pointScale: { value: getPointScale() },
       },
       vertexShader: vertex,
       fragmentShader: fragment,
@@ -160,8 +174,10 @@ export default function Globe({ className = "" }: Props) {
       const vector = new THREE.Vector3()
 
       // Arrays to store per-dot data
-      const positions: number[] = []
-      const offsets: number[] = []
+      // Pre-allocate typed arrays to avoid repeated reallocations
+      const positionsArray: number[] = []
+      const sinOffsets: number[] = []
+      const cosOffsets: number[] = []
 
       for (let i = 0; i < DOT_COUNT; i++) {
         // Phyllotaxis spherical coordinates
@@ -187,13 +203,16 @@ export default function Globe({ className = "" }: Props) {
           dotSphereRadius * radiusAtY * Math.sin(theta),
         )
 
-        positions.push(vector.x, vector.y, vector.z)
-        offsets.push(Math.random() * 6.28318530718) // 0-2π random phase
+        positionsArray.push(vector.x, vector.y, vector.z)
+        const randPhase = Math.random() * 6.28318530718 // 0-2π
+        sinOffsets.push(Math.sin(randPhase))
+        cosOffsets.push(Math.cos(randPhase))
       }
 
       const geometry = new THREE.BufferGeometry()
-      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
-      geometry.setAttribute("aOffset", new THREE.Float32BufferAttribute(offsets, 1))
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positionsArray, 3))
+      geometry.setAttribute("aSinOffset", new THREE.Float32BufferAttribute(sinOffsets, 1))
+      geometry.setAttribute("aCosOffset", new THREE.Float32BufferAttribute(cosOffsets, 1))
 
       pointsMesh = new THREE.Points(geometry, material)
       globeGroup.add(pointsMesh)
@@ -225,6 +244,8 @@ export default function Globe({ className = "" }: Props) {
       const scale = Math.min(scaleX, scaleY) // Use min to avoid distortion if non-isotropic
       // Cap at 2× to avoid expensive supersampling on very high-DPI screens
       renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 2))
+      // Update point sprite base size when pixel ratio or screen changes
+      material.uniforms.u_pointScale.value = getPointScale()
       renderer.setSize(offsetWidth, offsetHeight, false)
       canvas.style.width = `${offsetWidth}px`
       canvas.style.height = `${offsetHeight}px`
@@ -245,7 +266,9 @@ export default function Globe({ className = "" }: Props) {
     let isInViewport = true
 
     const render = () => {
-      material.uniforms.u_time.value += twinkleTime
+      const currentTime = performance.now() * 0.001 // seconds
+      material.uniforms.u_timeSin.value = Math.sin(currentTime)
+      material.uniforms.u_timeCos.value = Math.cos(currentTime)
       globeGroup.rotation.y += 0.002 // simple auto-rotation
       renderer.render(scene, camera)
       animationFrameId = requestAnimationFrame(render)
