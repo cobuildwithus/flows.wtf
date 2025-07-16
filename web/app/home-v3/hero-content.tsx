@@ -9,9 +9,10 @@ import { HeroTextAnimator } from "./hero-text-animator"
 interface Props {
   totalEarned: number
   monthlyFlowRate: number
+  totalBuilders: number
 }
 
-export function HeroContent({ totalEarned, monthlyFlowRate }: Props) {
+export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,7 +23,7 @@ export function HeroContent({ totalEarned, monthlyFlowRate }: Props) {
         The growth engine <span className="block sm:inline">for your </span>
         <HeroTextAnimator />
       </h1>
-      <p className="mt-6 max-w-xl text-base sm:text-muted-foreground md:text-2xl">
+      <p className="mt-6 max-w-xl text-base md:text-2xl">
         The AI-powered project accelerator. Fueled by global talent, coordinated by AI, owned by
         you.
       </p>
@@ -55,7 +56,10 @@ export function HeroContent({ totalEarned, monthlyFlowRate }: Props) {
           <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
         </span>
         <span className="text-base md:text-lg">
-          <AnimatedSalary value={totalEarned} monthlyRate={monthlyFlowRate} /> earned so far
+          <strong>
+            <AnimatedSalary value={totalEarned} monthlyRate={monthlyFlowRate} />
+          </strong>{" "}
+          earned by <strong>{totalBuilders}</strong> builders
         </span>
       </motion.div>
 
