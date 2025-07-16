@@ -61,6 +61,9 @@ const fragment = `
 // Base pixel size for point sprites (will be multiplied by devicePixelRatio)
 const BASE_POINT_SCALE = 250.0
 
+// Positive values rotate the globe eastward (degrees converted to radians)
+const INITIAL_LONGITUDE_OFFSET = -Math.PI / 4
+
 export default function Globe({ className = "" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
@@ -112,6 +115,8 @@ export default function Globe({ className = "" }: Props) {
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     globeGroup.add(baseMesh)
+    // Apply initial rotation so we start centred roughly on the mid-Atlantic rather than North America
+    globeGroup.rotation.y = INITIAL_LONGITUDE_OFFSET
 
     // Helper util so we avoid duplicating the expression in multiple places
     const getPointScale = () => BASE_POINT_SCALE * window.devicePixelRatio
