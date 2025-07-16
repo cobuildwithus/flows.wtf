@@ -1,3 +1,5 @@
+"use server"
+
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import { getEthAddress, getShortEthAddress } from "@/lib/utils"
 import { Profile as FarcasterProfile } from "@prisma/farcaster"
