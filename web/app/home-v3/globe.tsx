@@ -77,7 +77,7 @@ const fragment = `
 const BASE_POINT_SCALE = 125.0
 
 // Positive values rotate the globe eastward (degrees converted to radians)
-const INITIAL_LONGITUDE_OFFSET = Math.PI / 3
+const INITIAL_LONGITUDE_OFFSET = -Math.PI / 3
 
 export default function Globe({ className = "" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -123,7 +123,6 @@ export default function Globe({ className = "" }: Props) {
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     globeGroup.add(baseMesh)
-    globeGroup.rotation.x = Math.PI
     globeGroup.rotation.y = INITIAL_LONGITUDE_OFFSET
 
     const getPointScale = () => BASE_POINT_SCALE * window.devicePixelRatio
@@ -232,7 +231,7 @@ export default function Globe({ className = "" }: Props) {
       elapsed += delta
       material.uniforms.u_timeSin.value = Math.sin(elapsed)
       material.uniforms.u_timeCos.value = Math.cos(elapsed)
-      globeGroup.rotation.y -= 0.002
+      globeGroup.rotation.y += 0.0012
       renderer.render(scene, camera)
       animationFrameId = requestAnimationFrame(render)
     }
@@ -252,6 +251,8 @@ export default function Globe({ className = "" }: Props) {
       if (document.visibilityState === "hidden") {
         stopRendering()
       } else if (isInViewport) {
+        clock.start()
+        elapsed = 0
         startRendering()
       }
     }
