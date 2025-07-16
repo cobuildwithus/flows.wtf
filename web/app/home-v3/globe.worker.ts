@@ -62,7 +62,7 @@ function buildDots(raster: Uint8Array, dotCount: number, radius: number) {
     const cosT = Math.cos(th)
     const sinT = Math.sin(th)
 
-    positions[n * 3] = -radius * rAt * cosT
+    positions[n * 3] = radius * rAt * cosT
     positions[n * 3 + 1] = radius * y
     positions[n * 3 + 2] = radius * rAt * sinT
 

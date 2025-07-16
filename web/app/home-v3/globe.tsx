@@ -74,7 +74,7 @@ const fragment = `
 const BASE_POINT_SCALE = 125.0
 
 // Positive values rotate the globe eastward (degrees converted to radians)
-const INITIAL_LONGITUDE_OFFSET = -Math.PI / 3
+const INITIAL_LONGITUDE_OFFSET = Math.PI / 3
 
 export default function Globe({ className = "" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -129,6 +129,7 @@ export default function Globe({ className = "" }: Props) {
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     globeGroup.add(baseMesh)
+    globeGroup.rotation.x = Math.PI // Add this to flip the globe upright
     // Apply initial rotation so we start centred roughly on the mid-Atlantic rather than North America
     globeGroup.rotation.y = INITIAL_LONGITUDE_OFFSET
 
@@ -168,7 +169,7 @@ export default function Globe({ className = "" }: Props) {
     const worker = new Worker(new URL("./globe.worker.ts", import.meta.url), { type: "module" })
 
     worker.postMessage({
-      imgUrl: "/world_alpha_mini.jpg",
+      imgUrl: window.location.origin + "/world_alpha_mini.jpg", // Change this line
       dotCount: chooseDotCount(),
       radius: 20,
     } satisfies WorkerRequest)
@@ -215,7 +216,7 @@ export default function Globe({ className = "" }: Props) {
       const currentTime = performance.now() * 0.001 // seconds
       material.uniforms.u_timeSin.value = Math.sin(currentTime)
       material.uniforms.u_timeCos.value = Math.cos(currentTime)
-      globeGroup.rotation.y += 0.002 // simple auto-rotation
+      globeGroup.rotation.y -= 0.002 // Change + to - for natural spin direction after flip
       renderer.render(scene, camera)
       animationFrameId = requestAnimationFrame(render)
     }
