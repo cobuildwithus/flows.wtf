@@ -23,6 +23,7 @@ async function _getStartupBudgets(id: string) {
     include: {
       subgrants: {
         where: { isActive: true },
+        omit: { description: true },
         include: { derivedData: true },
       },
     },
@@ -33,6 +34,8 @@ async function _getStartupBudgets(id: string) {
     title: budget.id === id ? "Main Budget" : budget.title,
   }))
 }
+
+export type StartupBudget = Awaited<ReturnType<typeof _getStartupBudgets>>[0]
 
 export const getStartupBudgets = unstable_cache(_getStartupBudgets, ["startup-budgets"], {
   tags: ["startup-budgets"],
