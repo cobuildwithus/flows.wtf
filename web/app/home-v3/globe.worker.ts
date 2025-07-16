@@ -20,10 +20,15 @@ const RAD2DEG = 180 / Math.PI
  * Build a boolean raster (360 × 180) from the mask image.
  * land[y * 360 + x] == 1  means "this lat/lon is land".
  */
-async function buildRaster(imgUrl: string): Promise<Uint8Array> {
+async function buildRaster(imgUrl: string): Promise<Uint8Array | null> {
   const blob = await fetch(imgUrl).then((r) => r.blob())
   const bmp = await createImageBitmap(blob)
-  const off = new OffscreenCanvas(bmp.width, bmp.height)
+  let off
+  try {
+    off = new OffscreenCanvas(bmp.width, bmp.height)
+  } catch (e) {
+    return null
+  }
   const ctx = off.getContext("2d")!
   ctx.drawImage(bmp, 0, 0)
   const { data, width, height } = ctx.getImageData(0, 0, bmp.width, bmp.height)
@@ -57,7 +62,9 @@ function buildDots(raster: Uint8Array, dotCount: number, radius: number) {
     const lon = (th % TWO_PI) * RAD2DEG - 180 // [-180,180]
 
     //   lat index 0…179  ,  lon index 0…359
-    if (!raster[Math.round(lat + 90) * 360 + Math.round(lon + 180)]) continue
+    const latIdx = Math.min(179, Math.max(0, Math.round(lat + 90)))
+    const lonIdx = Math.min(359, Math.max(0, Math.round(lon + 180)))
+    if (!raster[latIdx * 360 + lonIdx]) continue
 
     const cosT = Math.cos(th)
     const sinT = Math.sin(th)
@@ -74,24 +81,40 @@ function buildDots(raster: Uint8Array, dotCount: number, radius: number) {
 
   // Trim typed arrays to actual size
   return {
-    positions: positions.subarray(0, n * 3),
-    sinArr: sinArr.subarray(0, n),
-    cosArr: cosArr.subarray(0, n),
+    positions: positions.slice(0, n * 3),
+    sinArr: sinArr.slice(0, n),
+    cosArr: cosArr.slice(0, n),
   }
 }
 
 // ---------- worker entry ----------
-self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
-  const { imgUrl, dotCount, radius } = e.data
-  const raster = await buildRaster(imgUrl)
-  const result = buildDots(raster, dotCount, radius)
-  const payload: WorkerResponse = result
-  // Transfer buffers (zero‑copy)
-  ;(self as any).postMessage(payload, [
-    result.positions.buffer,
-    result.sinArr.buffer,
-    result.cosArr.buffer,
-  ])
+self.onmessage = async (
+  e: MessageEvent<WorkerRequest | { raster: Uint8Array; dotCount: number; radius: number }>,
+) => {
+  if ("raster" in e.data) {
+    const { raster, dotCount, radius } = e.data
+    const result = buildDots(raster, dotCount, radius)
+    const payload: WorkerResponse = result
+    ;(self as any).postMessage(payload, [
+      result.positions.buffer,
+      result.sinArr.buffer,
+      result.cosArr.buffer,
+    ])
+  } else {
+    const { imgUrl, dotCount, radius } = e.data
+    const raster = await buildRaster(imgUrl)
+    if (!raster) {
+      ;(self as any).postMessage({ status: "no_offscreen" })
+      return
+    }
+    const result = buildDots(raster, dotCount, radius)
+    const payload: WorkerResponse = result
+    ;(self as any).postMessage(payload, [
+      result.positions.buffer,
+      result.sinArr.buffer,
+      result.cosArr.buffer,
+    ])
+  }
 }
 
 export {}
