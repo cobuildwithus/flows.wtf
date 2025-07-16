@@ -44,11 +44,22 @@ const vertex = `
 const fragment = `
   precision mediump float;
 
+  uniform float u_isDark;
   varying float vPct;
 
   void main() {
-    vec3 colorA = vec3(0.1, 0.4, 0.9);
-    vec3 colorB = vec3(0.05, 0.2, 0.7);
+    vec3 colorA, colorB;
+    
+    if (u_isDark > 0.5) {
+      // Dark mode colors (unchanged)
+      colorA = vec3(0.1, 0.4, 0.9);
+      colorB = vec3(0.05, 0.2, 0.7);
+    } else {
+      // Light mode colors (lighter blue)
+      colorA = vec3(0.4, 0.7, 1.0);
+      colorB = vec3(0.3, 0.6, 0.95);
+    }
+    
     vec3 color = mix(colorA, colorB, vPct);
 
     // Make points round instead of square
@@ -62,7 +73,7 @@ const fragment = `
 const BASE_POINT_SCALE = 125.0
 
 // Positive values rotate the globe eastward (degrees converted to radians)
-const INITIAL_LONGITUDE_OFFSET = -Math.PI / 4
+const INITIAL_LONGITUDE_OFFSET = -Math.PI / 3
 
 export default function Globe({ className = "" }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -108,10 +119,12 @@ export default function Globe({ className = "" }: Props) {
     // Mouse interaction removed – no ray-casting or click handling needed
 
     // Base sphere
-    const baseSphere = new THREE.SphereGeometry(19.5, 35, 35)
+    const baseSphere = new THREE.SphereGeometry(19.5, 64, 64) // higher segment count for smoother edges
+    const isDark = theme === "dark"
     const baseMaterial = new THREE.MeshBasicMaterial({
       // Darker shades to improve contrast against page background after lighting removal
-      color: theme === "dark" ? 0x001133 : 0x183064,
+      color: isDark ? 0x001133 : 0xb8e6ff,
+      //   depthWrite: isDark,
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     globeGroup.add(baseMesh)
@@ -130,6 +143,7 @@ export default function Globe({ className = "" }: Props) {
         u_timeCos: { value: 1.0 },
         u_maxExtrusion: { value: 1.0 },
         u_pointScale: { value: getPointScale() },
+        u_isDark: { value: isDark ? 1.0 : 0.0 },
       },
       vertexShader: vertex,
       fragmentShader: fragment,
