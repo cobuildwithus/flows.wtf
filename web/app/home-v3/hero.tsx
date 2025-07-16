@@ -5,6 +5,7 @@ import Link from "next/link"
 import { AnimatedSalary } from "@/components/global/animated-salary"
 import { useEffect, useState } from "react"
 import Globe from "./globe"
+import { accelerators as acceleratorAddresses } from "@/addresses"
 
 interface Props {
   totalEarned: number
@@ -62,8 +63,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
               The growth engine <span className="block sm:inline">for your </span>
               <span className="inline-block w-full overflow-visible bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text pb-2 text-transparent sm:w-auto sm:leading-normal">
                 {text || "\u00A0"}
-              </span>{" "}
-              project
+              </span>
             </h1>
             <p className="mt-6 max-w-xl text-base sm:text-muted-foreground md:text-2xl">
               The AI-powered project accelerator. Fueled by global talent, coordinated by AI, owned
@@ -73,7 +73,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
             {/* CTAs */}
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/apply"
+                href={`/apply/${acceleratorAddresses.vrbs}`}
                 className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
               >
                 Grow your project
@@ -82,7 +82,7 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
                 href="/explore"
                 className="inline-flex items-center justify-center rounded-md border-2 border-emerald-600 px-8 py-4 text-lg font-medium text-emerald-600 transition-all duration-200 hover:bg-emerald-50 dark:hover:bg-emerald-950"
               >
-                Join or invest
+                Contribute
               </Link>
             </div>
 
@@ -115,26 +115,26 @@ const Hero = ({ totalEarned, monthlyFlowRate }: Props) => {
 export default Hero
 
 const projects = [
-  "Software",
-  "AI",
-  "Hardware",
-  "Open Source",
-  "Crypto",
+  "Software startup",
+  "AI venture",
+  "Hardware business",
+  "Open Source library",
+  "Crypto venture",
   "Community",
-  "Sports",
-  "Art",
-  "Tech",
-  "Health",
-  "Charity",
-  "Nature",
-  "Gaming",
-  "Education",
-  "Finance",
-  "Music",
-  "Film",
-  "Fashion",
-  "Food",
-  "Travel",
-  "Fitness",
-  "Science",
+  "Sports brand",
+  "Art collective",
+  "Tech venture",
+  "Health business",
+  "Charity initiative",
+  "Nature venture",
+  "Gaming studio",
+  "Education business",
+  "Finance venture",
+  "Music label",
+  "Film studio",
+  "Fashion brand",
+  "Food business",
+  "Travel venture",
+  "Fitness brand",
+  "Science research",
 ]
