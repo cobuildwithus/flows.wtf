@@ -5,6 +5,7 @@ import database from "@/lib/database/flows-db"
 import { getAllStartupsWithIds } from "@/lib/onchain-startup/startup"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { getGrowthEvents } from "@/lib/onchain-startup/growth-events"
+import { getTotalBuilders } from "@/lib/onchain-startup/total-builders"
 
 const VRBS_GRANTS_PAYOUTS = 35555.41
 const REWARD_POOL_PAYOUT = 7547.3
@@ -18,10 +19,11 @@ export default async function Home() {
 
   // Fetch startup revenue data
   const startups = getAllStartupsWithIds()
-  const revenue = await getTotalRevenue(startups)
-
-  // Fetch growth events (token payments + hiring events)
-  const growthEvents = await getGrowthEvents()
+  const [revenue, growthEvents, totalBuilders] = await Promise.all([
+    getTotalRevenue(startups),
+    getGrowthEvents(),
+    getTotalBuilders(),
+  ])
 
   const totalMonthlyFlowRate = calculateTotalOutgoingFlowRate(grants)
   const totalEarned =
@@ -35,6 +37,7 @@ export default async function Home() {
       <Hero
         totalEarned={totalEarned}
         monthlyFlowRate={totalMonthlyFlowRate}
+        totalBuilders={totalBuilders}
         growthEvents={growthEvents.slice(0, 20)} // Only pass recent 20 events
       />
 
