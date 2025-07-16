@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { useTheme } from "next-themes"
 import type { WorkerResponse, WorkerRequest } from "./globe.worker"
+import { Clock } from "three"
 
 interface Props {
   className?: string
@@ -30,7 +31,9 @@ const vertex = `
 
     vec3 newPosition = position;
     if (u_maxExtrusion > 1.0) {
-      newPosition = newPosition * u_maxExtrusion + sine;
+      newPosition = newPosition * u_maxExtrusion;
+      vec3 direction = normalize(newPosition);
+      newPosition += direction * sine;
     } else {
       newPosition = newPosition * u_maxExtrusion;
     }
@@ -99,7 +102,6 @@ export default function Globe({ className = "" }: Props) {
       distance * Math.cos(initialPolarAngle),
       distance * Math.sin(initialPolarAngle),
     )
-    // Point the camera toward the centre of the scene (where the globe sits)
     camera.lookAt(new THREE.Vector3(0, 0, 0))
 
     const renderer = new THREE.WebGLRenderer({
@@ -111,32 +113,21 @@ export default function Globe({ className = "" }: Props) {
     const canvas = renderer.domElement
     containerRef.current.appendChild(canvas)
 
-    // Create a group that will hold all globe geometry so we can rotate it each frame
     const globeGroup = new THREE.Group()
     scene.add(globeGroup)
 
-    // Removed dynamic lighting; using flat colour on ocean sphere so no lights needed
-
-    // Mouse interaction removed – no ray-casting or click handling needed
-
-    // Base sphere
-    const baseSphere = new THREE.SphereGeometry(19.5, 64, 64) // higher segment count for smoother edges
+    const baseSphere = new THREE.SphereGeometry(19.5, 64, 64)
     const isDark = theme === "dark"
     const baseMaterial = new THREE.MeshBasicMaterial({
-      // Darker shades to improve contrast against page background after lighting removal
       color: isDark ? 0x001133 : 0xb8e6ff,
-      //   depthWrite: isDark,
     })
     const baseMesh = new THREE.Mesh(baseSphere, baseMaterial)
     globeGroup.add(baseMesh)
-    globeGroup.rotation.x = Math.PI // Add this to flip the globe upright
-    // Apply initial rotation so we start centred roughly on the mid-Atlantic rather than North America
+    globeGroup.rotation.x = Math.PI
     globeGroup.rotation.y = INITIAL_LONGITUDE_OFFSET
 
-    // Helper util so we avoid duplicating the expression in multiple places
     const getPointScale = () => BASE_POINT_SCALE * window.devicePixelRatio
 
-    // Shader material (single instance for every dot)
     const material = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
@@ -151,50 +142,76 @@ export default function Globe({ className = "" }: Props) {
       fragmentShader: fragment,
     })
 
-    // Geometry placeholder
     const geometry = new THREE.BufferGeometry()
     const pointsMesh = new THREE.Points(geometry, material)
     globeGroup.add(pointsMesh)
 
-    /** Pick dot count based on cores + DPR (same logic you had) */
     const chooseDotCount = () => {
-      const cores = navigator.hardwareConcurrency || 4
+      const cores = Math.max(4, navigator.hardwareConcurrency ?? 8)
       const dpr = window.devicePixelRatio || 1
       if (cores <= 4) return Math.floor(12000 * Math.min(dpr, 1.5))
       if (cores < 8) return Math.floor(24000 * Math.min(dpr, 2))
       return Math.floor(70000 * Math.min(dpr, 2))
     }
 
-    /* ---------- Web Worker ---------- */
     const worker = new Worker(new URL("./globe.worker.ts", import.meta.url), { type: "module" })
 
-    worker.postMessage({
-      imgUrl: window.location.origin + "/world_alpha_mini.jpg", // Change this line
-      dotCount: chooseDotCount(),
-      radius: 20,
-    } satisfies WorkerRequest)
+    const imgUrl = window.location.origin + "/world_alpha_mini.jpg"
+    const dotCount = chooseDotCount()
+    const radius = 20
+    worker.postMessage({ imgUrl, dotCount, radius } satisfies WorkerRequest)
 
-    worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
-      geometry.setAttribute("position", new THREE.BufferAttribute(data.positions, 3))
-      geometry.setAttribute("aSinOffset", new THREE.BufferAttribute(data.sinArr, 1))
-      geometry.setAttribute("aCosOffset", new THREE.BufferAttribute(data.cosArr, 1))
-      geometry.computeBoundingSphere()
-      // Now that geometry exists, start rendering if not already.
-      startRendering()
+    const buildRasterMain = async (imgUrl: string): Promise<Uint8Array | null> => {
+      const blob = await fetch(imgUrl).then((r) => r.blob())
+      const bmp = await createImageBitmap(blob)
+      const off = document.createElement("canvas")
+      off.width = bmp.width
+      off.height = bmp.height
+      const ctx = off.getContext("2d")
+      if (!ctx) return null
+      ctx.drawImage(bmp, 0, 0)
+      const { data, width, height } = ctx.getImageData(0, 0, bmp.width, bmp.height)
+
+      const raster = new Uint8Array(360 * 180)
+      for (let y = 0; y < 180; y++) {
+        for (let x = 0; x < 360; x++) {
+          const sx = Math.floor((x / 360) * width)
+          const sy = Math.floor((y / 180) * height)
+          const idx = (sy * width + sx) << 2
+          const r = data[idx]
+          raster[y * 360 + x] = r < 80 ? 1 : 0
+        }
+      }
+      return raster
+    }
+
+    worker.onmessage = ({ data }: MessageEvent<WorkerResponse | { status: string }>) => {
+      if ("status" in data) {
+        if (data.status === "no_offscreen") {
+          buildRasterMain(imgUrl).then((raster) => {
+            if (raster) {
+              worker.postMessage({ raster, dotCount, radius })
+            } else {
+              console.error("Failed to build raster in main thread")
+            }
+          })
+        } else {
+          console.error("Unknown status from worker:", data.status)
+        }
+      } else {
+        geometry.setAttribute("position", new THREE.BufferAttribute(data.positions, 3))
+        geometry.setAttribute("aSinOffset", new THREE.BufferAttribute(data.sinArr, 1))
+        geometry.setAttribute("aCosOffset", new THREE.BufferAttribute(data.cosArr, 1))
+        geometry.computeBoundingSphere()
+        startRendering()
+      }
     }
 
     const updateSize = () => {
       const offsetWidth = containerRef.current!.offsetWidth
       const offsetHeight = containerRef.current!.offsetHeight
-      const rect = containerRef.current!.getBoundingClientRect()
-      const scaleX = rect.width / offsetWidth
-      const scaleY = rect.height / offsetHeight
-      const scale = Math.min(scaleX, scaleY) // Use min to avoid distortion if non-isotropic
-      // Cap at 2× to avoid expensive supersampling on very high-DPI screens
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio * scale, 2))
-      // Update point sprite base size when pixel ratio or screen changes
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
       material.uniforms.u_pointScale.value = getPointScale()
-      // Let Three.js handle canvas sizing properly (including style updates)
       renderer.setSize(offsetWidth, offsetHeight)
       camera.aspect = offsetWidth / offsetHeight
       camera.updateProjectionMatrix()
@@ -204,19 +221,18 @@ export default function Globe({ className = "" }: Props) {
     const resizeObserver = new ResizeObserver(updateSize)
     resizeObserver.observe(containerRef.current)
 
-    // -------------------------------
-    // P4 PERFORMANCE FIXES
-    // -------------------------------
-
-    // 1. Pause the render loop when the globe is off-screen or the tab is hidden
     let animationFrameId: number | null = null
     let isInViewport = true
 
+    const clock = new Clock()
+    let elapsed = 0
+
     const render = () => {
-      const currentTime = performance.now() * 0.001 // seconds
-      material.uniforms.u_timeSin.value = Math.sin(currentTime)
-      material.uniforms.u_timeCos.value = Math.cos(currentTime)
-      globeGroup.rotation.y -= 0.002 // Change + to - for natural spin direction after flip
+      const delta = clock.getDelta()
+      elapsed += delta
+      material.uniforms.u_timeSin.value = Math.sin(elapsed)
+      material.uniforms.u_timeCos.value = Math.cos(elapsed)
+      globeGroup.rotation.y -= 0.002
       renderer.render(scene, camera)
       animationFrameId = requestAnimationFrame(render)
     }
@@ -232,10 +248,6 @@ export default function Globe({ className = "" }: Props) {
       }
     }
 
-    // Start immediately (component is initially on-screen)
-    // startRendering() // This line is removed as per the edit hint.
-
-    // Handle tab visibility change
     const visibilityHandler = () => {
       if (document.visibilityState === "hidden") {
         stopRendering()
@@ -245,7 +257,6 @@ export default function Globe({ className = "" }: Props) {
     }
     document.addEventListener("visibilitychange", visibilityHandler)
 
-    // Observe when the globe scrolls into / out of view
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -263,14 +274,7 @@ export default function Globe({ className = "" }: Props) {
     )
     intersectionObserver.observe(containerRef.current)
 
-    // Mouse interaction removed – no event listeners attached
-
-    // Render loop
-    // The render function is now managed by the P4 performance fixes
-
-    // Cleanup
     return () => {
-      // Mouse listeners were never attached, nothing to remove
       document.removeEventListener("visibilitychange", visibilityHandler)
       intersectionObserver.disconnect()
       stopRendering()
@@ -285,8 +289,9 @@ export default function Globe({ className = "" }: Props) {
       baseSphere.dispose()
       baseMaterial.dispose()
       material.dispose()
-      if (pointsMesh) {
-        pointsMesh.geometry.dispose()
+      globeGroup.remove(pointsMesh)
+      if (geometry) {
+        geometry.dispose()
       }
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
