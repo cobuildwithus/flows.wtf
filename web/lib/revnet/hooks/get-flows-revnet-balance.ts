@@ -6,7 +6,7 @@ import { getConversionRates } from "@/app/token/eth-price"
 import { FLOWS_REVNET_PROJECT_ID, FLOWS_TOKEN } from "@/lib/config"
 
 export async function getFlowsTreasuryBalance(
-  projectId: bigint,
+  projectId: number,
   chainId: number,
 ): Promise<{
   treasuryBalanceUSD: number

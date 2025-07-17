@@ -102,7 +102,7 @@ export const getRevnetTokenPrice = async (
 
     if (isFlowsDenominated) {
       const { currentPrice: ethPerFlows } = await getRevnetTokenPrice(
-        FLOWS_REVNET_PROJECT_ID,
+        BigInt(FLOWS_REVNET_PROJECT_ID),
         chainId,
         false,
       )

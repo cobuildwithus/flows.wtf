@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
-export function useFundraiseIllustration(projectId: bigint, chainId: number) {
+export function useFundraiseIllustration(projectId: number, chainId: number) {
   const [productsVolumeEth, setProductsVolumeEth] = useState(0)
   const [tokenVolume, setTokenVolumeEth] = useState(0)
 

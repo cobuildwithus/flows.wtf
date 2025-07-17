@@ -13,7 +13,7 @@ interface Props {
     newlyIssuedTokenCount: string
   }[]
   startupTitle: string
-  projectId: bigint
+  projectId: number
   chainId: number
 }
 

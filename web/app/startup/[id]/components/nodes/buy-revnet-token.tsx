@@ -12,7 +12,7 @@ import { TokenLogo } from "@/app/token/token-logo"
 import { getRevnetTokenLogo } from "@/app/token/get-revnet-token-logo"
 
 interface Props {
-  projectId: bigint
+  projectId: number
   changeTokenVolumeEth: (eth: number) => void
   chainId: number
 }

@@ -25,7 +25,7 @@ export interface StartupWithRevenue {
   revenue: number
   salesChange: number
   backers: number
-  projectIdBase: string
+  projectIdBase: number
   chainId: number
   team: TeamMember[]
   acceleratorColor: string
