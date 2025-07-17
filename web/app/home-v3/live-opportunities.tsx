@@ -18,7 +18,7 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
   ])
 
   const featuredOpportunities = opportunities.slice(0, 4)
-  const featuredFlows = flows.slice(0, 6)
+  const featuredFlows = flows.slice(0, 9 - featuredOpportunities.length)
 
   return (
     <AgentChatProvider
@@ -35,22 +35,14 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
             <p className="mt-2 text-muted-foreground">Back projects or get funded</p>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
-            {/* Left Column - Startups Table */}
-            <div className="lg:col-span-2">
-              <StartupsTable startups={startups} />
-            </div>
-
-            {/* Right Column - Opportunities & Flows */}
-            <div className="lg:col-span-1">
-              <OpportunitiesFlowsList opportunities={featuredOpportunities} flows={featuredFlows} />
-
-              <div className="mt-6 text-center">
-                <Link href="/apply" className="font-medium text-emerald-600 hover:underline">
-                  See all openings →
-                </Link>
-              </div>
+          {/* Content */}
+          <div className="space-y-12">
+            <StartupsTable startups={startups} />
+            <OpportunitiesFlowsList opportunities={featuredOpportunities} flows={featuredFlows} />
+            <div className="text-center">
+              <Link href="/apply" className="font-medium text-emerald-600 hover:underline">
+                See all openings →
+              </Link>
             </div>
           </div>
         </div>
