@@ -1,60 +1,47 @@
 import { getUser } from "@/lib/auth/user"
 import Footer from "@/components/global/footer"
 import Hero from "./hero"
-import database from "@/lib/database/flows-db"
-import { getAllStartupsWithIds } from "@/lib/onchain-startup/startup"
-import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
-import { getGrowthEvents } from "@/lib/onchain-startup/growth-events"
-import { getTotalBuilders } from "@/lib/onchain-startup/total-builders"
-
-const VRBS_GRANTS_PAYOUTS = 35555.41
-const REWARD_POOL_PAYOUT = 7547.3
+import { LiveOpportunities } from "./live-opportunities"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
+import { getHeroStats } from "@/lib/home-v3/hero-data"
+import { getLiveOpportunitiesData } from "@/lib/home-v3/live-opportunities-data"
+import { getStartupsTableData } from "@/lib/home-v3/startups-table-data"
+import { ActivityFeed } from "./activity-feed"
+import { getActivityFeedEvents } from "@/lib/home-v3/activity-feed-data"
 
 export default async function Home() {
-  // Fetch grants data for Hero
-  const grants = await database.grant.findMany({
-    where: { isFlow: true },
-    select: { totalEarned: true, monthlyOutgoingFlowRate: true, flowId: true, id: true },
-  })
-
-  // Fetch startup revenue data
-  const startups = getAllStartupsWithIds()
-  const [revenue, growthEvents, totalBuilders] = await Promise.all([
-    getTotalRevenue(startups),
-    getGrowthEvents(),
-    getTotalBuilders(),
-  ])
-
-  const totalMonthlyFlowRate = calculateTotalOutgoingFlowRate(grants)
-  const totalEarned =
-    grants.reduce((acc, grant) => acc + Number(grant.totalEarned), 0) +
-    VRBS_GRANTS_PAYOUTS +
-    REWARD_POOL_PAYOUT +
-    revenue.totalRevenue
+  const [heroStats, liveData, startupsTable, activityEvents, user, privyIdToken] =
+    await Promise.all([
+      getHeroStats(),
+      getLiveOpportunitiesData(),
+      getStartupsTableData(),
+      getActivityFeedEvents(),
+      getUser(),
+      getPrivyIdToken(),
+    ])
 
   return (
     <main>
       <Hero
-        totalEarned={totalEarned}
-        monthlyFlowRate={totalMonthlyFlowRate}
-        totalBuilders={totalBuilders}
-        growthEvents={growthEvents.slice(0, 20)} // Only pass recent 20 events
+        totalEarned={heroStats.totalEarned}
+        monthlyFlowRate={heroStats.totalMonthlyFlowRate}
+        totalBuilders={heroStats.totalBuilders}
+        growthEvents={heroStats.growthEvents.slice(0, 20)}
       />
+
+      <LiveOpportunities
+        opportunities={liveData.opportunities}
+        flows={liveData.flows}
+        user={user}
+        privyIdToken={privyIdToken}
+        startups={startupsTable}
+      />
+
+      <ActivityFeed events={activityEvents} />
 
       <div className="pt-12">
         <Footer />
       </div>
     </main>
   )
-}
-
-function calculateTotalOutgoingFlowRate(
-  flows: Array<{ id: string; monthlyOutgoingFlowRate: string; flowId?: string }>,
-): number {
-  return flows
-    .filter((flow) => !flows.some((otherFlow) => otherFlow.flowId === flow.id))
-    .reduce((total, flow) => {
-      const flowRate = parseFloat(flow.monthlyOutgoingFlowRate)
-      return total + (isNaN(flowRate) ? 0 : flowRate)
-    }, 0)
 }
