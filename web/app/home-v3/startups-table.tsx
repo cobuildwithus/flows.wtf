@@ -70,7 +70,7 @@ export function StartupsTable({ startups }: Props) {
                 {startup.team.slice(0, 3).map((member) => (
                   <UserProfile key={member.recipient} address={member.recipient as `0x${string}`}>
                     {(profile) => (
-                      <Avatar className="size-8 border-2 border-background md:size-10">
+                      <Avatar className="size-6 border-2 border-background md:size-8">
                         <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
                         <AvatarFallback className="text-sm md:text-base">
                           {profile.display_name[0]}
