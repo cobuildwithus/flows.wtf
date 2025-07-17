@@ -20,7 +20,7 @@ interface Props {
 export async function AcceleratorPage(props: Props) {
   const { accelerator } = props
 
-  const startups = getStartups(accelerator)
+  const startups = await getStartups(accelerator)
   const [flow, user, revenue] = await Promise.all([
     getFlow(accelerator.flowId),
     getUser(),

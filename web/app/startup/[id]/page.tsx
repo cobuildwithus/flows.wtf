@@ -88,7 +88,7 @@ export default async function GrantPage(props: Props) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${startup.acceleratorId}`}>
+              <BreadcrumbLink href={`/flow/${startup.flow.id}`}>
                 {startup.flow.title}
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -165,11 +165,13 @@ export default async function GrantPage(props: Props) {
             icon={Repeat}
           />
 
-          <MetricCard
-            title={`Funding from ${startup.accelerator.name}`}
-            value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
-            icon={Banknote}
-          />
+          {startup.accelerator && (
+            <MetricCard
+              title={`Funding from ${startup.accelerator.name}`}
+              value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
+              icon={Banknote}
+            />
+          )}
         </div>
 
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">

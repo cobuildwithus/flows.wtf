@@ -1,10 +1,8 @@
 import { StoreConfig } from "@/lib/shopify/stores"
 import { SocialProfileUsernames } from "@/lib/social-metrics/social-profile"
-import { AcceleratorId } from "./accelerators"
 
 export interface StartupData {
   slug: string
-  acceleratorId: AcceleratorId
   title: string
   image: string
   shortMission: string

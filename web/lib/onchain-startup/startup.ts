@@ -1,6 +1,6 @@
 import { cache } from "react"
 import database from "../database/flows-db"
-import { Accelerator, getAccelerator } from "./data/accelerators"
+import { Accelerator, getAccelerator, tryGetAccelerator } from "./data/accelerators"
 import { vrbscoffee } from "./data/vrbscoffee"
 import { getAllocator } from "../allocation/allocation-data/get-allocator"
 import { straystrong } from "./data/straystrong"
@@ -35,7 +35,7 @@ export async function getStartup(id: string) {
 
   const allocator = await getAllocator(grant.allocationStrategies[0], grant.chainId)
 
-  const accelerator = getAccelerator(startup.acceleratorId)
+  const accelerator = tryGetAccelerator(grant.parentContract as `0x${string}`)
 
   return {
     ...grant,
@@ -56,10 +56,21 @@ export function getStartupIdFromSlug(slug: string): string | null {
 
 export type Startup = Awaited<ReturnType<typeof getStartup>>
 
-export function getStartups(accelerator: Accelerator) {
-  return Object.entries(startups)
-    .map(([id, startup]) => ({ ...startup, id, accelerator }))
-    .filter((s) => s.acceleratorId === accelerator.id)
+export async function getStartups(accelerator: Accelerator) {
+  const startups = await database.grant.findMany({
+    where: { parentContract: accelerator.id, isTopLevel: false, isFlow: true },
+    include: { flow: true },
+  })
+
+  return startups.map((s) => {
+    console.log(s.id)
+    const startup = getStartupData(s.id)
+    return {
+      ...s,
+      ...startup,
+      accelerator,
+    }
+  })
 }
 
 export const getStartupData = cache((id: string) => {

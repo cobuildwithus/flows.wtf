@@ -4,8 +4,9 @@ import { getFlow } from "@/lib/database/queries/flow"
 import { getAccelerator } from "@/lib/onchain-startup/data/accelerators"
 import { Metadata } from "next"
 import { AcceleratorPage } from "../accelerator-page"
+import { accelerators } from "@/addresses"
 
-const accelerator = getAccelerator("vrbs")
+const accelerator = getAccelerator(accelerators.vrbs)
 
 export async function generateMetadata(): Promise<Metadata> {
   const flow = await getFlow(accelerator.flowId)

@@ -10,6 +10,9 @@ import { FlowSubmenu } from "./components/flow-submenu"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import { sortGrants } from "@/lib/grant-utils"
 import GrantsList from "@/components/global/grants-list"
+import { isAdmin } from "@/lib/database/helpers"
+import { redirect } from "next/navigation"
+import { getAccelerator, tryGetAccelerator } from "@/lib/onchain-startup/data/accelerators"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -31,6 +34,12 @@ export default async function FlowPage(props: Props) {
         profile: await getUserProfile(getEthAddress(g.recipient)),
       })),
   )
+
+  // Redirect to accelerator page if not admin
+  if (!isAdmin(user?.address)) {
+    const accelerator = tryGetAccelerator(flowId as `0x${string}`)
+    if (accelerator) redirect(`/${accelerator.slug}`)
+  }
 
   const monthlyImpact = flow.derivedData?.impactMonthly
   const isManager = flow.manager === user?.address
