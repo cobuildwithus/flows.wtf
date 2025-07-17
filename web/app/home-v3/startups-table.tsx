@@ -16,6 +16,7 @@ import { BuyRevnetDialog } from "./buy-revnet-dialog"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Currency } from "@/components/ui/currency"
+import { StartupStatsDialog } from "./startup-stats-dialog"
 
 interface Props {
   startups: StartupWithRevenue[]
@@ -86,12 +87,16 @@ export function StartupsTable({ startups }: Props) {
               </div>
             </TableCell>
             <TableCell className="text-center">
-              <div className="flex flex-col items-center">
-                <Currency className="text-base font-medium md:text-lg">{startup.revenue}</Currency>
-                {startup.salesChange !== 0 && (
-                  <PercentChange value={startup.salesChange} className="text-sm md:text-base" />
-                )}
-              </div>
+              <StartupStatsDialog startup={startup}>
+                <div className="flex cursor-pointer flex-col items-center">
+                  <Currency className="text-base font-medium decoration-muted-foreground/40 underline-offset-4 hover:decoration-muted-foreground md:text-lg">
+                    {startup.revenue}
+                  </Currency>
+                  {startup.salesChange !== 0 && (
+                    <PercentChange value={startup.salesChange} className="text-sm md:text-base" />
+                  )}
+                </div>
+              </StartupStatsDialog>
             </TableCell>
             <TableCell className="hidden text-center text-base md:table-cell md:text-lg">
               {startup.backers}
