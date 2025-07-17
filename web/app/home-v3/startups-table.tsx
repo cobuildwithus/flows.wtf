@@ -27,9 +27,9 @@ export function StartupsTable({ startups }: Props) {
       <TableHeader>
         <TableRow>
           <TableHead colSpan={2}>Project</TableHead>
-          <TableHead className="text-center">Team</TableHead>
+          <TableHead className="hidden text-center md:table-cell">Team</TableHead>
           <TableHead className="text-center">Revenue</TableHead>
-          <TableHead className="text-center">Holders</TableHead>
+          <TableHead className="hidden text-center md:table-cell">Holders</TableHead>
           <TableHead className="text-right"></TableHead>
         </TableRow>
       </TableHeader>
@@ -61,7 +61,7 @@ export function StartupsTable({ startups }: Props) {
                 </p>
               </div>
             </TableCell>
-            <TableCell className="text-center">
+            <TableCell className="hidden text-center md:table-cell">
               <div className="flex justify-center -space-x-2">
                 {startup.team.slice(0, 3).map((member) => (
                   <UserProfile key={member.recipient} address={member.recipient as `0x${string}`}>
@@ -88,7 +88,7 @@ export function StartupsTable({ startups }: Props) {
                 )}
               </div>
             </TableCell>
-            <TableCell className="text-center">{startup.backers}</TableCell>
+            <TableCell className="hidden text-center md:table-cell">{startup.backers}</TableCell>
 
             <TableCell className="text-right">
               <BuyRevnetDialog startup={startup} />
