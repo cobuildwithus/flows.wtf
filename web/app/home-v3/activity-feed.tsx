@@ -1,17 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { ActivityEvent } from "@/lib/home-v3/activity-feed-data"
+import { getActivityFeedEvents, ActivityEvent } from "@/lib/home-v3/activity-feed-data"
 import { OrderEvent } from "@/app/startup/[id]/components/timeline/order-event"
 import { TokenEvent } from "@/app/startup/[id]/components/timeline/token-event"
 import { HiringEventGlobal } from "./hiring-event-global"
 import { TimelineIndicator } from "@/app/startup/[id]/components/timeline/timeline-indicator"
 
-interface Props {
-  events: ActivityEvent[]
-}
-
-export function ActivityFeed({ events }: Props) {
+export default async function ActivityFeed() {
+  const events = await getActivityFeedEvents()
   return (
     <section className="py-16">
       <div className="container">
