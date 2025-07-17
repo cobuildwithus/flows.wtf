@@ -11,7 +11,6 @@ async function _getLiveOpportunitiesData(): Promise<{
 }> {
   const opportunitiesRaw = await database.opportunity.findMany({
     where: { status: 1 },
-    include: { _count: { select: { drafts: true } } },
     orderBy: { createdAt: "desc" },
   })
 

@@ -6,7 +6,7 @@ import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-detai
 
 interface Props {
   startupTitle: string
-  projectId: bigint
+  projectId: number
   chainId: number
   isOpen: boolean
   onOpenChange: (open: boolean) => void

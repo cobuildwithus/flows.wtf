@@ -32,7 +32,7 @@ function adjustPriceForReserved(price: bigint, reservedPercent: number): bigint 
 }
 
 export const getRevnetTokenPrice = async (
-  projectId: bigint,
+  projectId: number,
   chainId: number,
   isFlowsDenominated: boolean = true,
 ): Promise<{
