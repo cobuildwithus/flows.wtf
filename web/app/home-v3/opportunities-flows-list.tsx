@@ -16,7 +16,7 @@ interface Props {
 }
 
 const cardClass =
-  "h-full rounded-lg border border-border/60 bg-background/80 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg" as const
+  "h-full rounded-lg border border-border/60 bg-background/80 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md" as const
 
 function OpportunityCard({ opportunity }: { opportunity: OpportunityWithCount }) {
   return (

@@ -26,39 +26,42 @@ export function StartupsTable({ startups }: Props) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead colSpan={2}>Project</TableHead>
-          <TableHead className="hidden text-center md:table-cell">Team</TableHead>
-          <TableHead className="text-center">Revenue</TableHead>
-          <TableHead className="hidden text-center md:table-cell">Holders</TableHead>
+          <TableHead className="text-lg font-semibold md:text-xl" />
+          <TableHead className="hidden text-center text-lg font-semibold md:table-cell md:text-xl">
+            Team
+          </TableHead>
+          <TableHead className="text-center text-lg font-semibold md:text-xl">Revenue</TableHead>
+          <TableHead className="hidden text-center text-lg font-semibold md:table-cell md:text-xl">
+            Holders
+          </TableHead>
           <TableHead className="text-right"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {startups.map((startup) => (
           <TableRow key={startup.id}>
-            <TableCell className="w-8 pr-0 md:w-12 md:pr-0">
-              <div className="size-8 md:size-12">
-                <Image
-                  src={getIpfsUrl(startup.image)}
-                  alt={startup.title}
-                  width={48}
-                  height={48}
-                  className="size-full rounded-full object-cover"
-                />
-              </div>
-            </TableCell>
-
             <TableCell className="space-y-1">
-              <div className="overflow-hidden text-ellipsis">
-                <Link
-                  href={`/startup/${startup.id}`}
-                  className="text-sm font-medium duration-100 ease-out hover:text-primary md:whitespace-normal"
-                >
-                  {startup.title}
-                </Link>
-                <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                  {startup.shortMission}
-                </p>
+              <div className="flex flex-row items-center space-x-2 md:space-x-5">
+                <div className="size-12 flex-shrink-0 md:size-16 lg:size-20">
+                  <Image
+                    src={getIpfsUrl(startup.image)}
+                    alt={startup.title}
+                    width={80}
+                    height={80}
+                    className="size-full rounded-full object-cover"
+                  />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col space-y-0 overflow-hidden text-ellipsis md:space-y-1.5">
+                  <Link
+                    href={`/startup/${startup.id}`}
+                    className="text-base font-medium duration-100 ease-out hover:text-primary md:whitespace-normal md:text-xl"
+                  >
+                    {startup.title}
+                  </Link>
+                  <p className="line-clamp-2 text-xs text-muted-foreground md:text-base">
+                    {startup.shortMission}
+                  </p>
+                </div>
               </div>
             </TableCell>
             <TableCell className="hidden text-center md:table-cell">
@@ -66,15 +69,17 @@ export function StartupsTable({ startups }: Props) {
                 {startup.team.slice(0, 3).map((member) => (
                   <UserProfile key={member.recipient} address={member.recipient as `0x${string}`}>
                     {(profile) => (
-                      <Avatar className="size-7 border-2 border-background">
+                      <Avatar className="size-8 border-2 border-background md:size-10">
                         <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
-                        <AvatarFallback>{profile.display_name[0]}</AvatarFallback>
+                        <AvatarFallback className="text-sm md:text-base">
+                          {profile.display_name[0]}
+                        </AvatarFallback>
                       </Avatar>
                     )}
                   </UserProfile>
                 ))}
                 {startup.team.length > 3 && (
-                  <span className="ml-1 text-xs font-medium text-muted-foreground">
+                  <span className="ml-2 text-sm font-medium text-muted-foreground md:text-base">
                     +{startup.team.length - 3}
                   </span>
                 )}
@@ -82,13 +87,15 @@ export function StartupsTable({ startups }: Props) {
             </TableCell>
             <TableCell className="text-center">
               <div className="flex flex-col items-center">
-                <Currency className="text-sm font-medium">{startup.revenue}</Currency>
+                <Currency className="text-base font-medium md:text-lg">{startup.revenue}</Currency>
                 {startup.salesChange !== 0 && (
-                  <PercentChange value={startup.salesChange} className="text-xs" />
+                  <PercentChange value={startup.salesChange} className="text-sm md:text-base" />
                 )}
               </div>
             </TableCell>
-            <TableCell className="hidden text-center md:table-cell">{startup.backers}</TableCell>
+            <TableCell className="hidden text-center text-base md:table-cell md:text-lg">
+              {startup.backers}
+            </TableCell>
 
             <TableCell className="text-right">
               <BuyRevnetDialog startup={startup} />
