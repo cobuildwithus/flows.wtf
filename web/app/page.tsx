@@ -70,7 +70,3 @@ export default async function Home() {
     </AllocationProvider>
   )
 }
-
-function getSum(flows: LimitedFlow[], key: keyof LimitedFlow): number {
-  return flows.reduce((sum, flow) => sum + (flow[key] as number), 0)
-}
