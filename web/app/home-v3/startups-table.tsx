@@ -33,7 +33,7 @@ export function StartupsTable({ startups }: Props) {
           </TableHead>
           <TableHead className="text-center text-lg font-semibold md:text-xl">Revenue</TableHead>
           <TableHead className="hidden text-center text-lg font-semibold md:table-cell md:text-xl">
-            Holders
+            Backers
           </TableHead>
           <TableHead className="text-right"></TableHead>
         </TableRow>
