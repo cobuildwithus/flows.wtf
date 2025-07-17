@@ -4,7 +4,7 @@ import { useFlowsPrice } from "@/lib/revnet/hooks/use-flows-price"
 import { useETHPrice } from "@/app/token/hooks/useETHPrice"
 
 export function useFlowsTreasuryBalance(
-  projectId: bigint,
+  projectId: number,
   chainId: number,
   isBackedByFlows: boolean,
 ) {

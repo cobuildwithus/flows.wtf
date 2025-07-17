@@ -58,13 +58,12 @@ export function BuyRevnetDialog({ startup }: Props) {
   const [payAmount, setPayAmount] = useState<string>(TIERS[0]) // default tier
   const [custom, setCustom] = useState<string>("")
 
-  const { payRevnet, isLoading } = usePayRevnet(BigInt(startup.projectIdBase), startup.chainId)
-  const projectIdBigInt = BigInt(startup.projectIdBase)
+  const { payRevnet, isLoading } = usePayRevnet(startup.projectIdBase, startup.chainId)
   const { isLoading: isPriceLoading, calculateTokensFromEth } = useRevnetTokenPrice(
-    projectIdBigInt,
+    startup.projectIdBase,
     startup.chainId,
   )
-  const { data: tokenDetails } = useRevnetTokenDetails(projectIdBigInt, startup.chainId)
+  const { data: tokenDetails } = useRevnetTokenDetails(startup.projectIdBase, startup.chainId)
   const tokenSymbol = tokenDetails?.symbol || "TOKEN"
 
   const selectedAmount = custom !== "" ? custom : payAmount
@@ -74,7 +73,7 @@ export function BuyRevnetDialog({ startup }: Props) {
     if (!address || !selectedAmount) return
     await payRevnet(
       {
-        projectId: BigInt(startup.projectIdBase),
+        projectId: startup.projectIdBase,
         token: "0x000000000000000000000000000000000000EEEe",
         amount: selectedAmount,
         beneficiary: address,

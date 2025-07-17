@@ -25,6 +25,12 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
         })),
       ])
 
+      const safeTeam = team.map((m) => {
+        // ensure fid is number not bigint
+        const { fid, ...rest } = m as any
+        return { ...rest, fid: typeof fid === "bigint" ? Number(fid) : fid }
+      })
+
       return {
         id: startup.id,
         title: startup.title,
@@ -33,9 +39,9 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
         revenue: revenueData?.totalSales ?? 0,
         salesChange: revenueData?.salesChange ?? 0,
         backers: revnet.participantsCount,
-        projectIdBase: startup.revnetProjectIds.base.toString(),
+        projectIdBase: startup.revnetProjectIds.base,
         chainId: baseChain.id,
-        team,
+        team: safeTeam,
         acceleratorColor: accelerator.color,
       } satisfies StartupWithRevenue
     }),
@@ -43,6 +49,6 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
 }
 
 export const getStartupsTableData = unstable_cache(_getStartupsTableData, ["startups-table"], {
-  tags: ["startups-table"],
+  tags: ["startups-table-data"],
   revalidate: 180,
 })

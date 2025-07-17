@@ -59,8 +59,6 @@ export function AddRecipientToFlowButton(props: Props) {
         try {
           await prepareWallet()
 
-          console.log("recipient", recipient)
-
           writeContract({
             account: address,
             abi: customFlowImplAbi,

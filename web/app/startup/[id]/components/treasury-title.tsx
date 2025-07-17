@@ -18,7 +18,7 @@ export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
   const { ethPrice } = useETHPrice()
 
   const { treasuryBalanceUSD, isLoading, error } = useFlowsTreasuryBalance(
-    BigInt(startup.revnetProjectIds.base),
+    startup.revnetProjectIds.base,
     chainId,
     startup.isBackedByFlows,
   )

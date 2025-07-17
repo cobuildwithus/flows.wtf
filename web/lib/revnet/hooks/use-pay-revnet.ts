@@ -8,7 +8,7 @@ import { jbMultiTerminalAbi, jbDirectoryAbi } from "../../abis"
 import { useReadContract } from "wagmi"
 
 interface PayRevnetArgs {
-  projectId: bigint
+  projectId: number
   token: `0x${string}`
   amount: string
   beneficiary: `0x${string}`
@@ -19,7 +19,7 @@ interface PayRevnetArgs {
 
 const ETH_ADDRESS = "0x000000000000000000000000000000000000EEEe" as const
 
-export function usePayRevnet(projectId: bigint, chainId: number, onSuccess?: () => void) {
+export function usePayRevnet(projectId: number, chainId: number, onSuccess?: () => void) {
   const { writeContract, prepareWallet, isLoading } = useContractTransaction({
     chainId,
     onSuccess,
@@ -32,7 +32,7 @@ export function usePayRevnet(projectId: bigint, chainId: number, onSuccess?: () 
     address: base.JBDirectory,
     abi: jbDirectoryAbi,
     functionName: "primaryTerminalOf",
-    args: [projectId, ETH_ADDRESS],
+    args: [BigInt(projectId), ETH_ADDRESS],
     chainId,
   })
 
@@ -65,7 +65,15 @@ export function usePayRevnet(projectId: bigint, chainId: number, onSuccess?: () 
           abi: jbMultiTerminalAbi,
           functionName: "pay",
           chainId,
-          args: [projectId, token, payAmount, beneficiary, minReturnedTokens, memo, metadata],
+          args: [
+            BigInt(projectId),
+            token,
+            payAmount,
+            beneficiary,
+            minReturnedTokens,
+            memo,
+            metadata,
+          ],
           value,
         })
       } catch (e) {

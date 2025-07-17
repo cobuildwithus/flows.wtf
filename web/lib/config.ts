@@ -39,7 +39,7 @@ export const FLOWS_CHANNEL_URL = "https://farcaster.xyz/~/channel/flows"
 export const NOUNS_CHANNEL_ID = "nouns"
 export const FLOWS_CHANNEL_ID = "flows"
 
-export const FLOWS_REVNET_PROJECT_ID = 99n
+export const FLOWS_REVNET_PROJECT_ID = 99
 export const FLOWS_TOKEN = baseContracts.FlowsToken
 
 export const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11" as `0x${string}`
