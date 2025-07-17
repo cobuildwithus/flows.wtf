@@ -1,20 +1,22 @@
 import Link from "next/link"
 import { AgentChatProvider } from "../chat/components/agent-chat"
-import { User } from "@/lib/auth/user"
 import { StartupsTable } from "./startups-table"
 import { OpportunitiesFlowsList } from "./opportunities-flows-list"
-import type { OpportunityWithCount, FlowWithDisplayAmount, StartupWithRevenue } from "./types"
+import { getLiveOpportunitiesData } from "@/lib/home-v3/live-opportunities-data"
+import { getStartupsTableData } from "@/lib/home-v3/startups-table-data"
+import type { User } from "@/lib/auth/user"
 
 interface Props {
-  opportunities: OpportunityWithCount[]
-  flows: FlowWithDisplayAmount[]
   user: User | undefined
   privyIdToken: string | undefined
-  startups: StartupWithRevenue[]
 }
 
-export function LiveOpportunities({ opportunities, flows, user, privyIdToken, startups }: Props) {
-  // Limit items for the featured section
+export async function LiveOpportunities({ user, privyIdToken }: Props) {
+  const [{ opportunities, flows }, startups] = await Promise.all([
+    getLiveOpportunitiesData(),
+    getStartupsTableData(),
+  ])
+
   const featuredOpportunities = opportunities.slice(0, 4)
   const featuredFlows = flows.slice(0, 6)
 

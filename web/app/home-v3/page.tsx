@@ -2,23 +2,18 @@ import { getUser } from "@/lib/auth/user"
 import Footer from "@/components/global/footer"
 import Hero from "./hero"
 import { LiveOpportunities } from "./live-opportunities"
+import { Suspense } from "react"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getHeroStats } from "@/lib/home-v3/hero-data"
-import { getLiveOpportunitiesData } from "@/lib/home-v3/live-opportunities-data"
-import { getStartupsTableData } from "@/lib/home-v3/startups-table-data"
-import { ActivityFeed } from "./activity-feed"
-import { getActivityFeedEvents } from "@/lib/home-v3/activity-feed-data"
+import ActivityFeed from "./activity-feed"
+import { SkeletonLoader } from "@/components/ui/skeleton"
 
 export default async function Home() {
-  const [heroStats, liveData, startupsTable, activityEvents, user, privyIdToken] =
-    await Promise.all([
-      getHeroStats(),
-      getLiveOpportunitiesData(),
-      getStartupsTableData(),
-      getActivityFeedEvents(),
-      getUser(),
-      getPrivyIdToken(),
-    ])
+  const [heroStats, user, privyIdToken] = await Promise.all([
+    getHeroStats(),
+    getUser(),
+    getPrivyIdToken(),
+  ])
 
   return (
     <main>
@@ -29,15 +24,15 @@ export default async function Home() {
         growthEvents={heroStats.growthEvents.slice(0, 20)}
       />
 
-      <LiveOpportunities
-        opportunities={liveData.opportunities}
-        flows={liveData.flows}
-        user={user}
-        privyIdToken={privyIdToken}
-        startups={startupsTable}
-      />
+      <div className="container mt-12 space-y-12">
+        <Suspense fallback={<SkeletonLoader count={6} height={280} />}>
+          <LiveOpportunities user={user} privyIdToken={privyIdToken} />
+        </Suspense>
 
-      <ActivityFeed events={activityEvents} />
+        <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
+          <ActivityFeed />
+        </Suspense>
+      </div>
 
       <div className="pt-12">
         <Footer />
