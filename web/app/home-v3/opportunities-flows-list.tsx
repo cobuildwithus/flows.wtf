@@ -109,23 +109,13 @@ function FlowCard({ flow }: { flow: FlowWithDisplayAmount }) {
 
 export function OpportunitiesFlowsList({ opportunities, flows }: Props) {
   return (
-    <>
-      <div className="grid max-h-[700px] grid-cols-1 gap-4 overflow-y-scroll scrollbar-none sm:grid-cols-2 lg:grid-cols-1">
-        {opportunities.map((opportunity) => (
-          <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-        ))}
-        {flows.map((flow) => (
-          <FlowCard key={flow.id} flow={flow} />
-        ))}
-      </div>
-
-      {flows.length > 6 && (
-        <div className="mt-6 text-center">
-          <Link href="/apply" className="text-sm font-medium text-emerald-600 hover:underline">
-            See all →
-          </Link>
-        </div>
-      )}
-    </>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {opportunities.map((opportunity) => (
+        <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+      ))}
+      {flows.map((flow) => (
+        <FlowCard key={flow.id} flow={flow} />
+      ))}
+    </div>
   )
 }
