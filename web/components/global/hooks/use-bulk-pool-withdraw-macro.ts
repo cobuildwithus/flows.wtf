@@ -1,5 +1,5 @@
 import { superfluidMacroForwarderAbi } from "@/lib/abis"
-import { BULK_WITHDRAW_MACRO, MACRO_FORWARDER } from "@/lib/config"
+import { getBulkWithdrawMacro, MACRO_FORWARDER } from "@/lib/config"
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { toast } from "sonner"
 import { encodeAbiParameters } from "viem"
@@ -26,7 +26,9 @@ export const useBulkPoolWithdrawMacro = (
   const withdraw = async () => {
     try {
       await prepareWallet()
-      const args = encodeAbiParameters([{ type: "address[]", name: "pools" }], [pools])
+      const encodedArgs = encodeAbiParameters([{ type: "address[]", name: "pools" }], [pools])
+
+      const bulkWithdrawMacro = getBulkWithdrawMacro(chainId)
 
       writeContract({
         account: address,
@@ -34,7 +36,7 @@ export const useBulkPoolWithdrawMacro = (
         abi: superfluidMacroForwarderAbi,
         chainId,
         functionName: "runMacro",
-        args: [BULK_WITHDRAW_MACRO, args],
+        args: [bulkWithdrawMacro, encodedArgs],
       })
     } catch (e: any) {
       toast.error(e.message, { id: toastId })

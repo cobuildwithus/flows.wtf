@@ -1,5 +1,6 @@
 import { base as baseContracts } from "../addresses"
 import { nounsTokenAddress } from "./abis"
+import { base as baseChain, optimism as optimismChain } from "viem/chains"
 
 // Flow contracts
 export const NOUNS_FLOW = baseContracts.NounsFlow
@@ -16,8 +17,19 @@ export const PERCENTAGE_SCALE = 1e6
 // Macro forwarder address (same across all chains)
 export const MACRO_FORWARDER = "0xfD01285b9435bc45C243E5e7F978E288B2912de6" as `0x${string}`
 
-// Bulk withdraw macro address (same across all chains)
-export const BULK_WITHDRAW_MACRO = "0xd391e17927b1560d6847f90bc3d58b7f95122c9a" as `0x${string}`
+export const BULK_WITHDRAW_MACRO_ADDRESSES = {
+  [baseChain.id]: "0xd391e17927b1560d6847f90bc3d58b7f95122c9a",
+  [optimismChain.id]: "0x82c191c98f489801e021d0e8bc231711ab455504",
+} as const satisfies Record<number, `0x${string}`>
+
+export function getBulkWithdrawMacro(chainId: number): `0x${string}` {
+  const address =
+    BULK_WITHDRAW_MACRO_ADDRESSES[chainId as keyof typeof BULK_WITHDRAW_MACRO_ADDRESSES]
+  if (!address) {
+    throw new Error(`Unsupported chainId: ${chainId}`)
+  }
+  return address
+}
 
 // Farcaster Channel IDs
 export const NOUNS_CHANNEL_URL =
