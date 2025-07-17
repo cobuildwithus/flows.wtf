@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { AnimatedBenefits } from "../animated-benefits"
 
 interface Props {
-  projectId: bigint
+  projectId: number
   chainId: number
   userAddress: string | undefined
   extraRevnetTokens: string

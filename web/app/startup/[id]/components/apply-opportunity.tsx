@@ -12,10 +12,11 @@ interface Props {
   opportunityId: string
   position: string
   size?: ButtonProps["size"]
+  variant?: ButtonProps["variant"]
 }
 
 export function ApplyOpportunity(props: Props) {
-  const { opportunityId, position, startupId, size } = props
+  const { opportunityId, position, startupId, size, variant = "outline" } = props
   const { messages, isOpen, setIsOpen, appendData, setMessages, reload } = useAgentChat()
 
   return (
@@ -24,7 +25,7 @@ export function ApplyOpportunity(props: Props) {
         size={size}
         className="w-full"
         type="button"
-        variant="outline"
+        variant={variant}
         onClick={() => {
           appendData({ opportunityId, startupId })
           setMessages([

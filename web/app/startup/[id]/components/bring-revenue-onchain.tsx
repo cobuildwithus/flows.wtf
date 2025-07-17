@@ -27,7 +27,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 interface Props {
   startupTitle: string
-  projectId: bigint
+  projectId: number
   chainId: number
 }
 

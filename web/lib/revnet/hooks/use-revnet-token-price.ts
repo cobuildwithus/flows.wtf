@@ -6,14 +6,14 @@ import { formatEther, parseEther } from "viem"
 import { useMemo } from "react"
 
 export function useRevnetTokenPrice(
-  projectId: bigint,
+  projectId: number,
   chainId: number,
   isFlowsDenominated: boolean = true,
 ) {
   const { data, ...rest } = useServerFunction(
     getRevnetTokenPrice,
     "revnet-token-price",
-    [projectId, chainId, isFlowsDenominated],
+    [BigInt(projectId), chainId, isFlowsDenominated],
     {
       refreshInterval: 30000, // Refresh every 30 seconds
       revalidateOnFocus: false,

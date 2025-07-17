@@ -49,8 +49,6 @@ export async function GET() {
 
       for (const poolField of POOL_FIELDS) {
         const poolAddress = flow.flow[poolField]
-        console.log({ flow })
-        console.log({ poolAddress })
         if (!poolAddress) continue
 
         try {

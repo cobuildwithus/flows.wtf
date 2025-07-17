@@ -9,15 +9,15 @@ import { tropicalbody } from "./data/tropicalbody"
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
     ...vrbscoffee,
-    revnetProjectIds: { base: 104n },
+    revnetProjectIds: { base: 104 },
   },
   "0x16f7997240d763e1396e8ad33c8a32dbff708c56": {
     ...straystrong,
-    revnetProjectIds: { base: 108n },
+    revnetProjectIds: { base: 108 },
   },
   "0x674c0dbe85b3dee2a9cd63fe0dc7d8b9f724335a": {
     ...tropicalbody,
-    revnetProjectIds: { base: 112n },
+    revnetProjectIds: { base: 112 },
   },
 } as const
 
@@ -60,6 +60,13 @@ export function getStartups(accelerator: Accelerator) {
   return Object.entries(startups)
     .map(([id, startup]) => ({ ...startup, id, accelerator }))
     .filter((s) => s.acceleratorId === accelerator.id)
+}
+
+export function getAllStartupsWithIds() {
+  return Object.entries(startups).map(([id, startup]) => ({
+    ...startup,
+    id,
+  }))
 }
 
 export const getStartupData = cache((id: string) => {

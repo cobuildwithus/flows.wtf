@@ -4,7 +4,7 @@ import { useETHPrice } from "@/app/token/hooks/useETHPrice"
 import { FLOWS_REVNET_PROJECT_ID, FLOWS_TOKEN } from "@/lib/config"
 import { useERC20Supply } from "@/lib/erc20/use-erc20-supply"
 
-export function useFlowsTreasuryBalance(projectId: bigint, chainId: number) {
+export function useFlowsTreasuryBalance(projectId: number, chainId: number) {
   const { ethPrice } = useETHPrice()
 
   const {
