@@ -31,7 +31,7 @@ async function getAllHiringEvents() {
       },
     }),
     database.grant.findMany({
-      where: { isFlow: true, isActive: true, isTopLevel: false },
+      where: { isFlow: true, isActive: true },
       include: {
         subgrants: { where: { isActive: true, isFlow: false, isSiblingFlow: false } },
       },
@@ -71,7 +71,6 @@ async function getHiringEventsForStartup(id: string) {
       isActive: true,
       rootContract: mainFlow.rootContract,
       parentContract: { not: mainFlow.rootContract },
-      isTopLevel: false,
     },
     orderBy: { createdAt: "asc" },
     include: {
@@ -174,6 +173,6 @@ function getStartupInfoForBudget(budget: LimitedFlow) {
 export type HiringEvent = Awaited<ReturnType<typeof _getHiringEvents>>[0]
 
 export const getHiringEvents = unstable_cache(_getHiringEvents, ["hiring-events"], {
-  tags: ["hiring-events"],
+  tags: ["hiring-events-v2"],
   revalidate: 15 * 60, // 15 minutes
 })
