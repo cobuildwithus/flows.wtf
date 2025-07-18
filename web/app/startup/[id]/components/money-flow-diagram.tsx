@@ -66,7 +66,11 @@ export function MoneyFlowDiagram(props: Props) {
   if (!width)
     return (
       <div className="mb-6 mt-1.5 px-2">
-        <MoneyFlowSkeleton hasImpactFlow={impactGrants.grants.length > 0} hasShopify={!!shopify} />
+        <MoneyFlowSkeleton
+          hasImpactFlow={impactGrants.grants.length > 0}
+          hasShopify={!!shopify}
+          hasReviews={startup.reviews.length > 0}
+        />
       </div>
     )
 

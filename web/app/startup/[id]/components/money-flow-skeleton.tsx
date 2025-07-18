@@ -5,9 +5,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 export function MoneyFlowSkeleton({
   hasImpactFlow,
   hasShopify,
+  hasReviews,
 }: {
   hasImpactFlow: boolean
   hasShopify: boolean
+  hasReviews: boolean
 }) {
   return (
     <>
@@ -78,12 +80,14 @@ export function MoneyFlowSkeleton({
               <Skeleton height={32} />
 
               {/* Reviews Section */}
-              <div className="rounded-lg border p-4">
-                <div className="mb-3">
-                  <Skeleton height={20} width="115px" />
+              {hasReviews && (
+                <div className="rounded-lg border p-4">
+                  <div className="mb-3">
+                    <Skeleton height={20} width="115px" />
+                  </div>
+                  <Skeleton height={104} />
                 </div>
-                <Skeleton height={104} />
-              </div>
+              )}
 
               {/* Impact Section */}
               {hasImpactFlow && (
