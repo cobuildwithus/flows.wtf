@@ -5,7 +5,7 @@ export const flows = {
   title: "Flows",
   image:
     "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/618c5e54-fd7f-4717-6b37-1a2c84a72600/original",
-  shortMission: "Build something that matters",
+  shortMission: "The future of funding",
   longMission: `
   Our mission is to increase community driven impact in the world.`,
   // shopify: {
