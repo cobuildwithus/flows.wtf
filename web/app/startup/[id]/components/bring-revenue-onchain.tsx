@@ -24,16 +24,18 @@ import { Disclaimer } from "./disclaimer"
 import { EnsInput } from "@/components/ui/ens-input"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Startup } from "@/lib/onchain-startup/startup"
 
 interface Props {
-  startupTitle: string
-  projectId: bigint
-  chainId: number
+  startup: Startup
 }
 
-export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props) {
+export function BringRevenueOnchain({ startup }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const { address } = useAccount()
+  const { title: startupTitle, revnetProjectIds, chainId, isBackedByFlows } = startup
+  const projectId = revnetProjectIds.base
+
   const { payRevnet, isLoading } = usePayRevnet(projectId, chainId, () => {
     // Reset form and close dialog on success
     setAmount("")
@@ -46,6 +48,7 @@ export function BringRevenueOnchain({ startupTitle, projectId, chainId }: Props)
   const { isLoading: isPriceLoading, calculateTokensFromEth } = useRevnetTokenPrice(
     projectId,
     chainId,
+    isBackedByFlows,
   )
 
   const [amount, setAmount] = useState("")
