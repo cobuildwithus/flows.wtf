@@ -86,7 +86,12 @@ export default async function GrantPage(props: Props) {
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Flows</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            {/* <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/flow/${startup.flow.id}`}>
+                {startup.flow.title}
+              </BreadcrumbLink>
+            </BreadcrumbItem> */}
             <BreadcrumbSeparator className="max-sm:hidden" />
             <BreadcrumbItem className="max-sm:hidden">
               <BreadcrumbPage>{startup.title}</BreadcrumbPage>

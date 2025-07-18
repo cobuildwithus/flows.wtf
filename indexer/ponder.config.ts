@@ -21,7 +21,7 @@ import {
   oldCustomFlowImpl,
   optimism as optimismContracts,
 } from "./addresses"
-import { GARDENx, getChainsAndRpcUrls, IndexerConfig, USDCx } from "./src/utils"
+import { getChainsAndRpcUrls, IndexerConfig, STREAMING_TOKENS } from "./src/utils"
 
 const blockStarts = {
   base: {
@@ -148,7 +148,7 @@ export default createConfig({
       filter: {
         event: "MemberUnitsUpdated",
         args: {
-          token: [USDCx, GARDENx],
+          token: STREAMING_TOKENS,
         },
       },
     },
@@ -160,7 +160,7 @@ export default createConfig({
         event: "FlowDistributionUpdated",
         args: {
           // usdc on base
-          token: [USDCx, GARDENx],
+          token: STREAMING_TOKENS,
         },
       },
     },
@@ -171,7 +171,7 @@ export default createConfig({
       filter: {
         event: "FlowUpdated",
         args: {
-          token: [USDCx, GARDENx],
+          token: STREAMING_TOKENS,
         },
       },
     },

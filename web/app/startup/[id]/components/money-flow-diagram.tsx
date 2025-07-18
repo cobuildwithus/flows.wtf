@@ -83,11 +83,7 @@ export function MoneyFlowDiagram(props: Props) {
       id: "user_token",
       height: 285,
       content: (
-        <BuyRevnetToken
-          projectId={startup.revnetProjectIds.base}
-          changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
-          chainId={startup.chainId}
-        />
+        <BuyRevnetToken changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)} startup={startup} />
       ),
       handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
     },

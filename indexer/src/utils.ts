@@ -105,3 +105,8 @@ export const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
 export const GARDEN = "0x8b2F706cd2bc0Df6679218177c56E72C5241de9B"
 export const FLOWS = "0xa66c1faefd257dbe9da50e56c7816b5710c9e2a1"
 export const FLOWSx = "0x5edbd3756ba7f6f1d7486c838c6f003712dd1bf4"
+
+export const REV = "0x7928b48ce30aee1c5cde302769418b9e4515edcc"
+export const REVx = "0x7fc017037f23D553C7aD58d0d6273949B7194509"
+
+export const STREAMING_TOKENS = [USDCx, GARDENx, FLOWSx, REVx] as `0x${string}`[]

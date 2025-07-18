@@ -7,6 +7,7 @@ import { straystrong } from "./data/straystrong"
 import { tropicalbody } from "./data/tropicalbody"
 import { flows } from "./data/flows"
 import { getJuiceboxProjectForStartup } from "../juicebox/get-juicebox-project"
+import { base } from "@/addresses"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
@@ -46,6 +47,8 @@ export async function getStartup(id: string) {
 
   const accelerator = tryGetAccelerator(grant.parentContract as `0x${string}`)
 
+  const isBackedByFlows = jbxProject?.accountingToken === base.FlowsToken
+
   return {
     ...grant,
     ...startup,
@@ -54,6 +57,7 @@ export async function getStartup(id: string) {
     id,
     slug: startup.slug,
     jbxProject,
+    isBackedByFlows,
   }
 }
 

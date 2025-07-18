@@ -10,22 +10,26 @@ import { AuthButton } from "@/components/ui/auth-button"
 import { ArrowDown } from "lucide-react"
 import { TokenLogo } from "@/app/token/token-logo"
 import { getRevnetTokenLogo } from "@/app/token/get-revnet-token-logo"
+import { Startup } from "@/lib/onchain-startup/startup"
 
 interface Props {
-  projectId: bigint
   changeTokenVolumeEth: (eth: number) => void
-  chainId: number
+  startup: Startup
 }
 
-export function BuyRevnetToken({ projectId, changeTokenVolumeEth, chainId }: Props) {
+export function BuyRevnetToken({ changeTokenVolumeEth, startup }: Props) {
+  const { revnetProjectIds, chainId, isBackedByFlows } = startup
+  const { base: projectId } = revnetProjectIds
+
   const { address } = useAccount()
   const { payRevnet, isLoading } = usePayRevnet(projectId, chainId)
   const {
     isLoading: isPriceLoading,
     calculateTokensFromEth,
     calculateEthFromTokens,
-  } = useRevnetTokenPrice(projectId, chainId)
+  } = useRevnetTokenPrice(projectId, chainId, isBackedByFlows)
   const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
+
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
