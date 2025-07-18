@@ -18,7 +18,6 @@ async function _getStartupBudgets(id: string) {
       isActive: true,
       rootContract: mainFlow.rootContract,
       parentContract: { not: mainFlow.rootContract },
-      isTopLevel: false,
     },
     orderBy: { createdAt: "asc" },
     include: {
