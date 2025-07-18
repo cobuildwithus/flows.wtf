@@ -13,7 +13,7 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
 
   const revenue = await getTotalRevenue(startups)
 
-  return Promise.all(
+  const startupsWithData = await Promise.all(
     startups.map(async (startup) => {
       const startupData = await getStartup(startup.id)
       const revenueData = revenue.revenueByProjectId.get(startup.id)
@@ -45,6 +45,8 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
       } satisfies StartupWithRevenue
     }),
   )
+
+  return startupsWithData.sort((a, b) => b.revenue - a.revenue)
 }
 
 export const getStartupsTableData = unstable_cache(_getStartupsTableData, ["startups-table"], {
