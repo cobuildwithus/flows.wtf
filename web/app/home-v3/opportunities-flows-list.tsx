@@ -88,7 +88,7 @@ function FlowCard({ flow }: { flow: FlowWithDisplayAmount }) {
                 {flow.title}
               </h4>
               <Badge variant="secondary" className="mt-1 text-xs">
-                <Currency flow={flow}>{Number(flow.displayAmount)}</Currency>/mo
+                <Currency display={flow}>{Number(flow.displayAmount)}</Currency>/mo
               </Badge>
             </div>
           </Link>

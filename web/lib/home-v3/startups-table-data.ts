@@ -1,10 +1,9 @@
 "use server"
 
-import { getAllStartupsWithIds, getStartupData } from "@/lib/onchain-startup/startup"
+import { getAllStartupsWithIds, getStartup } from "@/lib/onchain-startup/startup"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { getRevnetBalance } from "@/lib/revnet/hooks/get-revnet-balance"
 import { base as baseChain } from "viem/chains"
-import { getAccelerator } from "@/lib/onchain-startup/data/accelerators"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import type { StartupWithRevenue } from "@/app/home-v3/types"
 import { unstable_cache } from "next/cache"
@@ -16,8 +15,8 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
 
   return Promise.all(
     startups.map(async (startup) => {
+      const startupData = await getStartup(startup.id)
       const revenueData = revenue.revenueByProjectId.get(startup.id)
-      const accelerator = getAccelerator(startup.acceleratorId)
       const [team, revnet] = await Promise.all([
         getTeamMembers(startup.id),
         getRevnetBalance(startup.revnetProjectIds.base, baseChain.id).catch(() => ({
@@ -42,7 +41,7 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
         projectIdBase: startup.revnetProjectIds.base,
         chainId: baseChain.id,
         team: safeTeam,
-        acceleratorColor: accelerator.color,
+        isBackedByFlows: startupData.isBackedByFlows,
       } satisfies StartupWithRevenue
     }),
   )

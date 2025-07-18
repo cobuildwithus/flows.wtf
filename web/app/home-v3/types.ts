@@ -28,5 +28,5 @@ export interface StartupWithRevenue {
   projectIdBase: number
   chainId: number
   team: TeamMember[]
-  acceleratorColor: string
+  isBackedByFlows: boolean
 }

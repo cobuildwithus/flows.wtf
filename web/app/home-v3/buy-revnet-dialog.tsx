@@ -62,6 +62,7 @@ export function BuyRevnetDialog({ startup }: Props) {
   const { isLoading: isPriceLoading, calculateTokensFromEth } = useRevnetTokenPrice(
     startup.projectIdBase,
     startup.chainId,
+    startup.isBackedByFlows,
   )
   const { data: tokenDetails } = useRevnetTokenDetails(startup.projectIdBase, startup.chainId)
   const tokenSymbol = tokenDetails?.symbol || "TOKEN"
