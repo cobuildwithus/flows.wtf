@@ -178,7 +178,7 @@ export default async function GrantPage(props: Props) {
               </div>
 
               <Stat label="Budget" className="">
-                <Currency flow={grant}>{grant.monthlyIncomingFlowRate}</Currency>
+                <Currency display={grant}>{grant.monthlyIncomingFlowRate}</Currency>
                 /mo
               </Stat>
 

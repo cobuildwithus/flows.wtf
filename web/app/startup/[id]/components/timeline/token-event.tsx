@@ -41,7 +41,7 @@ export async function TokenEvent({ payment, date }: Props) {
             >
               {payerProfile.display_name}
             </ProfileLink>{" "}
-            got <Currency flow={{ underlyingTokenSymbol: symbol }}>{amount}</Currency>
+            got <Currency display={{ underlyingTokenSymbol: symbol }}>{amount}</Currency>
             {showBeneficiary && (
               <>
                 {` for `}

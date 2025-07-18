@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { User as UserType } from "@/lib/auth/user"
 import { Trash, User } from "lucide-react"
+import { Currency } from "@/components/ui/currency"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import pluralize from "pluralize"
@@ -25,6 +26,8 @@ interface Props {
   expectedMonthlySalary: number
   startupId: string
   chainId: number
+  underlyingTokenSymbol: string
+  underlyingTokenPrefix: string
 }
 
 export function OpportunityCard(props: Props) {
@@ -39,6 +42,8 @@ export function OpportunityCard(props: Props) {
     user,
     startupId,
     chainId,
+    underlyingTokenSymbol,
+    underlyingTokenPrefix,
   } = props
   const router = useRouter()
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
@@ -91,7 +96,13 @@ export function OpportunityCard(props: Props) {
             <div className="flex items-center justify-between space-x-2">
               <div className="flex gap-1.5">
                 <Badge variant="secondary" className="shrink-0">
-                  ${expectedMonthlySalary}/mo
+                  <Currency
+                    display={{ underlyingTokenSymbol, underlyingTokenPrefix }}
+                    currency="ERC20"
+                  >
+                    {expectedMonthlySalary}
+                  </Currency>
+                  /mo
                 </Badge>
                 <Badge variant="secondary" className="shrink-0">
                   Hiring

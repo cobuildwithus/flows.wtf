@@ -1,19 +1,21 @@
 import { PropsWithChildren } from "react"
 import { formatCurrency } from "@/lib/erc20/super-token"
 
+export type CurrencyDisplay = {
+  underlyingTokenSymbol?: string
+  underlyingTokenPrefix?: string
+}
+
 interface Props {
   as?: "span" | "div"
   className?: string
   currency?: "USD" | "ETH" | "ERC20"
-  flow?: {
-    underlyingTokenSymbol?: string
-    underlyingTokenPrefix?: string
-  }
+  display?: CurrencyDisplay
 }
 
 export const Currency = (props: PropsWithChildren<Props>) => {
-  const { children: amount, as: Component = "span", currency = "USD", flow, ...rest } = props
-  const { underlyingTokenSymbol: tokenSymbol, underlyingTokenPrefix: tokenPrefix } = flow || {}
+  const { children: amount, as: Component = "span", currency = "USD", display, ...rest } = props
+  const { underlyingTokenSymbol: tokenSymbol, underlyingTokenPrefix: tokenPrefix } = display || {}
 
   const value = currency === "ETH" || currency === "ERC20" ? Number(amount) / 1e18 : Number(amount)
 

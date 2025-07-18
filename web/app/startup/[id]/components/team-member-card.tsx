@@ -2,13 +2,17 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Currency } from "@/components/ui/currency"
+import { Currency, CurrencyDisplay } from "@/components/ui/currency"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { cn } from "@/lib/utils"
 import { TeamMemberLink } from "./team-member-link"
 
-export async function TeamMemberCard(props: { member: TeamMember; isAllocator: boolean }) {
-  const { member, isAllocator } = props
+export async function TeamMemberCard(props: {
+  member: TeamMember
+  isAllocator: boolean
+  currency: CurrencyDisplay
+}) {
+  const { member, isAllocator, currency } = props
 
   const { display_name, pfp_url, username } = member
 
@@ -28,7 +32,7 @@ export async function TeamMemberCard(props: { member: TeamMember; isAllocator: b
       <div className="flex flex-col">
         <div>
           <Badge variant="secondary">
-            <Currency>{member.monthlyIncomingFlowRate.toString()}</Currency> /mo
+            <Currency display={currency}>{member.monthlyIncomingFlowRate.toString()}</Currency> /mo
           </Badge>
           <h3 className="mt-2.5 text-sm font-medium">
             <TeamMemberLink username={username || ""} displayName={display_name}>

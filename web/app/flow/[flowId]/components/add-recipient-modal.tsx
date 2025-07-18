@@ -19,16 +19,19 @@ import { useState } from "react"
 import { Plus } from "lucide-react"
 import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-flow-button"
 import { Grant } from "@/lib/database/types"
-import { ComponentProps } from "react"
+import { ComponentProps, ReactNode } from "react"
 import { SearchRecipient } from "./search-recipient/search-recipient"
 
 interface Props {
   flow: Pick<Grant, "id" | "chainId" | "recipient" | "superToken">
+  children?: ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) {
-  const { flow, ...buttonProps } = props
-  const [isOpen, setIsOpen] = useState(false)
+  const { flow, children, open: controlledOpen, onOpenChange, ...buttonProps } = props
+  const [internalOpen, setInternalOpen] = useState(false)
   const [recipient, setRecipient] = useState<{
     address: string
     title: string
@@ -38,6 +41,10 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
   } | null>(null)
 
   const { isConnected } = useLogin()
+
+  // Use controlled state if provided, otherwise use internal state
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setIsOpen = onOpenChange || setInternalOpen
 
   // Handler for successful recipient addition
   const handleAddRecipient = () => {
@@ -55,10 +62,12 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <AuthButton {...buttonProps}>
-          <Plus className="mr-1 h-4 w-4" />
-          Add
-        </AuthButton>
+        {children || (
+          <AuthButton {...buttonProps}>
+            <Plus className="mr-1 h-4 w-4" />
+            Add
+          </AuthButton>
+        )}
       </DialogTrigger>
 
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">

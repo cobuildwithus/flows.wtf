@@ -1,4 +1,5 @@
-import database from "@/lib/database/flows-db"
+"use server"
+
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { getEthAddress } from "@/lib/utils"
 import { getStartupBudgets } from "./budgets"
