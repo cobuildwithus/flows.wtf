@@ -67,13 +67,13 @@ export function CreateOpportunity(props: Props) {
                 </Badge>
               </div>
 
-              <h3 className="mt-3 text-sm font-medium">Create Opportunity</h3>
+              <h3 className="mt-3 text-sm font-medium">Hire someone</h3>
 
-              <div className="text-xs text-muted-foreground">Hire a new colleague</div>
+              <div className="text-xs text-muted-foreground">Create a job posting</div>
 
               <div className="mt-3">
                 <Button size="sm" className="py-0.5" variant="secondary">
-                  + Add new
+                  + Post job
                 </Button>
               </div>
             </div>
@@ -82,7 +82,7 @@ export function CreateOpportunity(props: Props) {
       </DialogTrigger>
       <DialogContent className="w-full max-w-xl">
         <DialogHeader>
-          <DialogTitle>Add New Opportunity</DialogTitle>
+          <DialogTitle>Add Opportunity</DialogTitle>
         </DialogHeader>
         <form action={handleSubmit} className="space-y-4">
           <input type="hidden" name="startupId" value={startupId} />

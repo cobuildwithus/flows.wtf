@@ -173,7 +173,7 @@ export default async function ApplyPage() {
                         </div>
                         <div>
                           <Badge>
-                            <Currency flow={flow}>{Number(flow.displayAmount)}</Currency>
+                            <Currency display={flow}>{Number(flow.displayAmount)}</Currency>
                             /mo
                           </Badge>
                         </div>

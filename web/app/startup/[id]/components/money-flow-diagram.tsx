@@ -55,7 +55,11 @@ export function MoneyFlowDiagram(props: Props) {
     tokenVolume,
     setTokenVolumeEth,
     totalRevnetTokens,
-  } = useFundraiseIllustration(startup.revnetProjectIds.base, startup.chainId)
+  } = useFundraiseIllustration(
+    startup.revnetProjectIds.base,
+    startup.chainId,
+    startup.isBackedByFlows,
+  )
 
   const shopify = startup.shopify
 
@@ -83,11 +87,7 @@ export function MoneyFlowDiagram(props: Props) {
       id: "user_token",
       height: 285,
       content: (
-        <BuyRevnetToken
-          projectId={startup.revnetProjectIds.base}
-          changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
-          chainId={startup.chainId}
-        />
+        <BuyRevnetToken changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)} startup={startup} />
       ),
       handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
     },
@@ -113,15 +113,7 @@ export function MoneyFlowDiagram(props: Props) {
       height: 90,
       content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
     },
-    {
-      col: 3,
-      row: 1,
-      id: "product",
-      title: diagram.receive.name,
-      height: startup.reviews.length > 0 ? 200 : 106,
-      content: <Reviews reviews={startup.reviews} />,
-      handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-    },
+
     // {
     //   col: 3,
     //   row: 2,
@@ -181,6 +173,18 @@ export function MoneyFlowDiagram(props: Props) {
         />
       ),
       handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
+    })
+  }
+
+  if (diagram.receive) {
+    items.push({
+      col: 3,
+      row: 1,
+      id: "product",
+      title: diagram.receive.name,
+      height: startup.reviews.length > 0 ? 200 : 106,
+      content: <Reviews reviews={startup.reviews} />,
+      handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
     })
   }
 

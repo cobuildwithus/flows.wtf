@@ -15,6 +15,7 @@ import { CreateOpportunity } from "./create-opportunity"
 import { AllocateBudgets } from "./allocate-budgets"
 import { OpportunityCard } from "./opportunity-card"
 import { TeamMemberCard } from "./team-member-card"
+import { HireDirectly } from "./hire-directly"
 
 interface Props {
   members: TeamMember[]
@@ -59,7 +60,12 @@ export async function Team(props: Props) {
                 user={user?.address ?? null}
               >
                 {members.map((m) => (
-                  <TeamMemberCard isAllocator={canManage} key={m.recipient} member={m} />
+                  <TeamMemberCard
+                    isAllocator={canManage}
+                    key={m.recipient}
+                    member={m}
+                    currency={startup}
+                  />
                 ))}
               </AllocateBudgets>
               <div className="hidden sm:block">
@@ -121,9 +127,12 @@ async function OpportunitiesSection({
           user={user}
           startupId={startupId}
           chainId={o.budget.chainId}
+          underlyingTokenSymbol={o.budget.underlyingTokenSymbol}
+          underlyingTokenPrefix={o.budget.underlyingTokenPrefix}
         />
       ))}
       {canManage && <CreateOpportunity budgets={budgets} startupId={startupId} />}
+      {canManage && <HireDirectly budgets={budgets} />}
     </div>
   )
 }
@@ -139,6 +148,8 @@ async function getOpportunitiesWithProfiles(startupId: string) {
       budget: {
         select: {
           chainId: true,
+          underlyingTokenSymbol: true,
+          underlyingTokenPrefix: true,
         },
       },
       expectedMonthlySalary: true,

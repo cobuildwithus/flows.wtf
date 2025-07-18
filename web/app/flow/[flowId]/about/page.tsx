@@ -63,7 +63,7 @@ export default async function FlowPage(props: Props) {
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Budget</h4>
                     <Badge className="mt-2">
-                      <Currency flow={flow}>{flow.monthlyIncomingFlowRate}</Currency>
+                      <Currency display={flow}>{flow.monthlyIncomingFlowRate}</Currency>
                       /mo
                     </Badge>
                   </div>

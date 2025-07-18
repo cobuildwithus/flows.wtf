@@ -5,5 +5,8 @@ export function getRevnetTokenLogo(tokenSymbol: string) {
   if (tokenSymbol === "FOUNS") {
     return "https://ipfs.io/ipfs/Qma7knXezhyuAPx9dcaCQG5QD5nawMNFX3TXgj7waA1vKu"
   }
+  if (tokenSymbol === "flows") {
+    return "/flows.png"
+  }
   return "/eth.png"
 }

@@ -1,10 +1,13 @@
 import { cache } from "react"
 import database from "../database/flows-db"
-import { Accelerator, getAccelerator } from "./data/accelerators"
+import { Accelerator, tryGetAccelerator } from "./data/accelerators"
 import { vrbscoffee } from "./data/vrbscoffee"
 import { getAllocator } from "../allocation/allocation-data/get-allocator"
 import { straystrong } from "./data/straystrong"
 import { tropicalbody } from "./data/tropicalbody"
+import { flows } from "./data/flows"
+import { getJuiceboxProjectForStartup } from "../juicebox/get-juicebox-project"
+import { base } from "@/addresses"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
@@ -19,6 +22,10 @@ const startups = {
     ...tropicalbody,
     revnetProjectIds: { base: 112n },
   },
+  "0x4c29314870977d7d81e47274762e74f0ebf84037": {
+    ...flows,
+    revnetProjectIds: { base: 99n },
+  },
 } as const
 
 const startupIdBySlug = Object.fromEntries(
@@ -29,13 +36,18 @@ export async function getStartup(id: string) {
   const startup = getStartupData(id)
 
   const grant = await database.grant.findUniqueOrThrow({
-    where: { id, isTopLevel: false },
-    include: { flow: true },
+    where: { id, isFlow: true },
   })
+  const { chainId } = grant
 
-  const allocator = await getAllocator(grant.allocationStrategies[0], grant.chainId)
+  const [allocator, jbxProject] = await Promise.all([
+    getAllocator(grant.allocationStrategies[0], chainId),
+    getJuiceboxProjectForStartup(chainId, Number(startup.revnetProjectIds.base)),
+  ])
 
-  const accelerator = getAccelerator(startup.acceleratorId)
+  const accelerator = tryGetAccelerator(grant.parentContract as `0x${string}`)
+
+  const isBackedByFlows = jbxProject?.accountingToken === base.FlowsToken
 
   return {
     ...grant,
@@ -44,6 +56,8 @@ export async function getStartup(id: string) {
     allocator,
     id,
     slug: startup.slug,
+    jbxProject,
+    isBackedByFlows,
   }
 }
 
@@ -56,10 +70,21 @@ export function getStartupIdFromSlug(slug: string): string | null {
 
 export type Startup = Awaited<ReturnType<typeof getStartup>>
 
-export function getStartups(accelerator: Accelerator) {
-  return Object.entries(startups)
-    .map(([id, startup]) => ({ ...startup, id, accelerator }))
-    .filter((s) => s.acceleratorId === accelerator.id)
+export async function getStartups(accelerator: Accelerator) {
+  const startups = await database.grant.findMany({
+    where: { parentContract: accelerator.id, isTopLevel: false, isFlow: true },
+    include: { flow: true },
+  })
+
+  return startups.map((s) => {
+    console.log(s.id)
+    const startup = getStartupData(s.id)
+    return {
+      ...s,
+      ...startup,
+      accelerator,
+    }
+  })
 }
 
 export const getStartupData = cache((id: string) => {

@@ -46,8 +46,8 @@ export function DAOInfoDialog({ startupTitle, projectId, chainId, isOpen, onOpen
         </DialogHeader>
         <div className="mb-2 space-y-4">
           <p className="text-sm text-muted-foreground">
-            {tokenDetails?.symbol || "DAO"} tokens represent your membership in the {startupTitle}{" "}
-            network.
+            <span className="font-medium capitalize">{tokenDetails?.symbol || "DAO"}</span> tokens
+            represent your membership in the {startupTitle} network.
           </p>
 
           <div className="space-y-3">

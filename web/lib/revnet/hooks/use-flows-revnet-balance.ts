@@ -1,46 +1,37 @@
 import { useRevnetBalance } from "@/lib/revnet/hooks/use-revnet-balance"
 import { useMemo } from "react"
+import { useFlowsPrice } from "@/lib/revnet/hooks/use-flows-price"
 import { useETHPrice } from "@/app/token/hooks/useETHPrice"
-import { FLOWS_REVNET_PROJECT_ID, FLOWS_TOKEN } from "@/lib/config"
-import { useERC20Supply } from "@/lib/erc20/use-erc20-supply"
 
-export function useFlowsTreasuryBalance(projectId: bigint, chainId: number) {
+export function useFlowsTreasuryBalance(
+  projectId: bigint,
+  chainId: number,
+  isBackedByFlows: boolean,
+) {
   const { ethPrice } = useETHPrice()
-
   const {
     data: startupData,
     isLoading: isStartupLoading,
     error: startupError,
   } = useRevnetBalance(projectId, chainId)
 
-  const {
-    data: flowsData,
-    isLoading: isFlowsLoading,
-    error: flowsError,
-  } = useRevnetBalance(FLOWS_REVNET_PROJECT_ID, chainId)
-
-  const { totalSupply: flowsSupply, isLoading: isSupplyLoading } = useERC20Supply(
-    FLOWS_TOKEN,
-    chainId,
-  )
+  const { flowsPrice, isLoading: isFlowsPriceLoading, error: flowsPriceError } = useFlowsPrice()
 
   const treasuryBalanceUSD = useMemo(() => {
-    if (!startupData?.balance || !flowsData?.balance || !flowsSupply || !ethPrice) {
+    if (!startupData?.balance || !flowsPrice) {
       return 0
     }
 
-    // Calculate FLOWS token price: (flows treasury balance in ETH * ETH price) / total supply
-    const flowsBalanceETH = Number(flowsData.balance)
-    const flowsPrice = (flowsBalanceETH * ethPrice) / flowsSupply
+    if (isBackedByFlows) {
+      return (Number(startupData.balance) / 1e18) * flowsPrice
+    }
 
-    // Calculate startup treasury value: balance in FLOWS * FLOWS price
-    const startupBalanceFlows = Number(startupData.balance) / 1e18
-    return startupBalanceFlows * flowsPrice
-  }, [startupData?.balance, flowsData?.balance, flowsSupply, ethPrice])
+    return (Number(startupData.balance) / 1e18) * (ethPrice || 1)
+  }, [startupData?.balance, flowsPrice])
 
   return {
     treasuryBalanceUSD,
-    isLoading: isStartupLoading || isFlowsLoading || isSupplyLoading,
-    error: startupError || flowsError,
+    isLoading: isStartupLoading || isFlowsPriceLoading,
+    error: startupError || flowsPriceError,
   }
 }

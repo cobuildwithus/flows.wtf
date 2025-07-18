@@ -21,7 +21,7 @@ const chartConfig = {
 
 export function SalesChart({ data }: Props) {
   return (
-    <ChartContainer config={chartConfig} className="mt-4 h-[320px] w-full">
+    <ChartContainer config={chartConfig} className="mt-4 h-full w-full">
       <ComposedChart data={data} accessibilityLayer>
         <CartesianGrid vertical={false} />
         <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />

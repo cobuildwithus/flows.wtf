@@ -22,7 +22,11 @@ export function ProductsList(props: Props) {
   const [quantity, setQuantity] = useState("1")
   const [touched, setTouched] = useState(false)
   const projectId = startup.revnetProjectIds.base
-  const { calculateTokensFromEth } = useRevnetTokenPrice(projectId, chainId)
+  const { calculateTokensFromEth } = useRevnetTokenPrice(
+    projectId,
+    chainId,
+    startup.isBackedByFlows,
+  )
   const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
 
   const tokenSymbol = tokenDetails?.symbol || ""

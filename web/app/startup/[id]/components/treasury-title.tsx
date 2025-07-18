@@ -20,6 +20,7 @@ export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
   const { treasuryBalanceUSD, isLoading, error } = useFlowsTreasuryBalance(
     BigInt(startup.revnetProjectIds.base),
     chainId,
+    startup.isBackedByFlows,
   )
 
   const [isFlashing, setIsFlashing] = useState(false)

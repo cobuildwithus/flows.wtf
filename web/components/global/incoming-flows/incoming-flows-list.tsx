@@ -116,7 +116,7 @@ function IncomingSuperfluidFlowItem({
                   </Avatar>
                   <div className="text-sm font-medium">{profile.display_name}</div>
                   <div className="text-xs text-muted-foreground">
-                    <Currency flow={parentFlow} currency="ERC20">
+                    <Currency display={parentFlow} currency="ERC20">
                       {flowRatePerMonth}
                     </Currency>
                     /mo
@@ -167,7 +167,7 @@ function IncomingSiblingFlowItem({
                 {title || "Sibling Flow"}
               </a>
               <div className="text-xs text-muted-foreground">
-                <Currency flow={parentFlow}>{flowRate}</Currency>
+                <Currency display={parentFlow}>{flowRate}</Currency>
                 /mo
               </div>
             </div>

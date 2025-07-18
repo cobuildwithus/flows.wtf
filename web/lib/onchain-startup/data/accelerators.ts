@@ -1,6 +1,6 @@
 import { accelerators as acceleratorAddresses } from "@/addresses"
 
-export type AcceleratorId = keyof typeof acceleratorAddresses
+type AcceleratorId = `0x${string}`
 
 export type Accelerator = {
   id: AcceleratorId
@@ -8,15 +8,17 @@ export type Accelerator = {
   flowId: string
   coverImage: string
   color: string
+  slug: string
 }
 
 const accelerators: Accelerator[] = [
   {
-    id: "vrbs",
+    id: acceleratorAddresses.vrbs,
     name: "Vrbs",
     flowId: acceleratorAddresses.vrbs,
     coverImage: "/vrbs-bg.png",
     color: "#22c55e",
+    slug: "vrbs",
   },
 ] as const
 
@@ -24,5 +26,9 @@ export function getAccelerator(id: AcceleratorId) {
   const accelerator = accelerators.find((a) => a.id === id)
 
   if (!accelerator) throw new Error(`Accelerator ${id} not found`)
-  return accelerator
+  return accelerator ?? null
+}
+
+export function tryGetAccelerator(id: AcceleratorId) {
+  return accelerators.find((a) => a.id === id) ?? null
 }

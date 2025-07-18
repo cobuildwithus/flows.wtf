@@ -66,7 +66,7 @@ export const BudgetDialog = async (props: Props) => {
                     <div className="space-y-1">
                       <h3 className="text-sm font-medium text-muted-foreground">Min. Funding</h3>
                       <p className="text-2xl font-bold">
-                        <Currency flow={flow}>{flow.derivedData?.minimumSalary || 0}</Currency>
+                        <Currency display={flow}>{flow.derivedData?.minimumSalary || 0}</Currency>
                         /month
                       </p>
                     </div>
@@ -126,7 +126,7 @@ export const BudgetDialog = async (props: Props) => {
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Incoming Flow</p>
                     <p className="text-xl font-bold">
-                      <Currency flow={flow}>{flow.monthlyIncomingFlowRate || 0}</Currency>
+                      <Currency display={flow}>{flow.monthlyIncomingFlowRate || 0}</Currency>
                       /month
                     </p>
                   </div>
@@ -138,7 +138,7 @@ export const BudgetDialog = async (props: Props) => {
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Outgoing Flow</p>
                     <p className="text-xl font-bold">
-                      <Currency flow={flow}>{flow.monthlyOutgoingFlowRate || 0}</Currency>
+                      <Currency display={flow}>{flow.monthlyOutgoingFlowRate || 0}</Currency>
                       /month
                     </p>
                   </div>
@@ -160,7 +160,7 @@ export const BudgetDialog = async (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency flow={flow}>{flow.monthlyBaselinePoolFlowRate || 0}</Currency>
+                  <Currency display={flow}>{flow.monthlyBaselinePoolFlowRate || 0}</Currency>
                   /mo
                 </span>
               </div>
@@ -181,7 +181,7 @@ export const BudgetDialog = async (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency flow={flow}>{flow.monthlyBonusPoolFlowRate || 0}</Currency>
+                  <Currency display={flow}>{flow.monthlyBonusPoolFlowRate || 0}</Currency>
                   /mo
                 </span>
               </div>
@@ -202,7 +202,7 @@ export const BudgetDialog = async (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency flow={flow}>{flow.monthlyRewardPoolFlowRate || 0}</Currency>
+                  <Currency display={flow}>{flow.monthlyRewardPoolFlowRate || 0}</Currency>
                   /mo
                 </span>
               </div>

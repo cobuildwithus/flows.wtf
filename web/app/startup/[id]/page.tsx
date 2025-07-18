@@ -86,12 +86,12 @@ export default async function GrantPage(props: Props) {
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Flows</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            {/* <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/${startup.acceleratorId}`}>
+              <BreadcrumbLink href={`/flow/${startup.flow.id}`}>
                 {startup.flow.title}
               </BreadcrumbLink>
-            </BreadcrumbItem>
+            </BreadcrumbItem> */}
             <BreadcrumbSeparator className="max-sm:hidden" />
             <BreadcrumbItem className="max-sm:hidden">
               <BreadcrumbPage>{startup.title}</BreadcrumbPage>
@@ -129,9 +129,7 @@ export default async function GrantPage(props: Props) {
                 <SalesOverview
                   monthlySales={salesSummary.monthlySales}
                   tokenPayments={tokenPayments}
-                  startupTitle={startup.title}
-                  projectId={startup.revnetProjectIds.base}
-                  chainId={startup.chainId}
+                  startup={startup}
                 />
               </Suspense>
             </div>
@@ -158,18 +156,20 @@ export default async function GrantPage(props: Props) {
             title="Budget"
             value={
               <>
-                <Currency>{totalBudget}</Currency>
+                <Currency display={startup}>{totalBudget}</Currency>
                 /mo
               </>
             }
             icon={Repeat}
           />
 
-          <MetricCard
-            title={`Funding from ${startup.accelerator.name}`}
-            value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
-            icon={Banknote}
-          />
+          {startup.accelerator && (
+            <MetricCard
+              title={`Funding from ${startup.accelerator.name}`}
+              value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
+              icon={Banknote}
+            />
+          )}
         </div>
 
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">

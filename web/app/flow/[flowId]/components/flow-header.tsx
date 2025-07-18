@@ -44,7 +44,7 @@ export const FlowHeader = async (props: Props) => {
               <div className="text-sm max-sm:text-xs md:text-center">
                 <BudgetDialog totalAllocationWeight={Number(totalAllocationWeight)} flow={flow}>
                   <Badge className="cursor-help">
-                    <Currency flow={flow}>
+                    <Currency display={flow}>
                       {(flow.activeRecipientCount > 0
                         ? flow.monthlyOutgoingFlowRate
                         : flow.monthlyIncomingFlowRate
