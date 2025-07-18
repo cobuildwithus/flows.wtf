@@ -5,15 +5,11 @@ import { getRevnetTokenPrice } from "./get-revnet-token-price"
 import { formatEther, parseEther } from "viem"
 import { useMemo } from "react"
 
-export function useRevnetTokenPrice(
-  projectId: bigint,
-  chainId: number,
-  isFlowsDenominated: boolean = true,
-) {
+export function useRevnetTokenPrice(projectId: bigint, chainId: number, isBackedByFlows: boolean) {
   const { data, ...rest } = useServerFunction(
     getRevnetTokenPrice,
     "revnet-token-price",
-    [projectId, chainId, isFlowsDenominated],
+    [projectId, chainId, isBackedByFlows],
     {
       refreshInterval: 30000, // Refresh every 30 seconds
       revalidateOnFocus: false,

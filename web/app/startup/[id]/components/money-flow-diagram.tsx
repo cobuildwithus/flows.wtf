@@ -55,7 +55,11 @@ export function MoneyFlowDiagram(props: Props) {
     tokenVolume,
     setTokenVolumeEth,
     totalRevnetTokens,
-  } = useFundraiseIllustration(startup.revnetProjectIds.base, startup.chainId)
+  } = useFundraiseIllustration(
+    startup.revnetProjectIds.base,
+    startup.chainId,
+    startup.isBackedByFlows,
+  )
 
   const shopify = startup.shopify
 
