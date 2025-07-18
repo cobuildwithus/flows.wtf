@@ -35,15 +35,7 @@ export async function HiringEventGlobal({ event, date }: Props) {
           >
             {event.startupName}
           </Link>{" "}
-          –{" "}
-          <Currency
-            flow={{
-              underlyingTokenSymbol: event.underlyingTokenSymbol,
-              underlyingTokenPrefix: event.underlyingTokenPrefix,
-            }}
-          >
-            {event.monthlyFlowRate}
-          </Currency>
+          – <Currency display={event}>{event.monthlyFlowRate}</Currency>
           /mo
         </p>
         <DateTime date={date} relative short className="text-xs text-muted-foreground" />

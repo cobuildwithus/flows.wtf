@@ -74,7 +74,7 @@ export function GrowthEvent({ event }: Props) {
               ) : (
                 <>
                   <span className="font-semibold text-emerald-600">
-                    <Currency flow={event.data.flow}>{event.data.monthlyFlowRate}</Currency>/mo
+                    <Currency display={event.data.flow}>{event.data.monthlyFlowRate}</Currency>/mo
                   </span>
                   <span className="text-muted-foreground">•</span>
                 </>
