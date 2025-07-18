@@ -15,6 +15,7 @@ export const flows = {
   // impactFlowId: "0x5a0b34e575c46b657d0dba5c87f74380987204c8",
   socialUsernames: {
     farcasterChannel: "flows",
+    x: "flows_wtf",
   },
   // reviews: [
   //   {
