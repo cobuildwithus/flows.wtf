@@ -156,7 +156,7 @@ export default async function GrantPage(props: Props) {
             title="Budget"
             value={
               <>
-                <Currency>{totalBudget}</Currency>
+                <Currency display={startup}>{totalBudget}</Currency>
                 /mo
               </>
             }
