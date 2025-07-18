@@ -1,4 +1,4 @@
-import { USDCx, GARDENx, USDC, GARDEN } from "../utils"
+import { USDCx, GARDENx, USDC, GARDEN, FLOWS, FLOWSx } from "../utils"
 import { superTokenAbi } from "../../abis"
 import type { Context } from "ponder:registry"
 
@@ -22,6 +22,8 @@ const LOGO_MAP: Record<string, string> = {
   [GARDENx.toLowerCase()]: "/gardens.png",
   [USDC.toLowerCase()]: "https://cdn.whisk.so/token/usdc.svg",
   [GARDEN.toLowerCase()]: "/gardens.png",
+  [FLOWSx.toLowerCase()]: "/flows.png",
+  [FLOWS.toLowerCase()]: "/flows.png",
 }
 
 export async function fetchTokenInfo(

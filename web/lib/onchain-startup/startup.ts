@@ -6,6 +6,7 @@ import { getAllocator } from "../allocation/allocation-data/get-allocator"
 import { straystrong } from "./data/straystrong"
 import { tropicalbody } from "./data/tropicalbody"
 import { flows } from "./data/flows"
+import { getJuiceboxProjectForStartup } from "../juicebox/get-juicebox-project"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
@@ -36,8 +37,12 @@ export async function getStartup(id: string) {
   const grant = await database.grant.findUniqueOrThrow({
     where: { id, isFlow: true },
   })
+  const { chainId } = grant
 
-  const allocator = await getAllocator(grant.allocationStrategies[0], grant.chainId)
+  const [allocator, jbxProject] = await Promise.all([
+    getAllocator(grant.allocationStrategies[0], chainId),
+    getJuiceboxProjectForStartup(chainId, Number(startup.revnetProjectIds.base)),
+  ])
 
   const accelerator = tryGetAccelerator(grant.parentContract as `0x${string}`)
 
@@ -48,6 +53,7 @@ export async function getStartup(id: string) {
     allocator,
     id,
     slug: startup.slug,
+    jbxProject,
   }
 }
 

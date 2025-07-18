@@ -458,6 +458,12 @@ view JuiceboxProject {
   projectTagline        String?  @map("project_tagline")
   suckerGroupId         String?  @map("sucker_group_id")
 
+  accountingToken         String  @map("accounting_token")
+  accountingDecimals      Int     @map("accounting_decimals")
+  accountingCurrency      Int     @map("accounting_currency")
+  accountingTokenSymbol   String  @map("accounting_token_symbol")
+  accountingTokenName     String  @map("accounting_token_name")
+
   participants JuiceboxParticipant[]
   rulesets     JuiceboxRuleset[]
   payEvents    JuiceboxPayEvent[]
