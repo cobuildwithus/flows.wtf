@@ -113,15 +113,7 @@ export function MoneyFlowDiagram(props: Props) {
       height: 90,
       content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
     },
-    {
-      col: 3,
-      row: 1,
-      id: "product",
-      title: diagram.receive.name,
-      height: startup.reviews.length > 0 ? 200 : 106,
-      content: <Reviews reviews={startup.reviews} />,
-      handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
-    },
+
     // {
     //   col: 3,
     //   row: 2,
@@ -181,6 +173,18 @@ export function MoneyFlowDiagram(props: Props) {
         />
       ),
       handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
+    })
+  }
+
+  if (diagram.receive) {
+    items.push({
+      col: 3,
+      row: 1,
+      id: "product",
+      title: diagram.receive.name,
+      height: startup.reviews.length > 0 ? 200 : 106,
+      content: <Reviews reviews={startup.reviews} />,
+      handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
     })
   }
 

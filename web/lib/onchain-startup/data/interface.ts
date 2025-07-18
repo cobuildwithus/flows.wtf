@@ -12,7 +12,6 @@ export interface StartupData {
   socialUsernames: SocialProfileUsernames
   reviews: { url: string; image: string }[]
   diagram: {
-    action: { name: string; description?: string }
-    receive: { name: string; description?: string }
+    receive?: { name: string; description?: string }
   }
 }

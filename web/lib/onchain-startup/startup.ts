@@ -1,10 +1,11 @@
 import { cache } from "react"
 import database from "../database/flows-db"
-import { Accelerator, getAccelerator, tryGetAccelerator } from "./data/accelerators"
+import { Accelerator, tryGetAccelerator } from "./data/accelerators"
 import { vrbscoffee } from "./data/vrbscoffee"
 import { getAllocator } from "../allocation/allocation-data/get-allocator"
 import { straystrong } from "./data/straystrong"
 import { tropicalbody } from "./data/tropicalbody"
+import { flows } from "./data/flows"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
@@ -19,6 +20,10 @@ const startups = {
     ...tropicalbody,
     revnetProjectIds: { base: 112n },
   },
+  "0x4c29314870977d7d81e47274762e74f0ebf84037": {
+    ...flows,
+    revnetProjectIds: { base: 99n },
+  },
 } as const
 
 const startupIdBySlug = Object.fromEntries(
@@ -29,8 +34,7 @@ export async function getStartup(id: string) {
   const startup = getStartupData(id)
 
   const grant = await database.grant.findUniqueOrThrow({
-    where: { id, isTopLevel: false },
-    include: { flow: true },
+    where: { id, isFlow: true },
   })
 
   const allocator = await getAllocator(grant.allocationStrategies[0], grant.chainId)
