@@ -12,7 +12,7 @@ export default async function ActivityFeed() {
   return (
     <section className="py-16">
       <div className="container">
-        <h2 className="mb-6 text-2xl font-semibold md:text-5xl">Builders and backers</h2>
+        <h2 className="mb-6 text-4xl font-semibold md:text-5xl">Builders and backers</h2>
         <p className="mb-6 text-muted-foreground">See who&apos;s building and backing projects</p>
         <Card className="border border-border/40 bg-card/80 shadow-sm">
           <CardContent className="space-y-6">

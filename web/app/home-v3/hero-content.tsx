@@ -37,7 +37,7 @@ export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Pro
           Grow your project
         </Link>
         <Link
-          href="/explore"
+          href="#live-opportunities"
           className="inline-flex items-center justify-center rounded-md border-2 border-emerald-600 px-8 py-4 text-lg font-medium text-emerald-600 transition-all duration-200 hover:bg-emerald-50 dark:hover:bg-emerald-950"
         >
           Contribute
