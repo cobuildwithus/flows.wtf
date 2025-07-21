@@ -17,6 +17,7 @@ import { GrantsTable } from "@/components/global/grants-table"
 import { AllocationBar } from "@/components/global/allocation-bar"
 import { Currency } from "@/components/ui/currency"
 import { LimitedGrant } from "@/lib/database/types"
+import { FundFlow } from "@/components/fund-flow/fund-flow"
 
 interface Props {
   flows: LimitedGrant[]
@@ -57,31 +58,33 @@ export function AllocateBudgets(props: Props) {
       <DialogTrigger asChild>
         <div className="flex shrink-0 cursor-pointer space-x-4">{children}</div>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Manage your budgets</DialogTitle>
+      <DialogContent className="max-h-[80vh] w-[95vw] max-w-[95vw] overflow-y-auto px-8 md:max-w-6xl">
+        <DialogHeader className="hidden">
+          <DialogTitle>Manage flows</DialogTitle>
         </DialogHeader>
-        <div className="mb-20">
-          <div className="mb-8 text-xs text-muted-foreground">
-            <Currency>{totalBudget}</Currency>
-            /mo total
-          </div>
-
-          {flows.length > 1 && (
-            <div className="mb-6 flex items-center justify-start space-x-2">
+        <div className="mb-20 mt-3 overflow-hidden">
+          <div className="flex items-center justify-between space-x-2 pb-4">
+            <div className="flex items-center space-x-2 overflow-x-auto">
               {flows.map((flow, index) => (
-                <Button
+                <div
                   key={flow.id}
-                  className="h-7 rounded-full px-5"
+                  className={`h-10 shrink-0 cursor-pointer px-3 py-2 text-base font-medium transition-colors ${
+                    selectedFlowIndex === index
+                      ? "border-b-2 border-primary text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                   onClick={() => setSelectedFlowIndex(index)}
-                  variant={selectedFlowIndex === index ? "default" : "outline"}
                 >
                   {flow.title}
-                </Button>
+                </div>
               ))}
             </div>
-          )}
-          <div className="min-h-[340px]">
+            <div className="shrink-0">
+              <FundFlow size="sm" flow={selectedFlow} variant="outline" />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
             {selectedGrants.length > 0 ? (
               <AllocationProvider
                 chainId={selectedFlow.chainId}
@@ -90,7 +93,12 @@ export function AllocateBudgets(props: Props) {
                 user={user}
                 defaultActive
               >
-                <GrantsTable canManage={isManager} flow={selectedFlow} grants={selectedGrants} />
+                <GrantsTable
+                  canManage={isManager}
+                  flow={selectedFlow}
+                  grants={selectedGrants}
+                  hideBuilder
+                />
                 <AllocationBar />
               </AllocationProvider>
             ) : (

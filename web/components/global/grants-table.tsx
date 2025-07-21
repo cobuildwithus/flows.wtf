@@ -29,17 +29,18 @@ interface Props {
     LimitedGrant & { derivedData: Pick<DerivedData, "lastBuilderUpdate"> | null; profile: Profile }
   >
   canManage?: boolean
+  hideBuilder?: boolean
 }
 
 export function GrantsTable(props: Props) {
-  const { flow, grants, canManage = false } = props
+  const { flow, grants, canManage = false, hideBuilder = false } = props
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead colSpan={2}>Name</TableHead>
-          {!flow.isTopLevel && <TableHead>Builder</TableHead>}
+          {!flow.isTopLevel && !hideBuilder && <TableHead>Builder</TableHead>}
           <TableHead className="text-center">Total earned</TableHead>
           <TableHead className="text-center">Monthly funding</TableHead>
           <TableHead className="text-center">Votes</TableHead>
@@ -61,10 +62,10 @@ export function GrantsTable(props: Props) {
               <GrantLogoCell image={getIpfsUrl(grant.image, "pinata")} title={grant.title} />
 
               <TableCell className="space-y-1">
-                <div className="max-w-64 overflow-hidden text-ellipsis max-sm:truncate">
+                <div className="max-w-32 overflow-hidden text-ellipsis max-sm:truncate md:max-w-64">
                   <Link
                     href={getGrantUrl(grant)}
-                    className="text-sm font-medium duration-100 ease-out hover:text-primary md:whitespace-normal"
+                    className="text-sm font-medium duration-100 ease-out hover:text-primary md:max-w-full md:whitespace-normal"
                     tabIndex={-1}
                   >
                     {grant.title}
@@ -73,7 +74,7 @@ export function GrantsTable(props: Props) {
 
                 {isRemovalRequested && <Badge variant="warning">Challenged</Badge>}
               </TableCell>
-              {!flow.isTopLevel && (
+              {!flow.isTopLevel && !hideBuilder && (
                 <TableCell>
                   <div className="relative inline-flex">
                     <div className="flex items-center space-x-1.5">
