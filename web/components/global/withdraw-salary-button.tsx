@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, ButtonProps } from "@/components/ui/button"
-import { Currency } from "@/components/ui/currency"
+import { Currency, CurrencyDisplay } from "@/components/ui/currency"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { DownloadIcon } from "@radix-ui/react-icons"
@@ -13,6 +13,7 @@ export const WithdrawSalaryButton = ({
   flow,
   builder,
   size = "sm",
+  currencyDisplay,
   onSuccess,
   chainId,
 }: {
@@ -20,6 +21,7 @@ export const WithdrawSalaryButton = ({
   flow: `0x${string}`
   builder: `0x${string}`
   size?: ButtonProps["size"]
+  currencyDisplay?: CurrencyDisplay
   onSuccess?: () => void
   chainId: number
 }) => {
@@ -69,7 +71,11 @@ export const WithdrawSalaryButton = ({
           variant="ghost"
           disabled={balance === BigInt(0) || isLoading}
         >
-          <Currency className={cn("text-center", getTextSize(size))}>
+          <Currency
+            compact
+            display={currencyDisplay}
+            className={cn("text-center", getTextSize(size))}
+          >
             {Number(balance) / 1e18}
           </Currency>
           <DownloadIcon className={cn("ml-1", getIconSize(size))} />

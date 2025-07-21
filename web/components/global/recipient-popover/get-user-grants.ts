@@ -14,7 +14,19 @@ export const getUserGrants = unstable_cache(
         // isRemoved: false,
       },
       select: {
-        flow: true,
+        flow: {
+          select: {
+            title: true,
+            underlyingERC20Token: true,
+            underlyingTokenPrefix: true,
+            underlyingTokenSymbol: true,
+            image: true,
+            baselinePool: true,
+            bonusPool: true,
+            chainId: true,
+            id: true,
+          },
+        },
         id: true,
         title: true,
         image: true,

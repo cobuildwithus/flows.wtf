@@ -29,7 +29,7 @@ export const getUserUpdatesChannel = cache(async (address: `0x${string}` | undef
       hasFarcasterAccount: true,
       isNounsMember,
       isFlowsMember,
-      updatesChannel: isNounsMember ? NOUNS_CHANNEL_ID : isFlowsMember ? FLOWS_CHANNEL_ID : null,
+      updatesChannel: isFlowsMember ? FLOWS_CHANNEL_ID : null,
     }
   } catch (e: any) {
     console.error(e?.message)

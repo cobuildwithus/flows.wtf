@@ -18,6 +18,7 @@ import { WithdrawSalaryButton } from "../withdraw-salary-button"
 import { useUserGrants } from "./use-user-grants"
 import SignInWithNeynar from "../signin-with-neynar"
 import type { User } from "@/lib/auth/user"
+import { formatEarningsList, getDominantCurrency } from "./group-earnings"
 
 interface Props {
   user: User
@@ -32,9 +33,8 @@ export const RecipientPopover = (props: Props) => {
   const { data, isLoading } = useServerFunction(getUserUpdatesChannel, "updates-channel", [address])
 
   const hasGrants = grants.length > 0
-  const hasActiveGrants =
-    grants.some((grant) => Number(grant.monthlyIncomingFlowRate) > 0) ||
-    Number(earnings.claimable) > 0
+  const activeGrants = grants.filter((grant) => Number(grant.monthlyIncomingFlowRate) > 0)
+  const hasActiveGrants = activeGrants.length > 0 || Number(earnings.claimable) > 0
 
   if (!hasActiveGrants) {
     return null
@@ -57,18 +57,19 @@ export const RecipientPopover = (props: Props) => {
       <PopoverTrigger>
         <Badge className="h-[26px] rounded-full text-xs md:h-[30px] md:px-2.5 md:text-sm">
           <AnimatedSalary
+            grant={getDominantCurrency(grants) ?? undefined}
             value={earnings.claimable ? Number(earnings.claimable) / 1e18 : 0}
             monthlyRate={earnings.monthly}
           />
         </Badge>
       </PopoverTrigger>
-      <PopoverContent className="relative flex w-full max-w-[100vw] flex-col overflow-hidden md:mr-8 md:w-[520px]">
+      <PopoverContent className="relative flex w-full max-w-[100vw] flex-col overflow-hidden md:mr-8 md:w-[600px]">
         <PopoverClose ref={closeRef} className="hidden" />
         <ScrollArea className="w-full p-2.5 pb-4 md:pb-0">
           <div>
             <div className="flex items-center justify-between space-x-1.5">
-              <p className="text-sm text-muted-foreground">
-                You&apos;re earning <Currency>{earnings.yearly}</Currency> per year.
+              <p className="text-base text-muted-foreground">
+                {formatEarningsList(grants)} per year.
               </p>
               {canPostUpdates && (
                 <a href={channelLink} target="_blank" rel="noreferrer">
@@ -80,39 +81,54 @@ export const RecipientPopover = (props: Props) => {
             </div>
             {hasGrants ? (
               <>
-                <div className="mt-6">
+                <div className="mt-10">
                   <div className="mb-2 grid grid-cols-4 gap-2 text-sm font-medium text-muted-foreground">
-                    <div className="col-start-3 text-center">Earned</div>
+                    <div className="col-start-3 text-right">Earned</div>
                     <div className="text-center">Claimable</div>
                   </div>
-                  {grants.map((grant) => (
+                  {activeGrants.map((grant) => (
                     <div
                       key={grant.id}
-                      className="grid grid-cols-4 items-center gap-2 border-t border-border py-2"
+                      className="grid grid-cols-4 items-center gap-2 border-t border-border py-4"
                     >
                       <div className="col-span-2 flex items-center space-x-3 overflow-hidden">
                         <Image
-                          src={getIpfsUrl(grant.image)}
+                          src={getIpfsUrl(grant.flow.image || grant.image)}
                           alt={grant.title}
-                          className="size-[30px] flex-shrink-0 rounded-full object-cover"
-                          width={30}
-                          height={30}
+                          className="size-[50px] flex-shrink-0 rounded-full object-cover"
+                          width={50}
+                          height={50}
                         />
-                        <Link
-                          href={`/item/${grant.id}`}
-                          className="truncate text-base hover:underline"
-                          onClick={closePopover}
-                        >
-                          {grant.title}
-                        </Link>
+
+                        <div className="flex min-w-0 flex-1 flex-col items-start">
+                          <Link
+                            href={`/flow/${grant.flow.id}`}
+                            className="w-full truncate text-base font-medium text-muted-foreground hover:underline sm:text-lg"
+                          >
+                            {grant.flow.title}
+                          </Link>
+                          <Link
+                            href={`/item/${grant.id}`}
+                            className="w-full truncate text-xs text-muted-foreground hover:underline"
+                            onClick={closePopover}
+                          >
+                            {grant.title}
+                          </Link>
+                        </div>
                       </div>
-                      <Currency as="div" className="text-center text-base font-medium">
+                      <Currency
+                        display={grant.flow}
+                        as="div"
+                        compact
+                        className="text-right text-lg font-medium"
+                      >
                         {grant.totalEarned}
                       </Currency>
-                      <div className="flex items-center justify-center">
+                      <div className="items-right flex justify-end">
                         <WithdrawSalaryButton
-                          size="default"
+                          size="lg"
                           builder={address}
+                          currencyDisplay={grant.flow}
                           onSuccess={refetch}
                           flow={getEthAddress(grant.parentContract)}
                           pools={[grant.flow.baselinePool, grant.flow.bonusPool].map((pool) =>

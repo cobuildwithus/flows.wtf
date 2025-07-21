@@ -11,16 +11,38 @@ interface Props {
   className?: string
   currency?: "USD" | "ETH" | "ERC20"
   display?: CurrencyDisplay
+  compact?: boolean
 }
 
 export const Currency = (props: PropsWithChildren<Props>) => {
-  const { children: amount, as: Component = "span", currency = "USD", display, ...rest } = props
+  const {
+    children: amount,
+    as: Component = "span",
+    currency = "USD",
+    display,
+    compact = false,
+    ...rest
+  } = props
   const { underlyingTokenSymbol: tokenSymbol, underlyingTokenPrefix: tokenPrefix } = display || {}
 
   const value = currency === "ETH" || currency === "ERC20" ? Number(amount) / 1e18 : Number(amount)
 
   // If token overrides are provided, use them regardless of currency type
   if (tokenSymbol || tokenPrefix) {
+    if (compact) {
+      const formattedValue = formatValue(value)
+      return (
+        <Component {...rest}>
+          <div>
+            {tokenPrefix || ""}
+            {formattedValue}
+            {!tokenPrefix && tokenSymbol && (
+              <div style={{ fontSize: "0.75em", lineHeight: 1 }}>{tokenSymbol}</div>
+            )}
+          </div>
+        </Component>
+      )
+    }
     const formattedCurrency = formatCurrency(value, tokenSymbol || "Token", tokenPrefix, {
       maximumFractionDigits: getCurrencyFractionDigits(value),
     })
@@ -28,11 +50,32 @@ export const Currency = (props: PropsWithChildren<Props>) => {
   }
 
   if (currency === "ETH") {
+    if (compact) {
+      return (
+        <Component {...rest}>
+          <div>
+            {formatValue(value)}
+            <div style={{ fontSize: "0.75em", lineHeight: 1 }}>ETH</div>
+          </div>
+        </Component>
+      )
+    }
     return <Component {...rest}>Ξ{formatValue(value)}</Component>
   }
 
   if (currency === "ERC20") {
     return <Component {...rest}>{formatValue(value)}</Component>
+  }
+
+  if (compact) {
+    return (
+      <Component {...rest}>
+        <div>
+          {value >= 1000 ? formatValue(value) : value.toFixed(getCurrencyFractionDigits(value))}
+          <div style={{ fontSize: "0.75em", lineHeight: 1 }}>USD</div>
+        </div>
+      </Component>
+    )
   }
 
   return (
