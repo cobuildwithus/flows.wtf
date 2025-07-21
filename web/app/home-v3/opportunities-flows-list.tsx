@@ -71,39 +71,37 @@ function OpportunityCard({ opportunity }: { opportunity: OpportunityWithCount })
 
 function FlowCard({ flow }: { flow: FlowWithDisplayAmount }) {
   return (
-    <Card className={cardClass}>
-      <CardContent className="flex flex-col items-start gap-4 p-4">
-        <div className="flex w-full items-center gap-4">
-          <Link href={`/apply/${flow.id}`} className="group flex flex-1 items-center gap-3">
-            <Image
-              src={getIpfsUrl(flow.image)}
-              alt={flow.title}
-              width={48}
-              height={48}
-              className="size-12 shrink-0 rounded-full object-cover ring-1 ring-border"
-            />
+    <Link href={`/apply/${flow.id}`} className="block">
+      <Card className={cardClass}>
+        <CardContent className="flex flex-col items-start gap-4 p-4">
+          <div className="flex w-full items-center gap-4">
+            <div className="group flex flex-1 items-center gap-3">
+              <Image
+                src={getIpfsUrl(flow.image)}
+                alt={flow.title}
+                width={48}
+                height={48}
+                className="size-12 shrink-0 rounded-full object-cover ring-1 ring-border"
+              />
 
-            <div className="min-w-0 flex-1">
-              <h4 className="line-clamp-1 text-sm font-semibold transition-colors group-hover:text-primary">
-                {flow.title}
-              </h4>
-              <Badge variant="secondary" className="mt-1 text-xs">
-                <Currency display={flow}>{Number(flow.displayAmount)}</Currency>/mo
-              </Badge>
+              <div className="min-w-0 flex-1">
+                <h4 className="line-clamp-1 text-sm font-semibold transition-colors group-hover:text-primary">
+                  {flow.title}
+                </h4>
+                <Badge variant="secondary" className="mt-1 text-xs">
+                  <Currency display={flow}>{Number(flow.displayAmount)}</Currency>/mo
+                </Badge>
+              </div>
             </div>
-          </Link>
 
-          <Link href={`/apply/${flow.id}`}>
             <Button variant="outline" size="sm">
               Apply
             </Button>
-          </Link>
-        </div>
-        <Link href={`/apply/${flow.id}`} className="block w-full">
+          </div>
           <p className="line-clamp-2 text-xs text-muted-foreground">{flow.tagline}</p>
-        </Link>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
 

@@ -94,14 +94,14 @@ export function BuyRevnetDialog({ startup }: Props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-center">Buy {startup.title} Token</DialogTitle>
+          <DialogTitle className="text-center">Back {startup.title}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-2">
           {/* Pay input and tier buttons grouped closer */}
           <div className="space-y-3">
             {/* Pay input */}
-            <div className="rounded-lg bg-muted/40 p-3">
+            <div className="rounded-lg bg-muted p-3 dark:bg-muted/40">
               <div className="flex items-center justify-between gap-3">
                 <Input
                   type="number"
@@ -117,7 +117,7 @@ export function BuyRevnetDialog({ startup }: Props) {
                     }
                   }}
                   placeholder="0"
-                  className="h-12 flex-1 border-none bg-transparent p-0 text-3xl font-semibold shadow-none focus-visible:ring-0"
+                  className="h-12 flex-1 border-none p-0 text-3xl font-semibold shadow-none focus-visible:ring-0"
                 />
                 <div className="flex items-center space-x-2 rounded-full bg-background px-3 py-2 text-sm font-medium">
                   <TokenLogo src="/eth.png" alt="ETH" />
