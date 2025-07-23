@@ -15,23 +15,23 @@ interface Props {
 export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Props) {
   return (
     <motion.div
+      className="flex flex-col items-center text-center"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
       <h1 className="max-w-5xl text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
-        The growth engine <span className="block sm:inline">for your </span>
+        AI powered grants <span className="block sm:inline">for your </span>
         <HeroTextAnimator />
       </h1>
       <p className="mt-6 max-w-xl text-base md:text-2xl">
-        The AI-powered project accelerator. Fueled by global talent, coordinated by AI, owned by
-        you.
+        Fueled by global talent, coordinated by AI, owned by you.
       </p>
 
       {/* CTAs */}
       <div className="mt-8 flex flex-col gap-4 sm:flex-row">
         <Link
-          href={`/apply/${acceleratorAddresses.vrbs}`}
+          href="mailto:rocketman@justco.build?subject=I%20want%20to%20run%20a%20grants%20program%20for%20my%20project"
           className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-4 text-lg font-medium text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl"
         >
           Grow your project

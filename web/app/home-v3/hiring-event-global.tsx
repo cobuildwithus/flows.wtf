@@ -1,5 +1,4 @@
 import { DateTime } from "@/components/ui/date-time"
-import { Currency } from "@/components/ui/currency"
 import { getUserProfile } from "@/components/user-profile/get-user-profile"
 import { TimelineIndicator } from "@/app/startup/[id]/components/timeline/timeline-indicator"
 import { ProfileLink } from "@/components/user-profile/profile-link"
@@ -35,8 +34,6 @@ export async function HiringEventGlobal({ event, date }: Props) {
           >
             {event.startupName}
           </Link>{" "}
-          – <Currency display={event}>{event.monthlyFlowRate}</Currency>
-          /mo
         </p>
         <DateTime date={date} relative short className="text-xs text-muted-foreground" />
       </div>

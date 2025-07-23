@@ -35,17 +35,16 @@ export default async function Home() {
           <p className="mb-8 text-muted-foreground">See who&apos;s building and backing projects</p>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
-              <div className="lg:col-span-1">
-                <h3 className="mb-4 text-xl font-semibold">Recent activity</h3>
-                <ActivityFeed />
-              </div>
-            </Suspense>
-
             <Suspense fallback={<SkeletonLoader count={20} height={80} />}>
               <div className="lg:col-span-2">
                 <h3 className="mb-4 text-xl font-semibold">Top backers</h3>
                 <TopHolders />
+              </div>
+            </Suspense>
+            <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
+              <div className="lg:col-span-1">
+                <h3 className="mb-4 text-xl font-semibold">Recent activity</h3>
+                <ActivityFeed />
               </div>
             </Suspense>
           </div>
