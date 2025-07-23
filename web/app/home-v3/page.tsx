@@ -6,6 +6,7 @@ import { Suspense } from "react"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getHeroStats } from "@/lib/home-v3/hero-data"
 import ActivityFeed from "./activity-feed"
+import TopHolders from "./top-holders"
 import { SkeletonLoader } from "@/components/ui/skeleton"
 
 export default async function Home() {
@@ -29,9 +30,26 @@ export default async function Home() {
           <LiveOpportunities user={user} privyIdToken={privyIdToken} />
         </Suspense>
 
-        <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
-          <ActivityFeed />
-        </Suspense>
+        <section className="py-16">
+          <h2 className="mb-6 text-4xl font-semibold md:text-5xl">Builders and backers</h2>
+          <p className="mb-8 text-muted-foreground">See who&apos;s building and backing projects</p>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
+              <div className="lg:col-span-1">
+                <h3 className="mb-4 text-xl font-semibold">Recent activity</h3>
+                <ActivityFeed />
+              </div>
+            </Suspense>
+
+            <Suspense fallback={<SkeletonLoader count={20} height={80} />}>
+              <div className="lg:col-span-2">
+                <h3 className="mb-4 text-xl font-semibold">Top backers</h3>
+                <TopHolders />
+              </div>
+            </Suspense>
+          </div>
+        </section>
       </div>
 
       <div className="pt-12">

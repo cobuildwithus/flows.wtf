@@ -494,7 +494,8 @@ view JuiceboxParticipant {
   isRevnet     Boolean? @map("is_revnet")
   address      String   @db.VarChar(42)
   firstOwned   Int?     @map("first_owned")
-  cashOutValue BigInt   @default(0) @map("cash_out_value")
+  cashOutValue Decimal   @default(0) @map("cash_out_value")
+  suckerGroupId String? @map("sucker_group_id")
 
   project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
 

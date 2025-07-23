@@ -10,34 +10,30 @@ import { TimelineIndicator } from "@/app/startup/[id]/components/timeline/timeli
 export default async function ActivityFeed() {
   const events = await getActivityFeedEvents()
   return (
-    <section className="py-16">
-      <div className="container">
-        <h2 className="mb-6 text-4xl font-semibold md:text-5xl">Builders and backers</h2>
-        <p className="mb-6 text-muted-foreground">See who&apos;s building and backing projects</p>
-        <Card className="border border-border/40 bg-card/80 shadow-sm">
-          <CardContent className="space-y-6">
-            <ScrollArea className="h-[650px] pr-4">
-              <ul role="list" className="space-y-7">
-                {events.map((event, i) => (
-                  <li key={i} className="relative flex gap-x-4">
-                    <div
-                      className={cn(
-                        i === events.length - 1 ? "h-6" : "-bottom-8",
-                        "absolute left-0 top-0 flex w-6 justify-center",
-                      )}
-                    >
-                      <div className="w-px bg-border" />
-                    </div>
-                    {renderEvent(event)}
-                  </li>
-                ))}
-              </ul>
-              <ScrollBar orientation="vertical" />
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
-    </section>
+    <div>
+      <Card className="border border-border/40 bg-card/80 shadow-sm">
+        <CardContent className="space-y-6">
+          <ScrollArea className="h-[650px] pr-4">
+            <ul role="list" className="space-y-7">
+              {events.map((event, i) => (
+                <li key={i} className="relative flex gap-x-4">
+                  <div
+                    className={cn(
+                      i === events.length - 1 ? "h-6" : "-bottom-8",
+                      "absolute left-0 top-0 flex w-6 justify-center",
+                    )}
+                  >
+                    <div className="w-px bg-border" />
+                  </div>
+                  {renderEvent(event)}
+                </li>
+              ))}
+            </ul>
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

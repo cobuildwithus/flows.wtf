@@ -1,0 +1,146 @@
+import { Card, CardContent } from "@/components/ui/card"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import {
+  getTopContributorsForAllStartups,
+  type TopContributor,
+} from "@/lib/onchain-startup/top-holders"
+import { UserProfile } from "@/components/user-profile/user-profile"
+import { type Profile } from "@/components/user-profile/get-user-profile"
+import { Currency } from "@/components/ui/currency"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Link from "next/link"
+
+export default async function TopHolders() {
+  const contributorsData = await getTopContributorsForAllStartups()
+
+  return (
+    <div>
+      <Tabs defaultValue="allTime" className="w-full">
+        <TabsList className="mb-6 grid w-full grid-cols-2">
+          <TabsTrigger value="allTime">All Time</TabsTrigger>
+          <TabsTrigger value="weekly">This Week</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="allTime">
+          <ContributorsList contributors={contributorsData.allTime} />
+        </TabsContent>
+
+        <TabsContent value="weekly">
+          <ContributorsList contributors={contributorsData.weekly} />
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+
+interface ContributorsListProps {
+  contributors: TopContributor[]
+}
+
+function ContributorsList({ contributors }: ContributorsListProps) {
+  return (
+    <Card className="border border-border/40 bg-card/80 shadow-sm">
+      <CardContent className="space-y-6">
+        <ScrollArea className="h-[650px] pr-4">
+          <div className="space-y-4">
+            {contributors.map((contributor, i) => (
+              <TopContributorItem
+                key={contributor.address}
+                contributor={contributor}
+                rank={i + 1}
+              />
+            ))}
+          </div>
+          <ScrollBar orientation="vertical" />
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  )
+}
+
+interface TopContributorItemProps {
+  contributor: TopContributor
+  rank: number
+}
+
+function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
+  // Debug the conversion
+  console.log("Contributor totalAmount:", contributor.totalAmount, typeof contributor.totalAmount)
+
+  const rawAmount = Number(contributor.totalAmount)
+  const totalAmount = rawAmount / 1e18 // Convert from wei to ETH
+
+  console.log("Raw amount:", rawAmount, "Total amount:", totalAmount)
+
+  // Handle NaN case
+  const displayAmount = isNaN(totalAmount) ? 0 : totalAmount
+
+  return (
+    <div className="flex items-center gap-4 rounded-lg border border-border/20 bg-background/50 p-4 transition-colors hover:bg-background/80">
+      {/* Rank */}
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+        {rank}
+      </div>
+
+      {/* Contributor Info */}
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <UserProfile address={contributor.address as `0x${string}`}>
+          {(profile: Profile) => (
+            <div className="flex items-center gap-2">
+              <div className="relative h-8 w-8 shrink-0">
+                {profile.pfp_url ? (
+                  <img
+                    src={profile.pfp_url}
+                    alt={profile.display_name}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+                    {profile.display_name.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <span className="truncate font-medium hover:text-primary">
+                {profile.display_name}
+              </span>
+            </div>
+          )}
+        </UserProfile>
+
+        {/* Startup Badges */}
+        <div className="flex flex-wrap gap-1">
+          {contributor.startups.map((startup) => (
+            <Link key={startup.id} href={`/startup/${startup.slug}`}>
+              <Badge variant="secondary" className="text-xs hover:bg-secondary/80">
+                {startup.name}
+              </Badge>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Payment Info */}
+      <div className="flex shrink-0 flex-col items-end gap-1 text-right">
+        <div className="text-sm font-semibold">
+          <Currency>
+            $
+            {displayAmount.toLocaleString(undefined, {
+              maximumFractionDigits: displayAmount < 1 ? 6 : 2,
+              minimumFractionDigits: 0,
+            })}
+          </Currency>{" "}
+          contributed
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {contributor.paymentCount} payment{contributor.paymentCount !== 1 ? "s" : ""}
+        </div>
+        {contributor.firstPayment && (
+          <div className="text-xs text-muted-foreground">
+            Since {new Date(contributor.firstPayment * 1000).toLocaleDateString()}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
