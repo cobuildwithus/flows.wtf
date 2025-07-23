@@ -63,24 +63,26 @@ export const WithdrawSalaryButton = ({
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          className={cn({ "text-green-600 dark:text-green-500": Number(balance) > 1e17 })}
+          className={cn("flex flex-row space-x-2 px-2.5", {
+            "text-green-600 dark:text-green-500": Number(balance) > 1e17,
+          })}
           size={size}
-          onClick={() => {
-            withdraw()
-          }}
+          onClick={() => withdraw()}
           variant="ghost"
           disabled={balance === BigInt(0) || isLoading}
         >
           <Currency
-            compact
-            display={currencyDisplay}
-            className={cn("text-center", getTextSize(size))}
+            currency="ERC20"
+            display={{ underlyingTokenPrefix: currencyDisplay?.underlyingTokenPrefix }}
+            className={cn(getTextSize(size))}
           >
-            {Number(balance) / 1e18}
+            {Number(balance)}
           </Currency>
+
           <DownloadIcon className={cn("ml-1", getIconSize(size))} />
         </Button>
       </TooltipTrigger>
+
       {balance === BigInt(0) && !isLoading && (
         <TooltipContent>No rewards to withdraw</TooltipContent>
       )}
