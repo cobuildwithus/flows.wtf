@@ -90,7 +90,7 @@ async function handleRecipientCreated(params: {
     underlyingTokenName: flow.underlyingTokenName,
     underlyingTokenDecimals: flow.underlyingTokenDecimals,
     underlyingTokenLogo: flow.underlyingTokenLogo,
-    underlyingERC20Token: "",
+    underlyingERC20Token: flow.underlyingERC20Token,
     managerRewardPool: "",
     managerRewardSuperfluidPool: "",
     status: Status.Registered,

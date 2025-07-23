@@ -17,7 +17,7 @@ import { WithdrawSalaryButton } from "../withdraw-salary-button"
 import { useUserGrants } from "./use-user-grants"
 import SignInWithNeynar from "../signin-with-neynar"
 import type { User } from "@/lib/auth/user"
-import { formatEarningsList, getDominantCurrency } from "./group-earnings"
+import { formatEarningsList } from "./group-earnings"
 
 interface Props {
   user: User
@@ -50,11 +50,7 @@ export const RecipientPopover = (props: Props) => {
     <Popover>
       <PopoverTrigger>
         <Badge className="h-[26px] rounded-full text-xs md:h-[30px] md:px-2.5 md:text-sm">
-          <AnimatedSalary
-            grant={getDominantCurrency(grants) ?? undefined}
-            value={earnings.claimable ? Number(earnings.claimable) / 1e18 : 0}
-            monthlyRate={earnings.monthly}
-          />
+          <AnimatedSalary value={earnings.claimableUsd} monthlyRate={earnings.monthlyUsd} />
         </Badge>
       </PopoverTrigger>
       <PopoverContent className="relative flex w-full max-w-[100vw] flex-col overflow-hidden md:mr-8 md:w-[600px]">

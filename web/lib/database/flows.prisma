@@ -185,6 +185,8 @@ view Grant {
   underlyingTokenName                   String  @map("underlying_token_name")
   underlyingTokenDecimals               Int     @map("underlying_token_decimals")
   underlyingTokenLogo                   String? @map("underlying_token_logo")
+  underlyingTokenEthPrice              String? @map("underlying_token_eth_price")
+  underlyingTokenUsdPrice              String? @map("underlying_token_usd_price")
   manager                          String  @map("manager")
   managerRewardSuperfluidPool      String  @map("manager_reward_superfluid_pool")
   managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")

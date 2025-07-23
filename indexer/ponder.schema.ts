@@ -56,6 +56,8 @@ export const grants = onchainTable(
     underlyingTokenName: t.text().notNull(),
     underlyingTokenDecimals: t.integer().notNull(),
     underlyingTokenLogo: t.text(),
+    underlyingTokenEthPrice: t.text(),
+    underlyingTokenUsdPrice: t.text(),
     updatedAt: t.integer().notNull(),
     removedAt: t.integer(),
     activatedAt: t.integer(),

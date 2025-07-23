@@ -89,7 +89,7 @@ export const IndexerConfig = {
       startBlock: 137560689,
     },
   },
-  TotalEarned: {
+  LatestBlockCron: {
     base: {
       startBlock: "latest",
     },

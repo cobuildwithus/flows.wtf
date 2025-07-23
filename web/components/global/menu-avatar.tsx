@@ -78,8 +78,7 @@ export const MenuAvatar = (props: Props) => {
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  You don&apos;t have any Nouns, which means you can&apos;t vote on flows. You can
-                  still get involved:
+                  Get involved in Flows and help fund the future of work:
                 </p>
                 <div className="flex space-x-2.5">
                   <Button asChild size="sm" className="w-full">
