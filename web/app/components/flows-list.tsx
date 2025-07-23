@@ -20,19 +20,14 @@ export default function FlowsList(props: Props) {
     return (
       <Card>
         <CardContent>
-          <FlowsTable
-            flows={flows}
-            canManage={canManage}
-            contract={contract}
-            chainId={chainId}
-          />
+          <FlowsTable flows={flows} canManage={canManage} contract={contract} chainId={chainId} />
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {flows.map((flow) => (
         <FlowCard key={flow.id} flow={flow} />
       ))}

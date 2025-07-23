@@ -21,6 +21,7 @@ import { AddRecipientToFlowButton } from "@/components/global/add-recipient-to-f
 import { Grant } from "@/lib/database/types"
 import { ComponentProps, ReactNode } from "react"
 import { SearchRecipient } from "./search-recipient/search-recipient"
+import Link from "next/link"
 
 interface Props {
   flow: Pick<Grant, "id" | "chainId" | "recipient" | "superToken">
@@ -59,6 +60,15 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
     setRecipient((prev) => (prev ? { ...prev, [field]: value } : null))
   }
 
+  // Check if recipient has any meaningful data entered
+  const hasRecipientData =
+    recipient &&
+    (recipient.address.trim() !== "" ||
+      recipient.title.trim() !== "" ||
+      recipient.image.trim() !== "" ||
+      recipient.tagline.trim() !== "" ||
+      recipient.description.trim() !== "")
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -70,17 +80,34 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Add builder</DialogTitle>
-          <DialogDescription className="text-zinc-500 dark:text-muted-foreground">
-            Pay a new builder
-          </DialogDescription>
+          <DialogTitle>Pay new builder</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        {/* Scrollable content */}
+        <div className="flex-1 space-y-6 overflow-y-auto">
           {/* Search Recipient Component */}
           <SearchRecipient flow={flow} disabled={!isConnected} onRecipientChange={setRecipient} />
+
+          {/* Or option for add budget */}
+          {!hasRecipientData && (
+            <>
+              <div className="flex items-center gap-4">
+                <div className="flex-1 border-t border-muted"></div>
+                <span className="text-base text-muted-foreground">or</span>
+                <div className="flex-1 border-t border-muted"></div>
+              </div>
+
+              <div className="flex justify-center">
+                <Link href={`/apply/${flow.id}/manual`}>
+                  <Button size="xl" variant="outline">
+                    Add budget
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
 
           {/* Form to edit recipient details */}
           {recipient && (
@@ -130,23 +157,27 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
               </div>
             </div>
           )}
-
-          {/* Add Recipient Button */}
-          <AddRecipientToFlowButton
-            recipient={{
-              address: recipient?.address || "",
-              title: recipient?.title || "",
-              image: recipient?.image || "",
-              tagline: recipient?.tagline || "",
-              description: recipient?.description || "",
-            }}
-            contract={flow.recipient as `0x${string}`}
-            chainId={flow.chainId}
-            size="xl"
-            onSuccess={handleAddRecipient}
-            disabled={!recipient}
-          />
         </div>
+
+        {/* Sticky footer button - only show when recipient has data */}
+        {hasRecipientData && (
+          <div className="sticky bottom-0 left-0 right-0 flex justify-end bg-background pt-4">
+            <AddRecipientToFlowButton
+              recipient={{
+                address: recipient?.address || "",
+                title: recipient?.title || "",
+                image: recipient?.image || "",
+                tagline: recipient?.tagline || "",
+                description: recipient?.description || "",
+              }}
+              contract={flow.recipient as `0x${string}`}
+              chainId={flow.chainId}
+              size="xl"
+              onSuccess={handleAddRecipient}
+              disabled={!recipient}
+            />
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   )

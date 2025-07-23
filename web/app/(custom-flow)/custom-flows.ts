@@ -56,9 +56,9 @@ const customFlows: CustomFlow[] = [
     },
   },
   {
-    id: "revnets",
+    id: "rev",
     name: "Revnets",
-    flowId: customFlowAddresses.revnets,
+    flowId: customFlowAddresses.rev,
     coverImage: "/revnets-bg.png",
     styles: {
       light: {

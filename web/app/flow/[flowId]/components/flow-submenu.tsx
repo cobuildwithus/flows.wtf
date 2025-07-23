@@ -90,13 +90,6 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {!isFlowRemoved && (
-            <Link href={`/apply/${flowId}`}>
-              <Button variant="outline" className="rounded-md">
-                {flow.isTopLevel ? (isManager ? "Add new budget" : "Suggest flow") : "Apply"}
-              </Button>
-            </Link>
-          )}
           {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
           {!isFlowRemoved && isFlow && isManager && (
             <AddRecipientModal flow={flow} variant="outline" />

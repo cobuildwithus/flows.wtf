@@ -32,8 +32,8 @@ export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
   // If token overrides are provided, use custom formatting without currency style
   if (grant && tokenPrefix !== "$") {
     return (
-      <span className="flex items-center gap-1">
-        {tokenPrefix && <span>{tokenPrefix}</span>}
+      <span>
+        {tokenPrefix && <span className="mr-2">{tokenPrefix}</span>}
         <NumberFlow
           value={currentValue}
           format={{
@@ -43,6 +43,7 @@ export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
           locales="en-US"
           trend={1}
         />
+        {tokenSymbol && !tokenPrefix && <span className="ml-2">{tokenSymbol}</span>}
       </span>
     )
   }

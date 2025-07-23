@@ -16,6 +16,7 @@ import { AllocationBar } from "@/components/global/allocation-bar"
 import type { Grant } from "@prisma/flows"
 import { zeroAddress } from "viem"
 import FlowsList from "../components/flows-list"
+import BuilderList from "@/app/components/builder-list"
 import { BudgetDialog } from "../flow/[flowId]/components/budget-dialog"
 import { getTotalAllocationWeight } from "@/lib/allocation/get-total-allocation-weight"
 
@@ -66,6 +67,9 @@ export async function CustomFlowPage(props: Props) {
       ),
     },
   ]
+
+  const builders = grants.filter((g) => !g.isFlow && !g.isSiblingFlow)
+  const flows = grants.filter((g) => g.isFlow || g.isSiblingFlow)
 
   return (
     <AllocationProvider
@@ -142,12 +146,26 @@ export async function CustomFlowPage(props: Props) {
               description="There are no approved projects yet"
             />
           ) : isTopLevel ? (
-            <FlowsList
-              flows={grants.sort(sortGrants)}
-              canManage={canManage}
-              contract={getEthAddress(flow.recipient)}
-              chainId={flow.chainId}
-            />
+            <div className="flex flex-col gap-8">
+              <FlowsList
+                flows={flows.sort(sortGrants)}
+                canManage={canManage}
+                contract={getEthAddress(flow.recipient)}
+                chainId={flow.chainId}
+              />
+              {builders.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="mb-4 text-lg font-medium">Builders</h2>
+                  <BuilderList
+                    builders={builders}
+                    currency={{
+                      underlyingTokenSymbol: flow.underlyingTokenSymbol,
+                      underlyingTokenPrefix: flow.underlyingTokenPrefix,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           ) : (
             <GrantsList grants={grants.sort(sortGrants)} flow={flow} canManage={canManage} />
           )}

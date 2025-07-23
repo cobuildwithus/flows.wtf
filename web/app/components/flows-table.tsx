@@ -55,8 +55,9 @@ export const FlowsTable = (props: Props) => {
           <TableHead className="text-center">Grants</TableHead>
           <TableHead className="text-center">Paid out</TableHead>
           <TableHead className="text-center">Monthly funding</TableHead>
-          <TableHead className="text-center">Votes</TableHead>
-          <TableHead className="text-center">{canManage ? "Manage" : "Your Vote"}</TableHead>
+          {canManage && (
+            <TableHead className="text-center">{canManage ? "Manage" : "Your Vote"}</TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -99,6 +100,7 @@ export const FlowsTable = (props: Props) => {
               <TableCell className="text-center">
                 <AnimatedSalary
                   value={flow.totalEarned}
+                  grant={flow}
                   monthlyRate={
                     flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate
                   }
@@ -113,7 +115,6 @@ export const FlowsTable = (props: Props) => {
                   approvedGrants={approvedGrants}
                 />
               </TableCell>
-              <TableCell className="text-center">{flow.allocationsCount}</TableCell>
               <TableCell className="w-[130px] max-w-[130px] text-center">
                 <div className="flex items-center gap-1 px-0.5">
                   <div className="w-[130px]">
