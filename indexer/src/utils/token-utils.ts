@@ -1,4 +1,4 @@
-import { USDCx, GARDENx, USDC, GARDEN, FLOWS, FLOWSx } from "../utils"
+import { USDCx, GARDENx, USDC, GARDEN, FLOWS, FLOWSx, REV, REVx } from "../utils"
 import { superTokenAbi } from "../../abis"
 import type { Context } from "ponder:registry"
 
@@ -24,6 +24,10 @@ const LOGO_MAP: Record<string, string> = {
   [GARDEN.toLowerCase()]: "/gardens.png",
   [FLOWSx.toLowerCase()]: "/flows.png",
   [FLOWS.toLowerCase()]: "/flows.png",
+  [REV.toLowerCase()]:
+    "https://ipfs.banny.eth.sucks/ipfs/QmceH4kgHa9xrYW8EGbby1K7uqs9SnoahTSxByhgdqLcys",
+  [REVx.toLowerCase()]:
+    "https://ipfs.banny.eth.sucks/ipfs/QmceH4kgHa9xrYW8EGbby1K7uqs9SnoahTSxByhgdqLcys",
 }
 
 export async function fetchTokenInfo(

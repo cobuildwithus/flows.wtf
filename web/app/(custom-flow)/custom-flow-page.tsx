@@ -177,7 +177,10 @@ export async function CustomFlowPage(props: Props) {
 }
 
 function getSum(
-  flows: Pick<Grant, "activeRecipientCount" | "totalEarned" | "monthlyOutgoingFlowRate">[],
+  flows: Pick<
+    Grant,
+    "activeRecipientCount" | "totalEarned" | "monthlyOutgoingFlowRate" | "monthlyIncomingFlowRate"
+  >[],
   key: "earned" | "projects" | "monthly",
 ): number {
   return flows.reduce((sum, flow) => {
@@ -187,7 +190,7 @@ function getSum(
       case "projects":
         return sum + flow.activeRecipientCount
       case "monthly":
-        return sum + Number(flow.monthlyOutgoingFlowRate)
+        return sum + (Number(flow.monthlyOutgoingFlowRate) || Number(flow.monthlyIncomingFlowRate))
       default:
         return sum
     }

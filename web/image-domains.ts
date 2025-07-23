@@ -19,4 +19,5 @@ export const imageDomains = [
   "images.unsplash.com",
   "*.cdninstagram.com",
   "cdn.whisk.so",
+  "ipfs.banny.eth.sucks",
 ]

@@ -9,7 +9,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { getUserUpdatesChannel } from "@/lib/farcaster/get-user-updates-channel"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
-import { PlusIcon } from "@radix-ui/react-icons"
 import Image from "next/image"
 import Link from "next/link"
 import { useRef } from "react"
@@ -40,12 +39,7 @@ export const RecipientPopover = (props: Props) => {
     return null
   }
 
-  const { isFlowsMember, updatesChannel, hasFarcasterAccount } = data || {}
-
-  const canPostUpdates = !isLoading && !!hasFarcasterAccount
-  const channelLink = updatesChannel
-    ? `https://farcaster.xyz/~/compose?text=&channelKey=${updatesChannel}`
-    : "https://farcaster.xyz/~/compose?text="
+  const { isFlowsMember, hasFarcasterAccount } = data || {}
 
   const needsVerify = !isLoading && !hasFarcasterAccount
   const shouldJoinFlowsChannel = !isLoading && !isFlowsMember && hasFarcasterAccount
