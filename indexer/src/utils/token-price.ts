@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:42071/price"
+const API_BASE = "https://jbdb.up.railway.app/price"
 
 interface PriceApiResponse {
   token?: { price?: string }
