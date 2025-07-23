@@ -55,6 +55,20 @@ const customFlows: CustomFlow[] = [
       },
     },
   },
+  {
+    id: "revnets",
+    name: "Revnets",
+    flowId: customFlowAddresses.revnets,
+    coverImage: "/revnets-bg.png",
+    styles: {
+      light: {
+        "--muted": "0 0% 90%",
+        "--muted-foreground": "0 0% 20%",
+        "--primary": "0 0% 0%",
+        "--primary-foreground": "0 0% 100%",
+      },
+    },
+  },
 ] as const
 
 export function getCustomFlow(id: CustomFlowId) {
