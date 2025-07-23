@@ -71,13 +71,6 @@ export const RecipientPopover = (props: Props) => {
               <p className="text-base text-muted-foreground">
                 {formatEarningsList(grants)} per year.
               </p>
-              {canPostUpdates && (
-                <a href={channelLink} target="_blank" rel="noreferrer">
-                  <Button size="xs" variant="outline">
-                    <PlusIcon className="mr-1.5 size-3" /> Post update
-                  </Button>
-                </a>
-              )}
             </div>
             {hasGrants ? (
               <>
