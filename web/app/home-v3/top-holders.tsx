@@ -18,7 +18,7 @@ export default async function TopHolders() {
   return (
     <div>
       <Tabs defaultValue="allTime" className="w-full">
-        <TabsList className="mb-6 grid w-fit grid-cols-2 gap-2 bg-transparent p-0">
+        <TabsList className="mb-3 grid w-fit grid-cols-2 gap-2 bg-transparent p-0">
           <TabsTrigger
             value="allTime"
             className="min-w-20 rounded-full data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"

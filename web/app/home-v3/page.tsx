@@ -47,7 +47,7 @@ export default async function Home() {
             </Suspense>
             <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
               <div className="lg:col-span-1">
-                <h3 className="text-xl font-semibold">Recent activity</h3>
+                <h3 className="text-lg font-semibold">Recent activity</h3>
                 <ActivityFeed />
               </div>
             </Suspense>

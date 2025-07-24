@@ -11,8 +11,8 @@ export default async function ActivityFeed() {
   const events = await getActivityFeedEvents()
 
   return (
-    <Card className="border-0 bg-background/50 shadow-none">
-      <CardContent className="p-0 md:px-0">
+    <div className="border-0 bg-background/50 shadow-none">
+      <div className="p-0 md:px-0">
         <ScrollArea className="h-[650px]">
           <div className="space-y-6 pr-4">
             {events.slice(0, 10).map((event, i) => (
@@ -44,8 +44,8 @@ export default async function ActivityFeed() {
           </div>
           <ScrollBar orientation="vertical" />
         </ScrollArea>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 

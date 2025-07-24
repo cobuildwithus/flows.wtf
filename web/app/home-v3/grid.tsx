@@ -37,6 +37,8 @@ const Grid: React.FC = () => {
   /* ---------- Refs & state ---------- */
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  // Background canvas used to render the static grid just once
+  const bgCanvasRef = useRef<HTMLCanvasElement>(null)
 
   // Dimension state – only changes on resize (rare)
   const [dimensions, setDimensions] = useState({
@@ -84,6 +86,21 @@ const Grid: React.FC = () => {
     window.addEventListener("resize", updateDimensions)
     return () => window.removeEventListener("resize", updateDimensions)
   }, [])
+
+  // Draw static grid on the background canvas whenever dimensions change
+  useEffect(() => {
+    const bg = bgCanvasRef.current
+    if (!bg || !gridPathRef.current) return
+
+    // Resize to match current viewport
+    bg.width = dimensions.width
+    bg.height = dimensions.height
+
+    const g = bg.getContext("2d")
+    if (!g) return
+    g.fillStyle = "rgba(100,100,100,0.3)"
+    g.fill(gridPathRef.current)
+  }, [dimensions])
 
   /* ---------- Helpers ---------- */
   const withinBounds = (p: Point) => {
@@ -222,11 +239,7 @@ const Grid: React.FC = () => {
     const { width, height, gridCellsX, gridCellsY } = dimsRef.current
     ctx.clearRect(0, 0, width, height)
 
-    // Grid dots – draw pre-computed path
-    if (gridPathRef.current) {
-      ctx.fillStyle = "rgba(100,100,100,0.3)"
-      ctx.fill(gridPathRef.current)
-    }
+    // Static grid rendered on bgCanvas; skip drawing here
 
     // Target points (deduplicated)
     const uniqueTargets = Array.from(
@@ -270,6 +283,7 @@ const Grid: React.FC = () => {
     let spawnAccumulator = 0
     let last = performance.now()
     let frameId: number
+    let dirty = true // ensure initial frame draws
 
     const loop = (now: number) => {
       const dt = now - last
@@ -277,16 +291,29 @@ const Grid: React.FC = () => {
       accumulator += dt
       spawnAccumulator += dt
 
-      // spawn snakes on interval using accumulator
+      let stepped = false
+
+      // Spawn new snakes on interval
       while (spawnAccumulator >= SPAWN_INTERVAL_MS) {
         spawnSnakes()
         spawnAccumulator -= SPAWN_INTERVAL_MS
+        stepped = true
       }
+
+      // Advance simulation at fixed tick rate
       while (accumulator >= TICK_MS) {
         advanceSimulation()
         accumulator -= TICK_MS
+        stepped = true
       }
-      draw()
+
+      if (stepped) dirty = true
+
+      if (dirty) {
+        draw()
+        dirty = false
+      }
+
       frameId = requestAnimationFrame(loop)
     }
 
@@ -307,8 +334,12 @@ const Grid: React.FC = () => {
   return (
     <div ref={containerRef} style={containerStyle}>
       <canvas
+        ref={bgCanvasRef}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.2 }}
+      />
+      <canvas
         ref={canvasRef}
-        style={{ width: "100%", height: "100%", display: "block", opacity: 0.2 }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.2 }}
       />
     </div>
   )

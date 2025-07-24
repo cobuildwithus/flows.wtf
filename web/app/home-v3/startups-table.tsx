@@ -32,9 +32,6 @@ export function StartupsTable({ startups }: Props) {
             Team
           </TableHead>
           <TableHead className="text-center text-lg font-semibold md:text-xl">Revenue</TableHead>
-          <TableHead className="hidden text-center text-lg font-semibold md:table-cell md:text-xl">
-            Backers
-          </TableHead>
           <TableHead className="text-right"></TableHead>
         </TableRow>
       </TableHeader>
@@ -97,9 +94,6 @@ export function StartupsTable({ startups }: Props) {
                   )}
                 </div>
               </StartupStatsDialog>
-            </TableCell>
-            <TableCell className="hidden text-center text-base md:table-cell md:text-lg">
-              {startup.backers}
             </TableCell>
 
             <TableCell className="text-right">
