@@ -20,6 +20,7 @@ import type { StartupWithRevenue } from "./types"
 import { TokenLogo } from "@/app/token/token-logo"
 import { getRevnetTokenLogo } from "@/app/token/get-revnet-token-logo"
 import { cn } from "@/lib/utils"
+import { AuthButton } from "../ui/auth-button"
 
 interface Props {
   startup: StartupWithRevenue
@@ -88,9 +89,9 @@ export function BuyRevnetDialog({ startup }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="w-full hover:bg-muted">
+        <AuthButton size="sm" variant="outline" className="w-full hover:bg-muted">
           Buy
-        </Button>
+        </AuthButton>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>

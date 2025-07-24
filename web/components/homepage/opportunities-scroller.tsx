@@ -46,7 +46,7 @@ export function OpportunitiesScroller({ opportunities, flows }: Props) {
 
   return (
     <div
-      className="relative overflow-x-hidden"
+      className="relative overflow-x-hidden pt-2"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

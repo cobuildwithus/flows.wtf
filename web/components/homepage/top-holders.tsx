@@ -74,7 +74,7 @@ interface TopContributorItemProps {
 
 function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
   return (
-    <div className="flex items-center gap-3 rounded-full border border-border p-4 shadow-sm transition-colors">
+    <div className="flex items-center gap-3 rounded-full border border-border p-3 shadow-sm transition-colors">
       {/* Rank */}
       <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground md:flex">
         {rank}

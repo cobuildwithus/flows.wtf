@@ -38,10 +38,10 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
           {/* Content */}
           <div className="space-y-20">
             <div className="flex flex-col">
-              <h3 className="text-lg font-semibold">Back projects</h3>
+              <h3 className="text-lg font-semibold">Back a project</h3>
               <StartupsTable startups={startups} />
             </div>
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-4">
               <h3 className="text-lg font-semibold">Get funded</h3>
               <OpportunitiesScroller opportunities={scrollerOpportunities} flows={scrollerFlows} />
             </div>
