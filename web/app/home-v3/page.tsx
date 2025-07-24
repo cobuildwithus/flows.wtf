@@ -36,17 +36,20 @@ export default async function Home() {
         </Suspense>
 
         <section className="py-16">
-          <h2 className="mb-6 text-4xl font-semibold md:text-5xl">Builders and backers</h2>
-          <p className="mb-8 text-muted-foreground">See who&apos;s building and backing projects</p>
+          <div className="mb-8 flex flex-col space-y-3">
+            <h2 className="text-4xl font-semibold md:text-5xl">Builders & backers</h2>
+            <p className="text-muted-foreground">See who&apos;s building and backing projects</p>
+          </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <Suspense fallback={<SkeletonLoader count={20} height={80} />}>
               <div className="lg:col-span-2">
+                <h3 className="mb-3 text-lg font-semibold">Top backers</h3>
                 <TopHolders />
               </div>
             </Suspense>
             <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
-              <div className="lg:col-span-1">
+              <div className="flex flex-col space-y-5 md:space-y-0 lg:col-span-1">
                 <h3 className="text-lg font-semibold">Recent activity</h3>
                 <ActivityFeed />
               </div>

@@ -12,39 +12,37 @@ export default async function ActivityFeed() {
 
   return (
     <div className="border-0 bg-background/50 shadow-none">
-      <div className="p-0 md:px-0">
-        <ScrollArea className="h-[650px]">
-          <div className="space-y-6 pr-4">
-            {events.slice(0, 10).map((event, i) => (
-              <div key={i} className="relative flex gap-4 md:hidden">
-                <div
-                  className={cn(
-                    "absolute left-0 top-0 flex w-6 justify-center",
-                    i === Math.min(events.length, 10) - 1 ? "h-6" : "-bottom-6",
-                  )}
-                >
-                  <div className="w-px bg-border/50" />
-                </div>
-                {renderEvent(event)}
+      <ScrollArea className="max-h-[650px]">
+        <div className="space-y-6 pr-4">
+          {events.slice(0, 10).map((event, i) => (
+            <div key={i} className="relative flex gap-4 md:hidden">
+              <div
+                className={cn(
+                  "absolute left-0 top-0 flex w-6 justify-center",
+                  i === Math.min(events.length, 10) - 1 ? "h-6" : "-bottom-6",
+                )}
+              >
+                <div className="w-px bg-border/50" />
               </div>
-            ))}
-            {events.map((event, i) => (
-              <div key={i} className="relative hidden gap-4 md:flex">
-                <div
-                  className={cn(
-                    "absolute left-0 top-0 flex w-6 justify-center",
-                    i === events.length - 1 ? "h-6" : "-bottom-6",
-                  )}
-                >
-                  <div className="w-px bg-border/50" />
-                </div>
-                {renderEvent(event)}
+              {renderEvent(event)}
+            </div>
+          ))}
+          {events.map((event, i) => (
+            <div key={i} className="relative hidden gap-4 md:flex">
+              <div
+                className={cn(
+                  "absolute left-0 top-0 flex w-6 justify-center",
+                  i === events.length - 1 ? "h-6" : "-bottom-6",
+                )}
+              >
+                <div className="w-px bg-border/50" />
               </div>
-            ))}
-          </div>
-          <ScrollBar orientation="vertical" />
-        </ScrollArea>
-      </div>
+              {renderEvent(event)}
+            </div>
+          ))}
+        </div>
+        <ScrollBar orientation="vertical" />
+      </ScrollArea>
     </div>
   )
 }

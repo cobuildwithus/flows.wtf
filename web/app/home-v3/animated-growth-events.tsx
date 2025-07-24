@@ -31,7 +31,7 @@ export function AnimatedGrowthEvents({ events, className }: Props) {
   return (
     <div
       className={cn(
-        "absolute bottom-8 left-1/2 z-30 -translate-x-1/2",
+        "absolute bottom-8 left-1/2 z-30 hidden -translate-x-1/2 md:block",
         "rounded-full bg-background/90 backdrop-blur-md",
         "border border-border/50 shadow-lg",
         "min-w-[280px] max-w-[360px] px-4 py-2.5",

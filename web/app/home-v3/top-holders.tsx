@@ -13,21 +13,19 @@ import { EthInUsd } from "@/components/global/eth-in-usd"
 export default async function TopHolders() {
   const contributorsData = await getTopContributorsForAllStartups()
 
-  console.log(contributorsData)
-
   return (
     <div>
       <Tabs defaultValue="allTime" className="w-full">
         <TabsList className="mb-3 grid w-fit grid-cols-2 gap-2 bg-transparent p-0">
           <TabsTrigger
             value="allTime"
-            className="min-w-20 rounded-full data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+            className="min-w-20 rounded-full border border-border/20 bg-muted/30 text-muted-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-muted/50"
           >
             All Time
           </TabsTrigger>
           <TabsTrigger
             value="weekly"
-            className="min-w-20 rounded-full data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+            className="min-w-20 rounded-full border border-border/20 bg-muted/30 text-muted-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-muted/50"
           >
             This Week
           </TabsTrigger>
@@ -52,7 +50,7 @@ interface ContributorsListProps {
 function ContributorsList({ contributors }: ContributorsListProps) {
   return (
     <div className="space-y-6">
-      <ScrollArea className="h-[650px] pr-4">
+      <ScrollArea>
         <div className="space-y-4">
           {contributors.map((contributor, i) => (
             <TopContributorItem key={contributor.address} contributor={contributor} rank={i + 1} />
@@ -73,7 +71,7 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
   return (
     <div className="flex items-center gap-4 rounded-lg border border-border/20 bg-background/50 p-4 transition-colors hover:bg-background/80">
       {/* Rank */}
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+      <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground md:flex">
         {rank}
       </div>
 
@@ -105,7 +103,7 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
         </div>
 
         {/* Startup Badges */}
-        <div className="flex flex-wrap gap-1">
+        <div className="hidden flex-wrap gap-1 md:flex">
           {contributor.startups.map((startup) => (
             <Link key={startup.id} href={`/startup/${startup.slug}`}>
               <Badge variant="secondary" className="text-xs hover:bg-secondary/80">
@@ -118,11 +116,8 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
 
       {/* Payment Info */}
       <div className="flex shrink-0 flex-col items-end gap-1 text-right">
-        <div className="text-sm font-semibold">
-          <EthInUsd amount={BigInt(contributor.totalAmount)} /> contributed
-        </div>
-        <div className="text-xs text-muted-foreground">
-          {contributor.paymentCount} payment{contributor.paymentCount !== 1 ? "s" : ""}
+        <div className="text-base font-medium">
+          <EthInUsd amount={BigInt(contributor.totalAmount)} />{" "}
         </div>
       </div>
     </div>

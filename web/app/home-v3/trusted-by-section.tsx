@@ -49,7 +49,7 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
       <div className="container mb-8">
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Trusted by</h2>
-          <p className="mt-3 text-muted-foreground">
+          <p className="mt-3 hidden text-muted-foreground md:block">
             Leading orgs use Flows to fund what matters to them
           </p>
         </div>
@@ -69,7 +69,7 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
                 key={`${flow.id}-${index}`}
                 className="group block flex-shrink-0"
               >
-                <div className="h-full w-80 transition-all duration-200">
+                <div className="h-full w-64 transition-all duration-200 md:w-80">
                   <div className="p-6">
                     <div className="flex items-center gap-4">
                       <Image

@@ -14,8 +14,7 @@ export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Pro
   return (
     <div className="flex flex-col items-center text-center">
       <h1 className="max-w-5xl text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
-        AI powered grants <span className="block sm:inline">for your </span>
-        <HeroTextAnimator />
+        AI powered grants for your <HeroTextAnimator />
       </h1>
       <p className="mt-6 max-w-2xl text-base md:text-xl">
         Easily coordinate and fund thousands of people.
@@ -47,7 +46,7 @@ export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Pro
           <strong>
             <AnimatedSalary value={totalEarned} monthlyRate={monthlyFlowRate} />
           </strong>{" "}
-          earned by <strong>{totalBuilders}</strong> builders
+          paid to <strong>{totalBuilders}</strong> people
         </span>
       </div>
 
