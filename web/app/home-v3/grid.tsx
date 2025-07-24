@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 
 /* ---------- Config knobs ---------- */
 const CELL_PX = 32 // each cell = 32 px
-const TICK_MS = 80 // game-loop interval (faster)
+const TICK_MS = 100 // game-loop interval (faster)
 const SPAWN_INTERVAL_MS = 2000 // spawn new snakes every 2 seconds
 const MAX_SNAKE_LEN = 21 // grows until this length (5x longer)
 const MAX_SNAKE_AGE = 220 // despawn after N ticks
@@ -104,21 +104,39 @@ const Grid: React.FC = () => {
             const ady = Math.abs(dy)
 
             if (adx !== 0 || ady !== 0) {
-              let chooseHorizontal: boolean
-
-              if (adx === 0) {
-                chooseHorizontal = false
-              } else if (ady === 0) {
-                chooseHorizontal = true
-              } else {
-                // Probability is proportional to remaining distance on that axis
-                chooseHorizontal = Math.random() < adx / (adx + ady)
+              // 80% chance to keep moving along the same axis if it still reduces distance
+              const isCurrentDirUseful = () => {
+                if (dir === "left" && dx < 0) return true
+                if (dir === "right" && dx > 0) return true
+                if (dir === "up" && dy < 0) return true
+                if (dir === "down" && dy > 0) return true
+                return false
               }
 
-              if (chooseHorizontal) {
-                dir = dx > 0 ? "right" : "left"
-              } else {
-                dir = dy > 0 ? "down" : "up"
+              if (!isCurrentDirUseful() || Math.random() < 0.15) {
+                let chooseHorizontal: boolean
+
+                if (adx === 0) {
+                  chooseHorizontal = false
+                } else if (ady === 0) {
+                  chooseHorizontal = true
+                } else if (adx > ady * 1.5) {
+                  // much more horizontal distance to cover
+                  chooseHorizontal = true
+                } else if (ady > adx * 1.5) {
+                  // much more vertical distance
+                  chooseHorizontal = false
+                } else {
+                  // Strong bias toward dominant axis (power-3 weighting)
+                  const horizProb = Math.pow(adx, 3) / (Math.pow(adx, 3) + Math.pow(ady, 3))
+                  chooseHorizontal = Math.random() < horizProb
+                }
+
+                if (chooseHorizontal) {
+                  dir = dx > 0 ? "right" : "left"
+                } else {
+                  dir = dy > 0 ? "down" : "up"
+                }
               }
             }
 
@@ -172,8 +190,8 @@ const Grid: React.FC = () => {
       const dims = dimsRef.current
       if (dims.gridCellsX === 0 || dims.gridCellsY === 0) return
 
-      // Decide how many snakes to spawn (1-3)
-      const count = 1 + Math.floor(Math.random() * 3) // 1,2,3
+      // Decide how many snakes to spawn (2-6) — doubled from before
+      const count = 2 + Math.floor(Math.random() * 5) // 2-6
 
       // Single shared target for this batch
       const sharedTarget: Point = {
@@ -278,14 +296,14 @@ const Grid: React.FC = () => {
     new Map(snakes.map((s) => [`${s.target.x},${s.target.y}`, s.target])).values(),
   )
 
-  const targetDots = uniqueTargets.map((t, idx) => (
+  const targetDots = uniqueTargets.map((t) => (
     <circle
-      key={`target-${idx}`}
+      key={`${t.x}-${t.y}`}
       cx={t.x * CELL_PX + CELL_PX / 2}
       cy={t.y * CELL_PX + CELL_PX / 2}
       r={CELL_PX * 0.25}
       fill="currentColor"
-      className="text-primary/60"
+      className="text-primary/60 duration-500 animate-in fade-in"
     />
   ))
 
