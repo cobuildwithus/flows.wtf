@@ -17,6 +17,7 @@ export interface TopContributor {
     slug: string
     amount: string
     paymentCount: number
+    image: string
   }>
 }
 
@@ -25,7 +26,7 @@ export interface TopContributorsData {
   allTime: TopContributor[]
 }
 
-async function _getTopContributorsForAllStartups(): Promise<TopContributorsData> {
+export async function getTopContributorsForAllStartups(): Promise<TopContributorsData> {
   const startups = getAllStartupsWithIds()
 
   // Get current timestamp and one week ago
@@ -92,7 +93,7 @@ async function _getTopContributorsForAllStartups(): Promise<TopContributorsData>
 
 function processEventsByBeneficiary(
   startupsWithEvents: Array<{
-    startup: { title: string; id: string; slug: string }
+    startup: { title: string; id: string; slug: string; image: string }
     events: Array<{ beneficiary: string; amount: any; timestamp: number; txnValue: any }>
   }>,
 ): TopContributor[] {
@@ -110,6 +111,7 @@ function processEventsByBeneficiary(
           slug: string
           amount: bigint
           paymentCount: number
+          image: string
         }
       >
     }
@@ -155,6 +157,7 @@ function processEventsByBeneficiary(
             slug: startup.slug,
             amount,
             paymentCount: 1,
+            image: startup.image,
           })
         }
       } else {
@@ -165,6 +168,7 @@ function processEventsByBeneficiary(
           slug: startup.slug,
           amount,
           paymentCount: 1,
+          image: startup.image,
         })
 
         beneficiaryMap.set(event.beneficiary, {
@@ -197,11 +201,11 @@ function processEventsByBeneficiary(
     .sort((a, b) => Number(BigInt(b.totalAmount) - BigInt(a.totalAmount)))
 }
 
-export const getTopContributorsForAllStartups = unstable_cache(
-  _getTopContributorsForAllStartups,
-  ["top-contributors-all-startups"],
-  {
-    revalidate: 300, // Cache for 5 minutes
-    tags: ["top-contributors"],
-  },
-)
+// export const getTopContributorsForAllStartups = unstable_cache(
+//   _getTopContributorsForAllStartups,
+//   ["top-contributors-all-startups-v2"],
+//   {
+//     revalidate: 300, // Cache for 5 minutes
+//     tags: ["top-contributors-v2"],
+//   },
+// )

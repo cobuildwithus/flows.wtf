@@ -33,11 +33,10 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
           {/* Section Header */}
           <div className="mb-10">
             <h2 className="text-4xl font-semibold md:text-6xl">Get involved</h2>
-            <p className="mt-2 text-muted-foreground">Back builders or get funded</p>
           </div>
 
           {/* Content */}
-          <div className="space-y-12">
+          <div className="space-y-20">
             <div className="flex flex-col">
               <h3 className="text-lg font-semibold">Back projects</h3>
               <StartupsTable startups={startups} />

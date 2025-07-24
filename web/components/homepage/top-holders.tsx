@@ -5,13 +5,15 @@ import {
 } from "@/lib/onchain-startup/top-holders"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { type Profile } from "@/components/user-profile/get-user-profile"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import { EthInUsd } from "@/components/global/eth-in-usd"
+import { getIpfsUrl } from "@/lib/utils"
+import Image from "next/image"
 
 export default async function TopHolders() {
   const contributorsData = await getTopContributorsForAllStartups()
+  console.log(contributorsData.weekly[0].startups)
 
   return (
     <div className="lg:col-span-2">
@@ -72,56 +74,76 @@ interface TopContributorItemProps {
 
 function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
   return (
-    <div className="flex items-center gap-4 rounded-lg border border-border p-4 shadow-sm transition-colors">
+    <div className="flex items-center gap-3 rounded-full border border-border p-4 shadow-sm transition-colors">
       {/* Rank */}
       <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground md:flex">
         {rank}
       </div>
 
-      {/* Contributor Info */}
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="w-fit">
-          <UserProfile address={contributor.address as `0x${string}`}>
-            {(profile: Profile) => (
-              <div className="flex items-center gap-2">
-                <div className="relative h-8 w-8 shrink-0">
-                  {profile.pfp_url ? (
-                    <img
-                      src={profile.pfp_url}
-                      alt={profile.display_name}
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold">
-                      {profile.display_name.slice(0, 2).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <span className="truncate font-medium text-black dark:text-white">
-                  {profile.display_name}
-                </span>
+      {/* User Avatar */}
+      <UserProfile address={contributor.address as `0x${string}`}>
+        {(profile: Profile) => (
+          <div className="relative h-8 w-8 shrink-0">
+            {profile.pfp_url ? (
+              <img
+                src={profile.pfp_url}
+                alt={profile.display_name}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold">
+                {profile.display_name.slice(0, 2).toUpperCase()}
               </div>
             )}
-          </UserProfile>
-        </div>
+          </div>
+        )}
+      </UserProfile>
 
-        {/* Startup Badges */}
-        <div className="hidden flex-wrap gap-1 md:flex">
-          {contributor.startups.map((startup) => (
-            <Link key={startup.id} href={`/startup/${startup.slug}`}>
-              <Badge variant="secondary" className="text-xs hover:bg-secondary/80">
-                {startup.name}
-              </Badge>
-            </Link>
-          ))}
-        </div>
+      {/* User Info and Stats */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <UserProfile address={contributor.address as `0x${string}`}>
+          {(profile: Profile) => (
+            <>
+              <span className="truncate font-medium text-black dark:text-white">
+                {profile.display_name}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {" "}
+                backed {contributor.startups.length}{" "}
+                {contributor.startups.length === 1 ? "project" : "projects"}
+              </span>
+            </>
+          )}
+        </UserProfile>
       </div>
 
-      {/* Payment Info */}
-      <div className="flex shrink-0 flex-col items-end gap-1 text-right">
-        <div className="text-base font-medium">
-          <EthInUsd amount={BigInt(contributor.totalAmount)} />{" "}
-        </div>
+      {/* Amount */}
+      <div className="shrink-0 text-base font-medium">
+        <EthInUsd amount={BigInt(contributor.totalAmount)} />
+      </div>
+
+      {/* Startup Avatars */}
+      <div className="flex shrink-0 -space-x-2">
+        {contributor.startups.slice(0, 3).map((startup) => (
+          <Link key={startup.id} href={`/${startup.slug}`}>
+            <div className="relative size-6 overflow-hidden rounded-full border-2 border-background hover:z-10">
+              {startup.image && (
+                <Image
+                  src={getIpfsUrl(startup.image)}
+                  alt={startup.name}
+                  width={24}
+                  height={24}
+                  className="size-full object-cover"
+                />
+              )}
+            </div>
+          </Link>
+        ))}
+        {contributor.startups.length > 3 && (
+          <div className="flex size-6 items-center justify-center rounded-full border-2 border-background bg-muted text-xs font-medium text-muted-foreground">
+            +{contributor.startups.length - 3}
+          </div>
+        )}
       </div>
     </div>
   )

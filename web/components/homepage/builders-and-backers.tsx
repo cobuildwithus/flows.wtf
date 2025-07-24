@@ -8,7 +8,7 @@ export function BuildersAndBackers() {
     <section className="w-full bg-primary/5 py-16">
       <div className="container">
         <div className="mb-8 flex flex-col space-y-3">
-          <h2 className="text-4xl font-semibold md:text-5xl">Builders & backers</h2>
+          <h2 className="text-4xl font-semibold md:text-6xl">Builders & backers</h2>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
