@@ -49,6 +49,7 @@ const Grid: React.FC = () => {
 
   // Entire simulation lives here; React never re-renders on every tick
   const snakesRef = useRef<Snake[]>([])
+  const gridPathRef = useRef<Path2D | null>(null)
 
   /* ---------- Dimension handling ---------- */
   useEffect(() => {
@@ -67,6 +68,16 @@ const Grid: React.FC = () => {
         canvas.width = width
         canvas.height = height
       }
+
+      // Build and memoise grid Path2D for static dots
+      const path = new Path2D()
+      for (let x = 0; x <= gridCellsX; x++) {
+        for (let y = 0; y <= gridCellsY; y++) {
+          path.moveTo(x * CELL_PX + 2, y * CELL_PX)
+          path.arc(x * CELL_PX, y * CELL_PX, 2, 0, Math.PI * 2)
+        }
+      }
+      gridPathRef.current = path
     }
 
     updateDimensions()
@@ -211,14 +222,10 @@ const Grid: React.FC = () => {
     const { width, height, gridCellsX, gridCellsY } = dimsRef.current
     ctx.clearRect(0, 0, width, height)
 
-    // Grid dots (static-ish but quick to draw)
-    ctx.fillStyle = "rgba(100,100,100,0.3)"
-    for (let x = 0; x <= gridCellsX; x++) {
-      for (let y = 0; y <= gridCellsY; y++) {
-        ctx.beginPath()
-        ctx.arc(x * CELL_PX, y * CELL_PX, 2, 0, Math.PI * 2)
-        ctx.fill()
-      }
+    // Grid dots – draw pre-computed path
+    if (gridPathRef.current) {
+      ctx.fillStyle = "rgba(100,100,100,0.3)"
+      ctx.fill(gridPathRef.current)
     }
 
     // Target points (deduplicated)
@@ -260,6 +267,7 @@ const Grid: React.FC = () => {
     if (dimensions.gridCellsX === 0 || dimensions.gridCellsY === 0) return
 
     let accumulator = 0
+    let spawnAccumulator = 0
     let last = performance.now()
     let frameId: number
 
@@ -267,6 +275,13 @@ const Grid: React.FC = () => {
       const dt = now - last
       last = now
       accumulator += dt
+      spawnAccumulator += dt
+
+      // spawn snakes on interval using accumulator
+      while (spawnAccumulator >= SPAWN_INTERVAL_MS) {
+        spawnSnakes()
+        spawnAccumulator -= SPAWN_INTERVAL_MS
+      }
       while (accumulator >= TICK_MS) {
         advanceSimulation()
         accumulator -= TICK_MS
@@ -279,12 +294,7 @@ const Grid: React.FC = () => {
     return () => cancelAnimationFrame(frameId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dimensions])
-
-  /* ---------- Spawn interval ---------- */
-  useEffect(() => {
-    const int = setInterval(spawnSnakes, SPAWN_INTERVAL_MS)
-    return () => clearInterval(int)
-  }, [])
+  /* ---------- Spawn interval effect removed – handled in rAF loop ---------- */
 
   /* ---------- Render ---------- */
   const containerStyle: React.CSSProperties = {
