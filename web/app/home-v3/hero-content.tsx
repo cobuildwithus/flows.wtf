@@ -13,7 +13,7 @@ interface Props {
 export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Props) {
   return (
     <div className="flex flex-col items-center text-center">
-      <h1 className="max-w-5xl text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
+      <h1 className="max-w-5xl text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
         AI powered grants <span className="block sm:inline">for your </span>
         <HeroTextAnimator />
       </h1>
