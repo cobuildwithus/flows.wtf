@@ -65,7 +65,7 @@ async function _getGrowthEvents() {
             ...event,
             flow: {
               name: event.startupName,
-              id: event.startupSlug,
+              id: event.flowId,
               underlyingTokenSymbol: event.underlyingTokenSymbol,
               underlyingTokenPrefix: event.underlyingTokenPrefix,
             },

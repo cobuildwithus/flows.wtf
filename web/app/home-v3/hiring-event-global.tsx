@@ -28,10 +28,7 @@ export async function HiringEventGlobal({ event, date }: Props) {
             {profile.display_name}
           </ProfileLink>{" "}
           joined{" "}
-          <Link
-            href={`/startup/${event.startupSlug}`}
-            className="font-medium text-foreground hover:text-primary"
-          >
+          <Link href={event.url} className="font-medium text-foreground hover:text-primary">
             {event.startupName}
           </Link>{" "}
         </p>
