@@ -4,6 +4,8 @@ import { unstable_cache } from "next/cache"
 import { getTokenPayments, type TokenPayment } from "./token-payments"
 import { getHiringEvents, type HiringEvent } from "./hiring-events"
 import { getAllStartupsWithIds } from "./startup"
+import { getUserProfile, type Profile } from "@/components/user-profile/get-user-profile"
+import { Address } from "viem"
 
 export type GrowthEvent =
   | {
@@ -16,6 +18,7 @@ export type GrowthEvent =
       }
       timestamp: number
       address: string
+      profile: Profile
     }
   | {
       type: "hiring"
@@ -29,9 +32,10 @@ export type GrowthEvent =
       }
       timestamp: number
       address: string
+      profile: Profile
     }
 
-async function _getGrowthEvents() {
+async function _getGrowthEvents(): Promise<GrowthEvent[]> {
   const startups = getAllStartupsWithIds()
 
   // Fetch both token payments and hiring events for all startups
@@ -41,7 +45,7 @@ async function _getGrowthEvents() {
       startups.map(async (startup) => {
         const payments = await getTokenPayments(Number(startup.revnetProjectIds.base))
         return payments.map(
-          (payment): GrowthEvent => ({
+          (payment): Omit<GrowthEvent, "profile"> => ({
             type: "token-payment",
             data: {
               ...payment,
@@ -59,7 +63,7 @@ async function _getGrowthEvents() {
     (async () => {
       const hiringEvents = await getHiringEvents()
       return hiringEvents.map(
-        (event): GrowthEvent => ({
+        (event): Omit<GrowthEvent, "profile"> => ({
           type: "hiring",
           data: {
             ...event,
@@ -80,8 +84,28 @@ async function _getGrowthEvents() {
   // Flatten and combine all events
   const allEvents = [...allTokenPayments.flat(), ...allHiringEvents.flat()]
 
-  // Sort all events by timestamp (most recent first)
-  return allEvents.sort((a, b) => b.timestamp - a.timestamp)
+  // Sort all events by timestamp (most recent first) and limit to 20
+  const sortedEvents = allEvents.sort((a, b) => b.timestamp - a.timestamp).slice(0, 20)
+
+  // Get unique addresses to fetch profiles efficiently
+  const uniqueAddresses = [...new Set(sortedEvents.map((event) => event.address))]
+
+  // Fetch all profiles in parallel
+  const profiles = await Promise.all(
+    uniqueAddresses.map((address) => getUserProfile(address as Address)),
+  )
+
+  // Create a map for quick profile lookup
+  const profileMap = new Map(uniqueAddresses.map((address, index) => [address, profiles[index]]))
+
+  // Add profiles to events
+  return sortedEvents.map(
+    (event) =>
+      ({
+        ...event,
+        profile: profileMap.get(event.address)!,
+      }) as GrowthEvent,
+  )
 }
 
 export const getGrowthEvents = unstable_cache(_getGrowthEvents, ["growth-events"], {

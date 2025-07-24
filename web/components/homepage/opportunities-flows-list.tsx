@@ -59,11 +59,6 @@ function OpportunityCard({ opportunity }: { opportunity: OpportunityWithCount })
             />
           </div>
         </div>
-        <Link href={`/startup/${opportunity.startupId}`} className="block w-full">
-          <p className="line-clamp-2 text-xs text-muted-foreground">
-            {opportunity.startup?.shortMission}
-          </p>
-        </Link>
       </CardContent>
     </Card>
   )
@@ -98,7 +93,6 @@ function FlowCard({ flow }: { flow: FlowWithDisplayAmount }) {
               Apply
             </Button>
           </div>
-          <p className="line-clamp-2 text-xs text-muted-foreground">{flow.tagline}</p>
         </CardContent>
       </Card>
     </Link>

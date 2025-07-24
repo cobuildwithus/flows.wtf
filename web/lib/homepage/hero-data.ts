@@ -3,7 +3,6 @@
 import database from "@/lib/database/flows-db"
 import { getAllStartupsWithIds } from "@/lib/onchain-startup/startup"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
-import { getGrowthEvents } from "@/lib/onchain-startup/growth-events"
 import { getTotalBuilders } from "@/lib/onchain-startup/total-builders"
 import { unstable_cache } from "next/cache"
 import { REWARD_POOL_PAYOUT, VRBS_GRANTS_PAYOUTS } from "./old-grants-data"
@@ -20,15 +19,10 @@ function calculateTotalOutgoingFlowRate(
 }
 
 async function _getHeroStats() {
-  const grants = await database.grant.findMany({
-    where: { isFlow: true },
-    select: { totalEarned: true, monthlyOutgoingFlowRate: true, flowId: true, id: true },
-  })
-
   const startups = getAllStartupsWithIds()
-  const [revenue, growthEvents, totalBuilders] = await Promise.all([
+  const [grants, revenue, totalBuilders] = await Promise.all([
+    getGrants(),
     getTotalRevenue(startups),
-    getGrowthEvents(),
     getTotalBuilders(),
   ])
 
@@ -43,11 +37,22 @@ async function _getHeroStats() {
     totalEarned,
     totalMonthlyFlowRate,
     totalBuilders,
-    growthEvents,
   }
 }
 
 export const getHeroStats = unstable_cache(_getHeroStats, ["hero-stats"], {
   tags: ["hero-stats"],
+  revalidate: 120, // 2 minutes
+})
+
+async function _getGrants() {
+  return await database.grant.findMany({
+    where: { isFlow: true },
+    select: { totalEarned: true, monthlyOutgoingFlowRate: true, flowId: true, id: true },
+  })
+}
+
+const getGrants = unstable_cache(_getGrants, ["grants"], {
+  tags: ["grants"],
   revalidate: 120, // 2 minutes
 })

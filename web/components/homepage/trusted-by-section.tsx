@@ -5,7 +5,7 @@ import Link from "next/link"
 import { getIpfsUrl } from "@/lib/utils"
 import { useRef } from "react"
 import { AnimatedSalary } from "@/components/global/animated-salary"
-import { VRBS_GRANTS_PAYOUTS, REWARD_POOL_PAYOUT } from "@/lib/home-v3/old-grants-data"
+import { VRBS_GRANTS_PAYOUTS, REWARD_POOL_PAYOUT } from "@/lib/homepage/old-grants-data"
 
 interface TrustedBySectionProps {
   topLevelFlows: Array<{

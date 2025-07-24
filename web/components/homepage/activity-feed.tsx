@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { getActivityFeedEvents, ActivityEvent } from "@/lib/home-v3/activity-feed-data"
+import { getActivityFeedEvents, ActivityEvent } from "@/lib/homepage/activity-feed-data"
 import { OrderEvent } from "@/app/startup/[id]/components/timeline/order-event"
 import { TokenEvent } from "@/app/startup/[id]/components/timeline/token-event"
 import { HiringEventGlobal } from "./hiring-event-global"
@@ -11,8 +11,8 @@ export default async function ActivityFeed() {
   const events = await getActivityFeedEvents()
 
   return (
-    <div className="border-0 bg-background/50 shadow-none">
-      <ScrollArea className="max-h-[650px]">
+    <div>
+      <ScrollArea className="h-[650px]">
         <div className="space-y-6 pr-4">
           {events.slice(0, 10).map((event, i) => (
             <div key={i} className="relative flex gap-4 md:hidden">
@@ -41,7 +41,6 @@ export default async function ActivityFeed() {
             </div>
           ))}
         </div>
-        <ScrollBar orientation="vertical" />
       </ScrollArea>
     </div>
   )

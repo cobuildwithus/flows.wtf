@@ -1,9 +1,9 @@
 import Link from "next/link"
-import { AgentChatProvider } from "../chat/components/agent-chat"
+import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { StartupsTable } from "./startups-table"
-import { OpportunitiesFlowsList } from "./opportunities-flows-list"
-import { getLiveOpportunitiesData } from "@/lib/home-v3/live-opportunities-data"
-import { getStartupsTableData } from "@/lib/home-v3/startups-table-data"
+import { OpportunitiesScroller } from "./opportunities-scroller"
+import { getLiveOpportunitiesData } from "@/lib/homepage/live-opportunities-data"
+import { getStartupsTableData } from "@/lib/homepage/startups-table-data"
 import type { User } from "@/lib/auth/user"
 
 interface Props {
@@ -17,8 +17,9 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
     getStartupsTableData(),
   ])
 
-  const featuredOpportunities = opportunities.slice(0, 4)
-  const featuredFlows = flows.slice(0, 9 - featuredOpportunities.length)
+  // Get more items for the scroller
+  const scrollerOpportunities = opportunities.slice(0, 6)
+  const scrollerFlows = flows.slice(0, 10)
 
   return (
     <AgentChatProvider
@@ -32,7 +33,7 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
           {/* Section Header */}
           <div className="mb-10">
             <h2 className="text-4xl font-semibold md:text-6xl">Get involved</h2>
-            <p className="mt-2 text-muted-foreground">Back projects or get funded</p>
+            <p className="mt-2 text-muted-foreground">Back builders or get funded</p>
           </div>
 
           {/* Content */}
@@ -41,9 +42,9 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
               <h3 className="text-lg font-semibold">Back projects</h3>
               <StartupsTable startups={startups} />
             </div>
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col space-y-6">
               <h3 className="text-lg font-semibold">Get funded</h3>
-              <OpportunitiesFlowsList opportunities={featuredOpportunities} flows={featuredFlows} />
+              <OpportunitiesScroller opportunities={scrollerOpportunities} flows={scrollerFlows} />
             </div>
             <div className="text-center">
               <Link href="/apply" className="font-medium text-emerald-600 hover:underline">

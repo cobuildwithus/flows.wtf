@@ -28,10 +28,12 @@ export function StartupsTable({ startups }: Props) {
       <TableHeader>
         <TableRow>
           <TableHead className="text-lg font-semibold md:text-xl" />
-          <TableHead className="hidden text-center text-lg font-semibold md:table-cell md:text-xl">
-            Team
+          <TableHead className="hidden text-right text-lg font-semibold md:table-cell md:text-xl">
+            <span className="mr-6">Team</span>
           </TableHead>
-          <TableHead className="text-center text-lg font-semibold md:text-xl">Revenue</TableHead>
+          <TableHead className="text-right text-lg font-semibold md:text-xl">
+            <span className="mr-6">Revenue</span>
+          </TableHead>
           <TableHead className="text-right"></TableHead>
         </TableRow>
       </TableHeader>
@@ -63,7 +65,7 @@ export function StartupsTable({ startups }: Props) {
               </div>
             </TableCell>
             <TableCell className="hidden text-center md:table-cell">
-              <div className="flex justify-center -space-x-2">
+              <div className="flex justify-end -space-x-2 pr-6">
                 {startup.team.slice(0, 3).map((member) => (
                   <UserProfile key={member.recipient} address={member.recipient as `0x${string}`}>
                     {(profile) => (
@@ -85,12 +87,12 @@ export function StartupsTable({ startups }: Props) {
             </TableCell>
             <TableCell className="text-center">
               <StartupStatsDialog startup={startup}>
-                <div className="flex cursor-pointer flex-col items-center">
+                <div className="flex cursor-pointer flex-col items-end pr-6">
                   <Currency className="text-base font-medium decoration-muted-foreground/40 underline-offset-4 hover:decoration-muted-foreground md:text-lg">
                     {startup.revenue}
                   </Currency>
                   {startup.salesChange !== 0 && (
-                    <PercentChange value={startup.salesChange} className="text-sm md:text-base" />
+                    <PercentChange value={startup.salesChange} className="text-xs md:text-sm" />
                   )}
                 </div>
               </StartupStatsDialog>

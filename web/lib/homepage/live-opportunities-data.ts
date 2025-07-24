@@ -2,7 +2,7 @@
 
 import database from "@/lib/database/flows-db"
 import { getStartupData } from "@/lib/onchain-startup/startup"
-import type { OpportunityWithCount, FlowWithDisplayAmount } from "@/app/home-v3/types"
+import type { OpportunityWithCount, FlowWithDisplayAmount } from "@/components/homepage/types"
 import { unstable_cache } from "next/cache"
 
 async function _getLiveOpportunitiesData(): Promise<{

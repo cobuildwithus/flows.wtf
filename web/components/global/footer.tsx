@@ -1,8 +1,6 @@
 import Link from "next/link"
-import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { getUser } from "@/lib/auth/user"
-import { HelpChat } from "@/app/components/action-card/help-chat"
 import HelpCenterItem from "./help-center-item"
 
 export default async function Footer() {
@@ -10,7 +8,7 @@ export default async function Footer() {
   const identityToken = user ? await getPrivyIdToken() : undefined
 
   return (
-    <footer className="mt-12 border-t bg-background py-16">
+    <footer className="border-t bg-background py-16">
       <div className="container px-4 md:px-6">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">

@@ -1,72 +1,48 @@
 import { getUser } from "@/lib/auth/user"
-import database from "@/lib/database/flows-db"
-import { getPool } from "@/lib/database/queries/pool"
-import { getEthAddress } from "@/lib/utils"
-import { AllocationProvider } from "@/lib/allocation/allocation-context"
-import Link from "next/link"
-import FlowsList from "./components/flows-list"
-import type { LimitedFlow } from "./components/flows-table"
-import { HomepageIntro } from "./components/homepage-intro"
-import { CTAButtons } from "./flow/[flowId]/components/cta-buttons"
-import { AllocationBar } from "@/components/global/allocation-bar"
 import Footer from "@/components/global/footer"
+import Hero from "../components/homepage/hero"
+import { LiveOpportunities } from "../components/homepage/live-opportunities"
+import { Suspense } from "react"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
+import { getHeroStats } from "@/lib/homepage/hero-data"
+import { BuildersAndBackers } from "../components/homepage/builders-and-backers"
+import { TrustedBySection } from "../components/homepage/trusted-by-section"
+import { getTopLevelFlows } from "@/lib/database/queries/get-top-level-flows"
+import { FinalSell } from "../components/homepage/final-sell"
+import { SkeletonLoader } from "@/components/ui/skeleton"
 
 export default async function Home() {
-  const pool = await getPool()
-  const [activeFlows, user] = await Promise.all([
-    database.grant.findMany({
-      // just nouns flows for now
-      where: { isFlow: true, isActive: true, isTopLevel: false, flowId: pool.id },
-      omit: { description: true },
-      orderBy: [
-        { activeRecipientCount: "desc" },
-        { challengedRecipientCount: "desc" },
-        { awaitingRecipientCount: "desc" },
-      ],
-    }),
+  const [heroStats, user, privyIdToken] = await Promise.all([
+    getHeroStats(),
     getUser(),
+    getPrivyIdToken(),
   ])
 
-  const canManage = user?.address === pool.manager
-
   return (
-    <AllocationProvider
-      chainId={pool.chainId}
-      contract={getEthAddress(pool.recipient)}
-      strategies={pool.allocationStrategies}
-      user={user?.address ?? null}
-    >
-      <main>
-        <div className="container mt-6">
-          <HomepageIntro user={user} />
-        </div>
-        <div className="container mt-6 flex items-center justify-between">
-          <div>
-            <div className="flex items-center space-x-4">
-              <h3 className="text-lg font-semibold leading-none tracking-tight md:text-xl">
-                <Link href={`/flow/${pool.id}`} className="hover:text-primary">
-                  Explore Flows
-                </Link>
-              </h3>
-            </div>
-          </div>
+    <main>
+      <Hero
+        totalEarned={heroStats.totalEarned}
+        monthlyFlowRate={heroStats.totalMonthlyFlowRate}
+        totalBuilders={heroStats.totalBuilders}
+      />
 
-          <CTAButtons />
-        </div>
+      <Suspense>
+        <TrustedBySection topLevelFlows={await getTopLevelFlows()} />
+      </Suspense>
 
-        <div className="container my-6">
-          <FlowsList
-            flows={activeFlows}
-            canManage={canManage}
-            contract={getEthAddress(pool.recipient)}
-            chainId={pool.chainId}
-          />
-        </div>
-        <div className="pt-12">
-          <Footer />
-        </div>
-      </main>
-      <AllocationBar />
-    </AllocationProvider>
+      <div className="container space-y-12">
+        <Suspense fallback={<SkeletonLoader count={6} height={280} />}>
+          <LiveOpportunities user={user} privyIdToken={privyIdToken} />
+        </Suspense>
+      </div>
+
+      <BuildersAndBackers />
+
+      <FinalSell />
+
+      <Suspense>
+        <Footer />
+      </Suspense>
+    </main>
   )
 }

@@ -14,9 +14,10 @@ interface Props {
 }
 
 export function GrowthEvent({ event }: Props) {
+  const profile = event.profile
   return (
-    <UserProfileClient address={event.address as `0x${string}`} withPopover={false} hideLink>
-      {(profile) => (
+    <div>
+      {profile && (
         <div className="flex items-center gap-3">
           {/* Profile Picture */}
           <div className="relative flex-shrink-0">
@@ -86,6 +87,6 @@ export function GrowthEvent({ event }: Props) {
           </div>
         </div>
       )}
-    </UserProfileClient>
+    </div>
   )
 }

@@ -14,22 +14,25 @@ export default async function TopHolders() {
   const contributorsData = await getTopContributorsForAllStartups()
 
   return (
-    <div>
+    <div className="lg:col-span-2">
       <Tabs defaultValue="allTime" className="w-full">
-        <TabsList className="mb-3 grid w-fit grid-cols-2 gap-2 bg-transparent p-0">
-          <TabsTrigger
-            value="allTime"
-            className="min-w-20 rounded-full border border-border/20 bg-muted/30 text-muted-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-muted/50"
-          >
-            All Time
-          </TabsTrigger>
-          <TabsTrigger
-            value="weekly"
-            className="min-w-20 rounded-full border border-border/20 bg-muted/30 text-muted-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-muted/50"
-          >
-            This Week
-          </TabsTrigger>
-        </TabsList>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Top backers</h3>
+          <TabsList className="grid w-fit grid-cols-2 gap-2 bg-transparent p-0">
+            <TabsTrigger
+              value="allTime"
+              className="min-w-20 rounded-full border border-border/20 bg-muted/30 text-xs text-muted-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-muted/50"
+            >
+              All
+            </TabsTrigger>
+            <TabsTrigger
+              value="weekly"
+              className="min-w-20 rounded-full border border-border/20 bg-muted/30 text-xs text-muted-foreground data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm hover:bg-muted/50"
+            >
+              Week
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="allTime">
           <ContributorsList contributors={contributorsData.allTime} />
@@ -69,7 +72,7 @@ interface TopContributorItemProps {
 
 function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
   return (
-    <div className="flex items-center gap-4 rounded-lg border border-border/20 bg-background/50 p-4 transition-colors hover:bg-background/80">
+    <div className="flex items-center gap-4 rounded-lg border border-border p-4 shadow-sm transition-colors">
       {/* Rank */}
       <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground md:flex">
         {rank}
@@ -89,12 +92,12 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold">
                       {profile.display_name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
                 </div>
-                <span className="truncate font-medium hover:text-primary">
+                <span className="truncate font-medium text-black dark:text-white">
                   {profile.display_name}
                 </span>
               </div>

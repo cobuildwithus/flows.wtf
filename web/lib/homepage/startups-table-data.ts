@@ -5,7 +5,7 @@ import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { getRevnetBalance } from "@/lib/revnet/hooks/get-revnet-balance"
 import { base as baseChain } from "viem/chains"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
-import type { StartupWithRevenue } from "@/app/home-v3/types"
+import type { StartupWithRevenue } from "@/components/homepage/types"
 import { unstable_cache } from "next/cache"
 
 async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {

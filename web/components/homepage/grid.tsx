@@ -339,7 +339,8 @@ const Grid: React.FC = () => {
       />
       <canvas
         ref={canvasRef}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.2 }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        className="opacity-40 dark:opacity-20"
       />
     </div>
   )
