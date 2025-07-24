@@ -29,7 +29,7 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
       identityToken={privyIdToken}
     >
       <section id="live-opportunities" className="py-20 lg:py-28">
-        <div className="container">
+        <div>
           {/* Section Header */}
           <div className="mb-10">
             <h2 className="text-4xl font-semibold md:text-6xl">Get involved</h2>

@@ -74,9 +74,9 @@ interface TopContributorItemProps {
 
 function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
   return (
-    <div className="flex items-center gap-3 rounded-full border border-border p-3 shadow-sm transition-colors">
+    <div className="flex items-center gap-3 rounded-full border border-border p-2 px-3 shadow-sm transition-colors md:p-3">
       {/* Rank */}
-      <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground md:flex">
+      <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground md:flex md:text-sm">
         {rank}
       </div>
 
@@ -91,39 +91,37 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
                 className="h-8 w-8 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-semibold md:text-sm">
                 {profile.display_name.slice(0, 2).toUpperCase()}
               </div>
             )}
           </div>
         )}
       </UserProfile>
-
       {/* User Info and Stats */}
-      <div className="flex min-w-0 flex-1 items-center gap-2">
+      <div className="min-w-0 flex-1">
         <UserProfile address={contributor.address as `0x${string}`}>
           {(profile: Profile) => (
-            <>
-              <span className="truncate font-medium text-black dark:text-white">
+            <div className="flex flex-col md:flex-row md:items-center md:gap-2">
+              <span className="truncate text-sm font-medium text-black dark:text-white md:text-base">
                 {profile.display_name}
               </span>
-              <span className="text-sm text-muted-foreground">
-                {" "}
+              <span className="text-xs text-muted-foreground md:text-sm">
                 backed {contributor.startups.length}{" "}
                 {contributor.startups.length === 1 ? "project" : "projects"}
               </span>
-            </>
+            </div>
           )}
         </UserProfile>
       </div>
 
       {/* Amount */}
-      <div className="shrink-0 text-base font-medium">
+      <div className="shrink-0 text-sm font-medium md:text-base">
         <EthInUsd amount={BigInt(contributor.totalAmount)} />
       </div>
 
       {/* Startup Avatars */}
-      <div className="flex shrink-0 -space-x-2">
+      <div className="hidden shrink-0 -space-x-2 md:flex">
         {contributor.startups.slice(0, 3).map((startup) => (
           <Link key={startup.id} href={`/${startup.slug}`}>
             <div className="relative size-6 overflow-hidden rounded-full border-2 border-background hover:z-10">

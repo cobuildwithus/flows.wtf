@@ -56,7 +56,7 @@ export function OpportunitiesScroller({ opportunities, flows }: Props) {
         style={{ width: "max-content" }}
       >
         {duplicatedItems.map((item, index) => (
-          <div key={`${item.type}-${item.data.id}-${index}`} className="w-80 flex-shrink-0">
+          <div key={`${item.type}-${item.data.id}-${index}`} className="w-64 flex-shrink-0 md:w-80">
             {item.type === "opportunity" ? (
               <OpportunityScrollerCard opportunity={item.data} />
             ) : (

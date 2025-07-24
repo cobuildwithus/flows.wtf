@@ -48,7 +48,7 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
     <section className="mt-12 overflow-hidden bg-muted/80 py-16 dark:bg-black/20">
       <div className="container mb-8">
         <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Trusted by</h2>
+          <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">Trusted by</h2>
           <p className="mt-3 hidden text-muted-foreground md:block">
             Leading orgs use Flows to fund what matters to them
           </p>
@@ -69,8 +69,8 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
                 key={`${flow.id}-${index}`}
                 className="group block flex-shrink-0"
               >
-                <div className="h-full w-64 transition-all duration-200 md:w-80">
-                  <div className="p-6">
+                <div className="h-full w-[200px] transition-all duration-200 md:w-80">
+                  <div className="p-3 lg:p-6">
                     <div className="flex items-center gap-4">
                       <Image
                         src={getFlowImage(flow)}
@@ -80,10 +80,10 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
                         className="size-16 shrink-0 rounded-full object-cover ring-1 ring-border"
                       />
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-xl font-semibold transition-colors group-hover:text-primary">
+                        <h3 className="text-lg font-semibold transition-colors group-hover:text-primary md:text-xl">
                           {cleanFlowTitle(flow.title)}
                         </h3>
-                        <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground md:text-sm">
                           <div>
                             <AnimatedSalary
                               value={getTotalPaidOut(flow)}

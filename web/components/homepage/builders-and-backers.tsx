@@ -11,7 +11,7 @@ export function BuildersAndBackers() {
           <h2 className="text-4xl font-semibold md:text-6xl">Builders & backers</h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-6">
           <Suspense fallback={<SkeletonLoader count={20} height={80} />}>
             <TopHolders />
           </Suspense>
