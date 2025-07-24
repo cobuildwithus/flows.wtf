@@ -50,7 +50,7 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Trusted by</h2>
           <p className="mt-3 text-muted-foreground">
-            Leading orgs use Flows to coordinate and fund their communities
+            Leading orgs use Flows to fund what matters to them
           </p>
         </div>
       </div>

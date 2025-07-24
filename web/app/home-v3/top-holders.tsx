@@ -14,6 +14,8 @@ import Link from "next/link"
 export default async function TopHolders() {
   const contributorsData = await getTopContributorsForAllStartups()
 
+  console.log(contributorsData)
+
   return (
     <div>
       <Tabs defaultValue="allTime" className="w-full">
@@ -65,13 +67,6 @@ interface TopContributorItemProps {
 }
 
 function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
-  // Debug the conversion
-  const rawAmount = Number(contributor.totalAmount)
-  const totalAmount = rawAmount / 1e18 // Convert from wei to ETH
-
-  // Handle NaN case
-  const displayAmount = isNaN(totalAmount) ? 0 : totalAmount
-
   return (
     <div className="flex items-center gap-4 rounded-lg border border-border/20 bg-background/50 p-4 transition-colors hover:bg-background/80">
       {/* Rank */}
@@ -119,14 +114,7 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
       {/* Payment Info */}
       <div className="flex shrink-0 flex-col items-end gap-1 text-right">
         <div className="text-sm font-semibold">
-          <Currency>
-            $
-            {displayAmount.toLocaleString(undefined, {
-              maximumFractionDigits: displayAmount < 1 ? 6 : 2,
-              minimumFractionDigits: 0,
-            })}
-          </Currency>{" "}
-          contributed
+          <Currency>{Number(contributor.totalAmount) / 1e18}</Currency> contributed
         </div>
         <div className="text-xs text-muted-foreground">
           {contributor.paymentCount} payment{contributor.paymentCount !== 1 ? "s" : ""}
