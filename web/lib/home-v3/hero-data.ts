@@ -6,9 +6,7 @@ import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { getGrowthEvents } from "@/lib/onchain-startup/growth-events"
 import { getTotalBuilders } from "@/lib/onchain-startup/total-builders"
 import { unstable_cache } from "next/cache"
-
-const VRBS_GRANTS_PAYOUTS = 35555.41
-const REWARD_POOL_PAYOUT = 7547.3
+import { REWARD_POOL_PAYOUT, VRBS_GRANTS_PAYOUTS } from "./old-grants-data"
 
 function calculateTotalOutgoingFlowRate(
   flows: Array<{ id: string; monthlyOutgoingFlowRate: string; flowId?: string }>,

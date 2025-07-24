@@ -80,6 +80,7 @@ async function handleItemSubmitted(params: {
     bonusMemberUnits: "0",
     baselineMemberUnits: "0",
     totalEarned: "0",
+    totalPaidOut: "0",
     activeRecipientCount: 0,
     awaitingRecipientCount: 0,
     challengedRecipientCount: 0,

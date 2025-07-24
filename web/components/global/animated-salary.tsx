@@ -33,7 +33,7 @@ export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
   if (grant && tokenPrefix !== "$") {
     return (
       <span>
-        {tokenPrefix && <span className="mr-2">{tokenPrefix}</span>}
+        {tokenPrefix && <span className="mr-0.5">{tokenPrefix}</span>}
         <NumberFlow
           value={currentValue}
           format={{

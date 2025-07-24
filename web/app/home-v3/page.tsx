@@ -8,12 +8,15 @@ import { getHeroStats } from "@/lib/home-v3/hero-data"
 import ActivityFeed from "./activity-feed"
 import TopHolders from "./top-holders"
 import { SkeletonLoader } from "@/components/ui/skeleton"
+import { TrustedBySection } from "./trusted-by-section"
+import { getTopLevelFlows } from "@/lib/database/queries/get-top-level-flows"
 
 export default async function Home() {
-  const [heroStats, user, privyIdToken] = await Promise.all([
+  const [heroStats, user, privyIdToken, topLevelFlows] = await Promise.all([
     getHeroStats(),
     getUser(),
     getPrivyIdToken(),
+    getTopLevelFlows(),
   ])
 
   return (
@@ -25,7 +28,9 @@ export default async function Home() {
         growthEvents={heroStats.growthEvents.slice(0, 20)}
       />
 
-      <div className="container mt-12 space-y-12">
+      <TrustedBySection topLevelFlows={topLevelFlows} />
+
+      <div className="container space-y-12">
         <Suspense fallback={<SkeletonLoader count={6} height={280} />}>
           <LiveOpportunities user={user} privyIdToken={privyIdToken} />
         </Suspense>
