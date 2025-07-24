@@ -284,10 +284,10 @@ const Grid: React.FC = () => {
         .map((p) => `${p.x * CELL_PX + CELL_PX / 2},${p.y * CELL_PX + CELL_PX / 2}`)
         .join(" ")}
       fill="none"
-      strokeWidth={CELL_PX * 0.2}
+      strokeWidth={CELL_PX * 0.15}
       strokeLinecap="round"
       strokeLinejoin="round"
-      stroke={`hsl(${(s.id * 77) % 360} 80% 50% / 0.3)`} // more transparent deterministic color
+      stroke={`hsl(${(s.id * 77) % 360} 80% 50% / 0.2)`} // more transparent deterministic color
     />
   ))
 
@@ -301,7 +301,7 @@ const Grid: React.FC = () => {
       key={`${t.x}-${t.y}`}
       cx={t.x * CELL_PX + CELL_PX / 2}
       cy={t.y * CELL_PX + CELL_PX / 2}
-      r={CELL_PX * 0.25}
+      r={CELL_PX * 0.2}
       fill="currentColor"
       className="text-primary/60 duration-500 animate-in fade-in"
     />
