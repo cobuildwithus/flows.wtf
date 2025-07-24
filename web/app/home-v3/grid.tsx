@@ -3,16 +3,17 @@ import React, { useEffect, useRef, useState } from "react"
 
 /* ---------- Config knobs ---------- */
 const CELL_PX = 32 // each cell = 32 px
-const TICK_MS = 100 // game-loop interval (faster)
+const TICK_MS = 100 // simulation tick interval (deterministic)
 const SPAWN_INTERVAL_MS = 2000 // spawn new snakes every 2 seconds
-const MAX_SNAKE_LEN = 21 // grows until this length (5x longer)
+const MAX_SNAKE_LEN = 21 // grows until this length
 const MAX_SNAKE_AGE = 220 // despawn after N ticks
-// Snakes now spawn when a "growth-event-advance" CustomEvent is dispatched,
-// so we no longer use probabilistic spawning
 /* ---------------------------------- */
 
 type Dir = "up" | "down" | "left" | "right"
-type Point = { x: number; y: number }
+interface Point {
+  x: number
+  y: number
+}
 
 interface Snake {
   id: number
@@ -33,29 +34,38 @@ const DIR_VEC: Record<Dir, Point> = {
 }
 
 const Grid: React.FC = () => {
-  const [snakes, setSnakes] = useState<Snake[]>([])
+  /* ---------- Refs & state ---------- */
+  const containerRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // Dimension state – only changes on resize (rare)
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
     gridCellsX: 0,
     gridCellsY: 0,
   })
-  const tickRef = useRef<ReturnType<typeof setInterval>>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const dimsRef = useRef(dimensions)
 
-  // Update dimensions on mount and resize
+  // Entire simulation lives here; React never re-renders on every tick
+  const snakesRef = useRef<Snake[]>([])
+
+  /* ---------- Dimension handling ---------- */
   useEffect(() => {
     const updateDimensions = () => {
-      if (containerRef.current) {
-        const { offsetWidth, offsetHeight } = containerRef.current
-        const gridCellsX = Math.ceil(offsetWidth / CELL_PX)
-        const gridCellsY = Math.ceil(offsetHeight / CELL_PX)
-        setDimensions({
-          width: offsetWidth,
-          height: offsetHeight,
-          gridCellsX,
-          gridCellsY,
-        })
+      if (!containerRef.current) return
+      const { offsetWidth: width, offsetHeight: height } = containerRef.current
+      const gridCellsX = Math.ceil(width / CELL_PX)
+      const gridCellsY = Math.ceil(height / CELL_PX)
+      const newDims = { width, height, gridCellsX, gridCellsY }
+      dimsRef.current = newDims
+      setDimensions(newDims)
+
+      // keep canvas in sync – handle HiDPI if desired (skipped for brevity)
+      const canvas = canvasRef.current
+      if (canvas) {
+        canvas.width = width
+        canvas.height = height
       }
     }
 
@@ -64,263 +74,232 @@ const Grid: React.FC = () => {
     return () => window.removeEventListener("resize", updateDimensions)
   }, [])
 
-  const withinBounds = ({ x, y }: Point) =>
-    x >= 0 && x < dimensions.gridCellsX && y >= 0 && y < dimensions.gridCellsY
+  /* ---------- Helpers ---------- */
+  const withinBounds = (p: Point) => {
+    const { gridCellsX, gridCellsY } = dimsRef.current
+    return p.x >= 0 && p.x < gridCellsX && p.y >= 0 && p.y < gridCellsY
+  }
 
-  /* ---------- Main game loop ---------- */
+  const advanceSimulation = () => {
+    const moved: Snake[] = snakesRef.current
+      .map((s) => {
+        // 1. Shrink if done
+        if (s.phase === "shrinking") {
+          const newBody = s.body.slice(0, -1)
+          return {
+            ...s,
+            body: newBody,
+            shrinkProgress: (s.shrinkProgress ?? 0) + 1,
+            age: s.age + 1,
+          }
+        }
+
+        // 2. Movement toward target
+        const head = s.body[0]
+        if (head.x === s.target.x && head.y === s.target.y) {
+          return { ...s, phase: "shrinking" as const, shrinkProgress: 0 }
+        }
+
+        let dir: Dir = s.dir
+        const dx = s.target.x - head.x
+        const dy = s.target.y - head.y
+        const adx = Math.abs(dx)
+        const ady = Math.abs(dy)
+
+        if (adx !== 0 || ady !== 0) {
+          const isCurrentDirUseful = () => {
+            if (dir === "left" && dx < 0) return true
+            if (dir === "right" && dx > 0) return true
+            if (dir === "up" && dy < 0) return true
+            if (dir === "down" && dy > 0) return true
+            return false
+          }
+
+          if (!isCurrentDirUseful() || Math.random() < 0.15) {
+            let chooseHorizontal: boolean
+            if (adx === 0) chooseHorizontal = false
+            else if (ady === 0) chooseHorizontal = true
+            else if (adx > ady * 1.5) chooseHorizontal = true
+            else if (ady > adx * 1.5) chooseHorizontal = false
+            else {
+              const horizProb = Math.pow(adx, 3) / (Math.pow(adx, 3) + Math.pow(ady, 3))
+              chooseHorizontal = Math.random() < horizProb
+            }
+            dir = chooseHorizontal ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up"
+          }
+        }
+
+        // fallback if chosen dir hits boundary
+        let newHead = { x: head.x + DIR_VEC[dir].x, y: head.y + DIR_VEC[dir].y }
+        if (!withinBounds(newHead)) {
+          const fallback = ("up down left right".split(" ") as Dir[]).find((d) => {
+            const attempt = { x: head.x + DIR_VEC[d].x, y: head.y + DIR_VEC[d].y }
+            return withinBounds(attempt)
+          })
+          if (fallback) dir = fallback
+          newHead = { x: head.x + DIR_VEC[dir].x, y: head.y + DIR_VEC[dir].y }
+        }
+
+        const newBody = withinBounds(newHead) ? [newHead, ...s.body] : s.body
+        if (newBody.length > MAX_SNAKE_LEN) newBody.pop()
+
+        return { ...s, body: newBody, dir, age: s.age + 1 }
+      })
+      // 3. Cull finished/elderly snakes
+      .filter((s) => s.age < MAX_SNAKE_AGE && s.body.length > 0)
+
+    snakesRef.current = moved
+  }
+
+  const spawnSnakes = () => {
+    const dims = dimsRef.current
+    if (dims.gridCellsX === 0 || dims.gridCellsY === 0) return
+
+    const count = 2 + Math.floor(Math.random() * 5) // 2–6 snakes
+    const sharedTarget: Point = {
+      x: Math.floor(Math.random() * dims.gridCellsX),
+      y: Math.floor(Math.random() * dims.gridCellsY),
+    }
+
+    const sides: Array<"top" | "bottom" | "left" | "right"> = ["top", "bottom", "left", "right"]
+    const pickStart = (): { start: Point; dir: Dir } => {
+      const side = sides[Math.floor(Math.random() * 4)]
+      switch (side) {
+        case "top": {
+          const x = Math.floor(Math.random() * dims.gridCellsX)
+          return { start: { x, y: 0 }, dir: "down" }
+        }
+        case "bottom": {
+          const x = Math.floor(Math.random() * dims.gridCellsX)
+          return { start: { x, y: dims.gridCellsY - 1 }, dir: "up" }
+        }
+        case "left": {
+          const y = Math.floor(Math.random() * dims.gridCellsY)
+          return { start: { x: 0, y }, dir: "right" }
+        }
+        default: {
+          const y = Math.floor(Math.random() * dims.gridCellsY)
+          return { start: { x: dims.gridCellsX - 1, y }, dir: "left" }
+        }
+      }
+    }
+
+    const newSnakes: Snake[] = Array.from({ length: count }).map(() => {
+      const { start, dir } = pickStart()
+      return {
+        id: Date.now() + Math.random(),
+        body: [start],
+        dir,
+        age: 0,
+        target: sharedTarget,
+        axisFirstX: Math.random() < 0.5,
+        phase: "active" as const,
+        shrinkProgress: 0,
+      }
+    })
+
+    snakesRef.current = [...snakesRef.current, ...newSnakes]
+  }
+
+  /* ---------- Canvas drawing ---------- */
+  function draw() {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const { width, height, gridCellsX, gridCellsY } = dimsRef.current
+    ctx.clearRect(0, 0, width, height)
+
+    // Grid dots (static-ish but quick to draw)
+    ctx.fillStyle = "rgba(100,100,100,0.3)"
+    for (let x = 0; x <= gridCellsX; x++) {
+      for (let y = 0; y <= gridCellsY; y++) {
+        ctx.beginPath()
+        ctx.arc(x * CELL_PX, y * CELL_PX, 2, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    }
+
+    // Target points (deduplicated)
+    const uniqueTargets = Array.from(
+      new Map(snakesRef.current.map((s) => [`${s.target.x},${s.target.y}`, s.target])).values(),
+    )
+    ctx.fillStyle = "rgba(59,130,246,0.6)" // primary-ish blue
+    uniqueTargets.forEach((t) => {
+      ctx.beginPath()
+      ctx.arc(
+        t.x * CELL_PX + CELL_PX / 2,
+        t.y * CELL_PX + CELL_PX / 2,
+        CELL_PX * 0.2,
+        0,
+        Math.PI * 2,
+      )
+      ctx.fill()
+    })
+
+    // Snakes
+    ctx.lineCap = "round"
+    ctx.lineJoin = "round"
+    snakesRef.current.forEach((s) => {
+      ctx.strokeStyle = `hsla(${(s.id * 77) % 360},80%,50%,0.2)`
+      ctx.lineWidth = CELL_PX * 0.15
+      ctx.beginPath()
+      s.body.forEach((p, idx) => {
+        const px = p.x * CELL_PX + CELL_PX / 2
+        const py = p.y * CELL_PX + CELL_PX / 2
+        if (idx === 0) ctx.moveTo(px, py)
+        else ctx.lineTo(px, py)
+      })
+      ctx.stroke()
+    })
+  }
+
+  /* ---------- Main loop (rAF) ---------- */
   useEffect(() => {
     if (dimensions.gridCellsX === 0 || dimensions.gridCellsY === 0) return
 
-    tickRef.current = setInterval(() => {
-      setSnakes((prev) => {
-        // 1. Move & age existing snakes
-        const moved = prev
-          .map((s) => {
-            // If snake is in shrinking phase, remove tail gradually
-            if (s.phase === "shrinking") {
-              const newBody = s.body.slice(0, -1)
-              return {
-                ...s,
-                body: newBody,
-                shrinkProgress: (s.shrinkProgress ?? 0) + 1,
-                age: s.age + 1,
-              }
-            }
+    let accumulator = 0
+    let last = performance.now()
+    let frameId: number
 
-            const head = s.body[0]
-
-            // Check if target reached -> enter shrinking phase
-            if (head.x === s.target.x && head.y === s.target.y) {
-              return { ...s, phase: "shrinking" as const, shrinkProgress: 0 }
-            }
-
-            // Move toward the target by alternating axes, approximating a diagonal path.
-            // We choose the axis probabilistically, weighted by the remaining distance on each axis.
-            let dir: Dir = s.dir
-
-            const dx = s.target.x - head.x
-            const dy = s.target.y - head.y
-            const adx = Math.abs(dx)
-            const ady = Math.abs(dy)
-
-            if (adx !== 0 || ady !== 0) {
-              // 80% chance to keep moving along the same axis if it still reduces distance
-              const isCurrentDirUseful = () => {
-                if (dir === "left" && dx < 0) return true
-                if (dir === "right" && dx > 0) return true
-                if (dir === "up" && dy < 0) return true
-                if (dir === "down" && dy > 0) return true
-                return false
-              }
-
-              if (!isCurrentDirUseful() || Math.random() < 0.15) {
-                let chooseHorizontal: boolean
-
-                if (adx === 0) {
-                  chooseHorizontal = false
-                } else if (ady === 0) {
-                  chooseHorizontal = true
-                } else if (adx > ady * 1.5) {
-                  // much more horizontal distance to cover
-                  chooseHorizontal = true
-                } else if (ady > adx * 1.5) {
-                  // much more vertical distance
-                  chooseHorizontal = false
-                } else {
-                  // Strong bias toward dominant axis (power-3 weighting)
-                  const horizProb = Math.pow(adx, 3) / (Math.pow(adx, 3) + Math.pow(ady, 3))
-                  chooseHorizontal = Math.random() < horizProb
-                }
-
-                if (chooseHorizontal) {
-                  dir = dx > 0 ? "right" : "left"
-                } else {
-                  dir = dy > 0 ? "down" : "up"
-                }
-              }
-            }
-
-            // Ensure chosen direction is within bounds
-            const attempt = {
-              x: head.x + DIR_VEC[dir].x,
-              y: head.y + DIR_VEC[dir].y,
-            }
-            if (!withinBounds(attempt)) {
-              const fallback = (["up", "down", "left", "right"] as Dir[]).find((d) => {
-                const n = {
-                  x: head.x + DIR_VEC[d].x,
-                  y: head.y + DIR_VEC[d].y,
-                }
-                return withinBounds(n)
-              })
-              if (fallback) dir = fallback
-            }
-
-            const newHead = {
-              x: head.x + DIR_VEC[dir].x,
-              y: head.y + DIR_VEC[dir].y,
-            }
-
-            const newBody = withinBounds(newHead) ? [newHead, ...s.body] : s.body
-            if (newBody.length > MAX_SNAKE_LEN) newBody.pop()
-
-            return { ...s, body: newBody, dir, age: s.age + 1 }
-          })
-          // 2. Cull finished or elderly snakes
-          .filter((s) => s.age < MAX_SNAKE_AGE && s.body.length > 0)
-
-        // No random spawning; new snakes are added via the growth-event listener
-        return moved
-      })
-    }, TICK_MS)
-
-    return () => {
-      if (tickRef.current) clearInterval(tickRef.current)
-    }
-  }, [dimensions])
-
-  /* ---------- Spawn snakes on an interval ---------- */
-  const dimsRef = useRef(dimensions)
-  useEffect(() => {
-    dimsRef.current = dimensions
-  }, [dimensions])
-
-  useEffect(() => {
-    const spawnSnakes = () => {
-      const dims = dimsRef.current
-      if (dims.gridCellsX === 0 || dims.gridCellsY === 0) return
-
-      // Decide how many snakes to spawn (2-6) — doubled from before
-      const count = 2 + Math.floor(Math.random() * 5) // 2-6
-
-      // Single shared target for this batch
-      const sharedTarget: Point = {
-        x: Math.floor(Math.random() * dims.gridCellsX),
-        y: Math.floor(Math.random() * dims.gridCellsY),
+    const loop = (now: number) => {
+      const dt = now - last
+      last = now
+      accumulator += dt
+      while (accumulator >= TICK_MS) {
+        advanceSimulation()
+        accumulator -= TICK_MS
       }
-
-      const sides: Array<"top" | "bottom" | "left" | "right"> = ["top", "bottom", "left", "right"]
-
-      const pickStart = (): { start: Point; dir: Dir } => {
-        const side = sides[Math.floor(Math.random() * 4)]
-        switch (side) {
-          case "top": {
-            const x = Math.floor(Math.random() * dims.gridCellsX)
-            return { start: { x, y: 0 }, dir: "down" }
-          }
-          case "bottom": {
-            const x = Math.floor(Math.random() * dims.gridCellsX)
-            return { start: { x, y: dims.gridCellsY - 1 }, dir: "up" }
-          }
-          case "left": {
-            const y = Math.floor(Math.random() * dims.gridCellsY)
-            return { start: { x: 0, y }, dir: "right" }
-          }
-          case "right":
-          default: {
-            const y = Math.floor(Math.random() * dims.gridCellsY)
-            return { start: { x: dims.gridCellsX - 1, y }, dir: "left" }
-          }
-        }
-      }
-
-      const newSnakes: Snake[] = Array.from({ length: count }).map(() => {
-        const { start, dir } = pickStart()
-        return {
-          id: Date.now() + Math.random(),
-          body: [start],
-          dir,
-          age: 0,
-          target: sharedTarget,
-          axisFirstX: Math.random() < 0.5,
-          phase: "active" as const,
-          shrinkProgress: 0,
-        }
-      })
-
-      setSnakes((prev) => [...prev, ...newSnakes])
+      draw()
+      frameId = requestAnimationFrame(loop)
     }
 
+    frameId = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(frameId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dimensions])
+
+  /* ---------- Spawn interval ---------- */
+  useEffect(() => {
     const int = setInterval(spawnSnakes, SPAWN_INTERVAL_MS)
     return () => clearInterval(int)
   }, [])
 
-  const containerStyle = {
-    position: "absolute" as const,
+  /* ---------- Render ---------- */
+  const containerStyle: React.CSSProperties = {
+    position: "absolute",
     inset: 0,
     zIndex: 10,
-    overflow: "hidden" as const,
+    overflow: "hidden",
   }
-
-  if (dimensions.width === 0 || dimensions.height === 0) {
-    return <div ref={containerRef} style={containerStyle} />
-  }
-
-  /* ---------- Render helpers ---------- */
-  const viewBoxWidth = dimensions.gridCellsX * CELL_PX
-  const viewBoxHeight = dimensions.gridCellsY * CELL_PX
-
-  // Grid dots at each vertex
-  const gridDots = []
-  for (let x = 0; x <= dimensions.gridCellsX; x++) {
-    for (let y = 0; y <= dimensions.gridCellsY; y++) {
-      gridDots.push(
-        <circle
-          key={`dot-${x}-${y}`}
-          cx={x * CELL_PX}
-          cy={y * CELL_PX}
-          r={2}
-          fill="currentColor"
-          className="text-muted-foreground/30"
-        />,
-      )
-    }
-  }
-
-  const snakeStrokes = snakes.map((s) => (
-    <polyline
-      key={s.id}
-      points={s.body
-        .map((p) => `${p.x * CELL_PX + CELL_PX / 2},${p.y * CELL_PX + CELL_PX / 2}`)
-        .join(" ")}
-      fill="none"
-      strokeWidth={CELL_PX * 0.15}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      stroke={`hsl(${(s.id * 77) % 360} 80% 50% / 0.2)`} // more transparent deterministic color
-    />
-  ))
-
-  // Deduplicate target dots so one per coordinate
-  const uniqueTargets = Array.from(
-    new Map(snakes.map((s) => [`${s.target.x},${s.target.y}`, s.target])).values(),
-  )
-
-  const targetDots = uniqueTargets.map((t) => (
-    <circle
-      key={`${t.x}-${t.y}`}
-      cx={t.x * CELL_PX + CELL_PX / 2}
-      cy={t.y * CELL_PX + CELL_PX / 2}
-      r={CELL_PX * 0.2}
-      fill="currentColor"
-      className="text-primary/60 duration-500 animate-in fade-in"
-    />
-  ))
 
   return (
     <div ref={containerRef} style={containerStyle}>
-      <svg
-        viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-        width="100%"
-        height="100%"
-        style={{ display: "block" }}
-        className="opacity-20"
-        preserveAspectRatio="none"
-      >
-        {gridDots}
-        {targetDots}
-        {snakeStrokes}
-      </svg>
+      <canvas
+        ref={canvasRef}
+        style={{ width: "100%", height: "100%", display: "block", opacity: 0.2 }}
+      />
     </div>
   )
 }
