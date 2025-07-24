@@ -462,7 +462,7 @@ view JuiceboxProject {
 
   accountingToken         String  @map("accounting_token")
   accountingDecimals      Int     @map("accounting_decimals")
-  accountingCurrency      Int     @map("accounting_currency")
+  accountingCurrency      BigInt  @map("accounting_currency")
   accountingTokenSymbol   String  @map("accounting_token_symbol")
   accountingTokenName     String  @map("accounting_token_name")
 
