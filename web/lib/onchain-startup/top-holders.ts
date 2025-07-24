@@ -117,7 +117,6 @@ function processEventsByBeneficiary(
     events.forEach((event) => {
       // Fix BigInt conversion - handle scientific notation
       const amountStr = event.amount.toString()
-      console.log("Processing amount:", amountStr, typeof event.amount)
       let amount: bigint
 
       try {
@@ -125,26 +124,10 @@ function processEventsByBeneficiary(
         if (amountStr.includes("e") || amountStr.includes("E")) {
           const num = Number(amountStr)
           amount = BigInt(Math.floor(num))
-          console.log(
-            "Converted scientific notation:",
-            amountStr,
-            "->",
-            num,
-            "->",
-            amount.toString(),
-          )
         } else {
           // Remove any decimal places and convert
           const cleanAmount = amountStr.split(".")[0]
           amount = BigInt(cleanAmount)
-          console.log(
-            "Converted regular amount:",
-            amountStr,
-            "->",
-            cleanAmount,
-            "->",
-            amount.toString(),
-          )
         }
       } catch (error) {
         console.warn("Failed to convert amount to BigInt:", amountStr, error)

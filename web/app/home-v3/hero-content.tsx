@@ -1,9 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
 import Link from "next/link"
 import { AnimatedSalary } from "@/components/global/animated-salary"
-import { accelerators as acceleratorAddresses } from "@/addresses"
 import { HeroTextAnimator } from "./hero-text-animator"
 
 interface Props {
@@ -14,12 +12,7 @@ interface Props {
 
 export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Props) {
   return (
-    <motion.div
-      className="flex flex-col items-center text-center"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
+    <div className="flex flex-col items-center text-center">
       <h1 className="max-w-5xl text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 md:text-6xl lg:text-7xl">
         AI powered grants <span className="block sm:inline">for your </span>
         <HeroTextAnimator />
@@ -45,25 +38,20 @@ export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Pro
       </div>
 
       {/* Live metric */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-        className="mt-8 flex items-center gap-3 text-muted-foreground"
-      >
-        <span className="relative flex h-3 w-3">
+      <div className="mt-8 flex items-center gap-3 text-muted-foreground">
+        {/* <span className="relative flex h-3 w-3">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
-        </span>
+        </span> */}
         <span className="text-base md:text-lg">
           <strong>
             <AnimatedSalary value={totalEarned} monthlyRate={monthlyFlowRate} />
           </strong>{" "}
           earned by <strong>{totalBuilders}</strong> builders
         </span>
-      </motion.div>
+      </div>
 
       {/* Trust badges */}
-    </motion.div>
+    </div>
   )
 }

@@ -66,12 +66,8 @@ interface TopContributorItemProps {
 
 function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
   // Debug the conversion
-  console.log("Contributor totalAmount:", contributor.totalAmount, typeof contributor.totalAmount)
-
   const rawAmount = Number(contributor.totalAmount)
   const totalAmount = rawAmount / 1e18 // Convert from wei to ETH
-
-  console.log("Raw amount:", rawAmount, "Total amount:", totalAmount)
 
   // Handle NaN case
   const displayAmount = isNaN(totalAmount) ? 0 : totalAmount
