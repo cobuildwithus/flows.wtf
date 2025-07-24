@@ -2,23 +2,126 @@
 
 import { unstable_cache } from "next/cache"
 import database from "@/lib/database/flows-db"
-import { getAllStartupsWithIds, getStartupData } from "./startup"
+import { getStartupData } from "./startup"
 import { Grant } from "../database/types"
 import { customFlows } from "@/app/(custom-flow)/custom-flows"
 
-function getCustomFlowById(flowId: string) {
-  return customFlows.find((a) => a.flowId === flowId)
+/* ---------------------------------------------------------------------
+ * Helpers
+ * -------------------------------------------------------------------*/
+
+/**
+ * Returns the custom flow slug (if any) for a given flow id.
+ */
+function getCustomFlowSlug(flowId: string): string | undefined {
+  return customFlows.find((flow) => flow.flowId === flowId)?.id
 }
 
-async function _getHiringEvents(id?: string) {
-  if (!id) {
-    return getAllHiringEvents()
+type LimitedFlow = Pick<Grant, "id" | "title" | "parentContract" | "isOnchainStartup" | "manager">
+
+/**
+ * Derives display information (name + slug) for a given budget / flow.
+ *
+ * The logic prefers, in order:
+ * 1. Custom flow override
+ * 2. Parent flow info (and its custom flow override)
+ * 3. On-chain startup metadata
+ * 4. Fallback to the budget itself
+ */
+function getStartupInfo(
+  budget: LimitedFlow,
+  allFlows: LimitedFlow[] = [],
+): { startupName: string; url: string } {
+  // 1. Start with the budget itself (plus potential custom flow override)
+  let startupName = budget.title
+  let startupSlug = getCustomFlowSlug(budget.id) || ""
+
+  // 2. Prefer the parent flow if present
+  const parentFlow = allFlows.find((flow) => flow.id === budget.parentContract)
+  if (parentFlow) {
+    startupName = parentFlow.title
+    startupSlug = getCustomFlowSlug(parentFlow.id) || ""
   }
 
-  return getHiringEventsForStartup(id)
+  // 3. Use on-chain startup metadata when available
+  const possibleStartupFlow = budget.isOnchainStartup
+    ? budget
+    : allFlows.find((flow) => flow.manager === budget.manager && flow.isOnchainStartup)
+
+  if (possibleStartupFlow) {
+    try {
+      const { title, slug } = getStartupData(possibleStartupFlow.id)
+      startupName = title
+      startupSlug = slug
+    } catch {
+      /* ignore – fallback to previous values */
+    }
+  }
+
+  const url = startupSlug ? `/${startupSlug}` : `/flow/${budget.id}`
+
+  return { startupName, url }
 }
 
-async function getAllHiringEvents() {
+export type HiringEvent = {
+  recipient: string
+  hiredAt: number
+  monthlyFlowRate: string | bigint
+  startupName: string
+  url: string
+  flowId: string
+  isOnchainStartup: boolean
+  underlyingTokenSymbol: string
+  underlyingTokenPrefix: string
+}
+
+/**
+ * Converts a subgrant row into a normalized HiringEvent object.
+ * Returns `null` when the subgrant should be ignored (e.g. payments to the manager).
+ */
+function subgrantToHiringEvent(
+  budget: Grant,
+  subgrant: {
+    recipient: string
+    monthlyIncomingFlowRate: string
+    activatedAt: number | null
+    createdAt: number
+  },
+  startup: { startupName: string; url: string },
+  mainManager?: string,
+) {
+  if (subgrant.recipient === (mainManager ?? budget.manager)) return null
+
+  return {
+    recipient: subgrant.recipient,
+    hiredAt: (subgrant.activatedAt ?? subgrant.createdAt) * 1000,
+    monthlyFlowRate: subgrant.monthlyIncomingFlowRate,
+    startupName: startup.startupName,
+    url: startup.url,
+    flowId: budget.id,
+    isOnchainStartup: budget.isOnchainStartup,
+    underlyingTokenSymbol: budget.underlyingTokenSymbol,
+    underlyingTokenPrefix: budget.underlyingTokenPrefix,
+  }
+}
+
+/* ---------------------------------------------------------------------
+ * Public API
+ * -------------------------------------------------------------------*/
+
+/**
+ * Fetches hiring events.
+ * When `id` is provided, only events for that startup are returned.
+ */
+export async function getHiringEvents(id?: string): Promise<HiringEvent[]> {
+  return id ? getHiringEventsForStartup(id) : getAllHiringEvents()
+}
+
+/* ---------------------------------------------------------------------
+ * Internals
+ * -------------------------------------------------------------------*/
+
+async function getAllHiringEvents(): Promise<HiringEvent[]> {
   const [flows, budgets] = await Promise.all([
     database.grant.findMany({
       where: { isFlow: true, isActive: true },
@@ -33,39 +136,38 @@ async function getAllHiringEvents() {
     database.grant.findMany({
       where: { isFlow: true, isActive: true },
       include: {
-        subgrants: { where: { isActive: true, isFlow: false, isSiblingFlow: false } },
+        subgrants: {
+          where: { isActive: true, isFlow: false, isSiblingFlow: false },
+          select: {
+            recipient: true,
+            monthlyIncomingFlowRate: true,
+            activatedAt: true,
+            createdAt: true,
+          },
+        },
       },
     }),
   ])
 
   return budgets.flatMap((budget) => {
-    const { startupName, startupSlug } = getStartupInfo(budget, flows)
-
-    return budget.subgrants
-      .filter((subgrant) => subgrant.recipient !== budget.manager)
-      .map((subgrant) => ({
-        recipient: subgrant.recipient,
-        hiredAt: (subgrant.activatedAt || subgrant.createdAt) * 1000,
-        monthlyFlowRate: subgrant.monthlyIncomingFlowRate,
-        startupName,
-        url: startupSlug ? `/${startupSlug}` : `/flow/${budget.id}`,
-        flowId: budget.id,
-        isOnchainStartup: budget.isOnchainStartup,
-        underlyingTokenSymbol: budget.underlyingTokenSymbol,
-        underlyingTokenPrefix: budget.underlyingTokenPrefix,
-      }))
-  })
+    const startup = getStartupInfo(budget, flows)
+    return (
+      budget.subgrants
+        .map((subgrant) => subgrantToHiringEvent(budget, subgrant, startup))
+        // Filter out subgrants that were skipped (manager payments)
+        .filter(Boolean)
+    )
+  }) as HiringEvent[]
 }
 
-async function getHiringEventsForStartup(id: string) {
+async function getHiringEventsForStartup(id: string): Promise<HiringEvent[]> {
   const mainFlow = await database.grant.findFirstOrThrow({
-    select: { manager: true, parentContract: true, rootContract: true },
+    select: { manager: true, rootContract: true },
     where: { id, isFlow: true, isActive: true },
-    orderBy: { createdAt: "asc" },
   })
 
   const budgets = await database.grant.findMany({
-    omit: { description: true },
+    // description retained for type compatibility
     where: {
       manager: mainFlow.manager,
       isFlow: true,
@@ -73,7 +175,6 @@ async function getHiringEventsForStartup(id: string) {
       rootContract: mainFlow.rootContract,
       parentContract: { not: mainFlow.rootContract },
     },
-    orderBy: { createdAt: "asc" },
     include: {
       subgrants: {
         where: { isActive: true, isFlow: false, isSiblingFlow: false },
@@ -88,93 +189,9 @@ async function getHiringEventsForStartup(id: string) {
   })
 
   return budgets.flatMap((budget) => {
-    const { startupName, startupSlug } = getStartupInfoForBudget(budget)
-
+    const startup = getStartupInfo(budget)
     return budget.subgrants
-      .filter((subgrant) => subgrant.recipient !== mainFlow.manager)
-      .map((subgrant) => ({
-        recipient: subgrant.recipient,
-        hiredAt: (subgrant.activatedAt || subgrant.createdAt) * 1000,
-        monthlyFlowRate: subgrant.monthlyIncomingFlowRate,
-        startupName,
-        url: startupSlug ? `/${startupSlug}` : `/flow/${budget.id}`,
-        flowId: budget.id,
-        isOnchainStartup: budget.isOnchainStartup,
-        underlyingTokenSymbol: budget.underlyingTokenSymbol,
-        underlyingTokenPrefix: budget.underlyingTokenPrefix,
-      }))
-  })
+      .map((subgrant) => subgrantToHiringEvent(budget, subgrant, startup, mainFlow.manager))
+      .filter(Boolean)
+  }) as HiringEvent[]
 }
-
-type LimitedFlow = Pick<Grant, "id" | "title" | "parentContract" | "isOnchainStartup" | "manager">
-
-function getStartupInfo(budget: Grant, flows: LimitedFlow[]) {
-  const startupsById = Object.fromEntries(
-    getAllStartupsWithIds().map((startup) => [startup.id, startup]),
-  )
-  let startupName = budget.title
-  let startupSlug = budget.id
-
-  // Check if the budget is a custom flow
-  const budgetCustomFlow = getCustomFlowById(budget.id)
-  if (budgetCustomFlow) {
-    startupSlug = budgetCustomFlow.id
-  }
-
-  // Check if there's a parent flow
-  const parentFlow = flows.find((flow) => flow.id === budget.parentContract)
-  if (parentFlow) {
-    startupName = parentFlow.title
-    startupSlug = parentFlow.id
-
-    // Check if the parent flow is a custom flow
-    const parentCustomFlow = getCustomFlowById(parentFlow.id)
-    if (parentCustomFlow) {
-      startupSlug = parentCustomFlow.id
-    }
-  }
-
-  // Check if there's startup data available
-  const possibleStartupId = flows.find(
-    (flow) => flow.manager === budget.manager && flow.isOnchainStartup,
-  )
-  const startupData =
-    (possibleStartupId && startupsById[possibleStartupId.id]) || startupsById[budget.id]
-  if (startupData) {
-    startupName = startupData.title
-    startupSlug = startupData.slug
-  }
-
-  return { startupName, startupSlug }
-}
-
-function getStartupInfoForBudget(budget: LimitedFlow) {
-  let startupName = budget.title
-  let startupSlug = budget.id
-
-  // Check if the budget is a custom flow
-  const customFlow = getCustomFlowById(budget.id)
-  if (customFlow) {
-    startupSlug = customFlow.id
-    return { startupName, startupSlug }
-  }
-
-  if (budget.isOnchainStartup) {
-    try {
-      const startupData = getStartupData(budget.id)
-      startupName = startupData.title
-      startupSlug = startupData.slug
-    } catch {
-      // Fallback to budget data if startup not found
-    }
-  }
-
-  return { startupName, startupSlug }
-}
-
-export type HiringEvent = Awaited<ReturnType<typeof _getHiringEvents>>[0]
-
-export const getHiringEvents = unstable_cache(_getHiringEvents, ["hiring-events"], {
-  tags: ["hiring-events-v2"],
-  revalidate: 15 * 60, // 15 minutes
-})
