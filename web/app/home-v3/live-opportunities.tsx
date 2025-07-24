@@ -37,8 +37,14 @@ export async function LiveOpportunities({ user, privyIdToken }: Props) {
 
           {/* Content */}
           <div className="space-y-12">
-            <StartupsTable startups={startups} />
-            <OpportunitiesFlowsList opportunities={featuredOpportunities} flows={featuredFlows} />
+            <div className="flex flex-col">
+              <h3 className="text-lg font-semibold">Back projects</h3>
+              <StartupsTable startups={startups} />
+            </div>
+            <div className="flex flex-col space-y-3">
+              <h3 className="text-lg font-semibold">Get funded</h3>
+              <OpportunitiesFlowsList opportunities={featuredOpportunities} flows={featuredFlows} />
+            </div>
             <div className="text-center">
               <Link href="/apply" className="font-medium text-emerald-600 hover:underline">
                 See all openings →
