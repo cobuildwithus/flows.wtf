@@ -82,6 +82,7 @@
     "@types/pluralize": "^0.0.33",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
+    "@types/three": "^0.178.1",
     "dotenv": "^16.4.7",
     "eslint": "9.29.0",
     "eslint-config-next": "15.3.4",

@@ -5,14 +5,14 @@ import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 
 interface Props {
   startupTitle: string
-  projectId: bigint
+  projectId: number
   chainId: number
 }
 
 export function RevnetLinkBox({ startupTitle, projectId, chainId }: Props) {
   return (
     <Link
-      href={getRevnetUrl(chainId, Number(projectId))}
+      href={getRevnetUrl(chainId, projectId)}
       target="_blank"
       rel="noopener noreferrer"
       className="mt-2 block rounded-lg border bg-muted/50 p-4 transition-colors hover:border-foreground/20 hover:bg-muted"

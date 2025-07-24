@@ -1,0 +1,2 @@
+export const VRBS_GRANTS_PAYOUTS = 35555.41
+export const REWARD_POOL_PAYOUT = 7547.3

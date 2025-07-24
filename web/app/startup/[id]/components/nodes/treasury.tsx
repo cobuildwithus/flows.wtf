@@ -5,7 +5,7 @@ import { getRevnetUrl } from "@/lib/revnet/revnet-lib"
 import Link from "next/link"
 
 interface Props {
-  projectId: bigint
+  projectId: number
   chainId: number
 }
 
@@ -20,7 +20,7 @@ export function Treasury({ projectId, chainId }: Props) {
 
   return (
     <Link
-      href={getRevnetUrl(chainId, Number(projectId))}
+      href={getRevnetUrl(chainId, projectId)}
       target="_blank"
       rel="noopener noreferrer"
       className="pointer-events-auto flex flex-col justify-between text-sm text-muted-foreground transition-opacity hover:opacity-80"

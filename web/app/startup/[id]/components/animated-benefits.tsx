@@ -7,7 +7,7 @@ import { DAOInfoDialog } from "./dao-info-dialog"
 
 interface AnimatedBenefitsProps {
   startupTitle: string
-  projectId: bigint
+  projectId: number
   chainId: number
 }
 

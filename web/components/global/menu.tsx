@@ -10,7 +10,6 @@ import { useSelectedLayoutSegments } from "next/navigation"
 import { useState } from "react"
 
 const publicOptions = [
-  { name: "Flows", href: "/" },
   { name: "Explore", href: "/explore" },
   { name: "Impact", href: "/impact" },
   { name: "Apply", href: "/apply" },

@@ -159,6 +159,7 @@ view Grant {
   bonusMemberUnits                 String  @map("bonus_member_units")
   baselineMemberUnits              String  @map("baseline_member_units")
   totalEarned                      String  @map("total_earned")
+  totalPaidOut                     String  @map("total_paid_out")
   activeRecipientCount             Int     @map("active_recipient_count")
   awaitingRecipientCount           Int     @map("awaiting_recipient_count")
   challengedRecipientCount         Int     @map("challenged_recipient_count")
@@ -494,7 +495,8 @@ view JuiceboxParticipant {
   isRevnet     Boolean? @map("is_revnet")
   address      String   @db.VarChar(42)
   firstOwned   Int?     @map("first_owned")
-  cashOutValue BigInt   @default(0) @map("cash_out_value")
+  cashOutValue Decimal   @default(0) @map("cash_out_value")
+  suckerGroupId String? @map("sucker_group_id")
 
   project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
 
@@ -569,6 +571,7 @@ view JuiceboxPayEvent {
   newlyIssuedTokenCount Decimal @map("newly_issued_token_count") @db.Decimal(78, 0)
   memo                  String
   suckerGroupId         String? @map("sucker_group_id")
+  txnValue              String @map("txn_value")
 
   metadata String @db.VarChar(66)
 

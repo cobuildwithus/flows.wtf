@@ -98,6 +98,10 @@ const config = {
             "background-position": "right center",
           },
         },
+        "infinite-scroll": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -106,6 +110,7 @@ const config = {
         "collapsible-up": "collapsible-up 0.3s ease-out",
         "gradient-x": "gradient-x 3s ease infinite",
         marquee: "marquee 10s infinite linear",
+        "infinite-scroll": "infinite-scroll 30s linear infinite",
       },
     },
   },

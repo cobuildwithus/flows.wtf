@@ -13,6 +13,9 @@ async function handleTotalEarned(params: {
   const { context } = params
   const chainId = context.chain.id
 
+  // Track total payout per parent flow in wei for accuracy
+  const parentTotals: Record<string, bigint> = {}
+
   // Get active grants
   const activeGrants = await context.db.sql.query.grants.findMany({
     where: (table, { eq }) => eq(table.chainId, chainId),
@@ -50,6 +53,9 @@ async function handleTotalEarned(params: {
             args: [getAddress(recipient)],
           })
           totalEarned = formatEther(total)
+
+          // Accumulate payout for the parent flow
+          parentTotals[parentContract] = (parentTotals[parentContract] || 0n) + total
         }
 
         return context.db.update(grants, { id }).set({
@@ -60,4 +66,13 @@ async function handleTotalEarned(params: {
 
     await Promise.all(updates)
   }
+
+  // After all grants have been processed, update totalPaidOut for parent flows
+  const parentUpdates = Object.entries(parentTotals).map(([parentContract, totalWei]) => {
+    return context.db.update(grants, { id: parentContract }).set({
+      totalPaidOut: formatEther(totalWei),
+    })
+  })
+
+  await Promise.all(parentUpdates)
 }

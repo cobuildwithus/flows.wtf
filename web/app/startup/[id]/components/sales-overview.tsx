@@ -10,7 +10,7 @@ interface Props {
   monthlySales: MonthlySales[]
   tokenPayments: {
     timestamp: number
-    ethAmount: string | null
+    txnValue: string
     newlyIssuedTokenCount: string
   }[]
   startup: Startup

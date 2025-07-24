@@ -11,7 +11,6 @@ import { getUser, hasSession } from "@/lib/auth/user"
 import { getPool } from "@/lib/database/queries/pool"
 import { isProduction } from "@/lib/utils"
 import Wagmi from "@/lib/wagmi/wagmi-provider"
-import Noggles from "@/public/noggles.svg"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
@@ -20,12 +19,16 @@ import Image from "next/image"
 import Link from "next/link"
 import CommandPalette from "./components/search/command-dialog"
 import "./globals.css"
+import Flows from "@/public/logo.png"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pool = await getPool()
-  return { title: "Flows", description: "Get funded to make the world a better place." }
+  return {
+    title: "Flows",
+    description:
+      "The AI powered capital allocation platform. Get paid to make the world a better place.",
+  }
 }
 
 export const viewport = {
@@ -57,7 +60,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
                       href="/"
                       className="flex items-center py-0.5 font-medium text-card-foreground max-sm:text-sm"
                     >
-                      <Image src={Noggles} alt={pool.title} className="mr-2.5 h-5 w-auto md:h-8" />
+                      <Image src={Flows} alt={pool.title} className="mr-2.5 h-5 w-auto md:h-10" />
                     </Link>
                   </h2>
                 </div>

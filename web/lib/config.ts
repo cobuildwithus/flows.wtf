@@ -17,6 +17,8 @@ export const PERCENTAGE_SCALE = 1e6
 // Macro forwarder address (same across all chains)
 export const MACRO_FORWARDER = "0xfD01285b9435bc45C243E5e7F978E288B2912de6" as `0x${string}`
 
+export const PAYMENT_GATEWAY_ADDRESS = "0x8292bbac0a2bb14f2f40a68af1fa8fd89fb6fa5b"
+
 export const BULK_WITHDRAW_MACRO_ADDRESSES = {
   [baseChain.id]: "0xd391e17927b1560d6847f90bc3d58b7f95122c9a",
   [optimismChain.id]: "0x82c191c98f489801e021d0e8bc231711ab455504",
@@ -39,7 +41,7 @@ export const FLOWS_CHANNEL_URL = "https://farcaster.xyz/~/channel/flows"
 export const NOUNS_CHANNEL_ID = "nouns"
 export const FLOWS_CHANNEL_ID = "flows"
 
-export const FLOWS_REVNET_PROJECT_ID = 99n
+export const FLOWS_REVNET_PROJECT_ID = 99
 export const FLOWS_TOKEN = baseContracts.FlowsToken
 
 export const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11" as `0x${string}`

@@ -10,7 +10,12 @@ import { cn } from "@/lib/utils"
 import { CastEvent } from "./cast-event"
 import { OrderEvent } from "./order-event"
 import { TokenEvent } from "./token-event"
+import { HiringEvent } from "./hiring-event"
 import { TokenEventData } from "@/lib/onchain-startup/types"
+import {
+  getHiringEvents,
+  type HiringEvent as HiringEventData,
+} from "@/lib/onchain-startup/hiring-events"
 
 interface Props {
   orders: Order[]
@@ -26,17 +31,23 @@ type TimelineEvent =
       date: Date
       data: TokenEventData
     }
+  | {
+      type: "hiring"
+      date: Date
+      data: HiringEventData
+    }
 
 const MAX_EVENTS = 50
 
 export async function Timeline(props: Props) {
   const { orders, startup, teamMembers } = props
 
-  const [tokenPayments, casts] = await Promise.all([
+  const [tokenPayments, casts, hiringEvents] = await Promise.all([
     getTokenPayments(Number(startup.revnetProjectIds.base)).then((payments) =>
       payments.slice(0, 30),
     ),
     getTeamCasts(teamMembers.map((m) => m.fid).filter((fid) => fid !== undefined)),
+    getHiringEvents(startup.id),
   ])
 
   const events: TimelineEvent[] = []
@@ -53,6 +64,14 @@ export async function Timeline(props: Props) {
     events.push({ type: "token", date: new Date(payment.timestamp * 1000), data: payment })
   })
 
+  hiringEvents.forEach((hiringEvent) => {
+    events.push({
+      type: "hiring",
+      date: new Date(hiringEvent.hiredAt),
+      data: hiringEvent,
+    })
+  })
+
   events.sort((a, b) => b.date.getTime() - a.date.getTime())
 
   const renderEventContent = (event: TimelineEvent) => {
@@ -63,6 +82,8 @@ export async function Timeline(props: Props) {
         return <CastEvent cast={event.data} date={event.date} />
       case "token":
         return <TokenEvent payment={event.data} date={event.date} />
+      case "hiring":
+        return <HiringEvent hiringEvent={event.data} date={event.date} />
       default:
         return null
     }

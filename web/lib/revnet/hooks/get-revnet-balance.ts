@@ -3,7 +3,7 @@
 import database from "@/lib/database/flows-db"
 
 export async function getRevnetBalance(
-  projectId: bigint,
+  projectId: number,
   chainId: number,
 ): Promise<{
   balance: string
