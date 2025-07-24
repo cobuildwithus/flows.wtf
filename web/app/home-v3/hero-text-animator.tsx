@@ -9,7 +9,7 @@ const projects = [
   "Open Source library",
   "Crypto venture",
   "Community",
-  "Defi Protocol",
+  "DeFi Protocol",
   "Sports brand",
   "Art collective",
   "Tech venture",

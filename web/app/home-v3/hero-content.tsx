@@ -17,8 +17,8 @@ export function HeroContent({ totalEarned, monthlyFlowRate, totalBuilders }: Pro
         AI powered grants <span className="block sm:inline">for your </span>
         <HeroTextAnimator />
       </h1>
-      <p className="mt-6 max-w-xl text-base md:text-2xl">
-        Fueled by global talent, coordinated by AI, owned by you.
+      <p className="mt-6 max-w-2xl text-base md:text-xl">
+        Easily coordinate and fund thousands of people.
       </p>
 
       {/* CTAs */}
