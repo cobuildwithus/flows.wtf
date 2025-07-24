@@ -1,9 +1,10 @@
 "use server"
 
-import { unstable_cache } from "next/cache"
 import database from "@/lib/database/flows-db"
 import { getAllStartupsWithIds } from "./startup"
 import { base } from "viem/chains"
+import { PAYMENT_GATEWAY_ADDRESS } from "../config"
+import { unstable_cache } from "next/cache"
 
 export interface TopContributor {
   address: string
@@ -44,9 +45,10 @@ async function _getTopContributorsForAllStartups(): Promise<TopContributorsData>
           },
         },
         select: {
-          beneficiary: true, // Changed from payer to beneficiary
+          beneficiary: true,
           amount: true,
           timestamp: true,
+          txnValue: true,
         },
       }),
       // All time events
@@ -56,9 +58,10 @@ async function _getTopContributorsForAllStartups(): Promise<TopContributorsData>
           projectId: Number(startup.revnetProjectIds.base),
         },
         select: {
-          beneficiary: true, // Changed from payer to beneficiary
+          beneficiary: true,
           amount: true,
           timestamp: true,
+          txnValue: true,
         },
       }),
     ])
@@ -82,15 +85,15 @@ async function _getTopContributorsForAllStartups(): Promise<TopContributorsData>
   )
 
   return {
-    weekly: weeklyContributors.slice(0, 20),
-    allTime: allTimeContributors.slice(0, 20),
+    weekly: weeklyContributors.slice(0, 20).filter((c) => c.address !== PAYMENT_GATEWAY_ADDRESS),
+    allTime: allTimeContributors.slice(0, 20).filter((c) => c.address !== PAYMENT_GATEWAY_ADDRESS),
   }
 }
 
 function processEventsByBeneficiary(
   startupsWithEvents: Array<{
     startup: { title: string; id: string; slug: string }
-    events: Array<{ beneficiary: string; amount: any; timestamp: number }>
+    events: Array<{ beneficiary: string; amount: any; timestamp: number; txnValue: any }>
   }>,
 ): TopContributor[] {
   const beneficiaryMap = new Map<
@@ -115,22 +118,22 @@ function processEventsByBeneficiary(
   // Process all events across all startups
   startupsWithEvents.forEach(({ startup, events }) => {
     events.forEach((event) => {
-      // Fix BigInt conversion - handle scientific notation
-      const amountStr = event.amount.toString()
+      // Use txnValue instead of amount for contribution value
+      const txnValueStr = event.txnValue.toString()
       let amount: bigint
 
       try {
         // If it's in scientific notation, convert to regular number first
-        if (amountStr.includes("e") || amountStr.includes("E")) {
-          const num = Number(amountStr)
+        if (txnValueStr.includes("e") || txnValueStr.includes("E")) {
+          const num = Number(txnValueStr)
           amount = BigInt(Math.floor(num))
         } else {
           // Remove any decimal places and convert
-          const cleanAmount = amountStr.split(".")[0]
+          const cleanAmount = txnValueStr.split(".")[0]
           amount = BigInt(cleanAmount)
         }
       } catch (error) {
-        console.warn("Failed to convert amount to BigInt:", amountStr, error)
+        console.warn("Failed to convert txnValue to BigInt:", txnValueStr, error)
         amount = BigInt(0)
       }
 

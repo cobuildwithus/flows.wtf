@@ -6,13 +6,12 @@ import Link from "next/link"
 import { TokenEventData } from "@/lib/onchain-startup/types"
 import { explorerUrl } from "@/lib/utils"
 import { Currency } from "@/components/ui/currency"
+import { PAYMENT_GATEWAY_ADDRESS } from "@/lib/config"
 
 interface Props {
   payment: TokenEventData
   date: Date
 }
-
-const PAYMENT_GATEWAY_ADDRESS = "0x8292bbac0a2bb14f2f40a68af1fa8fd89fb6fa5b"
 
 export async function TokenEvent({ payment, date }: Props) {
   if (!payment.payer || !payment.newlyIssuedTokenCount) return null

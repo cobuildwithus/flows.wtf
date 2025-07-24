@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import {
   getTopContributorsForAllStartups,
@@ -6,10 +5,10 @@ import {
 } from "@/lib/onchain-startup/top-holders"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { type Profile } from "@/components/user-profile/get-user-profile"
-import { Currency } from "@/components/ui/currency"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
+import { EthInUsd } from "@/components/global/eth-in-usd"
 
 export default async function TopHolders() {
   const contributorsData = await getTopContributorsForAllStartups()
@@ -19,9 +18,19 @@ export default async function TopHolders() {
   return (
     <div>
       <Tabs defaultValue="allTime" className="w-full">
-        <TabsList className="mb-6 grid w-full grid-cols-2">
-          <TabsTrigger value="allTime">All Time</TabsTrigger>
-          <TabsTrigger value="weekly">This Week</TabsTrigger>
+        <TabsList className="mb-6 grid w-fit grid-cols-2 gap-2 bg-transparent p-0">
+          <TabsTrigger
+            value="allTime"
+            className="min-w-20 rounded-full data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            All Time
+          </TabsTrigger>
+          <TabsTrigger
+            value="weekly"
+            className="min-w-20 rounded-full data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            This Week
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="allTime">
@@ -42,22 +51,16 @@ interface ContributorsListProps {
 
 function ContributorsList({ contributors }: ContributorsListProps) {
   return (
-    <Card className="border border-border/40 bg-card/80 shadow-sm">
-      <CardContent className="space-y-6">
-        <ScrollArea className="h-[650px] pr-4">
-          <div className="space-y-4">
-            {contributors.map((contributor, i) => (
-              <TopContributorItem
-                key={contributor.address}
-                contributor={contributor}
-                rank={i + 1}
-              />
-            ))}
-          </div>
-          <ScrollBar orientation="vertical" />
-        </ScrollArea>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <ScrollArea className="h-[650px] pr-4">
+        <div className="space-y-4">
+          {contributors.map((contributor, i) => (
+            <TopContributorItem key={contributor.address} contributor={contributor} rank={i + 1} />
+          ))}
+        </div>
+        <ScrollBar orientation="vertical" />
+      </ScrollArea>
+    </div>
   )
 }
 
@@ -76,28 +79,30 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
 
       {/* Contributor Info */}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <UserProfile address={contributor.address as `0x${string}`}>
-          {(profile: Profile) => (
-            <div className="flex items-center gap-2">
-              <div className="relative h-8 w-8 shrink-0">
-                {profile.pfp_url ? (
-                  <img
-                    src={profile.pfp_url}
-                    alt={profile.display_name}
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
-                    {profile.display_name.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
+        <div className="w-fit">
+          <UserProfile address={contributor.address as `0x${string}`}>
+            {(profile: Profile) => (
+              <div className="flex items-center gap-2">
+                <div className="relative h-8 w-8 shrink-0">
+                  {profile.pfp_url ? (
+                    <img
+                      src={profile.pfp_url}
+                      alt={profile.display_name}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+                      {profile.display_name.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <span className="truncate font-medium hover:text-primary">
+                  {profile.display_name}
+                </span>
               </div>
-              <span className="truncate font-medium hover:text-primary">
-                {profile.display_name}
-              </span>
-            </div>
-          )}
-        </UserProfile>
+            )}
+          </UserProfile>
+        </div>
 
         {/* Startup Badges */}
         <div className="flex flex-wrap gap-1">
@@ -114,16 +119,11 @@ function TopContributorItem({ contributor, rank }: TopContributorItemProps) {
       {/* Payment Info */}
       <div className="flex shrink-0 flex-col items-end gap-1 text-right">
         <div className="text-sm font-semibold">
-          <Currency>{Number(contributor.totalAmount) / 1e18}</Currency> contributed
+          <EthInUsd amount={BigInt(contributor.totalAmount)} /> contributed
         </div>
         <div className="text-xs text-muted-foreground">
           {contributor.paymentCount} payment{contributor.paymentCount !== 1 ? "s" : ""}
         </div>
-        {contributor.firstPayment && (
-          <div className="text-xs text-muted-foreground">
-            Since {new Date(contributor.firstPayment * 1000).toLocaleDateString()}
-          </div>
-        )}
       </div>
     </div>
   )

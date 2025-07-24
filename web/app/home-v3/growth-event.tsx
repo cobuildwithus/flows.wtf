@@ -67,7 +67,7 @@ export function GrowthEvent({ event }: Props) {
               {event.type === "token-payment" ? (
                 <>
                   <span className="font-semibold text-emerald-600">
-                    <EthInUsd amount={BigInt(event.data.ethAmount || event.data.amount)} />
+                    <EthInUsd amount={BigInt(event.data.txnValue)} />
                   </span>
                   <span className="text-muted-foreground">•</span>
                 </>

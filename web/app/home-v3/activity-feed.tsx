@@ -15,8 +15,21 @@ export default async function ActivityFeed() {
       <CardContent className="p-0 md:px-0">
         <ScrollArea className="h-[650px]">
           <div className="space-y-6 pr-4">
+            {events.slice(0, 10).map((event, i) => (
+              <div key={i} className="relative flex gap-4 md:hidden">
+                <div
+                  className={cn(
+                    "absolute left-0 top-0 flex w-6 justify-center",
+                    i === Math.min(events.length, 10) - 1 ? "h-6" : "-bottom-6",
+                  )}
+                >
+                  <div className="w-px bg-border/50" />
+                </div>
+                {renderEvent(event)}
+              </div>
+            ))}
             {events.map((event, i) => (
-              <div key={i} className="relative flex gap-4">
+              <div key={i} className="relative hidden gap-4 md:flex">
                 <div
                   className={cn(
                     "absolute left-0 top-0 flex w-6 justify-center",

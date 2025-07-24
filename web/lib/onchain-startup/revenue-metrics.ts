@@ -8,7 +8,7 @@ export async function getRevenueMetrics(
   monthlySales: MonthlySales[],
   tokenPayments: {
     timestamp: number
-    ethAmount: string | null
+    txnValue: string
     newlyIssuedTokenCount: string
   }[],
 ): Promise<Revenue> {

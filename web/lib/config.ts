@@ -17,6 +17,8 @@ export const PERCENTAGE_SCALE = 1e6
 // Macro forwarder address (same across all chains)
 export const MACRO_FORWARDER = "0xfD01285b9435bc45C243E5e7F978E288B2912de6" as `0x${string}`
 
+export const PAYMENT_GATEWAY_ADDRESS = "0x8292bbac0a2bb14f2f40a68af1fa8fd89fb6fa5b"
+
 export const BULK_WITHDRAW_MACRO_ADDRESSES = {
   [baseChain.id]: "0xd391e17927b1560d6847f90bc3d58b7f95122c9a",
   [optimismChain.id]: "0x82c191c98f489801e021d0e8bc231711ab455504",

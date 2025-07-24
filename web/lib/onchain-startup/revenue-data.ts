@@ -6,7 +6,7 @@ import type { MonthlySales } from "@/lib/shopify/summary"
 
 type TokenPayment = {
   timestamp: number
-  ethAmount: string | null
+  txnValue: string
   newlyIssuedTokenCount: string
 }
 
@@ -17,10 +17,10 @@ function getMonthKey(date: Date): string {
 }
 
 function paymentToUsd(payment: TokenPayment, ethPrice: number, flowsPrice: number): number {
-  if (payment.ethAmount && ethPrice) {
-    return (Number(payment.ethAmount) / WEI_IN_ETH) * ethPrice
+  if (payment.txnValue && ethPrice) {
+    return (Number(payment.txnValue) / WEI_IN_ETH) * ethPrice
   }
-  if (!payment.ethAmount && flowsPrice) {
+  if (!payment.txnValue && flowsPrice) {
     return (Number(payment.newlyIssuedTokenCount) / WEI_IN_ETH) * flowsPrice
   }
   return 0
