@@ -45,6 +45,7 @@ export const customFlows = {
   gnars: "0xb1daa1f96abba7954ac313481d157e04a94d80ee",
   gardens: "0x329a322e591d5b7b71d45d956607998d8d71c819",
   rev: "0x4d491999f8fb73289eef3a696414dca3a994dc1b",
+  base: "0xa5c54bd551648aa6e275f79787c42a238e519578",
 } as const
 
 export const accelerators = {
