@@ -69,6 +69,20 @@ export const customFlows: CustomFlow[] = [
       },
     },
   },
+  {
+    id: "base",
+    name: "Base Batches",
+    flowId: customFlowAddresses.base,
+    coverImage: "/base-bg.png",
+    styles: {
+      light: {
+        "--muted": "210 100% 95%",
+        "--muted-foreground": "210 60% 30%",
+        "--primary": "210 100% 50%",
+        "--primary-foreground": "0 0% 100%",
+      },
+    },
+  },
 ] as const
 
 export function getCustomFlow(id: CustomFlowId) {
