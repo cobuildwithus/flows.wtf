@@ -7,6 +7,7 @@ export type CustomFlow = {
   name: string
   flowId: string
   coverImage: string
+  logo: string
   styles: {
     light?: Record<`--${string}`, string>
     dark?: Record<`--${string}`, string>
@@ -19,6 +20,7 @@ export const customFlows: CustomFlow[] = [
     name: "Grounds",
     flowId: customFlowAddresses.grounds,
     coverImage: "/grounds-bg.jpg",
+    logo: "/logos/grounds.logo.svg",
     styles: {
       light: {
         "--muted": "0 93.3% 94.1%",
@@ -32,6 +34,7 @@ export const customFlows: CustomFlow[] = [
     name: "Gnars",
     flowId: customFlowAddresses.gnars,
     coverImage: "/gnars-bg.jpg",
+    logo: "/logos/gnars.logo.webp",
     styles: {
       light: {
         "--muted": "54 100% 88%",
@@ -46,6 +49,7 @@ export const customFlows: CustomFlow[] = [
     name: "Gardens",
     flowId: customFlowAddresses.gardens,
     coverImage: "/gardens-bg.png",
+    logo: "/logos/gardens.logo.png",
     styles: {
       light: {
         "--muted": "120 60% 90%",
@@ -60,6 +64,7 @@ export const customFlows: CustomFlow[] = [
     name: "Revnets",
     flowId: customFlowAddresses.rev,
     coverImage: "/revnets-bg.png",
+    logo: "/logos/rev.logo.png",
     styles: {
       light: {
         "--muted": "0 0% 90%",
@@ -74,11 +79,12 @@ export const customFlows: CustomFlow[] = [
     name: "Base Batches",
     flowId: customFlowAddresses.base,
     coverImage: "/base-bg.png",
+    logo: "/logos/base.logo.svg",
     styles: {
       light: {
         "--muted": "210 100% 95%",
         "--muted-foreground": "210 60% 30%",
-        "--primary": "210 100% 50%",
+        "--primary": "240 100% 50%",
         "--primary-foreground": "0 0% 100%",
       },
     },
