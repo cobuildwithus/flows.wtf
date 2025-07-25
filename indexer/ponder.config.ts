@@ -8,12 +8,13 @@ import {
   superfluidPoolAbi,
   tcrFactoryImplAbi,
   gdav1Address,
-  gdav1Abi,
   tokenEmitterImplAbi,
   customFlowImplAbi,
   nounsTokenAbi,
   cfav1Abi,
   cfav1Address,
+  gdav1ImplAbi,
+  cfav1ImplAbi,
 } from "./abis"
 import {
   base as baseContracts,
@@ -153,7 +154,7 @@ export default createConfig({
       },
     },
     GdaV1: {
-      abi: gdav1Abi,
+      abi: gdav1ImplAbi,
       chain: IndexerConfig.GdaV1,
       address: [gdav1Address[8453], gdav1Address[10]],
       filter: {
@@ -165,7 +166,7 @@ export default createConfig({
       },
     },
     CfaV1: {
-      abi: cfav1Abi,
+      abi: cfav1ImplAbi,
       chain: IndexerConfig.CfaV1,
       address: [cfav1Address[8453], cfav1Address[10]],
       filter: {
