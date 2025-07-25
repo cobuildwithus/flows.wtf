@@ -108,7 +108,11 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
   )
 }
 
-const FLOWS_TO_FILTER = ["0x5a0b34e575c46b657d0dba5c87f74380987204c8"]
+const FLOWS_TO_FILTER = [
+  "0x5a0b34e575c46b657d0dba5c87f74380987204c8",
+  // base batches for now
+  "0xa5c54bd551648aa6e275f79787c42a238e519578",
+]
 
 function cleanFlowTitle(title: string): string {
   return title.replace(/ Flow$/, "")
