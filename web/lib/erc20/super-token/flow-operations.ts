@@ -1,4 +1,4 @@
-import { superTokenAbi, cfav1Abi, cfav1ImplAbi } from "@/lib/abis"
+import { superTokenAbi, cfav1Abi } from "@/lib/abis"
 import { encodeFunctionData } from "viem"
 import { calculateFlowratePerSecond } from "./flow-rate"
 import { toast } from "sonner"
@@ -108,7 +108,7 @@ export function buildFlowOperations({
   // Second operation: Create or update the Superfluid flow
   const flowFunctionName = operationType === "create" ? "createFlow" : "updateFlow"
   const flowData = encodeFunctionData({
-    abi: cfav1ImplAbi,
+    abi: cfav1Abi,
     functionName: flowFunctionName,
     args: [superTokenAddress, receiver, flowRate, "0x"],
   })

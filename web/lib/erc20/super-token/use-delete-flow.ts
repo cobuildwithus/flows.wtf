@@ -3,7 +3,7 @@
 import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { type FlowOperationConfig, getFlowOperationConfig, validateWallet } from "./flow-operations"
 import { getCfaAddress, getHostAddress } from "./addresses"
-import { superfluidImplAbi, cfav1Abi, cfav1ImplAbi } from "@/lib/abis"
+import { superfluidImplAbi, cfav1Abi } from "@/lib/abis"
 import { encodeFunctionData } from "viem"
 import { OPERATION_TYPE, prepareOperation } from "./operation-type"
 import { getClient } from "@/lib/viem/client"
@@ -25,7 +25,7 @@ export function useDeleteFlow({ chainId, superTokenAddress, onSuccess }: FlowOpe
 
     // Build delete flow operation for batch call
     const deleteFlowData = encodeFunctionData({
-      abi: cfav1ImplAbi,
+      abi: cfav1Abi,
       functionName: "deleteFlow",
       args: [superTokenAddress, sender!, receiver, "0x"],
     })
