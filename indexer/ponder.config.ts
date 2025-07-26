@@ -13,7 +13,6 @@ import {
   nounsTokenAbi,
   cfav1Abi,
   cfav1Address,
-  gdav1ImplAbi,
   gdav1Abi,
 } from "./abis"
 import {

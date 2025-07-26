@@ -4,7 +4,6 @@ export type CustomFlowId = keyof typeof customFlowAddresses
 
 export type CustomFlow = {
   id: CustomFlowId
-  name: string
   flowId: string
   coverImage: string
   logo: string
@@ -17,7 +16,6 @@ export type CustomFlow = {
 export const customFlows: CustomFlow[] = [
   {
     id: "grounds",
-    name: "Grounds",
     flowId: customFlowAddresses.grounds,
     coverImage: "/grounds-bg.jpg",
     logo: "/logos/grounds.logo.svg",
@@ -31,7 +29,6 @@ export const customFlows: CustomFlow[] = [
   },
   {
     id: "gnars",
-    name: "Gnars",
     flowId: customFlowAddresses.gnars,
     coverImage: "/gnars-bg.jpg",
     logo: "/logos/gnars.logo.webp",
@@ -46,7 +43,6 @@ export const customFlows: CustomFlow[] = [
   },
   {
     id: "gardens",
-    name: "Gardens",
     flowId: customFlowAddresses.gardens,
     coverImage: "/gardens-bg.png",
     logo: "/logos/gardens.logo.png",
@@ -61,7 +57,6 @@ export const customFlows: CustomFlow[] = [
   },
   {
     id: "rev",
-    name: "Revnets",
     flowId: customFlowAddresses.rev,
     coverImage: "/revnets-bg.png",
     logo: "/logos/rev.logo.png",
@@ -76,7 +71,6 @@ export const customFlows: CustomFlow[] = [
   },
   {
     id: "base",
-    name: "Base Batches",
     flowId: customFlowAddresses.base,
     coverImage: "/base-bg.png",
     logo: "/logos/base.logo.svg",

@@ -12,7 +12,7 @@ export function Logo() {
   // If the customFlow exists, use its logo field (which is a path string)
   // Otherwise, use the default Flows logo
   const src = customFlow?.logo || Flows
-  const alt = customFlow?.name || "Flows"
+  const alt = "Flows logo"
 
   // If src is a string (from customFlow.logo), pass it directly to Image
   // If src is an imported image (Flows), pass the import
