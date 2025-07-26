@@ -28,7 +28,7 @@ export default async function BuilderList({ builders, currency }: Props) {
             {(profile) => (
               <div className="flex items-start gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/50">
                 <Avatar className="h-16 w-16 flex-shrink-0">
-                  <AvatarImage src={profile.pfp_url || "/eth.png"} alt={profile.display_name} />
+                  <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
                   <AvatarFallback>
                     {profile.display_name?.charAt(0)?.toUpperCase() || "?"}
                   </AvatarFallback>
