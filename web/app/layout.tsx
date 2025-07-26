@@ -20,6 +20,7 @@ import Link from "next/link"
 import CommandPalette from "./components/search/command-dialog"
 import "./globals.css"
 import Flows from "@/public/logo.png"
+import { Nav } from "@/components/global/nav"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -52,26 +53,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
         >
           <TooltipProvider delayDuration={350}>
             <Wagmi>
-              {/* <FundingBanner /> */}
-              <nav className="container flex items-center py-5 max-lg:justify-between md:py-6">
-                <div className="lg:w-1/5">
-                  <h2>
-                    <Link
-                      href="/"
-                      className="flex items-center py-0.5 font-medium text-card-foreground max-sm:text-sm"
-                    >
-                      <Image src={Flows} alt={pool.title} className="mr-2.5 h-5 w-auto md:h-10" />
-                    </Link>
-                  </h2>
-                </div>
-                <MenuDesktop />
-                <div className="flex items-center justify-end space-x-2.5 md:space-x-3 lg:w-1/5">
-                  {user && <RecipientPopover user={user} />}
-                  {user && <CuratorPopover flow={pool} address={user.address} />}
-                  <MenuAvatar user={user} hasSession={sessionPresent} />
-                  <MenuMobile />
-                </div>
-              </nav>
+              <Nav pool={pool} user={user} sessionPresent={sessionPresent} />
               {children}
               <Toaster />
               <Analytics />

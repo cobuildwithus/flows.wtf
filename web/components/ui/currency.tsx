@@ -33,9 +33,8 @@ export const Currency = (props: PropsWithChildren<Props>) => {
       const formattedValue = formatValue(value)
       return (
         <Component {...rest}>
-          <div className="flex flex-row items-center">
-            {tokenPrefix || ""}
-            {formattedValue}
+          <div>
+            {`${tokenPrefix || ""}${formattedValue}`}
             {!tokenPrefix && tokenSymbol && (
               <div style={{ fontSize: "0.75em", lineHeight: 1 }}>{tokenSymbol}</div>
             )}

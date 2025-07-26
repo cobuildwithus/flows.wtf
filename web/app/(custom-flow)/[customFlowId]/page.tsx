@@ -30,7 +30,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   if (!customFlow) notFound()
   const flow = await getFlow(customFlow.flowId)
-  return { title: flow.title, description: flow.tagline }
+
+  return {
+    title: `${flow.title} | Flows`,
+    description: flow.tagline,
+    icons: [customFlow.logo],
+  }
 }
 
 export default async function CustomFlowPage(props: Props) {

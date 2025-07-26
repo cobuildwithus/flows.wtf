@@ -8,12 +8,12 @@ import {
   superfluidPoolAbi,
   tcrFactoryImplAbi,
   gdav1Address,
-  gdav1Abi,
   tokenEmitterImplAbi,
   customFlowImplAbi,
   nounsTokenAbi,
   cfav1Abi,
   cfav1Address,
+  gdav1Abi,
 } from "./abis"
 import {
   base as baseContracts,

@@ -49,11 +49,6 @@ const baseContracts = [
   },
 
   {
-    name: "gdav1Impl",
-    address: "0xe3d8455a27f5cb58c2a85aa0bebf0cd49196d308" as `0x${string}`,
-  },
-
-  {
     name: "superfluidPool",
     address: "0x9224413b9177e6c1d5721b4a4d1d00ec84b07ce7" as `0x${string}`,
   },
