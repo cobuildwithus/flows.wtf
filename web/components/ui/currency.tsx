@@ -34,8 +34,7 @@ export const Currency = (props: PropsWithChildren<Props>) => {
       return (
         <Component {...rest}>
           <div>
-            {tokenPrefix || ""}
-            {formattedValue}
+            {`${tokenPrefix || ""}${formattedValue}`}
             {!tokenPrefix && tokenSymbol && (
               <div style={{ fontSize: "0.75em", lineHeight: 1 }}>{tokenSymbol}</div>
             )}
