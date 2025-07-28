@@ -102,7 +102,7 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
               <div className="flex justify-center">
                 <Link href={`/apply/${flow.id}/manual`}>
                   <Button size="xl" variant="outline">
-                    Add budget
+                    Add flow
                   </Button>
                 </Link>
               </div>

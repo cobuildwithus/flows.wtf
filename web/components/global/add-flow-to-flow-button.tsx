@@ -78,7 +78,7 @@ export function AddFlowToFlowButton(props: Props) {
               },
               getEthAddress(flow.manager), // flow's manager
               "0xc4079dc1F8F84711eee0942c192829f473Fc3C28", //cobuild safe
-              ["0x949077e425da36b3cb49b28b0d37051aa32858f9"], // custom single allocator TODO update before deploy
+              ["0x132B05c671B81bedf6226329D8991CfE6257f3D1"], // custom single allocator ROCKETMAN
             ],
           })
         } catch (e: unknown) {

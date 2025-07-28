@@ -26,6 +26,25 @@ export async function searchFarcasterUsernames(
   }
 
   try {
+    // First, try to find exact username match
+    const exactMatch = await farcasterDb.profile.findFirst({
+      where: {
+        fname: {
+          equals: query,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        fid: true,
+        fname: true,
+        display_name: true,
+        avatar_url: true,
+        bio: true,
+        verified_addresses: true,
+      },
+    })
+
+    // Then search for partial matches
     const profiles = await farcasterDb.profile.findMany({
       where: {
         OR: [
@@ -59,23 +78,30 @@ export async function searchFarcasterUsernames(
       take: Math.min(limit, 50), // Cap at 50 results max
     })
 
-    const mappedProfiles = profiles.map(
-      (profile: {
-        fid: bigint
-        fname: string | null
-        display_name: string | null
-        avatar_url: string | null
-        bio: string | null
-        verified_addresses: string[]
-      }) => ({
-        fid: profile.fid.toString(),
-        fname: profile.fname,
-        display_name: profile.display_name,
-        avatar_url: profile.avatar_url,
-        bio: profile.bio,
-        verified_addresses: profile.verified_addresses || [],
-      }),
-    )
+    const mapProfile = (profile: {
+      fid: bigint
+      fname: string | null
+      display_name: string | null
+      avatar_url: string | null
+      bio: string | null
+      verified_addresses: string[]
+    }) => ({
+      fid: profile.fid.toString(),
+      fname: profile.fname,
+      display_name: profile.display_name,
+      avatar_url: profile.avatar_url,
+      bio: profile.bio,
+      verified_addresses: profile.verified_addresses || [],
+    })
+
+    const mappedProfiles = profiles.map(mapProfile)
+
+    // If we have an exact match, put it first and remove duplicates
+    if (exactMatch) {
+      const exactMapped = mapProfile(exactMatch)
+      const filteredProfiles = mappedProfiles.filter((profile) => profile.fid !== exactMapped.fid)
+      return [exactMapped, ...filteredProfiles].slice(0, limit)
+    }
 
     // Sort to prioritize exact fname matches first
     return mappedProfiles.sort((a, b) => {

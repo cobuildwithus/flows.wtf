@@ -121,18 +121,6 @@ export function ApplyForm(props: Props) {
         </Alert>
       )}
 
-      {isFlow && (
-        <Alert variant="warning">
-          <AlertTitle className="text-base">This is not a grant application!</AlertTitle>
-          <AlertDescription>
-            You&apos;re about to suggest new flow (budget category) to add to the platform.
-            You&apos;re not applying for a grant and you won&apos;t earn any funding upon succesful
-            application. Return to the apply page to create a grant that fits within a specific
-            flow.
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <input type="hidden" name="flowId" value={flow.id} />
         <input type="hidden" name="isFlow" value={isFlow ? "1" : "0"} />
