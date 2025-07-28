@@ -69,7 +69,7 @@ export function MoneyFlowDiagram(props: Props) {
         <MoneyFlowSkeleton
           hasImpactFlow={impactGrants.grants.length > 0}
           hasShopify={!!shopify}
-          hasReviews={startup.reviews.length > 0}
+          hasReviews={!!startup.reviews?.length}
         />
       </div>
     )
@@ -180,14 +180,15 @@ export function MoneyFlowDiagram(props: Props) {
     })
   }
 
-  if (diagram.receive) {
+  if (diagram?.receive) {
+    const reviews = startup.reviews ?? []
     items.push({
       col: 3,
       row: 1,
       id: "product",
       title: diagram.receive.name,
-      height: startup.reviews.length > 0 ? 200 : 106,
-      content: <Reviews reviews={startup.reviews} />,
+      height: reviews.length > 0 ? 200 : 106,
+      content: <Reviews reviews={reviews} />,
       handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
     })
   }

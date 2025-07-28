@@ -10,8 +10,8 @@ export interface StartupData {
   shopify?: StoreConfig
   impactFlowId?: `0x${string}`
   socialUsernames: SocialProfileUsernames
-  reviews: { url: string; image: string }[]
-  diagram: {
+  reviews?: { url: string; image: string }[]
+  diagram?: {
     receive?: { name: string; description?: string }
   }
 }
