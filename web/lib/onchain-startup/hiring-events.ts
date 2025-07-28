@@ -1,8 +1,6 @@
 "use server"
 
-import { unstable_cache } from "next/cache"
 import database from "@/lib/database/flows-db"
-import { getStartupData } from "./startup"
 import { Grant } from "../database/types"
 import { customFlows } from "@/app/(custom-flow)/custom-flows"
 
@@ -49,13 +47,8 @@ function getStartupInfo(
     : allFlows.find((flow) => flow.manager === budget.manager && flow.isOnchainStartup)
 
   if (possibleStartupFlow) {
-    try {
-      const { title, slug } = getStartupData(possibleStartupFlow.id)
-      startupName = title
-      startupSlug = slug
-    } catch {
-      /* ignore – fallback to previous values */
-    }
+    startupName = possibleStartupFlow.title
+    startupSlug = getCustomFlowSlug(possibleStartupFlow.id) || ""
   }
 
   const url = startupSlug ? `/${startupSlug}` : `/flow/${budget.id}`

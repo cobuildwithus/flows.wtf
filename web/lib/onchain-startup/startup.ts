@@ -70,7 +70,7 @@ export function getAllStartupsWithIds() {
   }))
 }
 
-export const getStartupData = cache((id: string) => {
+const getStartupData = cache((id: string) => {
   const startup = startups[id as keyof typeof startups]
   if (!startup) throw new Error("Startup not found")
 

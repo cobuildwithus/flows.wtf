@@ -2,7 +2,6 @@ import { ApplyOpportunity } from "@/app/startup/[id]/components/apply-opportunit
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Currency } from "@/components/ui/currency"
-import { getStartupData } from "@/lib/onchain-startup/startup"
 import { getIpfsUrl } from "@/lib/utils"
 import type { Opportunity } from "@prisma/flows"
 import Image from "next/image"
