@@ -57,6 +57,11 @@ export function AddRecipientToFlowButton(props: Props) {
       type="button"
       onClick={async () => {
         try {
+          if (!recipient.description) {
+            toast.error("Please add a description to the recipient", { id: toastId })
+            return
+          }
+
           await prepareWallet()
 
           writeContract({
