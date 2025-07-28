@@ -1,7 +1,7 @@
 const API_BASE = "https://jbdb.up.railway.app/price"
 
 interface PriceApiResponse {
-  token?: { price?: string }
+  token?: { ethPrice?: string }
 }
 
 /**
@@ -20,7 +20,7 @@ export async function fetchTokenPriceWei(
     // Some endpoints return a single object, others return an array – handle both.
     const json = (await res.json()) as PriceApiResponse | PriceApiResponse[]
     const priceObj = Array.isArray(json) ? json[0] : json
-    const price = priceObj?.token?.price
+    const price = priceObj?.token?.ethPrice
     return price ?? null
   } catch (err) {
     console.error("fetchTokenPriceWei error", err)

@@ -19,9 +19,9 @@ const PREFIX_MAP: Record<string, string> = {
 
 const LOGO_MAP: Record<string, string> = {
   [USDCx.toLowerCase()]: "https://cdn.whisk.so/token/usdc.svg",
-  [GARDENx.toLowerCase()]: "/gardens.png",
+  [GARDENx.toLowerCase()]: "/logos/gardens.logo.png",
   [USDC.toLowerCase()]: "https://cdn.whisk.so/token/usdc.svg",
-  [GARDEN.toLowerCase()]: "/gardens.png",
+  [GARDEN.toLowerCase()]: "/logos/gardens.logo.png",
   [FLOWSx.toLowerCase()]: "/flows.png",
   [FLOWS.toLowerCase()]: "/flows.png",
   [REV.toLowerCase()]:

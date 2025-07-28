@@ -59,7 +59,7 @@ export const customFlows: CustomFlow[] = [
     id: "rev",
     flowId: customFlowAddresses.rev,
     coverImage: "/revnets-bg.png",
-    logo: "/logos/rev.logo.png",
+    logo: "/logos/rev.logo.svg",
     styles: {
       light: {
         "--muted": "0 0% 90%",
