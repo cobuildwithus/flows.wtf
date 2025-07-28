@@ -1,9 +1,12 @@
 import type { Opportunity } from "@prisma/flows"
-import type { StartupData } from "@/lib/onchain-startup/data/interface"
 import type { TeamMember } from "@/lib/onchain-startup/team-members"
 
 export interface OpportunityWithCount extends Opportunity {
-  startup?: StartupData
+  startup: {
+    id: string
+    title: string
+    image: string
+  }
 }
 
 export interface FlowWithDisplayAmount {

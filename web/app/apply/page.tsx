@@ -9,7 +9,6 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { OpportunityItem } from "../../components/opportunities/opportunity-item"
-import { getStartupData } from "@/lib/onchain-startup/startup"
 import { AgentChatProvider } from "../chat/components/agent-chat"
 import { getUser } from "@/lib/auth/user"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
@@ -43,22 +42,19 @@ export default async function ApplyPage() {
       where: { status: 1 },
       include: {
         _count: { select: { drafts: true } },
+        startup: {
+          select: {
+            title: true,
+            image: true,
+            id: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     }),
     getUser(),
     getPrivyIdToken(),
   ])
-
-  // Filter opportunities to only include those with valid startup IDs
-  const validOpportunities = opportunities.filter((opportunity) => {
-    try {
-      getStartupData(opportunity.startupId)
-      return true
-    } catch {
-      return false
-    }
-  })
 
   // sort flows by monthly incoming flow rate and map to display funding amount
   const sortedFlows = flows
@@ -83,7 +79,7 @@ export default async function ApplyPage() {
             />
 
             <div className="mt-10 md:mt-16">
-              {validOpportunities.length === 0 ? (
+              {opportunities.length === 0 ? (
                 <div className="flex items-center justify-center">
                   <Alert>
                     <ExclamationTriangleIcon className="size-4" />
@@ -99,7 +95,7 @@ export default async function ApplyPage() {
                   identityToken={privyIdToken}
                 >
                   <div className="mx-auto max-w-2xl space-y-4">
-                    {validOpportunities.map((opportunity) => (
+                    {opportunities.map((opportunity) => (
                       <OpportunityItem key={opportunity.id} opportunity={opportunity} />
                     ))}
                   </div>

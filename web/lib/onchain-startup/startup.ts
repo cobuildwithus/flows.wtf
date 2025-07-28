@@ -7,7 +7,6 @@ import { tropicalbody } from "./data/tropicalbody"
 import { flows } from "./data/flows"
 import { getJuiceboxProjectForStartup } from "../juicebox/get-juicebox-project"
 import { base } from "@/addresses"
-import { getCustomFlow, getCustomFlowById } from "@/app/(custom-flow)/custom-flows"
 import { Grant } from "../database/types"
 
 const startups = {

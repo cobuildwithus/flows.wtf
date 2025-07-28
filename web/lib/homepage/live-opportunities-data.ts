@@ -1,7 +1,6 @@
 "use server"
 
 import database from "@/lib/database/flows-db"
-import { getStartupData } from "@/lib/onchain-startup/startup"
 import type { OpportunityWithCount, FlowWithDisplayAmount } from "@/components/homepage/types"
 import { unstable_cache } from "next/cache"
 
@@ -9,24 +8,19 @@ async function _getLiveOpportunitiesData(): Promise<{
   opportunities: OpportunityWithCount[]
   flows: FlowWithDisplayAmount[]
 }> {
-  const opportunitiesRaw = await database.opportunity.findMany({
+  const opportunities = await database.opportunity.findMany({
     where: { status: 1 },
     orderBy: { createdAt: "desc" },
+    include: {
+      startup: {
+        select: {
+          id: true,
+          title: true,
+          image: true,
+        },
+      },
+    },
   })
-
-  const opportunities: OpportunityWithCount[] = opportunitiesRaw
-    .filter((opportunity) => {
-      try {
-        getStartupData(opportunity.startupId)
-        return true
-      } catch {
-        return false
-      }
-    })
-    .map((opportunity) => ({
-      ...opportunity,
-      startup: getStartupData(opportunity.startupId),
-    }))
 
   const flowsRaw = await database.grant.findMany({
     where: { isFlow: true, isActive: true, isTopLevel: false },

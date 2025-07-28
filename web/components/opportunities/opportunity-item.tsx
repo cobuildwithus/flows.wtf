@@ -10,15 +10,16 @@ import Link from "next/link"
 import pluralize from "pluralize"
 
 interface Props {
-  opportunity: Opportunity & { _count: { drafts: number } }
+  opportunity: Opportunity & {
+    _count: { drafts: number }
+    startup: { title: string; image: string; id: string }
+  }
 }
 
 export function OpportunityItem(props: Props) {
   const { opportunity } = props
 
-  const { id, startupId, position, expectedMonthlySalary, _count } = opportunity
-
-  const startup = getStartupData(startupId)
+  const { id, startup, position, expectedMonthlySalary, _count } = opportunity
 
   return (
     <Card key={id} className="shadow-none transition-all hover:shadow-md">
@@ -34,17 +35,11 @@ export function OpportunityItem(props: Props) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Link
-              href={`/startup/${startupId}`}
+              href={`/startup/${startup.id}`}
               className="font-semibold transition-colors hover:text-primary"
             >
               {startup.title}
             </Link>
-            {startup.shortMission && (
-              <>
-                <span>•</span>
-                <span className="line-clamp-1 truncate">{startup.shortMission}</span>
-              </>
-            )}
           </div>
 
           <h3 className="mt-2 text-xl font-semibold tracking-tight">{position}</h3>
@@ -59,7 +54,7 @@ export function OpportunityItem(props: Props) {
         </div>
 
         <div className="shrink-0">
-          <ApplyOpportunity opportunityId={id} position={position} startupId={startupId} />
+          <ApplyOpportunity opportunityId={id} position={position} startupId={startup.id} />
         </div>
       </CardContent>
     </Card>
