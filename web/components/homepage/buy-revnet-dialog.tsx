@@ -102,7 +102,7 @@ export function BuyRevnetDialog({ startup }: Props) {
           {/* Pay input and tier buttons grouped closer */}
           <div className="space-y-3">
             {/* Pay input */}
-            <div className="rounded-lg bg-muted p-3 dark:bg-muted/40">
+            <div className="rounded-lg bg-secondary/50 p-3 dark:bg-muted/40">
               <div className="flex items-center justify-between gap-3">
                 <Input
                   type="number"

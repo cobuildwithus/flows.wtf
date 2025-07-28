@@ -83,6 +83,20 @@ export const customFlows: CustomFlow[] = [
       },
     },
   },
+  {
+    id: "vrbs",
+    flowId: customFlowAddresses.vrbs,
+    coverImage: "/vrbs-bg.png",
+    logo: "/logos/vrbs.logo.svg",
+    styles: {
+      light: {
+        "--muted": "120 60% 90%",
+        "--muted-foreground": "120 40% 20%",
+        "--primary": "120 70% 50%",
+        "--primary-foreground": "0 0% 100%",
+      },
+    },
+  },
 ] as const
 
 export function getCustomFlow(id: CustomFlowId) {

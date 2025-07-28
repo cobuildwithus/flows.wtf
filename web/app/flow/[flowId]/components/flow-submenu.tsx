@@ -8,10 +8,10 @@ import database from "@/lib/database/flows-db"
 import { isGrantApproved, isGrantAwaiting } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getEthAddress } from "@/lib/utils"
-import Link from "next/link"
 import { AllocationToggle } from "./allocation-toggle"
 import { getUser } from "@/lib/auth/user"
 import { AddRecipientModal } from "./add-recipient-modal"
+import Link from "next/link"
 
 interface Props {
   flowId: string
@@ -48,6 +48,7 @@ export const FlowSubmenu = async (props: Props) => {
   const isFlow = flow.isFlow
   const isManager = flow.manager === user?.address
   const showDrafts = (isFlow && (hasTcr || isManager)) || !flow.isTopLevel
+  const isAccelerator = flow.isAccelerator
 
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
@@ -90,9 +91,16 @@ export const FlowSubmenu = async (props: Props) => {
               erc20Address={getEthAddress(flow.erc20)}
             />
           )}
-          {isApproved && approvedCount > 0 && <AllocationToggle variant="outline" />}
-          {!isFlowRemoved && isFlow && isManager && (
-            <AddRecipientModal flow={flow} variant="outline" />
+          {isApproved && approvedCount > 0 && !isAccelerator && (
+            <AllocationToggle variant="ghost" />
+          )}
+          {!isFlowRemoved && isFlow && isManager && !isAccelerator && (
+            <AddRecipientModal variant="outline" flow={flow} />
+          )}
+          {!isManager && flow.isAccelerator && (
+            <Link href={`/apply/${flowId}`}>
+              <Button variant="outline">Apply</Button>
+            </Link>
           )}
           <FundFlow variant="default" flow={flow} />
         </div>

@@ -46,10 +46,12 @@ export const customFlows = {
   gardens: "0x329a322e591d5b7b71d45d956607998d8d71c819",
   rev: "0x4d491999f8fb73289eef3a696414dca3a994dc1b",
   base: "0xa5c54bd551648aa6e275f79787c42a238e519578",
+  vrbs: "0x70d69869ed285d24eee28af10b16fb166ee67135",
 } as const
 
 export const accelerators = {
   vrbs: "0x70d69869ed285d24eee28af10b16fb166ee67135",
+  base: "0xa5c54bd551648aa6e275f79787c42a238e519578",
 } as const
 
 export const oldCustomFlowImpl = [

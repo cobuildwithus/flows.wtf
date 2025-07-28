@@ -163,13 +163,11 @@ export default async function GrantPage(props: Props) {
             icon={Repeat}
           />
 
-          {startup.accelerator && (
-            <MetricCard
-              title={`Funding from ${startup.accelerator.name}`}
-              value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
-              icon={Banknote}
-            />
-          )}
+          <MetricCard
+            title="Seed funding"
+            value={<AnimatedSalary value={totalFunded} monthlyRate={totalBudget} />}
+            icon={Banknote}
+          />
         </div>
 
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">

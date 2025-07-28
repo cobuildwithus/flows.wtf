@@ -5,7 +5,7 @@ import { Startup } from "./startup"
 import { getTokenPayments } from "./token-payments"
 
 export async function getTotalRevenue(
-  startups: Pick<Startup, "shopify" | "revnetProjectIds" | "id">[],
+  startups: Pick<Startup, "revnetProjectIds" | "id" | "shopify">[],
 ) {
   const results = await Promise.all(
     startups.map(async (startup, index) => {

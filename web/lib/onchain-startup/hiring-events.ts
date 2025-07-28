@@ -124,7 +124,11 @@ export async function getHiringEvents(id?: string): Promise<HiringEvent[]> {
 async function getAllHiringEvents(): Promise<HiringEvent[]> {
   const [flows, budgets] = await Promise.all([
     database.grant.findMany({
-      where: { isFlow: true, isActive: true },
+      where: {
+        isFlow: true,
+        isActive: true,
+        rootContract: { not: "0xa5c54bd551648aa6e275f79787c42a238e519578" },
+      },
       select: {
         isOnchainStartup: true,
         id: true,
@@ -134,7 +138,11 @@ async function getAllHiringEvents(): Promise<HiringEvent[]> {
       },
     }),
     database.grant.findMany({
-      where: { isFlow: true, isActive: true },
+      where: {
+        isFlow: true,
+        isActive: true,
+        rootContract: { not: "0xa5c54bd551648aa6e275f79787c42a238e519578" },
+      },
       include: {
         subgrants: {
           where: { isActive: true, isFlow: false, isSiblingFlow: false },

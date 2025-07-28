@@ -3,6 +3,7 @@
 import { AuthButton } from "@/components/ui/auth-button"
 import { ButtonProps } from "@/components/ui/button"
 import { useAllocate } from "@/lib/allocation/allocation-context"
+import { Edit } from "lucide-react"
 
 export const AllocationToggle = ({ variant = "default" }: { variant?: ButtonProps["variant"] }) => {
   const { isLoading, isActive, activate, canAllocate } = useAllocate()
@@ -24,5 +25,5 @@ export const AllocationToggle = ({ variant = "default" }: { variant?: ButtonProp
 
 function getButtonText(isActive: boolean) {
   if (isActive) return "In progress..."
-  return "Flow"
+  return <Edit className="size-4" />
 }
