@@ -1,5 +1,6 @@
 import type { Opportunity } from "@prisma/flows"
 import type { TeamMember } from "@/lib/onchain-startup/team-members"
+import { Startup } from "@/lib/onchain-startup/startup"
 
 export interface OpportunityWithCount extends Opportunity {
   startup: {
@@ -20,15 +21,15 @@ export interface FlowWithDisplayAmount {
   underlyingTokenSymbol: string
 }
 
-export interface StartupWithRevenue {
+export interface StartupWithRevenue extends Startup {
   id: string
   title: string
-  shortMission: string
+  shortMission?: string
   image: string
   revenue: number
   salesChange: number
   backers: number
-  projectIdBase: number
+  projectIdBase?: number
   chainId: number
   team: TeamMember[]
   isBackedByFlows: boolean

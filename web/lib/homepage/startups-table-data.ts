@@ -17,11 +17,14 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
     startups.map(async (startup) => {
       const startupData = await getStartup(startup.id)
       const revenueData = revenue.revenueByProjectId.get(startup.id)
+      const projectIdBase = startup.revnetProjectId
       const [team, revnet] = await Promise.all([
         getTeamMembers(startup.id),
-        getRevnetBalance(startup.revnetProjectIds.base, baseChain.id).catch(() => ({
-          participantsCount: 0,
-        })),
+        projectIdBase
+          ? getRevnetBalance(projectIdBase, baseChain.id).catch(() => ({
+              participantsCount: 0,
+            }))
+          : Promise.resolve({ participantsCount: 0 }),
       ])
 
       const safeTeam = team.map((m) => {
@@ -31,18 +34,17 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
       })
 
       return {
-        id: startup.id,
-        title: startup.title,
-        shortMission: startup.shortMission,
-        image: startup.image,
+        ...startup,
+        ...startupData,
+        shortMission: startup.shortMission || startupData.tagline || "",
         revenue: revenueData?.totalSales ?? 0,
         salesChange: revenueData?.salesChange ?? 0,
         backers: revnet.participantsCount,
-        projectIdBase: startup.revnetProjectIds.base,
+        projectIdBase: projectIdBase,
         chainId: baseChain.id,
         team: safeTeam,
         isBackedByFlows: startupData.isBackedByFlows,
-      } satisfies StartupWithRevenue
+      }
     }),
   )
 

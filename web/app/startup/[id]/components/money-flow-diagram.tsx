@@ -55,11 +55,7 @@ export function MoneyFlowDiagram(props: Props) {
     tokenVolume,
     setTokenVolumeEth,
     totalRevnetTokens,
-  } = useFundraiseIllustration(
-    startup.revnetProjectIds.base,
-    startup.chainId,
-    startup.isBackedByFlows,
-  )
+  } = useFundraiseIllustration(startup.revnetProjectId, startup.chainId, startup.isBackedByFlows)
 
   const shopify = startup.shopify
 
@@ -79,43 +75,12 @@ export function MoneyFlowDiagram(props: Props) {
 
   const items: ItemProps[] = [
     {
-      col: 1,
-      row: 1,
-      title: (
-        <JoinStartupLink
-          startupTitle={startup.title}
-          projectId={startup.revnetProjectIds.base}
-          chainId={startup.chainId}
-        />
-      ),
-      id: "user_token",
-      height: 285,
-      content: (
-        <BuyRevnetToken changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)} startup={startup} />
-      ),
-      handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
-    },
-    {
       col: 2,
       row: 1,
       id: "revenue",
       title: <TitleWithCurrency title="Revenue" value={revenue.totalSales} />,
       height: 90,
       content: <Revenue revenue={revenue} />,
-    },
-    {
-      col: 2,
-      row: 2,
-      id: "treasury",
-      title: (
-        <TreasuryTitle
-          startup={startup}
-          chainId={startup.chainId}
-          ethRaised={productsVolumeEth + tokenVolume}
-        />
-      ),
-      height: 90,
-      content: <Treasury projectId={startup.revnetProjectIds.base} chainId={startup.chainId} />,
     },
 
     // {
@@ -133,14 +98,53 @@ export function MoneyFlowDiagram(props: Props) {
     //   content: <ImpactGrants grants={impactGrants.grants} />,
     //   handles: isMobile ? [] : [{ type: "target", position: Position.Left }],
     // },
-    {
+  ]
+
+  if (startup.revnetProjectId) {
+    if (shopify) {
+      items.push({
+        col: 1,
+        row: 2,
+        height: 320,
+        id: "user_action",
+        title: "Shop to earn",
+        className: "bg-background dark:bg-background/50 shadow",
+        content: (
+          <ProductsList
+            changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
+            products={products.slice(0, 10)}
+            startup={startup}
+            chainId={startup.chainId}
+            shopify={shopify}
+            revnetProjectId={startup.revnetProjectId}
+          />
+        ),
+        handles: isMobile ? [] : [{ type: "source", position: Position.Right }],
+      })
+    }
+    items.push({
+      col: 2,
+      row: 2,
+      id: "treasury",
+      title: (
+        <TreasuryTitle
+          startup={startup}
+          chainId={startup.chainId}
+          ethRaised={productsVolumeEth + tokenVolume}
+          revnetProjectId={startup.revnetProjectId}
+        />
+      ),
+      height: 90,
+      content: <Treasury projectId={startup.revnetProjectId} chainId={startup.chainId} />,
+    })
+    items.push({
       col: 3,
       row: 3,
       id: "token",
       title: (
         <TokenDAOLink
           startupTitle={startup.title}
-          projectId={startup.revnetProjectIds.base}
+          projectId={startup.revnetProjectId}
           chainId={startup.chainId}
           tokenAmount={Number(totalRevnetTokens)}
         />
@@ -149,31 +153,31 @@ export function MoneyFlowDiagram(props: Props) {
       height: 145,
       content: (
         <TokenRewards
-          projectId={startup.revnetProjectIds.base}
+          projectId={startup.revnetProjectId}
           chainId={startup.chainId}
           userAddress={user?.address}
           extraRevnetTokens={totalRevnetTokens}
           startupTitle={startup.title}
         />
       ),
-    },
-  ]
-
-  if (shopify) {
+    })
     items.push({
       col: 1,
-      row: 2,
-      height: 320,
-      id: "user_action",
-      title: "Shop to earn",
-      className: "bg-background dark:bg-background/50 shadow",
-      content: (
-        <ProductsList
-          changeProductsVolumeEth={(eth) => setProductsVolumeEth(eth)}
-          products={products.slice(0, 10)}
-          startup={startup}
+      row: 1,
+      title: (
+        <JoinStartupLink
+          startupTitle={startup.title}
+          projectId={startup.revnetProjectId}
           chainId={startup.chainId}
-          shopify={shopify}
+        />
+      ),
+      id: "user_token",
+      height: 285,
+      content: (
+        <BuyRevnetToken
+          changeTokenVolumeEth={(eth) => setTokenVolumeEth(eth)}
+          startup={startup}
+          revnetProjectId={startup.revnetProjectId}
         />
       ),
       handles: isMobile ? [] : [{ type: "source", position: Position.Right }],

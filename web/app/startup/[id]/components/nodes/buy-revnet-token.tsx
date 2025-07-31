@@ -15,20 +15,20 @@ import { Startup } from "@/lib/onchain-startup/startup"
 interface Props {
   changeTokenVolumeEth: (eth: number) => void
   startup: Startup
+  revnetProjectId: number
 }
 
-export function BuyRevnetToken({ changeTokenVolumeEth, startup }: Props) {
-  const { revnetProjectIds, chainId, isBackedByFlows } = startup
-  const { base: projectId } = revnetProjectIds
+export function BuyRevnetToken({ changeTokenVolumeEth, startup, revnetProjectId }: Props) {
+  const { chainId, isBackedByFlows } = startup
 
   const { address } = useAccount()
-  const { payRevnet, isLoading } = usePayRevnet(projectId, chainId)
+  const { payRevnet, isLoading } = usePayRevnet(revnetProjectId, chainId)
   const {
     isLoading: isPriceLoading,
     calculateTokensFromEth,
     calculateEthFromTokens,
-  } = useRevnetTokenPrice(projectId, chainId, isBackedByFlows)
-  const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
+  } = useRevnetTokenPrice(revnetProjectId, chainId, isBackedByFlows)
+  const { data: tokenDetails } = useRevnetTokenDetails(revnetProjectId, chainId)
 
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
@@ -78,7 +78,7 @@ export function BuyRevnetToken({ changeTokenVolumeEth, startup }: Props) {
 
     await payRevnet(
       {
-        projectId,
+        projectId: revnetProjectId,
         token: "0x000000000000000000000000000000000000EEEe",
         amount: payAmount,
         beneficiary: address,

@@ -15,19 +15,19 @@ interface Props {
   startup: Startup
   shopify: StoreConfig
   chainId: number
+  revnetProjectId: number
 }
 
 export function ProductsList(props: Props) {
-  const { changeProductsVolumeEth, products, startup, chainId, shopify } = props
+  const { changeProductsVolumeEth, products, startup, chainId, shopify, revnetProjectId } = props
   const [quantity, setQuantity] = useState("1")
   const [touched, setTouched] = useState(false)
-  const projectId = startup.revnetProjectIds.base
   const { calculateTokensFromEth } = useRevnetTokenPrice(
-    projectId,
+    revnetProjectId,
     chainId,
     startup.isBackedByFlows,
   )
-  const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
+  const { data: tokenDetails } = useRevnetTokenDetails(revnetProjectId, chainId)
 
   const tokenSymbol = tokenDetails?.symbol || ""
   const quantityNum = quantity === "" ? 0 : parseInt(quantity)

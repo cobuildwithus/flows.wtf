@@ -31,12 +31,12 @@ export async function getStartupSalesData(startupId: string): Promise<StartupSal
 
   // Shopify & on-chain configuration
   const shopifyConfig = startup.shopify
-  const projectIdBase = Number(startup.revnetProjectIds.base)
+  const projectIdBase = startup.revnetProjectId
 
   // Parallel data fetching
   const [orders, tokenPayments] = await Promise.all([
     shopifyConfig ? getAllOrders(shopifyConfig) : Promise.resolve([]),
-    getTokenPayments(projectIdBase),
+    projectIdBase ? getTokenPayments(projectIdBase) : Promise.resolve([]),
   ])
 
   const [products, salesSummary] = await Promise.all([

@@ -59,28 +59,30 @@ export function StartupsTable({ startups }: Props) {
                     {startup.title}
                   </Link>
                   <p className="line-clamp-2 text-xs text-muted-foreground md:text-base">
-                    {startup.shortMission}
+                    {startup.shortMission || startup.tagline}
                   </p>
                 </div>
               </div>
             </TableCell>
             <TableCell className="hidden text-center md:table-cell">
-              <div className="flex justify-end -space-x-2 pr-6">
-                {startup.team.slice(0, 3).map((member) => (
-                  <UserProfile key={member.recipient} address={member.recipient as `0x${string}`}>
-                    {(profile) => (
-                      <Avatar className="size-6 border-2 border-background md:size-8">
-                        <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
-                        <AvatarFallback className="text-sm md:text-base">
-                          {profile.display_name[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                  </UserProfile>
-                ))}
-                {startup.team.length > 3 && (
+              <div className="flex items-center justify-end pr-6">
+                <div className="flex -space-x-2">
+                  {startup.team.slice(0, 5).map((member) => (
+                    <UserProfile key={member.recipient} address={member.recipient as `0x${string}`}>
+                      {(profile) => (
+                        <Avatar className="size-6 border-2 border-background md:size-8">
+                          <AvatarImage src={profile.pfp_url} alt={profile.display_name} />
+                          <AvatarFallback className="text-sm md:text-base">
+                            {profile.display_name[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                    </UserProfile>
+                  ))}
+                </div>
+                {startup.team.length > 5 && (
                   <span className="ml-2 text-sm font-medium text-muted-foreground md:text-base">
-                    +{startup.team.length - 3}
+                    +{startup.team.length - 5}
                   </span>
                 )}
               </div>
@@ -99,7 +101,9 @@ export function StartupsTable({ startups }: Props) {
             </TableCell>
 
             <TableCell className="text-right">
-              <BuyRevnetDialog startup={startup} />
+              {startup.projectIdBase && (
+                <BuyRevnetDialog startup={startup} revnetProjectId={startup.projectIdBase} />
+              )}
             </TableCell>
           </TableRow>
         ))}

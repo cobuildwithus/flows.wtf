@@ -35,12 +35,20 @@ export async function getTopContributorsForAllStartups(): Promise<TopContributor
 
   // Get all pay events for all startups
   const allPayEventsPromises = startups.map(async (startup) => {
+    if (!startup.revnetProjectId) {
+      return {
+        startup,
+        weeklyEvents: [],
+        allTimeEvents: [],
+      }
+    }
+
     const [weeklyEvents, allTimeEvents] = await Promise.all([
       // Weekly events
       database.juiceboxPayEvent.findMany({
         where: {
           chainId: base.id,
-          projectId: Number(startup.revnetProjectIds.base),
+          projectId: startup.revnetProjectId,
           timestamp: {
             gte: oneWeekAgo,
           },
@@ -56,7 +64,7 @@ export async function getTopContributorsForAllStartups(): Promise<TopContributor
       database.juiceboxPayEvent.findMany({
         where: {
           chainId: base.id,
-          projectId: Number(startup.revnetProjectIds.base),
+          projectId: startup.revnetProjectId,
         },
         select: {
           beneficiary: true,

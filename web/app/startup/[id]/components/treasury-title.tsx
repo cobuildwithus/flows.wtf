@@ -12,13 +12,14 @@ interface Props {
   startup: Startup
   chainId: number
   ethRaised: number
+  revnetProjectId: number
 }
 
-export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
+export function TreasuryTitle({ startup, chainId, ethRaised, revnetProjectId }: Props) {
   const { ethPrice } = useETHPrice()
 
   const { treasuryBalanceUSD, isLoading, error } = useFlowsTreasuryBalance(
-    startup.revnetProjectIds.base,
+    revnetProjectId,
     chainId,
     startup.isBackedByFlows,
   )
@@ -49,7 +50,7 @@ export function TreasuryTitle({ startup, chainId, ethRaised }: Props) {
   return (
     <div className="flex w-full items-center justify-between gap-1 text-base">
       <Link
-        href={getRevnetUrl(chainId, Number(startup.revnetProjectIds.base))}
+        href={getRevnetUrl(chainId, revnetProjectId)}
         target="_blank"
         rel="noopener noreferrer"
         className="hover:underline"

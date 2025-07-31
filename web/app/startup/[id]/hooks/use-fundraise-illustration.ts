@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 
 export function useFundraiseIllustration(
-  projectId: number,
+  projectId: number | undefined,
   chainId: number,
   isBackedByFlows: boolean,
 ) {

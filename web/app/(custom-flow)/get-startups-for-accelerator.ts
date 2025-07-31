@@ -7,7 +7,7 @@ import { base as baseChain } from "viem/chains"
 import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import { unstable_cache } from "next/cache"
 
-async function _getStartupsForAccelerator(flowId: string) {
+export async function getStartupsForAccelerator(flowId: string) {
   const startups = await getStartups(flowId)
 
   const revenue = await getTotalRevenue(startups)
@@ -17,9 +17,11 @@ async function _getStartupsForAccelerator(flowId: string) {
       const revenueData = revenue.revenueByProjectId.get(startup.id)
       const [team, revnet] = await Promise.all([
         getTeamMembers(startup.id),
-        getRevnetBalance(startup.revnetProjectIds.base, baseChain.id).catch(() => ({
-          participantsCount: 0,
-        })),
+        startup.revnetProjectId
+          ? getRevnetBalance(startup.revnetProjectId, baseChain.id).catch(() => ({
+              participantsCount: 0,
+            }))
+          : null,
       ])
 
       const safeTeam = team.map((m) => {
@@ -32,8 +34,8 @@ async function _getStartupsForAccelerator(flowId: string) {
         ...startup,
         revenue: revenueData?.totalSales ?? 0,
         salesChange: revenueData?.salesChange ?? 0,
-        backers: revnet.participantsCount,
-        projectIdBase: startup.revnetProjectIds.base,
+        backers: revnet?.participantsCount ?? 0,
+        projectIdBase: startup.revnetProjectId,
         chainId: baseChain.id,
         team: safeTeam,
       }
@@ -43,11 +45,11 @@ async function _getStartupsForAccelerator(flowId: string) {
   return startupsWithData.sort((a, b) => b.revenue - a.revenue)
 }
 
-export const getStartupsForAccelerator = unstable_cache(
-  _getStartupsForAccelerator,
-  ["startups-for-accelerator"],
-  {
-    tags: ["startups-for-accelerator"],
-    revalidate: 180,
-  },
-)
+// export const getStartupsForAccelerator = unstable_cache(
+//   _getStartupsForAccelerator,
+//   ["startups-for-accelerator"],
+//   {
+//     tags: ["startups-for-accelerator"],
+//     revalidate: 180,
+//   },
+// )

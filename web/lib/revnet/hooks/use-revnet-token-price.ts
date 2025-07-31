@@ -5,7 +5,11 @@ import { getRevnetTokenPrice } from "./get-revnet-token-price"
 import { formatEther, parseEther } from "viem"
 import { useMemo } from "react"
 
-export function useRevnetTokenPrice(projectId: number, chainId: number, isBackedByFlows: boolean) {
+export function useRevnetTokenPrice(
+  projectId: number | undefined,
+  chainId: number,
+  isBackedByFlows: boolean,
+) {
   const { data, ...rest } = useServerFunction(
     getRevnetTokenPrice,
     "revnet-token-price",

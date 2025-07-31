@@ -24,34 +24,10 @@ import { AuthButton } from "../ui/auth-button"
 
 interface Props {
   startup: StartupWithRevenue
+  revnetProjectId: number
 }
 
-const TIERS = ["0.001", "0.01", "0.1"] // ETH values as strings
-
-function TierButton({
-  value,
-  selected,
-  onClick,
-}: {
-  value: string
-  selected: boolean
-  onClick: () => void
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "whitespace-nowrap rounded-md border px-3 py-2 text-sm font-medium transition-colors",
-        selected ? "border-primary bg-primary/10" : "hover:bg-muted",
-      )}
-    >
-      {value}
-    </button>
-  )
-}
-
-export function BuyRevnetDialog({ startup }: Props) {
+export function BuyRevnetDialog({ startup, revnetProjectId }: Props) {
   const { address } = useAccount()
   const { data: ethBalance } = useBalance({ address, chainId: startup.chainId })
   const maxEth = ethBalance ? formatEther(ethBalance.value) : "0"
@@ -59,13 +35,13 @@ export function BuyRevnetDialog({ startup }: Props) {
   const [payAmount, setPayAmount] = useState<string>(TIERS[0]) // default tier
   const [custom, setCustom] = useState<string>("")
 
-  const { payRevnet, isLoading } = usePayRevnet(startup.projectIdBase, startup.chainId)
+  const { payRevnet, isLoading } = usePayRevnet(revnetProjectId, startup.chainId)
   const { isLoading: isPriceLoading, calculateTokensFromEth } = useRevnetTokenPrice(
-    startup.projectIdBase,
+    revnetProjectId,
     startup.chainId,
     startup.isBackedByFlows,
   )
-  const { data: tokenDetails } = useRevnetTokenDetails(startup.projectIdBase, startup.chainId)
+  const { data: tokenDetails } = useRevnetTokenDetails(revnetProjectId, startup.chainId)
   const tokenSymbol = tokenDetails?.symbol || "TOKEN"
 
   const selectedAmount = custom !== "" ? custom : payAmount
@@ -75,7 +51,7 @@ export function BuyRevnetDialog({ startup }: Props) {
     if (!address || !selectedAmount) return
     await payRevnet(
       {
-        projectId: startup.projectIdBase,
+        projectId: revnetProjectId,
         token: "0x000000000000000000000000000000000000EEEe",
         amount: selectedAmount,
         beneficiary: address,
@@ -181,5 +157,30 @@ export function BuyRevnetDialog({ startup }: Props) {
         </div>
       </DialogContent>
     </Dialog>
+  )
+}
+
+const TIERS = ["0.001", "0.01", "0.1"] // ETH values as strings
+
+function TierButton({
+  value,
+  selected,
+  onClick,
+}: {
+  value: string
+  selected: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "whitespace-nowrap rounded-md border px-3 py-2 text-sm font-medium transition-colors",
+        selected ? "border-primary bg-primary/10" : "hover:bg-muted",
+      )}
+    >
+      {value}
+    </button>
   )
 }

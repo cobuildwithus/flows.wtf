@@ -64,7 +64,7 @@ export default async function GrantPage(props: Props) {
     impactFlowId ? getImpactFlow(impactFlowId) : Promise.resolve(null),
     shopify ? getAllOrders(shopify) : Promise.resolve([]),
     getStartupBudgets(startup.id),
-    getTokenPayments(Number(startup.revnetProjectIds.base)),
+    startup.revnetProjectId ? getTokenPayments(startup.revnetProjectId) : Promise.resolve([]),
   ])
 
   const [products, salesSummary] = await Promise.all([
@@ -174,7 +174,7 @@ export default async function GrantPage(props: Props) {
           <ProductsTable products={products} />
 
           <Suspense>
-            <SocialProfiles usernames={startup.socialUsernames} />
+            {startup.socialUsernames && <SocialProfiles usernames={startup.socialUsernames} />}
           </Suspense>
         </div>
 

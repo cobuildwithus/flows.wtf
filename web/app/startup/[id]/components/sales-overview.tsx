@@ -30,7 +30,9 @@ export async function SalesOverview(props: Props) {
             <CardTitle className="text-base">Revenue</CardTitle>
             <CardDescription className="mt-1 text-xs">Grows the network</CardDescription>
           </div>
-          <BringRevenueOnchain startup={startup} />
+          {startup.revnetProjectId && (
+            <BringRevenueOnchain startup={startup} revnetProjectId={startup.revnetProjectId} />
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col pb-4 pt-2">

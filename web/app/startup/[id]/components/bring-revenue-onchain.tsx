@@ -28,13 +28,14 @@ import { Startup } from "@/lib/onchain-startup/startup"
 
 interface Props {
   startup: Startup
+  revnetProjectId: number
 }
 
-export function BringRevenueOnchain({ startup }: Props) {
+export function BringRevenueOnchain({ startup, revnetProjectId }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const { address } = useAccount()
-  const { title: startupTitle, revnetProjectIds, chainId, isBackedByFlows } = startup
-  const projectId = revnetProjectIds.base
+  const { title: startupTitle, chainId, isBackedByFlows } = startup
+  const projectId = revnetProjectId
 
   const { payRevnet, isLoading } = usePayRevnet(projectId, chainId, () => {
     // Reset form and close dialog on success

@@ -17,7 +17,6 @@ async function _getStartupBudgets(id: string) {
       isFlow: true,
       isActive: true,
       rootContract: mainFlow.rootContract,
-      parentContract: { not: mainFlow.rootContract },
     },
     orderBy: { createdAt: "asc" },
     include: {
@@ -29,10 +28,12 @@ async function _getStartupBudgets(id: string) {
     },
   })
 
-  return budgets.map((budget) => ({
-    ...budget,
-    title: budget.id === id ? "Main Budget" : budget.title,
-  }))
+  return budgets
+    .map((budget) => ({
+      ...budget,
+      title: budget.id === id ? "Main Budget" : budget.title,
+    }))
+    .filter((b) => !b.isAccelerator)
 }
 
 export type StartupBudget = Awaited<ReturnType<typeof _getStartupBudgets>>[0]

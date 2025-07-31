@@ -8,24 +8,13 @@ import { flows } from "./data/flows"
 import { getJuiceboxProjectForStartup } from "../juicebox/get-juicebox-project"
 import { base } from "@/addresses"
 import { Grant } from "../database/types"
+import { StartupData } from "./data/interface"
 
 const startups = {
-  "0xd3758b55916128c88dd7895472a2d47cacb9f208": {
-    ...vrbscoffee,
-    revnetProjectIds: { base: 104 },
-  },
-  "0x16f7997240d763e1396e8ad33c8a32dbff708c56": {
-    ...straystrong,
-    revnetProjectIds: { base: 108 },
-  },
-  "0x674c0dbe85b3dee2a9cd63fe0dc7d8b9f724335a": {
-    ...tropicalbody,
-    revnetProjectIds: { base: 112 },
-  },
-  "0x4c29314870977d7d81e47274762e74f0ebf84037": {
-    ...flows,
-    revnetProjectIds: { base: 99 },
-  },
+  "0xd3758b55916128c88dd7895472a2d47cacb9f208": vrbscoffee,
+  "0x16f7997240d763e1396e8ad33c8a32dbff708c56": straystrong,
+  "0x674c0dbe85b3dee2a9cd63fe0dc7d8b9f724335a": tropicalbody,
+  "0x4c29314870977d7d81e47274762e74f0ebf84037": flows,
 } as const
 
 const startupIdBySlug = Object.fromEntries(
@@ -70,9 +59,8 @@ export function getAllStartupsWithIds() {
   }))
 }
 
-const getStartupData = cache((id: string) => {
+const getStartupData = cache((id: string): StartupData | null => {
   const startup = startups[id as keyof typeof startups]
-  if (!startup) throw new Error("Startup not found")
 
   return startup
 })
@@ -80,10 +68,11 @@ const getStartupData = cache((id: string) => {
 // Helper function to enrich a grant with startup data
 async function enrichGrantWithStartupData(grant: Grant) {
   const startup = getStartupData(grant.id)
+  const revnet = startup?.revnetProjectId
 
   const [allocator, jbxProject] = await Promise.all([
     getAllocator(grant.allocationStrategies[0], grant.chainId),
-    getJuiceboxProjectForStartup(grant.chainId, Number(startup.revnetProjectIds.base)),
+    revnet ? getJuiceboxProjectForStartup(grant.chainId, Number(revnet)) : null,
   ])
 
   const isBackedByFlows = jbxProject?.accountingToken === base.FlowsToken
@@ -93,7 +82,7 @@ async function enrichGrantWithStartupData(grant: Grant) {
     ...startup,
     allocator,
     id: grant.id,
-    slug: startup.slug,
+    slug: startup?.slug,
     jbxProject,
     isBackedByFlows,
   }

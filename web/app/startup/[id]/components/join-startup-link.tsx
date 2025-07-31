@@ -5,7 +5,7 @@ import { DAOInfoDialog } from "./dao-info-dialog"
 
 interface Props {
   startupTitle: string
-  projectId: number
+  projectId?: number
   chainId: number
 }
 
@@ -29,13 +29,15 @@ export function JoinStartupLink({ startupTitle, projectId, chainId }: Props) {
         </button>
       </div>
 
-      <DAOInfoDialog
-        startupTitle={startupTitle}
-        projectId={projectId}
-        chainId={chainId}
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-      />
+      {projectId && (
+        <DAOInfoDialog
+          startupTitle={startupTitle}
+          projectId={projectId}
+          chainId={chainId}
+          isOpen={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+        />
+      )}
     </>
   )
 }

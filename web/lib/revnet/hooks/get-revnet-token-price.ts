@@ -32,13 +32,19 @@ function adjustPriceForReserved(price: bigint, reservedPercent: number): bigint 
 }
 
 export const getRevnetTokenPrice = async (
-  projectId: number,
+  projectId: number | undefined,
   chainId: number,
   isFlowsDenominated: boolean = true,
 ): Promise<{
   currentPrice: string
 }> => {
   try {
+    if (!projectId) {
+      return {
+        currentPrice: "0",
+      }
+    }
+
     const currentTime = Math.floor(Date.now() / 1000)
 
     // Find the currently active ruleset
