@@ -41,6 +41,7 @@ import { BgGradient } from "@/app/item/[grantId]/components/bg-gradient"
 
 interface Props {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ impactId?: string }>
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -57,6 +58,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function GrantPage(props: Props) {
   const { id } = await props.params
+  const { impactId } = await props.searchParams
 
   const startup = await getStartup(id)
   if (!startup) throw new Error("Startup not found")
@@ -191,7 +193,7 @@ export default async function GrantPage(props: Props) {
             >
               <Suspense fallback={<div className="h-[300px]" />}>
                 <div className="my-12">
-                  <ImpactChain impacts={impacts} canEdit={canEdit} />
+                  <ImpactChain impacts={impacts} canEdit={canEdit} impactId={impactId} />
                 </div>
               </Suspense>
             </AgentChatProvider>
