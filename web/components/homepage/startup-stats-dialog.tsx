@@ -55,7 +55,6 @@ function StatCard({
 }
 
 export function StartupStatsDialog({ startup, children }: Props) {
-  // Fetch data using the custom hook preferred by the project [[memory:3454412]]
   const { data, error, isLoading } = useServerFunction(getStartupSalesData, "startup-sales-data", [
     startup.id,
   ])

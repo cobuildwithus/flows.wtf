@@ -49,10 +49,9 @@ export const FlowSubmenu = async (props: Props) => {
   const isManager = flow.manager === user?.address
   const showDrafts = (isFlow && (hasTcr || isManager)) || !flow.isTopLevel
   const isAccelerator = flow.isAccelerator
-
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
     {
-      label: flow.isTopLevel ? "Flows" : "Projects",
+      label: flow.isAccelerator ? "Startups" : flow.isTopLevel ? "Flows" : "Projects",
       href: flowUrl,
       isActive: isApproved,
     },
@@ -69,7 +68,7 @@ export const FlowSubmenu = async (props: Props) => {
 
   if (showDrafts) {
     links.push({
-      label: "Drafts",
+      label: isAccelerator ? "Applications" : "Drafts",
       href: `/flow/${flowId}/drafts`,
       isActive: isDrafts,
       badge: draftsCount,
