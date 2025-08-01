@@ -1,6 +1,6 @@
 import { Edge, MarkerType, Node, Position } from "@xyflow/react"
 
-type MinimalNode = Omit<Node, "id" | "position"> & { width: number; height: number }
+export type MinimalNode = Omit<Node, "id" | "position"> & { width: number; height: number }
 
 export function generateDiagram(nodes: MinimalNode[], width: number) {
   const layout = getDiagramLayout(width, nodes)

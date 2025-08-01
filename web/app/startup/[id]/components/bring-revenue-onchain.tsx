@@ -91,12 +91,7 @@ export function BringRevenueOnchain({ startup, revnetProjectId }: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          className="h-8 px-3 text-sm font-normal"
-          aria-label="What does this mean?"
-          tabIndex={0}
-        >
+        <Button type="button" aria-label="What does this mean?" size="xs" tabIndex={0}>
           <span className="text-xs font-bold">Add +</span>
         </Button>
       </DialogTrigger>

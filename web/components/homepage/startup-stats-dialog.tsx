@@ -55,14 +55,15 @@ function StatCard({
 }
 
 export function StartupStatsDialog({ startup, children }: Props) {
-  // Fetch data using the custom hook preferred by the project [[memory:3454412]]
   const { data, error, isLoading } = useServerFunction(getStartupSalesData, "startup-sales-data", [
     startup.id,
   ])
 
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <div>{children}</div>
+      </DialogTrigger>
       <DialogContent className="max-w-5xl">
         <DialogHeader>
           <DialogTitle>{startup.title} Revenue</DialogTitle>

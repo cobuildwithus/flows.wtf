@@ -49,7 +49,9 @@ export function ImpactDialog(props: Props) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <div>{children}</div>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-5xl">
         <DialogTitle className="text-center text-2xl font-bold" />
         <div className="mt-2 flex flex-col space-y-16">

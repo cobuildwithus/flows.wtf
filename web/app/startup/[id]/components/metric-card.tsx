@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PercentChange } from "@/components/ui/percent-change"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { LucideIcon } from "lucide-react"
 import { ReactNode } from "react"
 
@@ -18,12 +19,23 @@ export function MetricCard({ title, value, change, icon: Icon }: MetricCardProps
         <Icon className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-semibold tracking-tight">{value}</div>
-        {change !== undefined && (
-          <CardDescription className="mt-1.5 text-xs">
-            <PercentChange value={change} className="text-xs" /> since last month
-          </CardDescription>
-        )}
+        <div className="flex items-end justify-start space-x-3">
+          <div className="text-2xl font-semibold tracking-tight">{value}</div>
+          {change !== undefined && (
+            <CardDescription className="pb-1 text-xs">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <PercentChange value={change} className="text-xs" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>since last month</p>
+                </TooltipContent>
+              </Tooltip>
+            </CardDescription>
+          )}
+        </div>
       </CardContent>
     </Card>
   )
