@@ -61,7 +61,9 @@ export function StartupStatsDialog({ startup, children }: Props) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <div>{children}</div>
+      </DialogTrigger>
       <DialogContent className="max-w-5xl">
         <DialogHeader>
           <DialogTitle>{startup.title} Revenue</DialogTitle>
