@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Currency } from "@/components/ui/currency"
 import { EditDescription } from "../components/edit-description"
+import { EditMetadataDialog } from "../components/edit-metadata"
 import { isAdmin } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getPool } from "@/lib/database/queries/pool"
@@ -51,11 +52,19 @@ export default async function FlowPage(props: Props) {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>About</CardTitle>
-                  <Link href={`/flow/${flowId}`}>
-                    <Button variant="outline" size="sm">
-                      View grants
-                    </Button>
-                  </Link>
+                  <div className="flex space-x-2">
+                    <Link href={`/flow/${flowId}`}>
+                      <Button variant="outline" size="sm">
+                        View grants
+                      </Button>
+                    </Link>
+                    <EditMetadataDialog
+                      flow={flow}
+                      contract={getEthAddress(recipient)}
+                      chainId={chainId}
+                      canEdit={canEdit}
+                    />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
