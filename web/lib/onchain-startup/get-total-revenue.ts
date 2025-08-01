@@ -1,6 +1,5 @@
 import { getAllOrders } from "../shopify/orders"
-import { getSalesSummary } from "../shopify/summary"
-import { getRevenueMetrics } from "./revenue-metrics"
+import { getRevenueChange } from "./revenue-change"
 import { Startup } from "./startup"
 import { getTokenPayments } from "./token-payments"
 
@@ -16,10 +15,8 @@ export async function getTotalRevenue(
           : Promise.resolve([]),
       ])
 
-      const salesSummary = await getSalesSummary(orders)
-
       // Get combined sales metrics including token payments
-      const combinedMetrics = await getRevenueMetrics(salesSummary.monthlySales, tokenPayments)
+      const combinedMetrics = await getRevenueChange(orders, tokenPayments)
 
       return {
         startupId: startup.id,

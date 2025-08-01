@@ -15,7 +15,6 @@ import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import { getTokenPayments } from "@/lib/onchain-startup/token-payments"
 import { getAllOrders } from "@/lib/shopify/orders"
 import { getProducts } from "@/lib/shopify/products"
-import { getSalesSummary } from "@/lib/shopify/summary"
 import { getIpfsUrl } from "@/lib/utils"
 import { Banknote, DollarSign, Repeat, ShoppingBag } from "lucide-react"
 import type { Metadata } from "next"
@@ -30,8 +29,8 @@ import { SocialProfiles } from "./components/social-profiles"
 import { Team } from "./components/team"
 import { Timeline } from "./components/timeline/timeline"
 import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
-import { getRevenueMetrics } from "@/lib/onchain-startup/revenue-metrics"
 import { calculateTotalBudget } from "@/lib/grant-utils"
+import { getRevenueChange } from "@/lib/onchain-startup/revenue-change"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -67,13 +66,10 @@ export default async function GrantPage(props: Props) {
     startup.revnetProjectId ? getTokenPayments(startup.revnetProjectId) : Promise.resolve([]),
   ])
 
-  const [products, salesSummary] = await Promise.all([
+  const [products, revenue] = await Promise.all([
     shopify ? getProducts(shopify, orders) : Promise.resolve([]),
-    getSalesSummary(orders),
+    getRevenueChange(orders, tokenPayments),
   ])
-
-  // Get combined sales metrics including token payments
-  const revenue = await getRevenueMetrics(salesSummary.monthlySales, tokenPayments)
 
   const totalBudget = calculateTotalBudget(budgets)
   const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
@@ -126,11 +122,7 @@ export default async function GrantPage(props: Props) {
             <Mission startup={startup} />
             <div className="flex-1">
               <Suspense fallback={<div className="h-[450px] animate-pulse rounded-lg bg-muted" />}>
-                <SalesOverview
-                  monthlySales={salesSummary.monthlySales}
-                  tokenPayments={tokenPayments}
-                  startup={startup}
-                />
+                <SalesOverview orders={orders} tokenPayments={tokenPayments} startup={startup} />
               </Suspense>
             </div>
           </div>

@@ -34,7 +34,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return {
     title: `${flow.title} | Flows`,
     description: flow.tagline,
-    icons: [customFlow.logo],
+    icons: [customFlow.logo, customFlow.coverImage],
   }
 }
 
