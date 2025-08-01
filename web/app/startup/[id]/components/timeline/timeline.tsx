@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { farcasterDb } from "@/lib/database/farcaster-db"
 import { Startup } from "@/lib/onchain-startup/startup"
 import { TeamMember } from "@/lib/onchain-startup/team-members"
 import { getTokenPayments } from "@/lib/onchain-startup/token-payments"
@@ -42,19 +41,14 @@ const MAX_EVENTS = 50
 export async function Timeline(props: Props) {
   const { orders, startup, teamMembers } = props
 
-  const [tokenPayments, casts, hiringEvents] = await Promise.all([
+  const [tokenPayments, hiringEvents] = await Promise.all([
     startup.revnetProjectId
       ? getTokenPayments(Number(startup.revnetProjectId)).then((payments) => payments.slice(0, 30))
       : Promise.resolve([]),
-    getTeamCasts(teamMembers.map((m) => m.fid).filter((fid) => fid !== undefined)),
     getHiringEvents(startup.id),
   ])
 
   const events: TimelineEvent[] = []
-
-  casts.forEach((cast) => {
-    events.push({ type: "cast", date: new Date(cast.created_at), data: cast })
-  })
 
   orders.forEach((order) => {
     events.push({ type: "order", date: new Date(order.date), data: order })
@@ -117,28 +111,4 @@ export async function Timeline(props: Props) {
       </CardContent>
     </Card>
   )
-}
-
-const getTeamCasts = async (teamMemberFids: number[]) => {
-  return farcasterDb.cast.findMany({
-    select: {
-      created_at: true,
-      embeds: true,
-      hash: true,
-      id: true,
-      impact_verifications: true,
-      mentioned_fids: true,
-      mentions_positions_array: true,
-      text: true,
-      profile: { select: { fname: true, display_name: true, avatar_url: true } },
-    },
-    where: {
-      deleted_at: null,
-      root_parent_url: "https://warpcast.com/~/channel/vrbscoffee",
-      parent_hash: null,
-      fid: { in: teamMemberFids },
-    },
-    orderBy: { created_at: "desc" },
-    take: 30,
-  })
 }
