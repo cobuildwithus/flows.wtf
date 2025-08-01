@@ -71,12 +71,14 @@ export function AddRecipientModal(props: Props & ComponentProps<typeof Button>) 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {children || (
-          <AuthButton {...buttonProps}>
-            <Plus className="mr-1 h-4 w-4" />
-            Add
-          </AuthButton>
-        )}
+        <div>
+          {children || (
+            <AuthButton {...buttonProps}>
+              <Plus className="mr-1 h-4 w-4" />
+              Add
+            </AuthButton>
+          )}
+        </div>
       </DialogTrigger>
 
       <DialogContent className="flex max-h-[90vh] flex-col overflow-y-auto sm:max-w-xl">
