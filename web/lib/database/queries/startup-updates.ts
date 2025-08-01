@@ -1,37 +1,13 @@
 "use server"
 
-import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
+import { getFarcasterUsersByFids } from "@/lib/farcaster/get-user"
 import { farcasterDb } from "../farcaster-db"
 import type { Profile } from "@prisma/farcaster"
-import database from "../flows-db"
-import { unstable_cache } from "next/cache"
 
 const MAX_LEVEL = 3
 
-async function getGrantsForFlows(flowIds: string[]) {
-  return unstable_cache(
-    async () => {
-      return database.grant.findMany({
-        where: {
-          flowId: { in: flowIds },
-        },
-        select: {
-          id: true,
-          recipient: true,
-        },
-      })
-    },
-    [`grants-for-flows-${flowIds.join("-")}`],
-    { revalidate: 300 },
-  )()
-}
-
 export async function getStartupActivity(flowIds: string[], startDate: Date) {
-  const grants = await getGrantsForFlows(flowIds)
-  const casts = await getActivityFromCasts(
-    grants.map((grant) => grant.id),
-    startDate,
-  )
+  const casts = await getActivityFromCasts(flowIds, startDate)
 
   const data = new Map<string, { count: number; level: number; date: string }>()
 
@@ -57,12 +33,12 @@ export async function getStartupActivity(flowIds: string[], startDate: Date) {
   )
 }
 
-async function getActivityFromCasts(grantIds: string[], startDate: Date) {
+async function getActivityFromCasts(flowIds: string[], startDate: Date) {
   const casts = await farcasterDb.cast.findMany({
     select: { timestamp: true, computed_tags: true },
     where: {
       deleted_at: null,
-      computed_tags: { hasSome: grantIds },
+      computed_tags: { hasSome: flowIds },
       created_at: { gt: startDate },
       parent_hash: null,
     },
@@ -78,7 +54,7 @@ async function getActivityFromCasts(grantIds: string[], startDate: Date) {
       }
 
       acc[date].count++
-      if (cast.computed_tags?.some((tag) => grantIds.includes(tag))) {
+      if (cast.computed_tags?.some((tag) => flowIds.includes(tag))) {
         acc[date].aboutGrant++
       }
 
@@ -99,21 +75,10 @@ function getDate(date: Date) {
 }
 
 export async function getStartupUpdates(flowIds: string[], startDate: Date) {
-  const grants = await getGrantsForFlows(flowIds)
-
-  const uniqueRecipients = [...new Set(grants.map((grant) => grant.recipient))]
-  const profiles = await Promise.all(
-    uniqueRecipients.map(async (recipient) =>
-      getFarcasterUserByEthAddress(recipient as `0x${string}`),
-    ),
-  )
-
-  const grantIds = grants.map((grant) => grant.id)
-
   const allCasts = await farcasterDb.cast.findMany({
     where: {
       deleted_at: null,
-      computed_tags: { hasSome: grantIds },
+      computed_tags: { hasSome: flowIds },
       parent_hash: null,
       created_at: { gt: startDate },
     },
@@ -132,6 +97,8 @@ export async function getStartupUpdates(flowIds: string[], startDate: Date) {
     },
   })
 
+  const profiles = await getFarcasterUsersByFids(allCasts.map((cast) => cast.fid))
+
   const profilesByFid = new Map(profiles.map((profile) => [profile?.fid, profile]))
 
   const castsWithProfiles = allCasts.map((cast) => ({
@@ -140,7 +107,7 @@ export async function getStartupUpdates(flowIds: string[], startDate: Date) {
   }))
 
   const updates = castsWithProfiles.filter((cast) =>
-    cast.computed_tags?.some((tag) => grantIds.includes(tag)),
+    cast.computed_tags?.some((tag) => flowIds.includes(tag)),
   )
 
   return {

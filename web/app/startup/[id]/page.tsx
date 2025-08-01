@@ -166,14 +166,11 @@ export default async function GrantPage(props: Props) {
           />
         </div>
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
-          <ProductsTable products={products} />
+          <ProductsTable products={products} shopifyUrl={shopify?.url} />
 
           <div className="space-y-6">
             <Suspense fallback={<Skeleton height={300} />}>
-              <StartupActivity
-                flowIds={budgets.map((b) => b.id)}
-                launchDate={new Date((startup.activatedAt ?? 0) * 1000)}
-              />
+              <StartupActivity flowIds={budgets.map((b) => b.id)} />
             </Suspense>
 
             <Suspense>

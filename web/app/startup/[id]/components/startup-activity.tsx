@@ -1,20 +1,18 @@
 import "server-only"
 
 import { ActivityCalendar } from "@/components/ui/activity-calendar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { unstable_cache } from "next/cache"
-import { DateTime } from "@/components/ui/date-time"
 import { getStartupActivity, getStartupUpdates } from "@/lib/database/queries/startup-updates"
 
 interface Props {
   flowIds: string[]
-  launchDate: Date
 }
 
 const MAX_LEVEL = 3
 
 export async function StartupActivity(props: Props) {
-  const { flowIds, launchDate } = props
+  const { flowIds } = props
 
   const sixMonthsAgo = new Date(new Date().setMonth(new Date().getMonth() - 6))
   const [activities, updates] = await Promise.all([
@@ -29,14 +27,7 @@ export async function StartupActivity(props: Props) {
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-base">Team&apos;s updates</CardTitle>
-            <CardDescription className="mt-1.5 text-xs">
-              {updates.count} since <DateTime shortDate date={launchDate} />
-            </CardDescription>
-          </div>
-        </div>
+        <CardTitle className="text-base">Team updates</CardTitle>
       </CardHeader>
       <CardContent className="pb-4">
         <div className="overflow-hidden">
