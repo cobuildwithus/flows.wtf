@@ -31,6 +31,8 @@ import { Timeline } from "./components/timeline/timeline"
 import { getStartupBudgets } from "@/lib/onchain-startup/budgets"
 import { calculateTotalBudget } from "@/lib/grant-utils"
 import { getRevenueChange } from "@/lib/onchain-startup/revenue-change"
+import { StartupActivity } from "./components/startup-activity"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -121,13 +123,15 @@ export default async function GrantPage(props: Props) {
           <div className="flex flex-col space-y-6 md:h-full">
             <Mission startup={startup} />
             <div className="flex-1">
-              <Suspense fallback={<div className="h-[450px] animate-pulse rounded-lg bg-muted" />}>
+              <Suspense fallback={<Skeleton height={450} />}>
                 <SalesOverview orders={orders} tokenPayments={tokenPayments} startup={startup} />
               </Suspense>
             </div>
           </div>
 
-          <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
+          <Suspense fallback={<Skeleton height={450} />}>
+            <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
+          </Suspense>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -161,13 +165,21 @@ export default async function GrantPage(props: Props) {
             icon={Banknote}
           />
         </div>
-
         <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <ProductsTable products={products} />
 
-          <Suspense>
-            {startup.socialUsernames && <SocialProfiles usernames={startup.socialUsernames} />}
-          </Suspense>
+          <div className="space-y-6">
+            <Suspense fallback={<Skeleton height={300} />}>
+              <StartupActivity
+                flowIds={budgets.map((b) => b.id)}
+                launchDate={new Date((startup.activatedAt ?? 0) * 1000)}
+              />
+            </Suspense>
+
+            <Suspense>
+              {startup.socialUsernames && <SocialProfiles usernames={startup.socialUsernames} />}
+            </Suspense>
+          </div>
         </div>
 
         {orders.length > 0 && <OrdersTable orders={orders} products={products} />}

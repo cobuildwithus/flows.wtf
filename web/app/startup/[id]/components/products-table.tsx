@@ -43,15 +43,10 @@ export async function ProductsTable(props: Props) {
   return (
     <Card className="border border-border/40 bg-card/80 shadow-sm">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-base">Products</CardTitle>
-            <CardDescription className="mt-1.5 text-xs">Currently available</CardDescription>
-          </div>
-        </div>
+        <CardTitle className="text-base">Products</CardTitle>
       </CardHeader>
       <CardContent className="py-0">
-        <ScrollArea className="h-[300px]">
+        <ScrollArea className="max-h-[400px]">
           <Table>
             <TableHeader>
               <TableRow>
