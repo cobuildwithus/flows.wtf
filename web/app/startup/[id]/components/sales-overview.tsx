@@ -1,26 +1,26 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MonthlySales } from "@/lib/shopify/summary"
 import { BringRevenueOnchain } from "./bring-revenue-onchain"
 import { SalesChart } from "./sales-chart"
-import { combineMonthlySalesWithTokenPayments } from "@/lib/onchain-startup/revenue-data"
+import { getSalesByMonth } from "@/lib/onchain-startup/sales-by-month"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Startup } from "@/lib/onchain-startup/startup"
+import { Order } from "@/lib/shopify/orders"
 
 interface Props {
-  monthlySales: MonthlySales[]
   tokenPayments: {
     timestamp: number
     txnValue: string
     newlyIssuedTokenCount: string
   }[]
   startup: Startup
+  orders: Order[]
 }
 
 export async function SalesOverview(props: Props) {
-  const { monthlySales, tokenPayments, startup } = props
+  const { orders, tokenPayments, startup } = props
 
   // Combine monthly sales with token payments on the server
-  const combinedData = await combineMonthlySalesWithTokenPayments(monthlySales, tokenPayments)
+  const combinedData = await getSalesByMonth(orders, tokenPayments)
 
   return (
     <Card className="flex h-full flex-col border border-border/40 bg-card/80 shadow-sm">
