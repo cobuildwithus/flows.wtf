@@ -8,13 +8,13 @@ import "@xyflow/react/dist/style.css"
 import React, { useMemo } from "react"
 import { ImpactDialog } from "./impact-dialog"
 import { CustomBezierEdge } from "./nodes/custom-edge"
-import { generateDiagram } from "./nodes/impact-chain-utils"
+import { generateDiagram, MinimalNode } from "./nodes/impact-chain-utils"
 import { ImpactNode } from "./nodes/impact-node"
 import { LaunchNode } from "./nodes/launch-node"
 
 interface Props {
   impacts: Impact[]
-  activatedAt: Date
+  activatedAt?: Date
   canEdit: boolean
   impactId?: string
 }
@@ -27,23 +27,30 @@ export function ImpactChain(props: Props) {
   const diagram = useMemo(() => {
     if (!width) return null
 
-    return generateDiagram(
-      [
-        ...impacts.map((impact, index) => ({
-          type: "impact",
-          width: 280,
-          height: impact.name.length > 22 ? 300 : 240,
-          data: {
-            impact,
-            onClick: () => {
-              updateQueryParam("impactId", impact.id)
-            },
+    const impactData: MinimalNode[] = [
+      ...impacts.map((impact, index) => ({
+        type: "impact",
+        width: 280,
+        height: impact.name.length > 22 ? 300 : 240,
+        data: {
+          impact,
+          onClick: () => {
+            updateQueryParam("impactId", impact.id)
           },
-        })),
-        { type: "launch", width: 250, height: 240, data: { activatedAt } },
-      ],
-      width,
-    )
+        },
+      })),
+    ]
+
+    if (activatedAt) {
+      impactData.push({
+        type: "launch",
+        width: 250,
+        height: 240,
+        data: { activatedAt: new Date(activatedAt) },
+      })
+    }
+
+    return generateDiagram(impactData, width)
   }, [impacts, width, activatedAt, updateQueryParam])
 
   if (!diagram || !width) return null

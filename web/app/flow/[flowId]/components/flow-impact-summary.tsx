@@ -54,6 +54,10 @@ export async function FlowImpactSummary(props: Props) {
   // If items can fit in a single row, use 1 row. Otherwise use 4 rows for hexagonal layout
   const numRows = totalItems <= itemsPerRowEstimate ? 1 : 4
 
+  if (totalItems === 0) {
+    return null
+  }
+
   return (
     <>
       <div className="container mb-6 max-w-6xl">

@@ -33,6 +33,11 @@ import { calculateTotalBudget } from "@/lib/grant-utils"
 import { getRevenueChange } from "@/lib/onchain-startup/revenue-change"
 import { StartupActivity } from "./components/startup-activity"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ImpactChain } from "@/app/item/[grantId]/impact/impact-chain"
+import { canEditGrant } from "@/lib/database/helpers"
+import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
+import { AgentChatProvider } from "@/app/chat/components/agent-chat"
+import { BgGradient } from "@/app/item/[grantId]/components/bg-gradient"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -68,10 +73,16 @@ export default async function GrantPage(props: Props) {
     startup.revnetProjectId ? getTokenPayments(startup.revnetProjectId) : Promise.resolve([]),
   ])
 
-  const [products, revenue] = await Promise.all([
+  const [products, revenue, impacts] = await Promise.all([
     shopify ? getProducts(shopify, orders) : Promise.resolve([]),
     getRevenueChange(orders, tokenPayments),
+    database.impact.findMany({
+      where: { grantId: { in: budgets.map((b) => b.id) }, deletedAt: null },
+      orderBy: [{ date: "desc" }, { updatedAt: "desc" }],
+    }),
   ])
+
+  const canEdit = canEditGrant(startup, user?.address)
 
   const totalBudget = calculateTotalBudget(budgets)
   const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
@@ -118,23 +129,24 @@ export default async function GrantPage(props: Props) {
         <Team members={teamMembers} user={user} startup={startup} />
       </div>
 
-      <div className="container mt-8 space-y-6 pb-12">
-        <div className="space-y-6 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0">
-          <div className="flex flex-col space-y-6 md:h-full">
-            <Mission startup={startup} />
-            <div className="flex-1">
-              <Suspense fallback={<Skeleton height={450} />}>
-                <SalesOverview orders={orders} tokenPayments={tokenPayments} startup={startup} />
-              </Suspense>
+      <div className="mt-8 space-y-6 pb-12">
+        <div className="container">
+          <div className="space-y-6 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0">
+            <div className="flex flex-col space-y-6 md:h-full">
+              <Mission startup={startup} />
+              <div className="flex-1">
+                <Suspense fallback={<Skeleton height={450} />}>
+                  <SalesOverview orders={orders} tokenPayments={tokenPayments} startup={startup} />
+                </Suspense>
+              </div>
             </div>
+
+            <Suspense fallback={<Skeleton height={450} />}>
+              <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
+            </Suspense>
           </div>
-
-          <Suspense fallback={<Skeleton height={450} />}>
-            <Timeline orders={orders.slice(0, 30)} startup={startup} teamMembers={teamMembers} />
-          </Suspense>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="container grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Revenue"
             value={`$${revenue.totalSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
@@ -165,7 +177,28 @@ export default async function GrantPage(props: Props) {
             icon={Banknote}
           />
         </div>
-        <div className="max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
+
+        {impacts.length > 0 && (
+          <div className="relative overflow-hidden">
+            <BgGradient />
+            <AgentChatProvider
+              id={`grant-edit-${startup.id}-${user?.address}`}
+              type="flo"
+              user={user}
+              data={{ grantId: startup.id }}
+              identityToken={await getPrivyIdToken()}
+              initialMessages={[]}
+            >
+              <Suspense fallback={<div className="h-[300px]" />}>
+                <div className="my-12">
+                  <ImpactChain impacts={impacts} canEdit={canEdit} />
+                </div>
+              </Suspense>
+            </AgentChatProvider>
+          </div>
+        )}
+
+        <div className="container max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <ProductsTable products={products} shopifyUrl={shopify?.url} />
 
           <div className="space-y-6">
@@ -179,7 +212,11 @@ export default async function GrantPage(props: Props) {
           </div>
         </div>
 
-        {orders.length > 0 && <OrdersTable orders={orders} products={products} />}
+        {orders.length > 0 && (
+          <div className="container">
+            <OrdersTable orders={orders} products={products} />
+          </div>
+        )}
       </div>
     </>
   )

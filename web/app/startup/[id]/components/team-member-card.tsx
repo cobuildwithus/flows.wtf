@@ -14,7 +14,7 @@ export async function TeamMemberCard(props: {
 }) {
   const { member, isAllocator, currency } = props
 
-  const { display_name, pfp_url, username } = member
+  const { display_name, pfp_url, username, bio } = member
 
   return (
     <div
@@ -40,7 +40,7 @@ export async function TeamMemberCard(props: {
             </TeamMemberLink>
           </h3>
           <div className="mb-3 mt-1 max-w-40 truncate text-xs text-muted-foreground">
-            {member.tagline}
+            {member.tagline || bio}
           </div>
         </div>
       </div>
