@@ -93,16 +93,34 @@ async function enrichGrantWithStartupData(
 
   const tokenSymbol = jbxProject?.erc20Symbol ?? ""
 
+  const marketCapUsd =
+    (Number(jbxProject?.erc20Supply ?? 0) * Number(grant?.fundraisingTokenUsdPrice ?? 0)) / 1e18
+
   return {
     ...grant,
     ...startup,
     allocator,
     id: grant.id,
     slug: startup?.slug,
-    jbxProject,
+    jbxProject: jbxProject
+      ? {
+          ...jbxProject,
+          balance: Number(jbxProject.balance),
+          erc20Supply: Number(jbxProject.erc20Supply),
+          pendingReservedTokens: Number(jbxProject.pendingReservedTokens),
+          activeRuleset: activeRuleset
+            ? {
+                ...activeRuleset,
+                weight: Number(activeRuleset.weight),
+                metadata: Number(activeRuleset.metadata),
+              }
+            : null,
+        }
+      : null,
     isBackedByFlows,
     nextPriceIncrease,
     tokenSymbol,
+    marketCapUsd,
   }
 }
 

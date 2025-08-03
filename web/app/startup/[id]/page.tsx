@@ -70,7 +70,7 @@ export default async function GrantPage(props: Props) {
     getUser(),
     shopify ? getAllOrders(shopify) : Promise.resolve([]),
     getStartupBudgets(startup.id),
-    startup.revnetProjectId ? getTokenPayments(startup.revnetProjectId) : Promise.resolve([]),
+    startup.jbxProjectId ? getTokenPayments(startup.jbxProjectId) : Promise.resolve([]),
   ])
 
   const [products, revenue, impacts] = await Promise.all([
@@ -144,7 +144,7 @@ export default async function GrantPage(props: Props) {
           />
         </div>
 
-        {impacts.length > 0 && (
+        {/* {impacts.length > 0 && (
           <div id="progress" className="relative overflow-hidden">
             <BgGradient />
             <AgentChatProvider
@@ -162,7 +162,7 @@ export default async function GrantPage(props: Props) {
               </Suspense>
             </AgentChatProvider>
           </div>
-        )}
+        )} */}
 
         <div className="container max-sm:space-y-6 md:grid md:grid-cols-2 md:gap-6">
           <ProductsTable products={products} shopifyUrl={shopify?.url} />

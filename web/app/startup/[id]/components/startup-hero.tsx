@@ -19,7 +19,7 @@ export async function StartupHero({ startup, revenue }: Props) {
             <div className="flex gap-8">
               <div className="flex flex-col">
                 <div className="text-sm text-muted-foreground">Market Cap</div>
-                <Currency className="text-2xl font-bold">{revenue}</Currency>
+                <Currency className="text-2xl font-bold">{startup.marketCapUsd}</Currency>
               </div>
               <div className="flex flex-col">
                 <div className="text-sm text-muted-foreground">Revenue</div>

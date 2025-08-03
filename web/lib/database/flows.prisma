@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["views", "multiSchema", "relationJoins"]
+  previewFeatures = ["relationJoins"]
   output          = "../../node_modules/@prisma/flows"
 }
 
@@ -131,7 +131,7 @@ model Story {
   @@schema("web")
 }
 
-view Grant {
+model Grant {
   id                               String   @id
   recipient                        String
   flowId                           String   @map("flow_id")
@@ -187,9 +187,11 @@ view Grant {
   underlyingTokenDecimals          Int      @map("underlying_token_decimals")
   underlyingTokenLogo              String?  @map("underlying_token_logo")
   underlyingTokenEthPrice          String?  @map("underlying_token_eth_price")
+  underlyingTokenUsdPrice          String?  @map("underlying_token_usd_price")
   jbxProjectId                     Int?     @map("jbx_project_id")
   jbxChainId                       Int?     @map("jbx_chain_id")
-  underlyingTokenUsdPrice          String?  @map("underlying_token_usd_price")
+  fundraisingTokenEthPrice         String?  @map("fundraising_token_eth_price")
+  fundraisingTokenUsdPrice         String?  @map("fundraising_token_usd_price")
   manager                          String   @map("manager")
   managerRewardSuperfluidPool      String   @map("manager_reward_superfluid_pool")
   managerRewardPoolFlowRatePercent Int      @map("manager_reward_pool_flow_rate_percent")
@@ -224,7 +226,7 @@ view Grant {
   @@schema("onchain")
 }
 
-view SuperfluidFlow {
+model SuperfluidFlow {
   token      String
   sender     String
   receiver   String
@@ -245,7 +247,7 @@ view SuperfluidFlow {
   @@schema("onchain")
 }
 
-view Allocation {
+model Allocation {
   id               String @id
   contract         String
   recipientId      String @map("recipient_id")
@@ -267,7 +269,7 @@ view Allocation {
   @@schema("onchain")
 }
 
-view erc721Token {
+model erc721Token {
   id       String  @id
   contract String
   owner    String
@@ -283,7 +285,7 @@ view erc721Token {
   @@schema("onchain")
 }
 
-view Dispute {
+model Dispute {
   id                   String     @id
   disputeId            String     @map("dispute_id")
   arbitrator           String
@@ -308,7 +310,7 @@ view Dispute {
   @@schema("onchain")
 }
 
-view DisputeVote {
+model DisputeVote {
   id          String  @id
   arbitrator  String
   disputeId   String  @map("dispute_id")
@@ -327,7 +329,7 @@ view DisputeVote {
   @@schema("onchain")
 }
 
-view TokenHolder {
+model TokenHolder {
   id                String @id
   tokenContract     String @map("token_contract")
   flow              Grant  @relation(fields: [tokenContract], references: [erc20])
@@ -346,7 +348,7 @@ view TokenHolder {
   @@schema("onchain")
 }
 
-view Evidence {
+model Evidence {
   id              String @id
   arbitrator      String
   evidenceGroupID String @map("evidence_group_id")
@@ -355,14 +357,14 @@ view Evidence {
   blockNumber     String @map("block_number")
   chainId         Int    @map("chain_id")
 
-  dispute Dispute @relation(fields: [evidenceGroupID], references: [evidenceGroupID])
-  grant   Grant   @relation(fields: [evidenceGroupID], references: [evidenceGroupID])
+  dispute Dispute @relation(fields: [evidenceGroupID], references: [evidenceGroupID], map: "Evidence_dispute_evidence_group_id_fkey")
+  grant   Grant   @relation(fields: [evidenceGroupID], references: [evidenceGroupID], map: "Evidence_grant_evidence_group_id_fkey")
 
   @@index([evidenceGroupID])
   @@schema("onchain")
 }
 
-view AllocationStrategy {
+model AllocationStrategy {
   address      String
   strategyKey  String @map("strategy_key")
   chainId      Int    @map("chain_id")
@@ -427,7 +429,7 @@ model Opportunity {
 
 /// Juicebox tables
 
-view JuiceboxProject {
+model JuiceboxProject {
   chainId               Int      @map("chain_id")
   createdAt             Int      @map("created_at")
   projectId             Int      @map("project_id")
@@ -482,7 +484,7 @@ view JuiceboxProject {
   @@schema("juicebox")
 }
 
-view JuiceboxSuckerGroup {
+model JuiceboxSuckerGroup {
   id        String   @id
   projects  String[]
   addresses String[] @db.VarChar(42)
@@ -492,7 +494,7 @@ view JuiceboxSuckerGroup {
   @@schema("juicebox")
 }
 
-view JuiceboxParticipant {
+model JuiceboxParticipant {
   chainId       Int      @map("chain_id")
   projectId     Int      @map("project_id")
   createdAt     Int      @map("created_at")
@@ -512,7 +514,7 @@ view JuiceboxParticipant {
   @@schema("juicebox")
 }
 
-view JuiceboxRuleset {
+model JuiceboxRuleset {
   chainId                    Int     @map("chain_id")
   projectId                  Int     @map("project_id")
   rulesetId                  BigInt  @map("ruleset_id")
@@ -561,7 +563,7 @@ view JuiceboxRuleset {
   @@schema("juicebox")
 }
 
-view JuiceboxPayEvent {
+model JuiceboxPayEvent {
   id                    String  @id
   chainId               Int     @map("chain_id")
   projectId             Int     @map("project_id")
