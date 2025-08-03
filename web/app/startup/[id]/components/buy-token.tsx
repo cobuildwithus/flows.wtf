@@ -92,7 +92,7 @@ export function BuyToken({ startup, revnetProjectId }: Props) {
             <Input
               id="pay"
               onFocus={() => setTouched(true)}
-              className="h-16 border-0 border-transparent bg-transparent p-0 text-2xl shadow-none focus-visible:ring-0"
+              className="h-16 border-0 border-transparent bg-transparent p-0 text-3xl shadow-none focus-visible:ring-0"
               type="number"
               min={0.000001}
               step={0.00000000001}
@@ -124,7 +124,7 @@ export function BuyToken({ startup, revnetProjectId }: Props) {
           <div className="flex items-center justify-between">
             <Input
               id="receive"
-              className="h-16 border-0 border-transparent bg-transparent p-0 text-2xl shadow-none focus-visible:ring-0"
+              className="h-16 border-0 border-transparent bg-transparent p-0 text-3xl shadow-none focus-visible:ring-0"
               type="number"
               min={0}
               step={0.01}

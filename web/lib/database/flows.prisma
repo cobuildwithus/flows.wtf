@@ -511,6 +511,7 @@ view JuiceboxRuleset {
   chainId                    Int     @map("chain_id")
   projectId                  Int     @map("project_id")
   rulesetId                  BigInt  @map("ruleset_id")
+  suckerGroupId              String @map("sucker_group_id")
   createdAt                  Int     @map("created_at")
   queuedAt                   Int     @map("queued_at")
   cycleNumber                Int     @map("cycle_number")
