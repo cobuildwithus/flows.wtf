@@ -15,7 +15,6 @@ import { useBalance } from "wagmi"
 import { formatEther } from "viem"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
-import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import type { StartupWithRevenue } from "./types"
 import { TokenLogo } from "@/app/token/token-logo"
 import { getRevnetTokenLogo } from "@/app/token/get-revnet-token-logo"
@@ -41,8 +40,6 @@ export function BuyRevnetDialog({ startup, revnetProjectId }: Props) {
     startup.chainId,
     startup.isBackedByFlows,
   )
-  const { data: tokenDetails } = useRevnetTokenDetails(revnetProjectId, startup.chainId)
-  const tokenSymbol = tokenDetails?.symbol || "TOKEN"
 
   const selectedAmount = custom !== "" ? custom : payAmount
   const tokenAmount = isPriceLoading ? "" : calculateTokensFromEth(selectedAmount)
@@ -138,9 +135,9 @@ export function BuyRevnetDialog({ startup, revnetProjectId }: Props) {
           {!isPriceLoading && (
             <div className="flex items-center justify-between rounded-md bg-accent/20 p-3 text-sm">
               <span>
-                You receive <strong>{tokenAmount}</strong> {tokenSymbol}
+                You receive <strong>{tokenAmount}</strong> {startup.tokenSymbol}
               </span>
-              <TokenLogo src={getRevnetTokenLogo(tokenSymbol)} alt={tokenSymbol} />
+              <TokenLogo src={getRevnetTokenLogo(startup.tokenSymbol)} alt={startup.tokenSymbol} />
             </div>
           )}
 

@@ -3,7 +3,6 @@
 import { Input } from "@/components/ui/input"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
-import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
 import { AuthButton } from "@/components/ui/auth-button"
@@ -27,14 +26,11 @@ export function BuyToken({ startup, revnetProjectId }: Props) {
     calculateTokensFromEth,
     calculateEthFromTokens,
   } = useRevnetTokenPrice(revnetProjectId, chainId, isBackedByFlows)
-  const { data: tokenDetails } = useRevnetTokenDetails(revnetProjectId, chainId)
 
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
   const [touched, setTouched] = useState(false)
-
-  const tokenSymbol = tokenDetails?.symbol || ""
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -142,9 +138,9 @@ export function BuyToken({ startup, revnetProjectId }: Props) {
             />
             <div className="ml-3 flex items-center rounded-full bg-background px-3 py-1.5">
               <div className="mr-2">
-                <TokenLogo src={getRevnetTokenLogo(tokenSymbol)} alt="TOKEN" />
+                <TokenLogo src={getRevnetTokenLogo(startup.tokenSymbol)} alt="TOKEN" />
               </div>
-              <span className="text-base font-medium">{tokenSymbol || "TOKEN"}</span>
+              <span className="text-base font-medium">{startup.tokenSymbol || "TOKEN"}</span>
             </div>
           </div>
         </div>

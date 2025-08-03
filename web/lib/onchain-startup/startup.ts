@@ -91,6 +91,8 @@ async function enrichGrantWithStartupData(
 
   const isBackedByFlows = grant.jbxProject?.accountingToken === base.FlowsToken
 
+  const tokenSymbol = jbxProject?.erc20Symbol ?? ""
+
   return {
     ...grant,
     ...startup,
@@ -100,6 +102,7 @@ async function enrichGrantWithStartupData(
     jbxProject,
     isBackedByFlows,
     nextPriceIncrease,
+    tokenSymbol,
   }
 }
 

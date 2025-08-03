@@ -8,7 +8,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
-import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
 import { Info } from "lucide-react"
 import { useState } from "react"
@@ -45,7 +44,6 @@ export function BringRevenueOnchain({ startup, revnetProjectId }: Props) {
     setMemo("")
     setIsOpen(false)
   })
-  const { data: tokenDetails } = useRevnetTokenDetails(projectId, chainId)
   const { isLoading: isPriceLoading, calculateTokensFromEth } = useRevnetTokenPrice(
     projectId,
     chainId,
@@ -56,8 +54,6 @@ export function BringRevenueOnchain({ startup, revnetProjectId }: Props) {
   const [beneficiary, setBeneficiary] = useState("")
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null)
   const [memo, setMemo] = useState("")
-
-  const tokenSymbol = tokenDetails?.symbol || ""
 
   // Calculate tokens using the hook's helper function
   const calculatedTokens = calculateTokensFromEth(amount)
@@ -125,7 +121,7 @@ export function BringRevenueOnchain({ startup, revnetProjectId }: Props) {
                           <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
                             <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
                             <span className="text-xs text-muted-foreground">
-                              {calculatedTokens} {tokenSymbol}
+                              {calculatedTokens} {startup.tokenSymbol}
                             </span>
                           </div>
                         </TooltipTrigger>
@@ -195,7 +191,7 @@ export function BringRevenueOnchain({ startup, revnetProjectId }: Props) {
                     <ul className="space-y-2 text-muted-foreground">
                       <li className="flex items-start gap-2">
                         <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-                        <span>Earn ${tokenSymbol} for yourself and your customers</span>
+                        <span>Earn ${startup.tokenSymbol} for yourself and your customers</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />

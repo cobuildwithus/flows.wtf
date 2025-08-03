@@ -41,11 +41,6 @@ export async function StartupHero({ startup, revenue }: Props) {
           <div className="flex flex-col gap-4">
             {startup.jbxProjectId && (
               <div className="flex flex-col gap-2 rounded-lg">
-                {/* <JoinStartupLink
-                  startupTitle={startup.title}
-                  projectId={startup.revnetProjectId}
-                  chainId={startup.chainId}
-                /> */}
                 <BuyToken startup={startup} revnetProjectId={startup.jbxProjectId} />
               </div>
             )}
