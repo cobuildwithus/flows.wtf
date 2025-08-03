@@ -47,10 +47,7 @@ export async function getRevnetBalance(
     // Get all unique participants across all projects in the sucker group
     const participants = await database.juiceboxParticipant.findMany({
       where: {
-        OR: projects.map((p) => ({
-          chainId: p.chainId,
-          projectId: p.projectId,
-        })),
+        suckerGroupId: project.suckerGroupId,
       },
       select: {
         address: true,

@@ -21,7 +21,6 @@ import type { Metadata } from "next"
 import { Suspense } from "react"
 import { MetricCard } from "./components/metric-card"
 import { Mission } from "./components/mission"
-import { MoneyFlowDiagram } from "./components/money-flow-diagram"
 import { OrdersTable } from "./components/orders-table"
 import { ProductsTable } from "./components/products-table"
 import { SalesOverview } from "./components/sales-overview"
@@ -38,6 +37,7 @@ import { canEditGrant } from "@/lib/database/helpers"
 import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { BgGradient } from "@/app/item/[grantId]/components/bg-gradient"
+import { StartupHero } from "./components/startup-hero"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -64,12 +64,10 @@ export default async function GrantPage(props: Props) {
   if (!startup) throw new Error("Startup not found")
 
   const shopify = startup.shopify
-  const impactFlowId = startup.impactFlowId
 
-  const [teamMembers, user, impactFlow, orders, budgets, tokenPayments] = await Promise.all([
+  const [teamMembers, user, orders, budgets, tokenPayments] = await Promise.all([
     getTeamMembers(startup.id),
     getUser(),
-    impactFlowId ? getImpactFlow(impactFlowId) : Promise.resolve(null),
     shopify ? getAllOrders(shopify) : Promise.resolve([]),
     getStartupBudgets(startup.id),
     startup.revnetProjectId ? getTokenPayments(startup.revnetProjectId) : Promise.resolve([]),
@@ -111,21 +109,7 @@ export default async function GrantPage(props: Props) {
         </Breadcrumb>
       </div>
 
-      <div className="container">
-        <MoneyFlowDiagram
-          products={products}
-          members={teamMembers}
-          revenue={revenue}
-          user={user}
-          startup={startup}
-          totalBudget={totalBudget}
-          impactGrants={{
-            grants: impactFlow?.subgrants ?? [],
-            monthlyFlowRate: Number(impactFlow?.monthlyOutgoingFlowRate ?? 0),
-            flowId: impactFlow?.id ?? "",
-          }}
-        />
-      </div>
+      <StartupHero startup={startup} />
 
       <div className="container flex">
         <Team members={teamMembers} user={user} startup={startup} />
@@ -134,8 +118,8 @@ export default async function GrantPage(props: Props) {
       <div className="mt-8 space-y-6 pb-12">
         <div className="container">
           <div className="space-y-6 md:grid md:grid-cols-2 md:items-start md:gap-6 md:space-y-0">
-            <div className="flex flex-col space-y-6 md:h-full">
-              <Mission startup={startup} />
+            <div id="revenue" className="flex flex-col space-y-6 md:h-full">
+              {/* <Mission startup={startup} /> */}
               <div className="flex-1">
                 <Suspense fallback={<Skeleton height={450} />}>
                   <SalesOverview orders={orders} tokenPayments={tokenPayments} startup={startup} />
@@ -181,7 +165,7 @@ export default async function GrantPage(props: Props) {
         </div>
 
         {impacts.length > 0 && (
-          <div className="relative overflow-hidden">
+          <div id="progress" className="relative overflow-hidden">
             <BgGradient />
             <AgentChatProvider
               id={`grant-edit-${startup.id}-${user?.address}`}
