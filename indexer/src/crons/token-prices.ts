@@ -2,16 +2,16 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
 import { grants } from "ponder:schema"
 
-import { fetchTokenPriceWei, fetchEthUsdPrice } from "../utils/token-price"
+import { fetchTokenPriceWeiForToken, fetchEthUsdPrice } from "../utils/token-price"
 import { USDC } from "../utils"
 
 const BATCH_SIZE = 20
 
-ponder.on("TokenPrices:block", handleTokenPrices)
+ponder.on("UnderlyingTokenPrices:block", handleTokenPrices)
 
 async function handleTokenPrices(params: {
-  event: Event<"TokenPrices:block">
-  context: Context<"TokenPrices:block">
+  event: Event<"UnderlyingTokenPrices:block">
+  context: Context<"UnderlyingTokenPrices:block">
 }) {
   const { context } = params
   const chainId = context.chain.id
@@ -52,7 +52,7 @@ async function handleTokenPrices(params: {
         return
       }
 
-      const ethPriceWei = await fetchTokenPriceWei(chainId, tokenAddr)
+      const ethPriceWei = await fetchTokenPriceWeiForToken(chainId, tokenAddr)
       if (!ethPriceWei) return
 
       const ethPriceNum = Number(ethPriceWei) / 1e18

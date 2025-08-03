@@ -207,7 +207,11 @@ export default createConfig({
       chain: IndexerConfig.LatestBlockCron,
       interval: (6 * 60 * 60) / 0.25, // Every 6 hours (base block time is 250ms)
     },
-    TokenPrices: {
+    UnderlyingTokenPrices: {
+      chain: IndexerConfig.LatestBlockCron,
+      interval: (60 * 60) / 0.25, // Every hour (base block time is 250ms)
+    },
+    FundraisingTokenPrices: {
       chain: IndexerConfig.LatestBlockCron,
       interval: (60 * 60) / 0.25, // Every hour (base block time is 250ms)
     },
