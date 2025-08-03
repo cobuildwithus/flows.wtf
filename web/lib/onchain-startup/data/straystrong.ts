@@ -47,5 +47,4 @@ export const straystrong = {
       description: "Playful feeders that spark care on every corner",
     },
   },
-  revnetProjectId: 108,
 } as StartupData

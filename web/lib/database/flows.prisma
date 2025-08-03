@@ -132,76 +132,78 @@ model Story {
 }
 
 view Grant {
-  id                               String  @id
+  id                               String   @id
   recipient                        String
-  flowId                           String  @map("flow_id")
+  flowId                           String   @map("flow_id")
   submitter                        String
-  parentContract                   String  @map("parent_contract")
-  rootContract                     String  @map("root_contract")
-  isTopLevel                       Boolean @map("is_top_level")
-  isFlow                           Boolean @map("is_flow")
-  isSiblingFlow                    Boolean @map("is_sibling_flow")
+  parentContract                   String   @map("parent_contract")
+  rootContract                     String   @map("root_contract")
+  isTopLevel                       Boolean  @map("is_top_level")
+  isFlow                           Boolean  @map("is_flow")
+  isSiblingFlow                    Boolean  @map("is_sibling_flow")
   title                            String
   description                      String
   image                            String
   tagline                          String?
   url                              String?
-  isRemoved                        Boolean @map("is_removed")
-  isActive                         Boolean @map("is_active")
-  allocationsCount                 String  @map("allocations_count")
-  monthlyIncomingFlowRate          String  @map("monthly_incoming_flow_rate")
-  monthlyIncomingBaselineFlowRate  String  @map("monthly_incoming_baseline_flow_rate")
-  monthlyIncomingBonusFlowRate     String  @map("monthly_incoming_bonus_flow_rate")
-  monthlyOutgoingFlowRate          String  @map("monthly_outgoing_flow_rate")
-  monthlyRewardPoolFlowRate        String  @map("monthly_reward_pool_flow_rate")
-  monthlyBaselinePoolFlowRate      String  @map("monthly_baseline_pool_flow_rate")
-  monthlyBonusPoolFlowRate         String  @map("monthly_bonus_pool_flow_rate")
-  bonusMemberUnits                 String  @map("bonus_member_units")
-  baselineMemberUnits              String  @map("baseline_member_units")
-  totalEarned                      String  @map("total_earned")
-  totalPaidOut                     String  @map("total_paid_out")
-  activeRecipientCount             Int     @map("active_recipient_count")
-  awaitingRecipientCount           Int     @map("awaiting_recipient_count")
-  challengedRecipientCount         Int     @map("challenged_recipient_count")
-  tcr                              String? @unique
-  erc20                            String? @unique
-  arbitrator                       String? @unique
-  tokenEmitter                     String? @unique @map("token_emitter")
+  isRemoved                        Boolean  @map("is_removed")
+  isActive                         Boolean  @map("is_active")
+  allocationsCount                 String   @map("allocations_count")
+  monthlyIncomingFlowRate          String   @map("monthly_incoming_flow_rate")
+  monthlyIncomingBaselineFlowRate  String   @map("monthly_incoming_baseline_flow_rate")
+  monthlyIncomingBonusFlowRate     String   @map("monthly_incoming_bonus_flow_rate")
+  monthlyOutgoingFlowRate          String   @map("monthly_outgoing_flow_rate")
+  monthlyRewardPoolFlowRate        String   @map("monthly_reward_pool_flow_rate")
+  monthlyBaselinePoolFlowRate      String   @map("monthly_baseline_pool_flow_rate")
+  monthlyBonusPoolFlowRate         String   @map("monthly_bonus_pool_flow_rate")
+  bonusMemberUnits                 String   @map("bonus_member_units")
+  baselineMemberUnits              String   @map("baseline_member_units")
+  totalEarned                      String   @map("total_earned")
+  totalPaidOut                     String   @map("total_paid_out")
+  activeRecipientCount             Int      @map("active_recipient_count")
+  awaitingRecipientCount           Int      @map("awaiting_recipient_count")
+  challengedRecipientCount         Int      @map("challenged_recipient_count")
+  tcr                              String?  @unique
+  erc20                            String?  @unique
+  arbitrator                       String?  @unique
+  tokenEmitter                     String?  @unique @map("token_emitter")
   status                           Int
-  challengePeriodEndsAt            Int     @map("challenge_period_ends_at")
-  activatedAt                      Int?    @map("activated_at")
-  removedAt                        Int?    @map("removed_at")
-  isDisputed                       Boolean @map("is_disputed")
-  isResolved                       Boolean @map("is_resolved")
-  evidenceGroupID                  String  @unique @map("evidence_group_id")
-  createdAt                        Int     @map("created_at")
-  updatedAt                        Int     @map("updated_at")
-  baselinePool                     String  @map("baseline_pool")
-  bonusPool                        String  @map("bonus_pool")
-  managerRewardPool                String  @map("manager_reward_pool")
-  superToken                       String  @map("super_token")
-  underlyingERC20Token             String  @map("underlying_erc_20_token")
-  underlyingTokenSymbol                 String  @map("underlying_token_symbol")
-  underlyingTokenPrefix                 String  @map("underlying_token_prefix")
-  underlyingTokenName                   String  @map("underlying_token_name")
-  underlyingTokenDecimals               Int     @map("underlying_token_decimals")
-  underlyingTokenLogo                   String? @map("underlying_token_logo")
-  underlyingTokenEthPrice              String? @map("underlying_token_eth_price")
-  underlyingTokenUsdPrice              String? @map("underlying_token_usd_price")
-  manager                          String  @map("manager")
-  managerRewardSuperfluidPool      String  @map("manager_reward_superfluid_pool")
-  managerRewardPoolFlowRatePercent Int     @map("manager_reward_pool_flow_rate_percent")
-  baselinePoolFlowRatePercent      Int     @map("baseline_pool_flow_rate_percent")
-  bonusPoolQuorum                  Int     @map("bonus_pool_quorum")
-  totalAllocationWeightOnFlow      String  @map("total_allocation_weight_on_flow")
-  isOnchainStartup                 Boolean @map("is_onchain_startup")
-  isAccelerator                    Boolean @map("is_accelerator")
-  recipientId                      String  @map("recipient_id")
+  challengePeriodEndsAt            Int      @map("challenge_period_ends_at")
+  activatedAt                      Int?     @map("activated_at")
+  removedAt                        Int?     @map("removed_at")
+  isDisputed                       Boolean  @map("is_disputed")
+  isResolved                       Boolean  @map("is_resolved")
+  evidenceGroupID                  String   @unique @map("evidence_group_id")
+  createdAt                        Int      @map("created_at")
+  updatedAt                        Int      @map("updated_at")
+  baselinePool                     String   @map("baseline_pool")
+  bonusPool                        String   @map("bonus_pool")
+  managerRewardPool                String   @map("manager_reward_pool")
+  superToken                       String   @map("super_token")
+  underlyingERC20Token             String   @map("underlying_erc_20_token")
+  underlyingTokenSymbol            String   @map("underlying_token_symbol")
+  underlyingTokenPrefix            String   @map("underlying_token_prefix")
+  underlyingTokenName              String   @map("underlying_token_name")
+  underlyingTokenDecimals          Int      @map("underlying_token_decimals")
+  underlyingTokenLogo              String?  @map("underlying_token_logo")
+  underlyingTokenEthPrice          String?  @map("underlying_token_eth_price")
+  jbxProjectId                     Int?     @map("jbx_project_id")
+  jbxChainId                       Int?     @map("jbx_chain_id")
+  underlyingTokenUsdPrice          String?  @map("underlying_token_usd_price")
+  manager                          String   @map("manager")
+  managerRewardSuperfluidPool      String   @map("manager_reward_superfluid_pool")
+  managerRewardPoolFlowRatePercent Int      @map("manager_reward_pool_flow_rate_percent")
+  baselinePoolFlowRatePercent      Int      @map("baseline_pool_flow_rate_percent")
+  bonusPoolQuorum                  Int      @map("bonus_pool_quorum")
+  totalAllocationWeightOnFlow      String   @map("total_allocation_weight_on_flow")
+  isOnchainStartup                 Boolean  @map("is_onchain_startup")
+  isAccelerator                    Boolean  @map("is_accelerator")
+  recipientId                      String   @map("recipient_id")
   allocationStrategies             String[] @map("allocation_strategies")
-  chainId                          Int     @map("chain_id")
+  chainId                          Int      @map("chain_id")
 
-  flow                 Grant         @relation("Subgrants", fields: [flowId], references: [id])
-  subgrants            Grant[]       @relation("Subgrants")
+  flow                 Grant            @relation("Subgrants", fields: [flowId], references: [id])
+  subgrants            Grant[]          @relation("Subgrants")
   drafts               Draft[]
   disputes             Dispute[]
   tokenHolders         TokenHolder[]
@@ -209,8 +211,9 @@ view Grant {
   derivedData          DerivedData?
   allocations          Allocation[]
   impacts              Impact[]
-  opportunities        Opportunity[] @relation("StartupOpportunity")
-  opportunitiesBudgets Opportunity[] @relation("StartupBudgetOpportunity") // not needed, just required by Prisma
+  opportunities        Opportunity[]    @relation("StartupOpportunity")
+  opportunitiesBudgets Opportunity[]    @relation("StartupBudgetOpportunity") // not needed, just required by Prisma
+  jbxProject           JuiceboxProject? @relation(fields: [jbxChainId, jbxProjectId], references: [chainId, projectId])
 
   @@unique([recipientId])
   @@index([isTopLevel])
@@ -241,7 +244,6 @@ view SuperfluidFlow {
   @@index([chainId])
   @@schema("onchain")
 }
-
 
 view Allocation {
   id               String @id
@@ -336,7 +338,7 @@ view TokenHolder {
   totalSold         String @map("total_sold")
   costBasis         String @map("cost_basis")
   totalSaleProceeds String @map("total_sale_proceeds")
-  chainId          Int    @map("chain_id")
+  chainId           Int    @map("chain_id")
 
   @@unique([tokenContract, holder])
   @@index([holder])
@@ -366,10 +368,10 @@ view AllocationStrategy {
   chainId      Int    @map("chain_id")
   registeredAt Int    @map("registered_at")
 
+  @@unique([address, chainId])
   @@index([address])
   @@index([strategyKey])
   @@index([chainId])
-  @@unique([address, chainId])
   @@schema("onchain")
 }
 
@@ -444,7 +446,7 @@ view JuiceboxProject {
   contributorsCount     Int      @default(0) @map("contributors_count")
   redeemCount           Int      @default(0) @map("redeem_count")
   redeemVolume          BigInt   @default(0) @map("redeem_volume")
-  pendingReservedTokens BigInt   @default(0) @map("pending_reserved_tokens")
+  pendingReservedTokens Decimal   @default(0) @map("pending_reserved_tokens")
   metadataUri           String?  @map("metadata_uri")
   metadata              Json?
   name                  String?
@@ -461,17 +463,20 @@ view JuiceboxProject {
   projectTagline        String?  @map("project_tagline")
   suckerGroupId         String?  @map("sucker_group_id")
 
-  accountingToken         String  @map("accounting_token")
-  accountingDecimals      Int     @map("accounting_decimals")
-  accountingCurrency      BigInt  @map("accounting_currency")
-  accountingTokenSymbol   String  @map("accounting_token_symbol")
-  accountingTokenName     String  @map("accounting_token_name")
+  accountingToken       String @map("accounting_token")
+  accountingDecimals    Int    @map("accounting_decimals")
+  accountingCurrency    BigInt @map("accounting_currency")
+  accountingTokenSymbol String @map("accounting_token_symbol")
+  accountingTokenName   String @map("accounting_token_name")
 
   participants JuiceboxParticipant[]
-  rulesets     JuiceboxRuleset[]
+  rulesets     JuiceboxRuleset[] @relation("JuiceboxProjectRulesets")
   payEvents    JuiceboxPayEvent[]
+  Grant        Grant[]
+  activeRuleset JuiceboxRuleset? @relation("ActiveRuleset", fields: [currentRulesetId, chainId, projectId], references: [rulesetId, chainId, projectId])
 
-  @@id([chainId, projectId])
+  @@unique([chainId, projectId])
+  @@unique([currentRulesetId, chainId, projectId])
   @@index([projectId])
   @@map("project")
   @@schema("juicebox")
@@ -488,15 +493,15 @@ view JuiceboxSuckerGroup {
 }
 
 view JuiceboxParticipant {
-  chainId      Int      @map("chain_id")
-  projectId    Int      @map("project_id")
-  createdAt    Int      @map("created_at")
-  balance      Decimal  @default(0)
-  isRevnet     Boolean? @map("is_revnet")
-  address      String   @db.VarChar(42)
-  firstOwned   Int?     @map("first_owned")
-  cashOutValue Decimal   @default(0) @map("cash_out_value")
-  suckerGroupId String? @map("sucker_group_id")
+  chainId       Int      @map("chain_id")
+  projectId     Int      @map("project_id")
+  createdAt     Int      @map("created_at")
+  balance       Decimal  @default(0)
+  isRevnet      Boolean? @map("is_revnet")
+  address       String   @db.VarChar(42)
+  firstOwned    Int?     @map("first_owned")
+  cashOutValue  Decimal  @default(0) @map("cash_out_value")
+  suckerGroupId String?  @map("sucker_group_id")
 
   project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
 
@@ -511,7 +516,7 @@ view JuiceboxRuleset {
   chainId                    Int     @map("chain_id")
   projectId                  Int     @map("project_id")
   rulesetId                  BigInt  @map("ruleset_id")
-  suckerGroupId              String @map("sucker_group_id")
+  suckerGroupId              String  @map("sucker_group_id")
   createdAt                  Int     @map("created_at")
   queuedAt                   Int     @map("queued_at")
   cycleNumber                Int     @map("cycle_number")
@@ -539,15 +544,16 @@ view JuiceboxRuleset {
   useDataHookForPay          Boolean @map("use_data_hook_for_pay")
   useDataHookForCashOut      Boolean @map("use_data_hook_for_cash_out")
   dataHook                   String? @map("data_hook") @db.VarChar(42)
-  metadata                   BigInt
+  metadata                   Decimal
   metadataExtra              Int?    @map("metadata_extra")
   mustStartAtOrAfter         BigInt? @map("must_start_at_or_after")
   caller                     String  @db.VarChar(42)
   approvalStatus             String? @map("approval_status")
 
-  project JuiceboxProject @relation(fields: [chainId, projectId], references: [chainId, projectId])
+  project JuiceboxProject @relation("JuiceboxProjectRulesets", fields: [chainId, projectId], references: [chainId, projectId])
+  activeProject JuiceboxProject? @relation("ActiveRuleset")
 
-  @@id([chainId, projectId, rulesetId])
+  @@unique([chainId, projectId, rulesetId])
   @@index([projectId])
   @@index([rulesetId])
   @@index([start])
@@ -572,7 +578,7 @@ view JuiceboxPayEvent {
   newlyIssuedTokenCount Decimal @map("newly_issued_token_count") @db.Decimal(78, 0)
   memo                  String
   suckerGroupId         String? @map("sucker_group_id")
-  txnValue              String @map("txn_value")
+  txnValue              String  @map("txn_value")
 
   metadata String @db.VarChar(66)
 

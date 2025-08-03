@@ -43,7 +43,7 @@ async function _getGrowthEvents(): Promise<GrowthEvent[]> {
     // Fetch token payments
     Promise.all(
       startups.map(async (startup) => {
-        const payments = await getTokenPayments(Number(startup.revnetProjectId))
+        const payments = await getTokenPayments(Number(startup.jbxProjectId))
         return payments.map(
           (payment): Omit<GrowthEvent, "profile"> => ({
             type: "token-payment",

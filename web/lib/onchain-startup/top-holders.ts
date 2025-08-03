@@ -4,7 +4,7 @@ import database from "@/lib/database/flows-db"
 import { getAllStartupsWithIds } from "./startup"
 import { base } from "viem/chains"
 import { PAYMENT_GATEWAY_ADDRESS } from "../config"
-import { unstable_cache } from "next/cache"
+import { startupsToJbxBaseProjectId } from "@/addresses"
 
 export interface TopContributor {
   address: string
@@ -35,7 +35,9 @@ export async function getTopContributorsForAllStartups(): Promise<TopContributor
 
   // Get all pay events for all startups
   const allPayEventsPromises = startups.map(async (startup) => {
-    if (!startup.revnetProjectId) {
+    const jbxProjectId =
+      startupsToJbxBaseProjectId[startup.id as keyof typeof startupsToJbxBaseProjectId]
+    if (!jbxProjectId) {
       return {
         startup,
         weeklyEvents: [],
@@ -48,7 +50,7 @@ export async function getTopContributorsForAllStartups(): Promise<TopContributor
       database.juiceboxPayEvent.findMany({
         where: {
           chainId: base.id,
-          projectId: startup.revnetProjectId,
+          projectId: jbxProjectId,
           timestamp: {
             gte: oneWeekAgo,
           },
@@ -64,7 +66,7 @@ export async function getTopContributorsForAllStartups(): Promise<TopContributor
       database.juiceboxPayEvent.findMany({
         where: {
           chainId: base.id,
-          projectId: startup.revnetProjectId,
+          projectId: jbxProjectId,
         },
         select: {
           beneficiary: true,

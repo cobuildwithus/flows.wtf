@@ -10,7 +10,7 @@ interface Props {
 }
 
 export async function Header({ startup }: Props) {
-  const revnetProjectId = startup.revnetProjectId
+  const revnetProjectId = startup.jbxProjectId
   const chainId = startup.chainId
 
   const [holdersCount, teamMemberCount] = await Promise.all([

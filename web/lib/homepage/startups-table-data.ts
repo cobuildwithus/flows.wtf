@@ -17,7 +17,7 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
     startups.map(async (startup) => {
       const startupData = await getStartup(startup.id)
       const revenueData = revenue.revenueByProjectId.get(startup.id)
-      const projectIdBase = startup.revnetProjectId
+      const projectIdBase = startup.jbxProjectId
       const [team, revnet] = await Promise.all([
         getTeamMembers(startup.id),
         projectIdBase

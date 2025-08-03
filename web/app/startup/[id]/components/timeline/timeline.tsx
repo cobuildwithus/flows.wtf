@@ -42,8 +42,8 @@ export async function Timeline(props: Props) {
   const { orders, startup, teamMembers } = props
 
   const [tokenPayments, hiringEvents] = await Promise.all([
-    startup.revnetProjectId
-      ? getTokenPayments(Number(startup.revnetProjectId)).then((payments) => payments.slice(0, 30))
+    startup.jbxProjectId
+      ? getTokenPayments(Number(startup.jbxProjectId)).then((payments) => payments.slice(0, 30))
       : Promise.resolve([]),
     getHiringEvents(startup.id),
   ])

@@ -60,3 +60,14 @@ export const oldCustomFlowImpl = [
   "0x0bc08d5432159f568bb6d7cc68d07b61d02f2462", // op v1
   "0x233ed8be4e5ee1c57be03de38377bb2d2c25fd2b", // base v1
 ] as const
+
+export const startupsToJbxBaseProjectId = {
+  // Vrbs Coffee
+  "0xd3758b55916128c88dd7895472a2d47cacb9f208": 104,
+  // Stray Strong
+  "0x16f7997240d763e1396e8ad33c8a32dbff708c56": 108,
+  // Tropical Body
+  "0x674c0dbe85b3dee2a9cd63fe0dc7d8b9f724335a": 112,
+  // Flows
+  "0x4c29314870977d7d81e47274762e74f0ebf84037": 99,
+} as const

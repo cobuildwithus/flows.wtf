@@ -29,7 +29,6 @@ export interface StartupWithRevenue extends Startup {
   revenue: number
   salesChange: number
   backers: number
-  projectIdBase?: number
   chainId: number
   team: TeamMember[]
   isBackedByFlows: boolean

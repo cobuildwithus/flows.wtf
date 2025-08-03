@@ -101,8 +101,8 @@ export function StartupsTable({ startups }: Props) {
             </TableCell>
 
             <TableCell className="text-right">
-              {startup.projectIdBase && (
-                <BuyRevnetDialog startup={startup} revnetProjectId={startup.projectIdBase} />
+              {startup.jbxProjectId && (
+                <BuyRevnetDialog startup={startup} revnetProjectId={startup.jbxProjectId} />
               )}
             </TableCell>
           </TableRow>

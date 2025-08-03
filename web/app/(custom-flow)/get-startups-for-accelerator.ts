@@ -17,8 +17,8 @@ export async function getStartupsForAccelerator(flowId: string) {
       const revenueData = revenue.revenueByProjectId.get(startup.id)
       const [team, revnet] = await Promise.all([
         getTeamMembers(startup.id),
-        startup.revnetProjectId
-          ? getRevnetBalance(startup.revnetProjectId, baseChain.id).catch(() => ({
+        startup.jbxProjectId
+          ? getRevnetBalance(startup.jbxProjectId, baseChain.id).catch(() => ({
               participantsCount: 0,
             }))
           : null,
@@ -35,7 +35,7 @@ export async function getStartupsForAccelerator(flowId: string) {
         revenue: revenueData?.totalSales ?? 0,
         salesChange: revenueData?.salesChange ?? 0,
         backers: revnet?.participantsCount ?? 0,
-        projectIdBase: startup.revnetProjectId,
+        projectIdBase: startup.jbxProjectId,
         chainId: baseChain.id,
         team: safeTeam,
       }
