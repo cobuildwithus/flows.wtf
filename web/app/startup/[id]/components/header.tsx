@@ -19,7 +19,7 @@ export async function Header({ startup }: Props) {
   ])
 
   return (
-    <div className="flex items-center gap-6 py-6">
+    <div className="flex items-center gap-6 pb-2 pt-6">
       <div className="flex flex-col items-center">
         <Image
           src={getIpfsUrl(startup.image, "pinata")}

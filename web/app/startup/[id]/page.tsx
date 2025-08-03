@@ -89,27 +89,7 @@ export default async function GrantPage(props: Props) {
 
   return (
     <>
-      <div className="container mt-2.5 md:mt-6 md:flex md:items-center md:justify-between">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Flows</BreadcrumbLink>
-            </BreadcrumbItem>
-            {/* <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/flow/${startup.flow.id}`}>
-                {startup.flow.title}
-              </BreadcrumbLink>
-            </BreadcrumbItem> */}
-            <BreadcrumbSeparator className="max-sm:hidden" />
-            <BreadcrumbItem className="max-sm:hidden">
-              <BreadcrumbPage>{startup.title}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-
-      <StartupHero startup={startup} />
+      <StartupHero startup={startup} revenue={revenue.totalSales} />
 
       <div className="container flex">
         <Team members={teamMembers} user={user} startup={startup} />
