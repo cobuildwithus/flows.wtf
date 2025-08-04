@@ -34,6 +34,9 @@ export function StartupsTable({ startups }: Props) {
           <TableHead className="text-right text-lg font-semibold md:text-xl">
             <span className="mr-6">Revenue</span>
           </TableHead>
+          <TableHead className="text-right text-lg font-semibold md:text-xl">
+            <span className="mr-6">Market Cap</span>
+          </TableHead>
           <TableHead className="text-right"></TableHead>
         </TableRow>
       </TableHeader>
@@ -101,8 +104,14 @@ export function StartupsTable({ startups }: Props) {
             </TableCell>
 
             <TableCell className="text-right">
-              {startup.projectIdBase && (
-                <BuyRevnetDialog startup={startup} revnetProjectId={startup.projectIdBase} />
+              <Currency className="pr-6 text-base font-medium decoration-muted-foreground/40 underline-offset-4 hover:decoration-muted-foreground md:text-lg">
+                {startup.marketCapUsd}
+              </Currency>
+            </TableCell>
+
+            <TableCell className="text-right">
+              {startup.jbxProjectId && (
+                <BuyRevnetDialog startup={startup} revnetProjectId={startup.jbxProjectId} />
               )}
             </TableCell>
           </TableRow>

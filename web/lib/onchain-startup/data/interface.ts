@@ -14,5 +14,4 @@ export interface StartupData {
   diagram?: {
     receive?: { name: string; description?: string }
   }
-  revnetProjectId?: number // ON BASE
 }

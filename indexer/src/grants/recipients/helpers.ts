@@ -1,6 +1,6 @@
 import { Context } from "ponder:registry"
 import { grants } from "ponder:schema"
-import { accelerators } from "../../../addresses"
+import { accelerators, startupsToJbxBaseProjectId } from "../../../addresses"
 
 export async function getFlow(db: Context["db"], id: string) {
   const flow = await db.find(grants, { id })
@@ -15,4 +15,10 @@ export function isOnchainStartup(parentFlow: string) {
 
 export function isAccelerator(id: string) {
   return Object.values(accelerators).some((addr) => addr.toLowerCase() === id.toLowerCase())
+}
+
+export function revnetProjectChainId(flow: string): number | null {
+  const projectId = startupsToJbxBaseProjectId[flow as keyof typeof startupsToJbxBaseProjectId]
+
+  return projectId
 }

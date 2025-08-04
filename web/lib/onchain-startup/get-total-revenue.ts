@@ -4,15 +4,13 @@ import { Startup } from "./startup"
 import { getTokenPayments } from "./token-payments"
 
 export async function getTotalRevenue(
-  startups: Pick<Startup, "revnetProjectId" | "id" | "shopify">[],
+  startups: Pick<Startup, "jbxProjectId" | "id" | "shopify">[],
 ) {
   const results = await Promise.all(
     startups.map(async (startup, index) => {
       const [orders, tokenPayments] = await Promise.all([
         startup.shopify ? getAllOrders(startup.shopify) : Promise.resolve([]),
-        startup.revnetProjectId
-          ? getTokenPayments(Number(startup.revnetProjectId))
-          : Promise.resolve([]),
+        startup.jbxProjectId ? getTokenPayments(Number(startup.jbxProjectId)) : Promise.resolve([]),
       ])
 
       // Get combined sales metrics including token payments
@@ -21,7 +19,7 @@ export async function getTotalRevenue(
       return {
         startupId: startup.id,
         startupIndex: index,
-        projectId: Number(startup.revnetProjectId),
+        projectId: Number(startup.jbxProjectId),
         totalSales: combinedMetrics.totalSales,
         salesChange: combinedMetrics.salesChange,
       }

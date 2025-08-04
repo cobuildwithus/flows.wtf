@@ -43,10 +43,7 @@ export async function getUserRevnetBalance(
     const participants = await database.juiceboxParticipant.findMany({
       where: {
         address: userAddress.toLowerCase(),
-        OR: projects.map((p) => ({
-          chainId: p.chainId,
-          projectId: p.projectId,
-        })),
+        suckerGroupId: project.suckerGroupId,
       },
       select: {
         balance: true,

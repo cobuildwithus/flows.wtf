@@ -26,8 +26,8 @@ async function _getActivityFeedEvents(): Promise<ActivityEvent[]> {
   })
 
   const tokenPromises = startups.map(async (s) => {
-    if (!s.revnetProjectId) return [] as TokenEventData[]
-    const payments = await getTokenPayments(s.revnetProjectId)
+    if (!s.jbxProjectId) return [] as TokenEventData[]
+    const payments = await getTokenPayments(s.jbxProjectId)
     return payments.slice(0, 20)
   })
 

@@ -9,8 +9,9 @@ import {
 } from "ponder:schema"
 import { calculateRootContract } from "../grant-helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
-import { isAccelerator } from "../recipients/helpers"
+import { isAccelerator, revnetProjectChainId } from "../recipients/helpers"
 import { fetchTokenInfo } from "../../utils/token-utils"
+import { base } from "viem/chains"
 
 ponder.on("CustomFlow:FlowInitialized", handleFlowInitialized)
 
@@ -54,9 +55,14 @@ async function handleFlowInitialized(params: {
   const isTopLevel = parentContract === zeroAddress
   const rootContract = await calculateRootContract(context.db, contract, parentContract)
 
+  const revnetProjectId = revnetProjectChainId(contract)
+
   await context.db.insert(grants).values({
     id: grantId,
     chainId: context.chain.id,
+    jbxProjectId: revnetProjectId,
+    // hardcode to base for now
+    jbxChainId: revnetProjectId ? base.id : null,
     ...metadata,
     recipient: contract,
     recipientId: "",

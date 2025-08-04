@@ -3,7 +3,6 @@
 import { Input } from "@/components/ui/input"
 import { usePayRevnet } from "@/lib/revnet/hooks/use-pay-revnet"
 import { useRevnetTokenPrice } from "@/lib/revnet/hooks/use-revnet-token-price"
-import { useRevnetTokenDetails } from "@/lib/revnet/hooks/use-revnet-token-details"
 import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
 import { AuthButton } from "@/components/ui/auth-button"
@@ -13,12 +12,11 @@ import { getRevnetTokenLogo } from "@/app/token/get-revnet-token-logo"
 import { Startup } from "@/lib/onchain-startup/startup"
 
 interface Props {
-  changeTokenVolumeEth: (eth: number) => void
   startup: Startup
   revnetProjectId: number
 }
 
-export function BuyRevnetToken({ changeTokenVolumeEth, startup, revnetProjectId }: Props) {
+export function BuyToken({ startup, revnetProjectId }: Props) {
   const { chainId, isBackedByFlows } = startup
 
   const { address } = useAccount()
@@ -28,23 +26,15 @@ export function BuyRevnetToken({ changeTokenVolumeEth, startup, revnetProjectId 
     calculateTokensFromEth,
     calculateEthFromTokens,
   } = useRevnetTokenPrice(revnetProjectId, chainId, isBackedByFlows)
-  const { data: tokenDetails } = useRevnetTokenDetails(revnetProjectId, chainId)
 
   const [payAmount, setPayAmount] = useState("0.01")
   const [tokenAmount, setTokenAmount] = useState("")
   const [lastEdited, setLastEdited] = useState<"pay" | "token">("pay")
   const [touched, setTouched] = useState(false)
 
-  const tokenSymbol = tokenDetails?.symbol || ""
-
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!touched) return
-      if (payAmount) {
-        changeTokenVolumeEth(parseFloat(payAmount))
-      } else {
-        changeTokenVolumeEth(0)
-      }
     }, 500)
 
     return () => clearTimeout(timer)
@@ -98,7 +88,7 @@ export function BuyRevnetToken({ changeTokenVolumeEth, startup, revnetProjectId 
             <Input
               id="pay"
               onFocus={() => setTouched(true)}
-              className="h-16 border-0 border-transparent bg-transparent p-0 text-2xl shadow-none focus-visible:ring-0"
+              className="h-16 border-0 border-transparent bg-transparent p-0 text-3xl shadow-none focus-visible:ring-0"
               type="number"
               min={0.000001}
               step={0.00000000001}
@@ -130,7 +120,7 @@ export function BuyRevnetToken({ changeTokenVolumeEth, startup, revnetProjectId 
           <div className="flex items-center justify-between">
             <Input
               id="receive"
-              className="h-16 border-0 border-transparent bg-transparent p-0 text-2xl shadow-none focus-visible:ring-0"
+              className="h-16 border-0 border-transparent bg-transparent p-0 text-3xl shadow-none focus-visible:ring-0"
               type="number"
               min={0}
               step={0.01}
@@ -148,9 +138,9 @@ export function BuyRevnetToken({ changeTokenVolumeEth, startup, revnetProjectId 
             />
             <div className="ml-3 flex items-center rounded-full bg-background px-3 py-1.5">
               <div className="mr-2">
-                <TokenLogo src={getRevnetTokenLogo(tokenSymbol)} alt="TOKEN" />
+                <TokenLogo src={getRevnetTokenLogo(startup.tokenSymbol)} alt="TOKEN" />
               </div>
-              <span className="text-base font-medium">{tokenSymbol || "TOKEN"}</span>
+              <span className="text-base font-medium">{startup.tokenSymbol || "TOKEN"}</span>
             </div>
           </div>
         </div>
