@@ -22,14 +22,12 @@ const startupIdBySlug = Object.fromEntries(
 ) as Record<string, string>
 
 export async function getStartup(id: string) {
-  console.log("getStartup", id)
   const grant = await database.grant.findFirst({
     where: { id, isFlow: true },
     include: {
       jbxProject: { include: { activeRuleset: true } },
     },
   })
-  console.log("gotStartup", grant?.title)
 
   if (!grant) throw new Error(`Grant ${id} not found`)
 
@@ -42,7 +40,6 @@ export async function getStartups(parentContract: string): Promise<Startup[]> {
   const grants = await database.grant.findMany({
     where: { parentContract, isTopLevel: false, isFlow: true },
     include: {
-      flow: true,
       jbxProject: { include: { activeRuleset: true } },
     },
   })
