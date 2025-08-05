@@ -26,7 +26,20 @@ export async function getStartup(id: string) {
     where: { id, isFlow: true },
     include: {
       flow: { omit: { description: true } },
-      jbxProject: true,
+    },
+  })
+
+  if (!grant.jbxProjectId) {
+    return {
+      ...grant,
+      jbxProject: null,
+    }
+  }
+
+  const jbxProject = await database.juiceboxProject.findFirst({
+    where: {
+      chainId: grant.chainId,
+      projectId: grant.jbxProjectId,
     },
   })
 
@@ -34,13 +47,13 @@ export async function getStartup(id: string) {
     where: {
       chainId: grant.chainId,
       projectId: grant.jbxProjectId!,
-      rulesetId: grant.jbxProject?.currentRulesetId!,
+      rulesetId: jbxProject?.currentRulesetId!,
     },
   })
 
   return enrichGrantWithStartupData({
     ...grant,
-    jbxProject: grant.jbxProject ? { ...grant.jbxProject, activeRuleset } : null,
+    jbxProject: jbxProject ? { ...jbxProject, activeRuleset } : null,
   })
 }
 
