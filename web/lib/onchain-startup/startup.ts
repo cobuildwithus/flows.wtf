@@ -22,7 +22,7 @@ const startupIdBySlug = Object.fromEntries(
 ) as Record<string, string>
 
 export async function getStartup(id: string) {
-  const grant = await database.grant.findFirst({
+  const grant = await database.grant.findUniqueOrThrow({
     where: { id, isFlow: true },
     include: {
       jbxProject: { include: { activeRuleset: true } },
