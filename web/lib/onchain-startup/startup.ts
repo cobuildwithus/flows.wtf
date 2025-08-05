@@ -22,6 +22,7 @@ const startupIdBySlug = Object.fromEntries(
 ) as Record<string, string>
 
 export async function getStartup(id: string) {
+  console.log("getStartup", id)
   const grant = await database.grant.findFirst({
     where: { id, isFlow: true },
     include: {
@@ -29,6 +30,7 @@ export async function getStartup(id: string) {
       jbxProject: { include: { activeRuleset: true } },
     },
   })
+  console.log("gotStartup", grant?.title)
 
   if (!grant) throw new Error(`Grant ${id} not found`)
 
