@@ -26,7 +26,6 @@ export async function getStartup(id: string) {
   const grant = await database.grant.findFirst({
     where: { id, isFlow: true },
     include: {
-      flow: true,
       jbxProject: { include: { activeRuleset: true } },
     },
   })
@@ -81,7 +80,6 @@ const getStartupData = cache((id: string): StartupData | null => {
 async function enrichGrantWithStartupData(
   grant: Grant & {
     jbxProject: (JuiceboxProject & { activeRuleset: JuiceboxRuleset | null }) | null
-    flow: Omit<Grant, "description"> | null
   },
 ) {
   const startup = getStartupData(grant.id)
