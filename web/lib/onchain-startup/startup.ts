@@ -39,7 +39,7 @@ export async function getStartups(parentContract: string): Promise<Startup[]> {
   const grants = await database.grant.findMany({
     where: { parentContract, isTopLevel: false, isFlow: true },
     include: {
-      flow: { omit: { description: true } },
+      flow: true,
       jbxProject: { include: { activeRuleset: true } },
     },
   })
