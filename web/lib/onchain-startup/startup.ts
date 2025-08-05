@@ -25,36 +25,12 @@ export async function getStartup(id: string) {
   const grant = await database.grant.findUniqueOrThrow({
     where: { id, isFlow: true },
     include: {
-      flow: { omit: { description: true } },
+      flow: true,
+      jbxProject: { include: { activeRuleset: true } },
     },
   })
 
-  if (!grant.jbxProjectId) {
-    return {
-      ...grant,
-      jbxProject: null,
-    }
-  }
-
-  const jbxProject = await database.juiceboxProject.findFirst({
-    where: {
-      chainId: grant.chainId,
-      projectId: grant.jbxProjectId,
-    },
-  })
-
-  const activeRuleset = await database.juiceboxRuleset.findFirst({
-    where: {
-      chainId: grant.chainId,
-      projectId: grant.jbxProjectId!,
-      rulesetId: jbxProject?.currentRulesetId!,
-    },
-  })
-
-  return enrichGrantWithStartupData({
-    ...grant,
-    jbxProject: jbxProject ? { ...jbxProject, activeRuleset } : null,
-  })
+  return enrichGrantWithStartupData(grant)
 }
 
 export type Startup = Awaited<ReturnType<typeof getStartup>>
