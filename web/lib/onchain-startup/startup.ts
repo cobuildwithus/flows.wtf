@@ -25,7 +25,6 @@ export async function getStartup(id: string) {
   const grant = await database.grant.findUniqueOrThrow({
     where: { id, isFlow: true },
     include: {
-      flow: { omit: { description: true } },
       jbxProject: { include: { activeRuleset: true } },
     },
   })
@@ -39,7 +38,6 @@ export async function getStartups(parentContract: string): Promise<Startup[]> {
   const grants = await database.grant.findMany({
     where: { parentContract, isTopLevel: false, isFlow: true },
     include: {
-      flow: { omit: { description: true } },
       jbxProject: { include: { activeRuleset: true } },
     },
   })
@@ -77,7 +75,6 @@ const getStartupData = cache((id: string): StartupData | null => {
 async function enrichGrantWithStartupData(
   grant: Grant & {
     jbxProject: (JuiceboxProject & { activeRuleset: JuiceboxRuleset | null }) | null
-    flow: Omit<Grant, "description"> | null
   },
 ) {
   const startup = getStartupData(grant.id)
