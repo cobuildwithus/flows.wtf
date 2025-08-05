@@ -195,7 +195,6 @@ function processEventsByBeneficiary(
   return Array.from(beneficiaryMap.entries())
     .map(([address, data]): TopContributor => {
       const totalAmountStr = data.totalAmount.toString()
-      console.log("Final contributor data:", address, "totalAmount:", totalAmountStr)
 
       return {
         address,
