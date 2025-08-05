@@ -22,13 +22,15 @@ const startupIdBySlug = Object.fromEntries(
 ) as Record<string, string>
 
 export async function getStartup(id: string) {
-  const grant = await database.grant.findUniqueOrThrow({
+  const grant = await database.grant.findFirst({
     where: { id, isFlow: true },
     include: {
       flow: true,
       jbxProject: { include: { activeRuleset: true } },
     },
   })
+
+  if (!grant) throw new Error(`Grant ${id} not found`)
 
   return enrichGrantWithStartupData(grant)
 }
