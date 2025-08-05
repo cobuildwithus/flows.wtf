@@ -29,8 +29,6 @@ export async function getStartup(id: string) {
     },
   })
 
-  if (!grant) throw new Error(`Grant ${id} not found`)
-
   return enrichGrantWithStartupData(grant)
 }
 
