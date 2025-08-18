@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { getActivityFeedEvents, ActivityEvent } from "@/lib/homepage/activity-feed-data"
@@ -11,7 +10,10 @@ export default async function ActivityFeed() {
   const events = await getActivityFeedEvents()
 
   return (
-    <div>
+    <div className="rounded-2xl border p-4 shadow-sm md:p-6">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Recent activity</h3>
+      </div>
       <ScrollArea className="h-[650px]">
         <div className="space-y-6 pr-4">
           {events.slice(0, 10).map((event, i) => (

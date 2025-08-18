@@ -11,13 +11,12 @@ export function BuildersAndBackers() {
           <h2 className="text-4xl font-semibold md:text-6xl">Builders & backers</h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-6">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-5 lg:gap-6">
           <Suspense fallback={<SkeletonLoader count={20} height={80} />}>
             <TopHolders />
           </Suspense>
           <Suspense fallback={<SkeletonLoader count={8} height={72} />}>
-            <div className="flex flex-col space-y-5 md:space-y-0 lg:col-span-1">
-              <h3 className="text-lg font-semibold">Recent activity</h3>
+            <div className="lg:col-span-2">
               <ActivityFeed />
             </div>
           </Suspense>
