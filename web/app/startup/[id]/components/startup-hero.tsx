@@ -49,7 +49,7 @@ export async function StartupHero({ startup, revenue, balance }: Props) {
               </div>
             )}
             <div className="flex flex-col gap-6">
-              {balance && (
+              {(balance ?? 0) > 0 && (
                 <div className="flex flex-col gap-2">
                   <div className="text-lg font-medium">Your balance</div>
 

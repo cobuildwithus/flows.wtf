@@ -8,14 +8,16 @@
     "start": "ponder start",
     "codegen": "ponder codegen",
     "lint": "eslint .",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "prune:list": "ponder db list",
+    "prune:drop": "ponder db prune"
   },
   "dependencies": {
     "@vercel/kv": "^3.0.0",
     "dotenv": "^16.3.1",
     "hono": "^4.6.14",
     "pg": "^8.13.3",
-    "ponder": "^0.11.26",
+    "ponder": "^0.12.6",
     "viem": "^2.23.13"
   },
   "devDependencies": {

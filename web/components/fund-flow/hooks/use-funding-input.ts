@@ -33,11 +33,11 @@ export function useFundingInput({
     const balance = getTokenBalance(selectedToken, ethBalances, totalTokenBalance)
 
     if (selectedToken.isNative) {
-      const gasReserve = parseUnits("0.01", selectedToken.decimals)
+      const gasReserve = parseUnits("0.001", 18)
       const maxAmount = balance > gasReserve ? balance - gasReserve : 0n
-      setDonationAmount(formatUnits(maxAmount, selectedToken.decimals))
+      setDonationAmount(formatUnits(maxAmount, 18))
     } else {
-      setDonationAmount(formatUnits(balance, selectedToken.decimals))
+      setDonationAmount(formatUnits(balance, 18))
     }
   }
 
