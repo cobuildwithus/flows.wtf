@@ -21,7 +21,7 @@ import {
   oldCustomFlowImpl,
   optimism as optimismContracts,
 } from "./addresses"
-import { getChainsAndRpcUrls, IndexerConfig, STREAMING_TOKENS } from "./src/utils"
+import { getChainsAndRpcUrls, IndexerConfig } from "./src/utils"
 
 const blockStarts = {
   base: {
@@ -145,35 +145,16 @@ export default createConfig({
     SuperfluidPool: {
       abi: superfluidPoolAbi,
       chain: IndexerConfig.SuperfluidPool,
-      filter: {
-        event: "MemberUnitsUpdated",
-        args: {
-          token: STREAMING_TOKENS,
-        },
-      },
     },
     GdaV1: {
       abi: gdav1Abi,
       chain: IndexerConfig.GdaV1,
       address: [gdav1Address[8453], gdav1Address[10]],
-      filter: {
-        event: "FlowDistributionUpdated",
-        args: {
-          // usdc on base
-          token: STREAMING_TOKENS,
-        },
-      },
     },
     CfaV1: {
       abi: cfav1Abi,
       chain: IndexerConfig.CfaV1,
       address: [cfav1Address[8453], cfav1Address[10]],
-      filter: {
-        event: "FlowUpdated",
-        args: {
-          token: STREAMING_TOKENS,
-        },
-      },
     },
     CustomFlow: {
       abi: customFlowImplAbi,
