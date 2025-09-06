@@ -1,9 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { Status } from "../enums"
 import { getAddress } from "viem"
-import { removeApplicationEmbedding } from "./embeddings/embed-applications"
 import { grants, tcrToGrantId } from "ponder:schema"
-import { isBlockRecent } from "../utils"
 import { getGrantIdFromTcrAndItemId } from "./tcr-helpers"
 
 ponder.on("FlowTcr:ItemStatusChange", handleItemStatusChange)
@@ -15,7 +13,6 @@ async function handleItemStatusChange(params: {
 }) {
   const { event, context } = params
   const { _itemID, _itemStatus, _disputed, _resolved } = event.args
-  const isRecent = isBlockRecent(Number(event.block.timestamp))
 
   const parent = await context.db.find(tcrToGrantId, { tcr: event.log.address.toLowerCase() })
   if (!parent) throw new Error(`Parent grant not found: ${event.log.address.toLowerCase()}`)
@@ -49,7 +46,6 @@ async function handleItemStatusChange(params: {
   }
 
   if (grant.status === Status.RegistrationRequested && _itemStatus === Status.Absent) {
-    if (isRecent) await removeApplicationEmbedding(grant)
     await context.db.update(grants, { id: parent.grantId }).set((row) => ({
       awaitingRecipientCount: row.awaitingRecipientCount - 1,
     }))

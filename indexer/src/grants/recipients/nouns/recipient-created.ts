@@ -1,7 +1,5 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
-import { addGrantEmbedding } from "../../embeddings/embed-grants"
-import { isBlockRecent } from "../../../utils"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { getFlow } from "../helpers"
 import { RecipientType } from "../../../enums"
@@ -27,7 +25,6 @@ async function handleRecipientCreated(params: {
   const recipient = rawRecipient.toLowerCase()
 
   const flowAddress = event.log.address.toLowerCase()
-  const timestamp = Number(event.block.timestamp)
 
   const parentFlow = await getFlow(context.db, flowAddress)
   const rootContract = parentFlow.rootContract
@@ -48,8 +45,4 @@ async function handleRecipientCreated(params: {
 
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
   await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
-
-  if (isBlockRecent(timestamp)) {
-    await addGrantEmbedding(grant, recipientType, parentFlow.id)
-  }
 }
