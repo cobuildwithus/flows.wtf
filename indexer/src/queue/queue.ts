@@ -34,7 +34,6 @@ const makeRequest = async (endpoint: string, body: any) => {
         const text = await response.text()
         console.error({ text })
         console.error(`Failed request to ${endpoint}:`, text)
-        throw new Error((text as any)?.message || `Failed request to ${endpoint}`)
       }
 
       return response
