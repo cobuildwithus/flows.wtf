@@ -261,12 +261,12 @@ model Allocation {
   allocationsCount String @map("allocations_count")
   chainId          Int    @map("chain_id")
 
-  grant Grant @relation(fields: [recipientId, contract], references: [recipientId, flowId])
+  grant Grant @relation(fields: [contract, recipientId], references: [flowId, recipientId])
 
   @@index([allocator])
   @@index([contract])
   @@index([recipientId])
-  @@index([recipientId, contract])
+  @@index([contract, recipientId])
   @@schema("onchain")
 }
 
