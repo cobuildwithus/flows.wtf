@@ -29,6 +29,10 @@ export async function getGrantIdFromFlowContractAndRecipientId(
 const getId = (flowContract: string, recipientId: string) =>
   `${flowContract.toLowerCase()}-${recipientId}`
 
+export function buildCanonicalRecipientGrantId(flowContract: string, recipientId: string) {
+  return `${flowContract.toLowerCase()}-${recipientId}`
+}
+
 export async function calculateRootContract(
   db: Context["db"],
   contract: string,

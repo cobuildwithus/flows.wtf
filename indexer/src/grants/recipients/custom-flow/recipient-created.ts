@@ -2,7 +2,10 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { getFlow, isOnchainStartup } from "../helpers"
 import { handleRecipientMappings } from "../mappings/eoa-mappings"
 import { RecipientType, Status } from "../../../enums"
-import { addGrantIdToFlowContractAndRecipientId } from "../../grant-helpers"
+import {
+  addGrantIdToFlowContractAndRecipientId,
+  buildCanonicalRecipientGrantId,
+} from "../../grant-helpers"
 import { grants } from "ponder:schema"
 
 ponder.on("CustomFlow:RecipientCreated", handleRecipientCreated)
@@ -35,8 +38,10 @@ async function handleRecipientCreated(params: {
 
   const existingRecipient = await context.db.find(grants, { id: recipient })
 
+  const canonicalId = buildCanonicalRecipientGrantId(flowAddress, grantId)
+
   const grant = await context.db.insert(grants).values({
-    id: grantId,
+    id: canonicalId,
     chainId: context.chain.id,
     title: metadata.title,
     recipientId: grantId,

@@ -2,6 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 import { getFlow } from "./helpers"
 import { getGrantIdFromTcrAndItemId } from "../../tcr/tcr-helpers"
+import { getGrantIdFromFlowContractAndRecipientId } from "../grant-helpers"
 
 ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
 ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
@@ -20,15 +21,9 @@ async function handleRecipientRemoved(params: {
 
   if (!flow) throw new Error(`Flow not found: ${flowAddress}`)
 
-  let removedGrantId = recipientId
-
-  if (flow.tcr) {
-    removedGrantId = (await getGrantIdFromTcrAndItemId(
-      context.db,
-      flow.tcr,
-      recipientId
-    )) as `0x${string}`
-  }
+  const removedGrantId = flow.tcr
+    ? ((await getGrantIdFromTcrAndItemId(context.db, flow.tcr, recipientId)) as `0x${string}`)
+    : await getGrantIdFromFlowContractAndRecipientId(context.db, flowAddress, recipientId)
 
   await context.db.update(grants, { id: removedGrantId }).set({
     isRemoved: true,
