@@ -217,7 +217,7 @@ model Grant {
   opportunitiesBudgets Opportunity[]    @relation("StartupBudgetOpportunity") // not needed, just required by Prisma
   jbxProject           JuiceboxProject? @relation(fields: [jbxChainId, jbxProjectId], references: [chainId, projectId])
 
-  @@unique([recipientId])
+  @@unique([flowId, recipientId])
   @@index([isTopLevel])
   @@index([isFlow])
   @@index([isActive])
@@ -261,11 +261,12 @@ model Allocation {
   allocationsCount String @map("allocations_count")
   chainId          Int    @map("chain_id")
 
-  grant Grant @relation(fields: [recipientId], references: [recipientId])
+  grant Grant @relation(fields: [recipientId, contract], references: [recipientId, flowId])
 
   @@index([allocator])
   @@index([contract])
   @@index([recipientId])
+  @@index([recipientId, contract])
   @@schema("onchain")
 }
 

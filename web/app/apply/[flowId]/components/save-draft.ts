@@ -1,7 +1,6 @@
 "use server"
 
 import database from "@/lib/database/flows-db"
-import { addDraftEmbedding } from "@/lib/embedding/embed-drafts"
 import { after } from "next/server"
 import { z } from "zod"
 
@@ -43,10 +42,6 @@ export async function saveDraft(formData: FormData, user?: `0x${string}`) {
 
     const draft = await database.draft.create({
       data: { ...rest, isPrivate: false, isOnchain: false },
-    })
-
-    after(async () => {
-      await addDraftEmbedding(draft, rest.flowId)
     })
 
     return { error: false, id: draft.id }

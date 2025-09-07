@@ -2,7 +2,6 @@
 
 import database from "@/lib/database/flows-db"
 import { isAdmin } from "@/lib/database/helpers"
-import { updateDraftEmbedding } from "@/lib/embedding/embed-drafts"
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 import { z } from "zod"
@@ -36,10 +35,6 @@ export async function updateDraft(id: number, formData: FormData, user?: `0x${st
     const newDraft = await database.draft.update({
       where: { id, isOnchain: false },
       data: validation.data,
-    })
-
-    after(async () => {
-      await updateDraftEmbedding(draft, newDraft, draft.flowId)
     })
 
     revalidatePath(`/draft/${id}`)

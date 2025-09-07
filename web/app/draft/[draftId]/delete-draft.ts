@@ -1,7 +1,6 @@
 "use server"
 
 import database from "@/lib/database/flows-db"
-import { removeDraftEmbedding } from "@/lib/embedding/embed-drafts"
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 
@@ -15,10 +14,6 @@ export async function deleteDraft(id: number, user?: string) {
     }
 
     await database.draft.update({ where: { id }, data: { isPrivate: true } })
-
-    after(async () => {
-      await removeDraftEmbedding(draft)
-    })
 
     revalidatePath(`/flow/${draft.flowId}/drafts`)
 
