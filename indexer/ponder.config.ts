@@ -186,7 +186,7 @@ export default createConfig({
   blocks: {
     TotalEarned: {
       chain: IndexerConfig.LatestBlockCron,
-      interval: (60 * 60) / 0.25, // Every hour (base block time is 250ms)
+      interval: (15 * 60) / 0.25, // Every 15 minutes (base block time is 250ms)
     },
     UnderlyingTokenPrices: {
       chain: IndexerConfig.LatestBlockCron,
