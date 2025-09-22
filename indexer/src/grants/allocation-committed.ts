@@ -30,20 +30,30 @@ async function handleAllocationCommitted({
   })
   const newRecipients = scratch?.recipientIds ?? []
 
-  // Diff against the previous committed set for this (contract,key,allocator)
+  // Get the previous committed set for this (contract,key,allocator)
   const lastKey = `${contract}_${allocationKey}_${allocator}`
   const prev = await context.db.find(lastRecipientsByKeyAllocator, {
     contractKeyAllocator: lastKey,
   })
-  const prevRecipients = new Set(prev?.recipientIds ?? [])
+  const prevRecipientIds = prev?.recipientIds ?? []
 
-  // Calculate recipients to delete = prev \ new
-  const toDelete = [...prevRecipients].filter((id) => !newRecipients.includes(id))
+  // Build a map of previous memberUnits for delta calculation
+  const previousMemberUnits = new Map<string, bigint>()
+  for (const recipientId of prevRecipientIds) {
+    const prevAllocation = await context.db.find(allocations, {
+      contract,
+      allocationKey: allocationKey.toString(),
+      allocator,
+      recipientId,
+    })
+    if (prevAllocation && prevAllocation.commitTxHash !== txHash) {
+      // Only count it as "previous" if it's from a different commit
+      previousMemberUnits.set(recipientId, BigInt(prevAllocation.memberUnits))
+    }
+  }
 
-  // Calculate unit deltas for both new and removed recipients
-  const deltas = new Map<string, bigint>()
-
-  // First, collect positive deltas from new allocations
+  // Calculate current memberUnits and update commitTxHash for all new recipients
+  const currentMemberUnits = new Map<string, bigint>()
   for (const recipientId of newRecipients) {
     const allocation = await context.db.find(allocations, {
       contract,
@@ -52,42 +62,54 @@ async function handleAllocationCommitted({
       recipientId,
     })
     if (allocation) {
-      deltas.set(recipientId, BigInt(allocation.memberUnits))
+      currentMemberUnits.set(recipientId, BigInt(allocation.memberUnits))
+      // Update the commitTxHash to mark this allocation as committed
+      await context.db
+        .update(allocations, {
+          contract,
+          allocationKey: allocationKey.toString(),
+          allocator,
+          recipientId,
+        })
+        .set(() => ({
+          commitTxHash: txHash,
+        }))
     }
   }
 
-  // Then subtract units for removed recipients
-  for (const recipientId of toDelete) {
-    // Get the allocation that's about to be deleted to know how many units to subtract
-    const allocation = await context.db.find(allocations, {
-      contract,
-      allocationKey: allocationKey.toString(),
-      allocator,
-      recipientId,
-    })
-    if (allocation) {
-      const existing = deltas.get(recipientId) ?? BigInt(0)
-      deltas.set(recipientId, existing - BigInt(allocation.memberUnits))
+  // Calculate deltas for all affected recipients
+  const deltas = new Map<string, bigint>()
+
+  // Process all recipients (both old and new)
+  const allRecipients = new Set([...previousMemberUnits.keys(), ...currentMemberUnits.keys()])
+
+  for (const recipientId of allRecipients) {
+    const oldUnits = previousMemberUnits.get(recipientId) ?? BigInt(0)
+    const newUnits = currentMemberUnits.get(recipientId) ?? BigInt(0)
+    const delta = newUnits - oldUnits
+
+    if (delta !== BigInt(0)) {
+      deltas.set(recipientId, delta)
     }
 
-    // Delete the allocation row for this removed recipient
-    await context.db.delete(allocations, {
-      contract,
-      allocationKey: allocationKey.toString(),
-      allocator,
-      recipientId,
-    })
+    // Delete allocation for removed recipients
+    if (oldUnits > BigInt(0) && newUnits === BigInt(0)) {
+      await context.db.delete(allocations, {
+        contract,
+        allocationKey: allocationKey.toString(),
+        allocator,
+        recipientId,
+      })
+    }
   }
 
   // Apply the unit deltas to grant rows
   for (const [rid, delta] of deltas) {
-    if (delta !== BigInt(0)) {
-      const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
-      if (grantId) {
-        await context.db.update(grants, { id: grantId }).set((row) => ({
-          memberUnits: (BigInt(row.memberUnits) + delta).toString(),
-        }))
-      }
+    const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
+    if (grantId) {
+      await context.db.update(grants, { id: grantId }).set((row) => ({
+        memberUnits: (BigInt(row.memberUnits) + delta).toString(),
+      }))
     }
   }
 

@@ -48,7 +48,7 @@ async function handleAllocationSet({
       blockTimestamp,
       transactionHash,
       logIndex,
-      commitTxHash: transactionHash,
+      commitTxHash: "", // Will be set on AllocationCommitted
     })
     .onConflictDoUpdate(() => ({
       // Overwrite with latest values in the same tx/block
@@ -61,7 +61,7 @@ async function handleAllocationSet({
       blockTimestamp,
       transactionHash,
       logIndex,
-      commitTxHash: transactionHash,
+      commitTxHash: "", // Will be updated on AllocationCommitted
     }))
 
   // Build the scratch recipient set for this tx
