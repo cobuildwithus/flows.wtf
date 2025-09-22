@@ -23,13 +23,15 @@ async function handleAllocationSet({
   const transactionHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
   const contract = event.log.address.toLowerCase() as `0x${string}`
+  const strategyLower = (strategy as string).toLowerCase()
   const logIndex = Number(event.log.logIndex)
 
-  // Update weight-on-flow if this (contract,key) is brand new
+  // Update weight-on-flow if this (contract,strategy,key) is brand new
   await incrementWeightIfFirstUse(
     context.db,
     chainId,
     contract,
+    strategyLower,
     allocationKey,
     totalWeight,
     blockNumber
@@ -38,16 +40,16 @@ async function handleAllocationSet({
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
 
-  // Upsert the allocation row for (contract, key, allocator, recipientId)
+  // Upsert the allocation row for (contract, strategy, key, allocator, recipientId)
   await context.db
     .insert(allocations)
     .values({
       contract,
       allocationKey: allocationKey.toString(),
+      strategy: strategyLower,
       allocator,
       recipientId: recipientId.toString(),
       chainId,
-      strategy: strategy.toLowerCase(),
       bps: Number(bps),
       memberUnits: memberUnits.toString(),
       committedMemberUnits: "0",
@@ -60,8 +62,6 @@ async function handleAllocationSet({
     })
     .onConflictDoUpdate((row) => ({
       // Overwrite with latest values in the same tx/block
-      chainId,
-      strategy: strategy.toLowerCase(),
       bps: Number(bps),
       memberUnits: memberUnits.toString(),
       totalWeight,
@@ -74,8 +74,8 @@ async function handleAllocationSet({
       commitTxHash: row.commitTxHash,
     }))
 
-  // Build the scratch recipient set for this tx
-  const scratchKey = `${chainId}_${contract}_${allocationKey}_${allocator}_${transactionHash}`
+  // Build the scratch recipient set for this tx (per strategy)
+  const scratchKey = `${chainId}_${contract}_${strategyLower}_${allocationKey}_${allocator}_${transactionHash}`
   await context.db
     .insert(tempRecipientsByKeyAllocatorTx)
     .values({
@@ -91,11 +91,12 @@ async function incrementWeightIfFirstUse(
   db: Context["db"],
   chainId: number,
   contract: `0x${string}`,
+  strategyLower: string,
   allocationKey: bigint,
   newWeight: bigint,
   blockNumber: string
 ) {
-  const key = `${chainId}_${contract}_${allocationKey}`
+  const key = `${chainId}_${contract}_${strategyLower}_${allocationKey}`
   const seen = await db.find(allocationKeyRegistered, { contractAllocationKey: key })
   if (!seen) {
     await db.update(grants, { id: contract }).set((row) => ({

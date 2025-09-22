@@ -109,10 +109,10 @@ export const allocations = onchainTable(
   (t) => ({
     contract: t.text().notNull(),
     allocationKey: t.text().notNull(),
+    strategy: t.text().notNull(),
     allocator: t.text().notNull(),
     recipientId: t.text().notNull(),
     chainId: t.integer().notNull(),
-    strategy: t.text().notNull(),
     bps: t.integer().notNull(),
     memberUnits: t.text().notNull(),
     committedMemberUnits: t.text().notNull(),
@@ -125,10 +125,23 @@ export const allocations = onchainTable(
   }),
   (tbl) => ({
     pk: primaryKey({
-      columns: [tbl.contract, tbl.allocationKey, tbl.allocator, tbl.recipientId, tbl.chainId],
+      columns: [
+        tbl.contract,
+        tbl.allocationKey,
+        tbl.strategy,
+        tbl.allocator,
+        tbl.recipientId,
+        tbl.chainId,
+      ],
     }),
-    byKey: index().on(tbl.contract, tbl.allocationKey, tbl.chainId),
-    byAllocator: index().on(tbl.contract, tbl.allocationKey, tbl.allocator, tbl.chainId),
+    byKey: index().on(tbl.contract, tbl.allocationKey, tbl.strategy, tbl.chainId),
+    byAllocator: index().on(
+      tbl.contract,
+      tbl.allocationKey,
+      tbl.strategy,
+      tbl.allocator,
+      tbl.chainId
+    ),
     byRecipient: index().on(tbl.contract, tbl.recipientId, tbl.chainId),
   })
 )

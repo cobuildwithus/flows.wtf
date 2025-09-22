@@ -17,37 +17,39 @@ async function handleAllocationCommitted({
   event: Event<"CustomFlow:AllocationCommitted">
   context: Context<"CustomFlow:AllocationCommitted">
 }) {
-  const { allocationKey } = event.args
+  const { allocationKey, strategy } = event.args
   const chainId = context.chain.id
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const blockNumber = event.block.number.toString()
   const txHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
+  const strategyLower = (strategy as string).toLowerCase()
 
   // Pull the scratch list for this tx (the "new" recipient set)
-  const scratchKey = `${chainId}_${contract}_${allocationKey}_${allocator}_${txHash}`
+  const scratchKey = `${chainId}_${contract}_${strategyLower}_${allocationKey}_${allocator}_${txHash}`
   const scratch = await context.db.find(tempRecipientsByKeyAllocatorTx, {
     contractKeyAllocatorTx: scratchKey,
   })
   const newRecipients = scratch?.recipientIds ?? []
 
-  // Get the previous committed set for this (chain,contract,key,allocator)
-  const lastKey = `${chainId}_${contract}_${allocationKey}_${allocator}`
+  // Get the previous committed set for this (chain,contract,strategy,key,allocator)
+  const lastKey = `${chainId}_${contract}_${strategyLower}_${allocationKey}_${allocator}`
   const prev = await context.db.find(lastRecipientsByKeyAllocator, {
     contractKeyAllocator: lastKey,
   })
   const prevRecipientIds = prev?.recipientIds ?? []
 
-  // Build a map of previous committed units
+  // Build a map of previous committed units (per strategy)
   const previousMemberUnits = new Map<string, bigint>()
   for (const recipientId of prevRecipientIds) {
     const prevAllocation = await context.db.find(allocations, {
       contract,
       allocationKey: allocationKey.toString(),
+      strategy: strategyLower,
       allocator,
       recipientId,
       chainId,
-    })
+    } as any)
     if (prevAllocation) {
       previousMemberUnits.set(recipientId, BigInt(prevAllocation.committedMemberUnits))
     } else {
@@ -55,16 +57,17 @@ async function handleAllocationCommitted({
     }
   }
 
-  // Current units come from upserted AllocationSet rows in this tx
+  // Current units come from upserted AllocationSet rows in this tx (per strategy)
   const currentMemberUnits = new Map<string, bigint>()
   for (const recipientId of newRecipients) {
     const allocation = await context.db.find(allocations, {
       contract,
       allocationKey: allocationKey.toString(),
+      strategy: strategyLower,
       allocator,
       recipientId,
       chainId,
-    })
+    } as any)
     if (allocation) {
       currentMemberUnits.set(recipientId, BigInt(allocation.memberUnits))
     }
@@ -80,15 +83,16 @@ async function handleAllocationCommitted({
     const delta = newUnits - oldUnits
     if (delta !== 0n) deltas.set(recipientId, delta)
 
-    // Delete allocation for removed recipients
+    // Delete allocation for removed recipients (this strategy only)
     if (oldUnits > 0n && newUnits === 0n) {
       await context.db.delete(allocations, {
         contract,
         allocationKey: allocationKey.toString(),
+        strategy: strategyLower,
         allocator,
         recipientId,
         chainId,
-      })
+      } as any)
     }
   }
 
@@ -107,23 +111,24 @@ async function handleAllocationCommitted({
     }
   }
 
-  // Stamp committed snapshot and commitTxHash for all new recipients
+  // Stamp committed snapshot and commitTxHash for all new recipients (this strategy only)
   for (const rid of newRecipients) {
     await context.db
       .update(allocations, {
         contract,
         allocationKey: allocationKey.toString(),
+        strategy: strategyLower,
         allocator,
         recipientId: rid,
         chainId,
-      })
+      } as any)
       .set((row) => ({
         committedMemberUnits: row.memberUnits,
         commitTxHash: txHash,
       }))
   }
 
-  // Save the "last" recipients set for this allocator/key
+  // Save the "last" recipients set for this allocator/key/strategy
   await context.db
     .insert(lastRecipientsByKeyAllocator)
     .values({
@@ -138,7 +143,7 @@ async function handleAllocationCommitted({
       lastBlockNumber: blockNumber,
     }))
 
-  // Clean up the scratch row for this tx
+  // Clean up the scratch row for this tx (strategy-scoped)
   await context.db.delete(tempRecipientsByKeyAllocatorTx, { contractKeyAllocatorTx: scratchKey })
 
   // Recompute flows exactly once
