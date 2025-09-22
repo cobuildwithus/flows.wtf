@@ -119,6 +119,7 @@ export const allocations = onchainTable(
     blockTimestamp: t.integer().notNull(),
     transactionHash: t.text().notNull(),
     memberUnits: t.text().notNull(),
+    totalWeight: t.bigint().notNull(),
   }),
   (table) => ({
     allocatorIdx: index().on(table.allocator),

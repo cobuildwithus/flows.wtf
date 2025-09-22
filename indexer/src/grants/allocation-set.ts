@@ -53,6 +53,7 @@ async function handleAllocationSet(params: {
     blockTimestamp,
     transactionHash,
     memberUnits: memberUnits.toString(),
+    totalWeight: totalWeight,
   })
 
   await context.db

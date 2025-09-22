@@ -148,7 +148,7 @@ model Grant {
   url                              String?
   isRemoved                        Boolean  @map("is_removed")
   isActive                         Boolean  @map("is_active")
-  memberUnits                 String   @map("allocations_count")
+  memberUnits                 String   @map("member_units")
   monthlyIncomingFlowRate          String   @map("monthly_incoming_flow_rate")
   monthlyIncomingBaselineFlowRate  String   @map("monthly_incoming_baseline_flow_rate")
   monthlyIncomingBonusFlowRate     String   @map("monthly_incoming_bonus_flow_rate")
@@ -258,7 +258,7 @@ model Allocation {
   blockNumber      String @map("block_number")
   blockTimestamp   Int    @map("block_timestamp")
   transactionHash  String @map("transaction_hash")
-  memberUnits String @map("allocations_count")
+  memberUnits String @map("member_units")
   chainId          Int    @map("chain_id")
 
   grant Grant @relation(fields: [contract, recipientId], references: [flowId, recipientId])
