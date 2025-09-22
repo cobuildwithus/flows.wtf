@@ -1,10 +1,5 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import {
-  allocations,
-  grants,
-  tempRecipientsByKeyAllocatorTx,
-  allocationKeyRegistered,
-} from "ponder:schema"
+import { allocations, grants, tempRecipientsByKeyAllocatorTx } from "ponder:schema"
 
 ponder.on("CustomFlow:AllocationSet", handleAllocationSet)
 
@@ -25,17 +20,6 @@ async function handleAllocationSet({
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const strategyLower = (strategy as string).toLowerCase()
   const logIndex = Number(event.log.logIndex)
-
-  // Update weight-on-flow if this (contract,strategy,key) is brand new
-  await incrementWeightIfFirstUse(
-    context.db,
-    chainId,
-    contract,
-    strategyLower,
-    allocationKey,
-    totalWeight,
-    blockNumber
-  )
 
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
@@ -85,25 +69,4 @@ async function handleAllocationSet({
     .onConflictDoUpdate((row) => ({
       recipientIds: Array.from(new Set([...row.recipientIds, recipientId.toString()])),
     }))
-}
-
-async function incrementWeightIfFirstUse(
-  db: Context["db"],
-  chainId: number,
-  contract: `0x${string}`,
-  strategyLower: string,
-  allocationKey: bigint,
-  newWeight: bigint,
-  blockNumber: string
-) {
-  const key = `${chainId}_${contract}_${strategyLower}_${allocationKey}`
-  const seen = await db.find(allocationKeyRegistered, { contractAllocationKey: key })
-  if (!seen) {
-    await db.update(grants, { id: contract }).set((row) => ({
-      totalAllocationWeightOnFlow: (BigInt(row.totalAllocationWeightOnFlow) + newWeight).toString(),
-    }))
-    await db
-      .insert(allocationKeyRegistered)
-      .values({ contractAllocationKey: key, firstSeenBlock: blockNumber })
-  }
 }

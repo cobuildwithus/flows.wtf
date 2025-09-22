@@ -4,6 +4,7 @@ import {
   tempRecipientsByKeyAllocatorTx,
   lastRecipientsByKeyAllocator,
   grants,
+  allocationKeyRegistered,
 } from "ponder:schema"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
@@ -17,7 +18,7 @@ async function handleAllocationCommitted({
   event: Event<"CustomFlow:AllocationCommitted">
   context: Context<"CustomFlow:AllocationCommitted">
 }) {
-  const { allocationKey, strategy } = event.args
+  const { allocationKey, strategy, weight } = event.args
   const chainId = context.chain.id
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const blockNumber = event.block.number.toString()
@@ -25,12 +26,26 @@ async function handleAllocationCommitted({
   const allocator = event.transaction.from.toLowerCase()
   const strategyLower = (strategy as string).toLowerCase()
 
+  // First-use weight (once per (strategy,key))
+  await incrementWeightIfFirstUse(
+    context.db,
+    chainId,
+    contract,
+    strategyLower,
+    allocationKey,
+    weight,
+    blockNumber
+  )
+
   // Pull the scratch list for this tx (the "new" recipient set)
   const scratchKey = `${chainId}_${contract}_${strategyLower}_${allocationKey}_${allocator}_${txHash}`
   const scratch = await context.db.find(tempRecipientsByKeyAllocatorTx, {
     contractKeyAllocatorTx: scratchKey,
   })
   const newRecipients = scratch?.recipientIds ?? []
+
+  // Safety: the contract can't commit an empty set; skip rather than wiping state if scratch is missing.
+  if (newRecipients.length === 0) return
 
   // Get the previous committed set for this (chain,contract,strategy,key,allocator)
   const lastKey = `${chainId}_${contract}_${strategyLower}_${allocationKey}_${allocator}`
@@ -96,14 +111,18 @@ async function handleAllocationCommitted({
     }
   }
 
-  // Apply the unit deltas to grant rows with defensive clamping and error handling
+  // Apply the unit deltas to grant rows: update bonusMemberUnits (and memberUnits if still used)
   for (const [rid, delta] of deltas) {
     try {
       if (delta !== 0n) {
         const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
         await context.db.update(grants, { id: grantId }).set((row) => {
-          const next = BigInt(row.memberUnits) + delta
-          return { memberUnits: (next < 0n ? 0n : next).toString() }
+          const nextMember = BigInt(row.memberUnits) + delta
+          const nextBonus = BigInt(row.bonusMemberUnits) + delta
+          return {
+            memberUnits: (nextMember < 0n ? 0n : nextMember).toString(),
+            bonusMemberUnits: (nextBonus < 0n ? 0n : nextBonus).toString(),
+          }
         })
       }
     } catch (e: any) {
@@ -148,4 +167,25 @@ async function handleAllocationCommitted({
 
   // Recompute flows exactly once
   await handleIncomingFlowRates(context.db, contract)
+}
+
+async function incrementWeightIfFirstUse(
+  db: Context["db"],
+  chainId: number,
+  contract: `0x${string}`,
+  strategyLower: string,
+  allocationKey: bigint,
+  newWeight: bigint,
+  blockNumber: string
+) {
+  const key = `${chainId}_${contract}_${strategyLower}_${allocationKey}`
+  const seen = await db.find(allocationKeyRegistered, { contractAllocationKey: key })
+  if (!seen) {
+    await db.update(grants, { id: contract }).set((row) => ({
+      totalAllocationWeightOnFlow: (BigInt(row.totalAllocationWeightOnFlow) + newWeight).toString(),
+    }))
+    await db
+      .insert(allocationKeyRegistered)
+      .values({ contractAllocationKey: key, firstSeenBlock: blockNumber })
+  }
 }
