@@ -89,8 +89,8 @@ export async function updateSiblingFlowRates(
   const rid = recipientId.toLowerCase()
   const pid = parentContract.toLowerCase()
   const siblingFlow = await db.find(grants, { id: rid })
-  // Only propagate if it is a flow and NOT a direct child of this parent
-  if (!siblingFlow || siblingFlow.parentContract.toLowerCase() === pid) return
+  // Only propagate if recipient is a flow
+  if (!siblingFlow || !siblingFlow.isFlow) return
 
   const kvKey = `${chainId}_${rid}_${pid}`
 
