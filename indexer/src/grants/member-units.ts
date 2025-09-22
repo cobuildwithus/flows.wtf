@@ -45,7 +45,7 @@ async function handleMemberUnitsUpdated(params: {
   const bonusChanged = shouldUpdateBonus && grant.bonusMemberUnits !== newUnitsStr
 
   if (baselineChanged || bonusChanged) {
-    await context.db.update(grants, { id: grant.id }).set((row) => ({
+    await context.db.update(grants, { id: grant.id }).set((row: typeof grants.$inferSelect) => ({
       baselineMemberUnits: baselineChanged ? newUnitsStr : row.baselineMemberUnits,
       bonusMemberUnits: bonusChanged ? newUnitsStr : row.bonusMemberUnits,
       updatedAt: Number(event.block.timestamp),
@@ -119,8 +119,8 @@ async function handleRemovedGrant(
     db.delete(recipientAndParentToGrantId, {
       recipientAndParent: `${recipient.toLowerCase()}-${parentContract.toLowerCase()}`,
     }),
-    db.update(parentFlowToChildren, { parentFlowContract: parentContract }).set((row) => ({
-      childGrantIds: row.childGrantIds.filter((id) => id !== grant.id),
+    db.update(parentFlowToChildren, { parentFlowContract: parentContract }).set((row: typeof parentFlowToChildren.$inferSelect) => ({
+      childGrantIds: row.childGrantIds.filter((id: string) => id !== grant.id),
     })),
     isFlow
       ? db.update(grants, { id: grant.id }).set({

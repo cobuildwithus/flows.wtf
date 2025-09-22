@@ -12,15 +12,17 @@ async function getRelevantGrants(db: Context["db"], parentContract: string) {
   const grantIds = res.childGrantIds
 
   const relevantGrants = await Promise.all(
-    grantIds.map(async (grantId) => db.find(grants, { id: grantId }))
+    grantIds.map(async (grantId: string) => db.find(grants, { id: grantId }))
   )
 
   // ensure not null, throw if any are null
-  if (relevantGrants.some((grant) => grant === null)) {
+  if (relevantGrants.some((grant: typeof grants.$inferSelect | null) => grant === null)) {
     throw new Error(`Null grant found: ${parentContract}`)
   }
 
-  return relevantGrants.filter((grant) => grant !== null)
+  return relevantGrants.filter(
+    (grant: typeof grants.$inferSelect | null): grant is typeof grants.$inferSelect => grant !== null
+  )
 }
 
 export async function handleIncomingFlowRates(db: Context["db"], parentContract: string) {
@@ -37,7 +39,7 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
 
   // Calculate total baseline and bonus member units across all siblings
   const [totalBaselineMemberUnits, totalBonusMemberUnits] = items.reduce(
-    (acc: [number, number], item) => [
+    (acc: [number, number], item: typeof grants.$inferSelect) => [
       acc[0] + Number(item.baselineMemberUnits),
       acc[1] + Number(item.bonusMemberUnits),
     ],
@@ -45,12 +47,6 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
   )
 
   if (totalBaselineMemberUnits === 0 || totalBonusMemberUnits === 0) {
-    console.error({
-      totalBaselineMemberUnits,
-      totalBonusMemberUnits,
-      baselineFlowRate,
-      bonusFlowRate,
-    })
     throw new Error("Invalid member units")
   }
 
@@ -58,8 +54,9 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
   const baselineFlowRatePerUnit = baselineFlowRate / totalBaselineMemberUnits
   const bonusFlowRatePerUnit = bonusFlowRate / totalBonusMemberUnits
 
+  // First, parallelize independent writes on distinct grant ids
   await Promise.all(
-    items.map(async (sibling) => {
+    items.map(async (sibling: typeof grants.$inferSelect) => {
       const baselineUnits = Number(sibling.baselineMemberUnits)
       const bonusUnits = Number(sibling.bonusMemberUnits)
 
@@ -67,13 +64,11 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
       const bonusFlowRateForSibling = bonusFlowRatePerUnit * bonusUnits
       const totalSiblingFlowRate = baselineFlowRateForSibling + bonusFlowRateForSibling
 
-      // Convert flow rate to monthly amount
       const monthlyIncomingFlowRate = totalSiblingFlowRate * secondsPerMonth
       const monthlyIncomingBaselineFlowRate = baselineFlowRateForSibling * secondsPerMonth
       const monthlyIncomingBonusFlowRate = bonusFlowRateForSibling * secondsPerMonth
 
       if (Number.isNaN(monthlyIncomingFlowRate)) {
-        console.error(totalSiblingFlowRate, baselineFlowRateForSibling, bonusFlowRateForSibling)
         throw new Error(`Invalid monthly incoming flow rate: ${monthlyIncomingFlowRate}`)
       }
 
@@ -82,19 +77,31 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
         monthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
         monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
       })
-
-      // if the flow is being paid to another flow
-      // we need to update its flow rates
-      await updateSiblingFlowRates(
-        db,
-        sibling.recipient,
-        parentContract,
-        monthlyIncomingFlowRate,
-        monthlyIncomingBaselineFlowRate,
-        monthlyIncomingBonusFlowRate
-      )
     })
   )
+
+  // Then, sequentially update any sibling flows to avoid lost updates when multiple siblings target the same flow
+  for (const sibling of items) {
+    const baselineUnits = Number(sibling.baselineMemberUnits)
+    const bonusUnits = Number(sibling.bonusMemberUnits)
+
+    const baselineFlowRateForSibling = baselineFlowRatePerUnit * baselineUnits
+    const bonusFlowRateForSibling = bonusFlowRatePerUnit * bonusUnits
+    const totalSiblingFlowRate = baselineFlowRateForSibling + bonusFlowRateForSibling
+
+    const monthlyIncomingFlowRate = totalSiblingFlowRate * secondsPerMonth
+    const monthlyIncomingBaselineFlowRate = baselineFlowRateForSibling * secondsPerMonth
+    const monthlyIncomingBonusFlowRate = bonusFlowRateForSibling * secondsPerMonth
+
+    await updateSiblingFlowRates(
+      db,
+      sibling.recipient,
+      parentContract,
+      monthlyIncomingFlowRate,
+      monthlyIncomingBaselineFlowRate,
+      monthlyIncomingBonusFlowRate
+    )
+  }
 }
 
 async function updateSiblingFlowRates(
@@ -123,7 +130,7 @@ async function updateSiblingFlowRates(
     monthlyIncomingBonusFlowRate -
     Number(previousFlowRates?.previousMonthlyIncomingBonusFlowRate || 0)
 
-  await db.update(grants, { id: recipientId }).set((row) => ({
+  await db.update(grants, { id: recipientId }).set((row: typeof grants.$inferSelect) => ({
     monthlyIncomingFlowRate: (
       Number(row.monthlyIncomingFlowRate) + netMonthlyIncomingFlowRate
     ).toString(),
@@ -143,7 +150,7 @@ async function updateSiblingFlowRates(
       previousMonthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
       previousMonthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
     })
-    .onConflictDoUpdate((row) => ({
+    .onConflictDoUpdate((row: typeof siblingFlowAndParentToPreviousFlowRates.$inferSelect) => ({
       previousMonthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
       previousMonthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
       previousMonthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
