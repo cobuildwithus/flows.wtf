@@ -15,135 +15,119 @@ async function getRelevantGrants(db: Context["db"], parentContract: string) {
     grantIds.map(async (grantId) => db.find(grants, { id: grantId }))
   )
 
-  // ensure not null, throw if any are null
-  if (relevantGrants.some((grant) => grant === null)) {
-    throw new Error(`Null grant found: ${parentContract}`)
+  // ensure not undefined, throw if any are missing
+  if (relevantGrants.some((grant) => !grant)) {
+    throw new Error(`Null/undefined grant under parent: ${parentContract}`)
   }
 
-  return relevantGrants.filter((grant) => grant !== null)
+  return relevantGrants.filter((g): g is NonNullable<(typeof relevantGrants)[number]> => Boolean(g))
 }
 
 export async function handleIncomingFlowRates(db: Context["db"], parentContract: string) {
   const items = await getRelevantGrants(db, parentContract)
-
   if (!items?.length) return
 
   const parent = await db.find(grants, { id: parentContract })
   if (!parent) throw new Error(`Parent not found: ${parentContract}`)
 
-  const secondsPerMonth = 60 * 60 * 24 * 30
-  const baselineFlowRate = Number(parent.monthlyBaselinePoolFlowRate) / secondsPerMonth
-  const bonusFlowRate = Number(parent.monthlyBonusPoolFlowRate) / secondsPerMonth
+  // Monthly amounts as BigInt
+  const baselineMonthly = BigInt(parent.monthlyBaselinePoolFlowRate)
+  const bonusMonthly = BigInt(parent.monthlyBonusPoolFlowRate)
 
-  // Calculate total baseline and bonus member units across all siblings
-  const [totalBaselineMemberUnits, totalBonusMemberUnits] = items.reduce(
-    (acc: [number, number], item) => [
-      acc[0] + Number(item.baselineMemberUnits),
-      acc[1] + Number(item.bonusMemberUnits),
+  // Parent self-units
+  const parentBaselineUnits = BigInt(parent.baselineMemberUnits ?? "0")
+  const parentBonusUnits = BigInt(parent.bonusMemberUnits ?? "0")
+
+  // Sum children units + parent units
+  const [totalBaselineUnits, totalBonusUnits] = items.reduce(
+    (acc: [bigint, bigint], item) => [
+      acc[0] + BigInt(item.baselineMemberUnits),
+      acc[1] + BigInt(item.bonusMemberUnits),
     ],
-    [1, 1] // the parent always has 1 unit directing the pool flow to itself
+    [parentBaselineUnits, parentBonusUnits] as [bigint, bigint]
   )
 
-  if (totalBaselineMemberUnits === 0 || totalBonusMemberUnits === 0) {
-    console.error({
-      totalBaselineMemberUnits,
-      totalBonusMemberUnits,
-      baselineFlowRate,
-      bonusFlowRate,
-    })
-    throw new Error("Invalid member units")
-  }
-
-  // Calculate flow rate per unit for baseline and bonus pools
-  const baselineFlowRatePerUnit = baselineFlowRate / totalBaselineMemberUnits
-  const bonusFlowRatePerUnit = bonusFlowRate / totalBonusMemberUnits
+  const safeDiv = (num: bigint, den: bigint) => (den === 0n ? 0n : num / den)
 
   await Promise.all(
     items.map(async (sibling) => {
-      const baselineUnits = Number(sibling.baselineMemberUnits)
-      const bonusUnits = Number(sibling.bonusMemberUnits)
+      const baselineUnits = BigInt(sibling.baselineMemberUnits)
+      const bonusUnits = BigInt(sibling.bonusMemberUnits)
 
-      const baselineFlowRateForSibling = baselineFlowRatePerUnit * baselineUnits
-      const bonusFlowRateForSibling = bonusFlowRatePerUnit * bonusUnits
-      const totalSiblingFlowRate = baselineFlowRateForSibling + bonusFlowRateForSibling
-
-      // Convert flow rate to monthly amount
-      const monthlyIncomingFlowRate = totalSiblingFlowRate * secondsPerMonth
-      const monthlyIncomingBaselineFlowRate = baselineFlowRateForSibling * secondsPerMonth
-      const monthlyIncomingBonusFlowRate = bonusFlowRateForSibling * secondsPerMonth
-
-      if (Number.isNaN(monthlyIncomingFlowRate)) {
-        console.error(totalSiblingFlowRate, baselineFlowRateForSibling, bonusFlowRateForSibling)
-        throw new Error(`Invalid monthly incoming flow rate: ${monthlyIncomingFlowRate}`)
-      }
+      const baselineShare = safeDiv(baselineMonthly * baselineUnits, totalBaselineUnits)
+      const bonusShare = safeDiv(bonusMonthly * bonusUnits, totalBonusUnits)
+      const totalShare = baselineShare + bonusShare
 
       await db.update(grants, { id: sibling.id }).set({
-        monthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
-        monthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
-        monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
+        monthlyIncomingFlowRate: totalShare.toString(),
+        monthlyIncomingBaselineFlowRate: baselineShare.toString(),
+        monthlyIncomingBonusFlowRate: bonusShare.toString(),
       })
 
-      // if the flow is being paid to another flow
-      // we need to update its flow rates
       await updateSiblingFlowRates(
         db,
         sibling.recipient,
         parentContract,
-        monthlyIncomingFlowRate,
-        monthlyIncomingBaselineFlowRate,
-        monthlyIncomingBonusFlowRate
+        totalShare,
+        baselineShare,
+        bonusShare,
+        parent.chainId
       )
     })
   )
 }
 
-async function updateSiblingFlowRates(
+export async function updateSiblingFlowRates(
   db: Context["db"],
   recipientId: string,
   parentContract: string,
-  monthlyIncomingFlowRate: number,
-  monthlyIncomingBaselineFlowRate: number,
-  monthlyIncomingBonusFlowRate: number
+  monthlyIncomingFlowRate: bigint,
+  monthlyIncomingBaselineFlowRate: bigint,
+  monthlyIncomingBonusFlowRate: bigint,
+  chainId: number
 ) {
-  const siblingFlow = await db.find(grants, { id: recipientId })
-  // if the flow is being paid to another flow that is not a direct child of the parent
-  // we need to update its flow rates
-  if (!siblingFlow || siblingFlow?.parentContract == parentContract) return
+  const rid = recipientId.toLowerCase()
+  const pid = parentContract.toLowerCase()
+  const siblingFlow = await db.find(grants, { id: rid })
+  // Only propagate if it is a flow and NOT a direct child of this parent
+  if (!siblingFlow || siblingFlow.parentContract.toLowerCase() === pid) return
+
+  const kvKey = `${chainId}_${rid}_${pid}`
 
   const previousFlowRates = await db.find(siblingFlowAndParentToPreviousFlowRates, {
-    siblingFlowAndParent: `${recipientId}-${parentContract}`,
+    siblingFlowAndParent: kvKey,
   })
 
-  const netMonthlyIncomingFlowRate =
-    monthlyIncomingFlowRate - Number(previousFlowRates?.previousMonthlyIncomingFlowRate || 0)
-  const netMonthlyIncomingBaselineFlowRate =
-    monthlyIncomingBaselineFlowRate -
-    Number(previousFlowRates?.previousMonthlyIncomingBaselineFlowRate || 0)
-  const netMonthlyIncomingBonusFlowRate =
-    monthlyIncomingBonusFlowRate -
-    Number(previousFlowRates?.previousMonthlyIncomingBonusFlowRate || 0)
+  const prevTotal = BigInt(previousFlowRates?.previousMonthlyIncomingFlowRate ?? "0")
+  const prevBase = BigInt(previousFlowRates?.previousMonthlyIncomingBaselineFlowRate ?? "0")
+  const prevBonus = BigInt(previousFlowRates?.previousMonthlyIncomingBonusFlowRate ?? "0")
 
-  await db.update(grants, { id: recipientId }).set((row) => ({
-    monthlyIncomingFlowRate: (
-      Number(row.monthlyIncomingFlowRate) + netMonthlyIncomingFlowRate
-    ).toString(),
-    monthlyIncomingBaselineFlowRate: (
-      Number(row.monthlyIncomingBaselineFlowRate) + netMonthlyIncomingBaselineFlowRate
-    ).toString(),
-    monthlyIncomingBonusFlowRate: (
-      Number(row.monthlyIncomingBonusFlowRate) + netMonthlyIncomingBonusFlowRate
-    ).toString(),
+  const netTotal = monthlyIncomingFlowRate - prevTotal
+  const netBase = monthlyIncomingBaselineFlowRate - prevBase
+  const netBonus = monthlyIncomingBonusFlowRate - prevBonus
+
+  const addClamp = (current: string, delta: bigint) => {
+    const cur = BigInt(current)
+    if (delta >= 0n) return (cur + delta).toString()
+    const abs = -delta
+    return (cur > abs ? cur - abs : 0n).toString()
+  }
+
+  await db.update(grants, { id: rid }).set((row) => ({
+    monthlyIncomingFlowRate: addClamp(row.monthlyIncomingFlowRate, netTotal),
+    monthlyIncomingBaselineFlowRate: addClamp(row.monthlyIncomingBaselineFlowRate, netBase),
+    monthlyIncomingBonusFlowRate: addClamp(row.monthlyIncomingBonusFlowRate, netBonus),
   }))
 
   await db
     .insert(siblingFlowAndParentToPreviousFlowRates)
     .values({
-      siblingFlowAndParent: `${recipientId}-${parentContract}`,
+      siblingFlowAndParent: kvKey,
       previousMonthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
       previousMonthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
       previousMonthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
     })
-    .onConflictDoUpdate((row) => ({
+    .onConflictDoUpdate(() => ({
       previousMonthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
       previousMonthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
       previousMonthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
