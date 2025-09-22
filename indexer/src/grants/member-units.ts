@@ -1,5 +1,4 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import {
   baselinePoolToGrantId,
   bonusPoolToGrantId,
@@ -41,21 +40,17 @@ async function handleMemberUnitsUpdated(params: {
     throw new Error(`Grant not found: ${member}`)
   }
 
-  if (shouldUpdateBaseline) {
-    await context.db.update(grants, { id: grant.id }).set({
-      baselineMemberUnits: newUnits.toString(),
-      updatedAt: Number(event.block.timestamp),
-    })
-  }
+  const newUnitsStr = newUnits.toString()
+  const baselineChanged = shouldUpdateBaseline && grant.baselineMemberUnits !== newUnitsStr
+  const bonusChanged = shouldUpdateBonus && grant.bonusMemberUnits !== newUnitsStr
 
-  if (shouldUpdateBonus) {
-    await context.db.update(grants, { id: grant.id }).set({
-      bonusMemberUnits: newUnits.toString(),
+  if (baselineChanged || bonusChanged) {
+    await context.db.update(grants, { id: grant.id }).set((row) => ({
+      baselineMemberUnits: baselineChanged ? newUnitsStr : row.baselineMemberUnits,
+      bonusMemberUnits: bonusChanged ? newUnitsStr : row.bonusMemberUnits,
       updatedAt: Number(event.block.timestamp),
-    })
+    }))
   }
-
-  await handleIncomingFlowRates(context.db, parentGrant.recipient)
 
   if (shouldUpdateBaseline && newUnits === 0n) {
     // we assume that if the new units are 0 in the baseline pool, the grant is being removed

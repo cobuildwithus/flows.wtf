@@ -58,41 +58,43 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
   const baselineFlowRatePerUnit = baselineFlowRate / totalBaselineMemberUnits
   const bonusFlowRatePerUnit = bonusFlowRate / totalBonusMemberUnits
 
-  for (const sibling of items) {
-    const baselineUnits = Number(sibling.baselineMemberUnits)
-    const bonusUnits = Number(sibling.bonusMemberUnits)
+  await Promise.all(
+    items.map(async (sibling) => {
+      const baselineUnits = Number(sibling.baselineMemberUnits)
+      const bonusUnits = Number(sibling.bonusMemberUnits)
 
-    const baselineFlowRate = baselineFlowRatePerUnit * baselineUnits
-    const bonusFlowRate = bonusFlowRatePerUnit * bonusUnits
-    const totalSiblingFlowRate = baselineFlowRate + bonusFlowRate
+      const baselineFlowRateForSibling = baselineFlowRatePerUnit * baselineUnits
+      const bonusFlowRateForSibling = bonusFlowRatePerUnit * bonusUnits
+      const totalSiblingFlowRate = baselineFlowRateForSibling + bonusFlowRateForSibling
 
-    // Convert flow rate to monthly amount
-    const monthlyIncomingFlowRate = totalSiblingFlowRate * secondsPerMonth
-    const monthlyIncomingBaselineFlowRate = baselineFlowRate * secondsPerMonth
-    const monthlyIncomingBonusFlowRate = bonusFlowRate * secondsPerMonth
+      // Convert flow rate to monthly amount
+      const monthlyIncomingFlowRate = totalSiblingFlowRate * secondsPerMonth
+      const monthlyIncomingBaselineFlowRate = baselineFlowRateForSibling * secondsPerMonth
+      const monthlyIncomingBonusFlowRate = bonusFlowRateForSibling * secondsPerMonth
 
-    if (Number.isNaN(monthlyIncomingFlowRate)) {
-      console.error(totalSiblingFlowRate, baselineFlowRate, bonusFlowRate)
-      throw new Error(`Invalid monthly incoming flow rate: ${monthlyIncomingFlowRate}`)
-    }
+      if (Number.isNaN(monthlyIncomingFlowRate)) {
+        console.error(totalSiblingFlowRate, baselineFlowRateForSibling, bonusFlowRateForSibling)
+        throw new Error(`Invalid monthly incoming flow rate: ${monthlyIncomingFlowRate}`)
+      }
 
-    await db.update(grants, { id: sibling.id }).set({
-      monthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
-      monthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
-      monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
+      await db.update(grants, { id: sibling.id }).set({
+        monthlyIncomingFlowRate: monthlyIncomingFlowRate.toString(),
+        monthlyIncomingBaselineFlowRate: monthlyIncomingBaselineFlowRate.toString(),
+        monthlyIncomingBonusFlowRate: monthlyIncomingBonusFlowRate.toString(),
+      })
+
+      // if the flow is being paid to another flow
+      // we need to update its flow rates
+      await updateSiblingFlowRates(
+        db,
+        sibling.recipient,
+        parentContract,
+        monthlyIncomingFlowRate,
+        monthlyIncomingBaselineFlowRate,
+        monthlyIncomingBonusFlowRate
+      )
     })
-
-    // if the flow is being paid to another flow
-    // we need to update its flow rates
-    await updateSiblingFlowRates(
-      db,
-      sibling.recipient,
-      parentContract,
-      monthlyIncomingFlowRate,
-      monthlyIncomingBaselineFlowRate,
-      monthlyIncomingBonusFlowRate
-    )
-  }
+  )
 }
 
 async function updateSiblingFlowRates(
