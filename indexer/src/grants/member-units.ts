@@ -1,4 +1,5 @@
 import { ponder, type Context, type Event } from "ponder:registry"
+import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import {
   baselinePoolToGrantId,
   bonusPoolToGrantId,
@@ -53,6 +54,8 @@ async function handleMemberUnitsUpdated(params: {
   }
 
   if (shouldUpdateBaseline && newUnits === 0n) {
+    // Recompute incoming flows while this child is still in the sibling set
+    await handleIncomingFlowRates(context.db, parentGrant.recipient)
     // we assume that if the new units are 0 in the baseline pool, the grant is being removed
     await handleRemovedGrant(context.db, grant.recipient, parentGrant.recipient, grant.isFlow)
   }
