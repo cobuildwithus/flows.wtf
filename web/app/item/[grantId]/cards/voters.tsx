@@ -42,9 +42,7 @@ export const Voters = async (props: Props) => {
                     <span className="mr-1.5 truncate text-sm font-medium">
                       {profile.display_name}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                      {v.allocationsCount} votes
-                    </span>
+                    <span className="text-xs text-muted-foreground">{v.memberUnits} votes</span>
                   </div>
                 </div>
               )}

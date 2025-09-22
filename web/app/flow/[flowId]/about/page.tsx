@@ -87,7 +87,7 @@ export default async function FlowPage(props: Props) {
                   </div>
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Votes</h4>
-                    <p className="mt-1 text-lg font-medium">{flow.allocationsCount}</p>
+                    <p className="mt-1 text-lg font-medium">{flow.memberUnits}</p>
                   </div>
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Your Vote</h4>
@@ -141,7 +141,7 @@ export default async function FlowPage(props: Props) {
                   <Voters
                     contract={flow.parentContract as `0x${string}`}
                     recipientId={flow.recipientId}
-                    flowVotesCount={pool.allocationsCount}
+                    flowVotesCount={pool.memberUnits}
                     isFlow={true}
                   />
                 </Suspense>

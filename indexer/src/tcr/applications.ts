@@ -63,7 +63,7 @@ async function handleItemSubmitted(params: {
     isFlow: recipientType === RecipientType.FlowContract,
     isSiblingFlow: false,
     isRemoved: false,
-    allocationsCount: "0",
+    memberUnits: "0",
     bonusPoolQuorum: 0,
     totalAllocationWeightOnFlow: "0",
     monthlyIncomingFlowRate: "0",

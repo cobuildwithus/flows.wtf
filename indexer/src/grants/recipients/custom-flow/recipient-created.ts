@@ -64,7 +64,7 @@ async function handleRecipientCreated(params: {
     isFlow: false,
     isSiblingFlow: existingRecipient?.isFlow ? true : false,
     isRemoved: false,
-    allocationsCount: "0",
+    memberUnits: "0",
     isOnchainStartup: isOnchainStartup(flowAddress),
     isAccelerator: false,
     bonusPoolQuorum: 0,

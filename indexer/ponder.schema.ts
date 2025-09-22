@@ -20,7 +20,7 @@ export const grants = onchainTable(
     url: t.text(),
     isRemoved: t.boolean().notNull(),
     isActive: t.boolean().notNull(),
-    allocationsCount: t.text().notNull(),
+    memberUnits: t.text().notNull(),
     monthlyIncomingFlowRate: t.text().notNull(),
     monthlyIncomingBaselineFlowRate: t.text().notNull(),
     monthlyIncomingBonusFlowRate: t.text().notNull(),
@@ -118,7 +118,7 @@ export const allocations = onchainTable(
     blockNumber: t.text().notNull(),
     blockTimestamp: t.integer().notNull(),
     transactionHash: t.text().notNull(),
-    allocationsCount: t.text().notNull(),
+    memberUnits: t.text().notNull(),
   }),
   (table) => ({
     allocatorIdx: index().on(table.allocator),

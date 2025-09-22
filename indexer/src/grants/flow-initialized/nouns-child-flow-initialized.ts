@@ -73,7 +73,7 @@ async function handleFlowInitialized(params: {
     underlyingTokenDecimals,
     underlyingTokenLogo,
     submitter: zeroAddress,
-    allocationsCount: "0",
+    memberUnits: "0",
     totalAllocationWeightOnFlow: "0",
     monthlyIncomingFlowRate: "0",
     monthlyIncomingBaselineFlowRate: "0",

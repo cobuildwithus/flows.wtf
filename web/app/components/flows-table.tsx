@@ -31,7 +31,7 @@ export type LimitedFlow = FlowWithBudget &
     | "challengedRecipientCount"
     | "totalEarned"
     | "isFlow"
-    | "allocationsCount"
+    | "memberUnits"
     | "recipientId"
     | "underlyingTokenSymbol"
     | "underlyingTokenPrefix"

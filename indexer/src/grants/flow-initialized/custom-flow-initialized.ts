@@ -86,7 +86,7 @@ async function handleFlowInitialized(params: {
     underlyingTokenLogo,
     underlyingERC20Token: underlyingERC20Token.toLowerCase(),
     submitter: zeroAddress,
-    allocationsCount: "0",
+    memberUnits: "0",
     totalAllocationWeightOnFlow: "0",
     monthlyIncomingFlowRate: "0",
     monthlyIncomingBaselineFlowRate: "0",

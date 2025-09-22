@@ -2,7 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
 import { allocations, grants, allocationsByAllocationKeyAndContract } from "ponder:schema"
 import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
-import { base, mainnet } from "../../addresses"
+import { mainnet } from "../../addresses"
 
 ponder.on("NounsFlow:VoteCast", handleAllocationCast)
 ponder.on("NounsFlowChildren:VoteCast", handleAllocationCast)
@@ -22,7 +22,7 @@ async function handleAllocationCast(params: {
   context: Context<"NounsFlow:VoteCast">
 }) {
   const { event, context } = params
-  const { recipientId, tokenId, bps, totalWeight } = event.args
+  const { recipientId, tokenId, memberUnits, bps, totalWeight } = event.args
   const chainId = context.chain.id
 
   const blockNumber = event.block.number.toString()
@@ -30,10 +30,9 @@ async function handleAllocationCast(params: {
   const transactionHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
   const contract = event.log.address.toLowerCase() as `0x${string}`
-  const allocationsCount = bps / (totalWeight / BigInt(1e18))
 
   const affectedRecipientIds = new Map<string, bigint>()
-  affectedRecipientIds.set(recipientId.toString(), allocationsCount)
+  affectedRecipientIds.set(recipientId.toString(), memberUnits)
 
   let hasPreviousAllocations = false
 
@@ -48,7 +47,7 @@ async function handleAllocationCast(params: {
     const existingAllocations = affectedRecipientIds.get(oldAllocation.recipientId) ?? BigInt(0)
     affectedRecipientIds.set(
       oldAllocation.recipientId,
-      existingAllocations - BigInt(oldAllocation.allocationsCount)
+      existingAllocations - BigInt(oldAllocation.memberUnits)
     )
     hasPreviousAllocations = true
   }
@@ -68,7 +67,7 @@ async function handleAllocationCast(params: {
     blockNumber,
     blockTimestamp,
     transactionHash,
-    allocationsCount: allocationsCount.toString(),
+    memberUnits: memberUnits.toString(),
   })
 
   await context.db
@@ -89,7 +88,7 @@ async function handleAllocationCast(params: {
     )
 
     await context.db.update(grants, { id: grantId }).set((row) => ({
-      allocationsCount: (BigInt(row.allocationsCount) + allocationsDelta).toString(),
+      memberUnits: (BigInt(row.memberUnits) + allocationsDelta).toString(),
     }))
   }
 

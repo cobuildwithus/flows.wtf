@@ -10,7 +10,7 @@ async function handleAllocationSet(params: {
   context: Context<"CustomFlow:AllocationSet">
 }) {
   const { event, context } = params
-  const { recipientId, strategy, allocationKey, bps, totalWeight } = event.args
+  const { recipientId, strategy, allocationKey, memberUnits, bps, totalWeight } = event.args
   const chainId = context.chain.id
 
   const blockNumber = event.block.number.toString()
@@ -18,10 +18,9 @@ async function handleAllocationSet(params: {
   const transactionHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
   const contract = event.log.address.toLowerCase() as `0x${string}`
-  const allocationsCount = bps / (totalWeight / BigInt(1e18))
 
   const affectedRecipientIds = new Map<string, bigint>()
-  affectedRecipientIds.set(recipientId.toString(), allocationsCount)
+  affectedRecipientIds.set(recipientId.toString(), memberUnits)
 
   let hasPreviousVotes = false
 
@@ -34,7 +33,7 @@ async function handleAllocationSet(params: {
 
   for (const oldVote of oldVotes) {
     const existingVotes = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
-    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.allocationsCount))
+    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.memberUnits))
     hasPreviousVotes = true
   }
 
@@ -53,7 +52,7 @@ async function handleAllocationSet(params: {
     blockNumber,
     blockTimestamp,
     transactionHash,
-    allocationsCount: allocationsCount.toString(),
+    memberUnits: memberUnits.toString(),
   })
 
   await context.db
@@ -74,7 +73,7 @@ async function handleAllocationSet(params: {
     )
 
     await context.db.update(grants, { id: grantId }).set((row) => ({
-      allocationsCount: (BigInt(row.allocationsCount) + allocationsDelta).toString(),
+      memberUnits: (BigInt(row.memberUnits) + allocationsDelta).toString(),
     }))
   }
 

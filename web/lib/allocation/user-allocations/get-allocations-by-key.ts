@@ -10,7 +10,7 @@ export async function getAllocationsByKey(contract: `0x${string}`, keys: string[
     select: {
       bps: true,
       recipientId: true,
-      allocationsCount: true,
+      memberUnits: true,
       grant: { select: { isActive: true } },
     },
     where: {

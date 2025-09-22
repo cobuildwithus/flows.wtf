@@ -14,6 +14,6 @@ export async function getVoters(contract: `0x${string}`, recipientId: string) {
 
   return voters.map((v) => ({
     allocator: v.allocator,
-    allocationsCount: v.allocations_count.toString(),
+    memberUnits: v.allocations_count.toString(),
   }))
 }
