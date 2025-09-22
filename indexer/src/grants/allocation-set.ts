@@ -23,10 +23,17 @@ async function handleAllocationSet({
   const transactionHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
   const contract = event.log.address.toLowerCase() as `0x${string}`
-  const logIndex = Number(event.log.logIndex ?? 0)
+  const logIndex = Number(event.log.logIndex)
 
   // Update weight-on-flow if this (contract,key) is brand new
-  await incrementWeightIfFirstUse(context.db, contract, allocationKey, totalWeight, blockNumber)
+  await incrementWeightIfFirstUse(
+    context.db,
+    chainId,
+    contract,
+    allocationKey,
+    totalWeight,
+    blockNumber
+  )
 
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
@@ -43,6 +50,7 @@ async function handleAllocationSet({
       strategy: strategy.toLowerCase(),
       bps: Number(bps),
       memberUnits: memberUnits.toString(),
+      committedMemberUnits: "0",
       totalWeight,
       blockNumber,
       blockTimestamp,
@@ -50,7 +58,7 @@ async function handleAllocationSet({
       logIndex,
       commitTxHash: "", // Will be set on AllocationCommitted
     })
-    .onConflictDoUpdate(() => ({
+    .onConflictDoUpdate((row) => ({
       // Overwrite with latest values in the same tx/block
       chainId,
       strategy: strategy.toLowerCase(),
@@ -61,11 +69,13 @@ async function handleAllocationSet({
       blockTimestamp,
       transactionHash,
       logIndex,
-      commitTxHash: "", // Will be updated on AllocationCommitted
+      // Keep snapshot and commit fields until committed
+      committedMemberUnits: row.committedMemberUnits,
+      commitTxHash: row.commitTxHash,
     }))
 
   // Build the scratch recipient set for this tx
-  const scratchKey = `${contract}_${allocationKey}_${allocator}_${transactionHash}`
+  const scratchKey = `${chainId}_${contract}_${allocationKey}_${allocator}_${transactionHash}`
   await context.db
     .insert(tempRecipientsByKeyAllocatorTx)
     .values({
@@ -79,12 +89,13 @@ async function handleAllocationSet({
 
 async function incrementWeightIfFirstUse(
   db: Context["db"],
+  chainId: number,
   contract: `0x${string}`,
   allocationKey: bigint,
   newWeight: bigint,
   blockNumber: string
 ) {
-  const key = `${contract}_${allocationKey}`
+  const key = `${chainId}_${contract}_${allocationKey}`
   const seen = await db.find(allocationKeyRegistered, { contractAllocationKey: key })
   if (!seen) {
     await db.update(grants, { id: contract }).set((row) => ({

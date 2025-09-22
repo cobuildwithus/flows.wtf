@@ -18,26 +18,27 @@ async function handleAllocationCommitted({
   context: Context<"CustomFlow:AllocationCommitted">
 }) {
   const { allocationKey } = event.args
+  const chainId = context.chain.id
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const blockNumber = event.block.number.toString()
   const txHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
 
   // Pull the scratch list for this tx (the "new" recipient set)
-  const scratchKey = `${contract}_${allocationKey}_${allocator}_${txHash}`
+  const scratchKey = `${chainId}_${contract}_${allocationKey}_${allocator}_${txHash}`
   const scratch = await context.db.find(tempRecipientsByKeyAllocatorTx, {
     contractKeyAllocatorTx: scratchKey,
   })
   const newRecipients = scratch?.recipientIds ?? []
 
-  // Get the previous committed set for this (contract,key,allocator)
-  const lastKey = `${contract}_${allocationKey}_${allocator}`
+  // Get the previous committed set for this (chain,contract,key,allocator)
+  const lastKey = `${chainId}_${contract}_${allocationKey}_${allocator}`
   const prev = await context.db.find(lastRecipientsByKeyAllocator, {
     contractKeyAllocator: lastKey,
   })
   const prevRecipientIds = prev?.recipientIds ?? []
 
-  // Build a map of previous memberUnits for delta calculation
+  // Build a map of previous committed units
   const previousMemberUnits = new Map<string, bigint>()
   for (const recipientId of prevRecipientIds) {
     const prevAllocation = await context.db.find(allocations, {
@@ -45,14 +46,16 @@ async function handleAllocationCommitted({
       allocationKey: allocationKey.toString(),
       allocator,
       recipientId,
+      chainId,
     })
-    if (prevAllocation && prevAllocation.commitTxHash !== txHash) {
-      // Only count it as "previous" if it's from a different commit
-      previousMemberUnits.set(recipientId, BigInt(prevAllocation.memberUnits))
+    if (prevAllocation) {
+      previousMemberUnits.set(recipientId, BigInt(prevAllocation.committedMemberUnits))
+    } else {
+      previousMemberUnits.set(recipientId, 0n)
     }
   }
 
-  // Calculate current memberUnits and update commitTxHash for all new recipients
+  // Current units come from upserted AllocationSet rows in this tx
   const currentMemberUnits = new Map<string, bigint>()
   for (const recipientId of newRecipients) {
     const allocation = await context.db.find(allocations, {
@@ -60,57 +63,64 @@ async function handleAllocationCommitted({
       allocationKey: allocationKey.toString(),
       allocator,
       recipientId,
+      chainId,
     })
     if (allocation) {
       currentMemberUnits.set(recipientId, BigInt(allocation.memberUnits))
-      // Update the commitTxHash to mark this allocation as committed
-      await context.db
-        .update(allocations, {
-          contract,
-          allocationKey: allocationKey.toString(),
-          allocator,
-          recipientId,
-        })
-        .set(() => ({
-          commitTxHash: txHash,
-        }))
     }
   }
 
-  // Calculate deltas for all affected recipients
+  // Calculate deltas across union of recipients
   const deltas = new Map<string, bigint>()
-
-  // Process all recipients (both old and new)
   const allRecipients = new Set([...previousMemberUnits.keys(), ...currentMemberUnits.keys()])
 
   for (const recipientId of allRecipients) {
-    const oldUnits = previousMemberUnits.get(recipientId) ?? BigInt(0)
-    const newUnits = currentMemberUnits.get(recipientId) ?? BigInt(0)
+    const oldUnits = previousMemberUnits.get(recipientId) ?? 0n
+    const newUnits = currentMemberUnits.get(recipientId) ?? 0n
     const delta = newUnits - oldUnits
-
-    if (delta !== BigInt(0)) {
-      deltas.set(recipientId, delta)
-    }
+    if (delta !== 0n) deltas.set(recipientId, delta)
 
     // Delete allocation for removed recipients
-    if (oldUnits > BigInt(0) && newUnits === BigInt(0)) {
+    if (oldUnits > 0n && newUnits === 0n) {
       await context.db.delete(allocations, {
         contract,
         allocationKey: allocationKey.toString(),
         allocator,
         recipientId,
+        chainId,
       })
     }
   }
 
-  // Apply the unit deltas to grant rows
+  // Apply the unit deltas to grant rows with defensive clamping and error handling
   for (const [rid, delta] of deltas) {
-    const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
-    if (grantId) {
-      await context.db.update(grants, { id: grantId }).set((row) => ({
-        memberUnits: (BigInt(row.memberUnits) + delta).toString(),
-      }))
+    try {
+      if (delta !== 0n) {
+        const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
+        await context.db.update(grants, { id: grantId }).set((row) => {
+          const next = BigInt(row.memberUnits) + delta
+          return { memberUnits: (next < 0n ? 0n : next).toString() }
+        })
+      }
+    } catch (e: any) {
+      console.error(e)
     }
+  }
+
+  // Stamp committed snapshot and commitTxHash for all new recipients
+  for (const rid of newRecipients) {
+    await context.db
+      .update(allocations, {
+        contract,
+        allocationKey: allocationKey.toString(),
+        allocator,
+        recipientId: rid,
+        chainId,
+      })
+      .set((row) => ({
+        committedMemberUnits: row.memberUnits,
+        commitTxHash: txHash,
+      }))
   }
 
   // Save the "last" recipients set for this allocator/key

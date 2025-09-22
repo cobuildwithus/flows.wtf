@@ -115,6 +115,7 @@ export const allocations = onchainTable(
     strategy: t.text().notNull(),
     bps: t.integer().notNull(),
     memberUnits: t.text().notNull(),
+    committedMemberUnits: t.text().notNull(),
     totalWeight: t.bigint().notNull(),
     blockNumber: t.text().notNull(),
     blockTimestamp: t.integer().notNull(),
@@ -123,10 +124,12 @@ export const allocations = onchainTable(
     commitTxHash: t.text().notNull(),
   }),
   (tbl) => ({
-    pk: primaryKey({ columns: [tbl.contract, tbl.allocationKey, tbl.allocator, tbl.recipientId] }),
-    byKey: index().on(tbl.contract, tbl.allocationKey),
-    byAllocator: index().on(tbl.contract, tbl.allocationKey, tbl.allocator),
-    byRecipient: index().on(tbl.contract, tbl.recipientId),
+    pk: primaryKey({
+      columns: [tbl.contract, tbl.allocationKey, tbl.allocator, tbl.recipientId, tbl.chainId],
+    }),
+    byKey: index().on(tbl.contract, tbl.allocationKey, tbl.chainId),
+    byAllocator: index().on(tbl.contract, tbl.allocationKey, tbl.allocator, tbl.chainId),
+    byRecipient: index().on(tbl.contract, tbl.recipientId, tbl.chainId),
   })
 )
 
@@ -369,7 +372,7 @@ export const bonusPoolToGrantId = onchainTable(
     bonusPool: t.text().primaryKey(),
     grantId: t.text().notNull(),
   }),
-  (table) => ({})
+  () => ({})
 )
 
 export const baselinePoolToGrantId = onchainTable(
@@ -378,7 +381,7 @@ export const baselinePoolToGrantId = onchainTable(
     baselinePool: t.text().primaryKey(),
     grantId: t.text().notNull(),
   }),
-  (table) => ({})
+  () => ({})
 )
 
 export const rewardPoolContractToGrantId = onchainTable(
@@ -410,22 +413,13 @@ export const parentFlowToChildren = onchainTable(
     parentFlowContract: t.text().primaryKey(),
     childGrantIds: t.text().array().notNull(),
   }),
-  (table) => ({})
+  () => ({})
 )
 
 export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
   ownerContractChainId: t.text().primaryKey(),
   tokenIds: t.integer().array().notNull(),
 }))
-
-export const allocLastBlockByKey = onchainTable(
-  "_kv_AllocLastBlockByKey",
-  (t) => ({
-    contractAllocationKey: t.text().primaryKey(),
-    lastBlockNumber: t.text().notNull(),
-  }),
-  (table) => ({})
-)
 
 export const lastRecipientsByKeyAllocator = onchainTable(
   "_kv_LastRecipientsByKeyAllocator",
