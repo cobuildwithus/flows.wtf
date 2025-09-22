@@ -897,7 +897,7 @@ export const cfav1ForwarderConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x94a724d604a3d173e33a60aa0239bdab43667316)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xa2ff5cc093770613e4fb6d6e05a0a76f1316c60c)
  */
 export const customFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -915,6 +915,7 @@ export const customFlowImplAbi = [
   { type: 'error', inputs: [], name: 'INVALID_ERC721_VOTING_WEIGHT' },
   { type: 'error', inputs: [], name: 'INVALID_METADATA' },
   { type: 'error', inputs: [], name: 'INVALID_PERCENTAGE' },
+  { type: 'error', inputs: [], name: 'INVALID_PREV_ALLOCATION' },
   { type: 'error', inputs: [], name: 'INVALID_RATE_PERCENT' },
   { type: 'error', inputs: [], name: 'INVALID_RECIPIENT_ID' },
   { type: 'error', inputs: [], name: 'INVALID_SIGNATURE' },
@@ -965,6 +966,37 @@ export const customFlowImplAbi = [
       },
     ],
     name: 'AdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'strategy',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'allocationKey',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'commit',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'weight',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'AllocationCommitted',
   },
   {
     type: 'event',
@@ -1580,6 +1612,11 @@ export const customFlowImplAbi = [
     type: 'function',
     inputs: [
       { name: 'allocationData', internalType: 'bytes[][]', type: 'bytes[][]' },
+      {
+        name: 'prevAllocationWitnesses',
+        internalType: 'bytes[][]',
+        type: 'bytes[][]',
+      },
       { name: 'recipientIds', internalType: 'bytes32[]', type: 'bytes32[]' },
       {
         name: 'percentAllocations',
@@ -1764,24 +1801,8 @@ export const customFlowImplAbi = [
       { name: 'strategy', internalType: 'address', type: 'address' },
       { name: 'allocationKey', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'getAllocationsForKey',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct FlowTypes.Allocation[]',
-        type: 'tuple[]',
-        components: [
-          { name: 'recipientId', internalType: 'bytes32', type: 'bytes32' },
-          { name: 'bps', internalType: 'uint32', type: 'uint32' },
-          { name: 'memberUnits', internalType: 'uint128', type: 'uint128' },
-          {
-            name: 'allocationWeight',
-            internalType: 'uint256',
-            type: 'uint256',
-          },
-        ],
-      },
-    ],
+    name: 'getAllocationCommitment',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
   {
@@ -2252,14 +2273,14 @@ export const customFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x94a724d604a3d173e33a60aa0239bdab43667316)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xa2ff5cc093770613e4fb6d6e05a0a76f1316c60c)
  */
 export const customFlowImplAddress = {
-  8453: '0x94a724D604A3d173E33a60aa0239BdaB43667316',
+  8453: '0xa2ff5cC093770613E4Fb6D6E05a0A76f1316C60C',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0x94a724d604a3d173e33a60aa0239bdab43667316)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0xa2ff5cc093770613e4fb6d6e05a0a76f1316c60c)
  */
 export const customFlowImplConfig = {
   address: customFlowImplAddress,
@@ -12230,6 +12251,7 @@ export const superfluidAbi = [
         internalType: 'address',
         type: 'address',
       },
+      { name: 'simpleAclAddress', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
@@ -12438,6 +12460,13 @@ export const superfluidAbi = [
       },
     ],
     name: 'SuperTokenLogicUpdated',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'ACL_SUPERAPP_REGISTRATION_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -12784,6 +12813,15 @@ export const superfluidAbi = [
     inputs: [],
     name: 'getNow',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getSimpleACL',
+    outputs: [
+      { name: '', internalType: 'contract IAccessControl', type: 'address' },
+    ],
     stateMutability: 'view',
   },
   {

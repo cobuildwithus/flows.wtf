@@ -424,3 +424,12 @@ export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
   ownerContractChainId: t.text().primaryKey(),
   tokenIds: t.integer().array().notNull(),
 }))
+
+export const allocLastBlockByKey = onchainTable(
+  "_kv_AllocLastBlockByKey",
+  (t) => ({
+    contractAllocationKey: t.text().primaryKey(),
+    lastBlockNumber: t.text().notNull(),
+  }),
+  (table) => ({})
+)

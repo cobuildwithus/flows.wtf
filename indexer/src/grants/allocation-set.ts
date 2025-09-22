@@ -1,6 +1,10 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { allocations, grants, allocationsByAllocationKeyAndContract } from "ponder:schema"
+import {
+  allocations,
+  grants,
+  allocationsByAllocationKeyAndContract,
+  allocLastBlockByKey,
+} from "ponder:schema"
 import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("CustomFlow:AllocationSet", handleAllocationSet)
@@ -22,19 +26,18 @@ async function handleAllocationSet(params: {
   const affectedRecipientIds = new Map<string, bigint>()
   affectedRecipientIds.set(recipientId.toString(), memberUnits)
 
-  let hasPreviousVotes = false
-
+  // Only the first event for a *brand new key* should add the key's weight to the flow.
   await updateAllocationWeightOnFlow(context.db, contract, allocationKey, totalWeight)
+
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
 
-  // Mark old votes for this token as stale
-  const oldVotes = await getOldVotes(context.db, contract, allocationKey, blockNumber)
+  // Clear previous-block votes at most once per (contract, key, block)
+  const oldVotes = await clearOldVotesOncePerBlock(context.db, contract, allocationKey, blockNumber)
 
   for (const oldVote of oldVotes) {
-    const existingVotes = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
-    affectedRecipientIds.set(oldVote.recipientId, existingVotes - BigInt(oldVote.memberUnits))
-    hasPreviousVotes = true
+    const existing = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
+    affectedRecipientIds.set(oldVote.recipientId, existing - BigInt(oldVote.memberUnits))
   }
 
   const voteId = `${contract}_${recipientId}_${allocator}_${blockNumber}_${strategy}_${allocationKey}`
@@ -66,23 +69,15 @@ async function handleAllocationSet(params: {
       allocationIds: Array.from(new Set([...row.allocationIds, voteId])),
     }))
 
-  for (const [recipientId, allocationsDelta] of affectedRecipientIds) {
-    const grantId = await getGrantIdFromFlowContractAndRecipientId(
-      context.db,
-      contract,
-      recipientId
-    )
-
+  // Apply unit deltas
+  for (const [rid, delta] of affectedRecipientIds) {
+    const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
     await context.db.update(grants, { id: grantId }).set((row) => ({
-      memberUnits: (BigInt(row.memberUnits) + allocationsDelta).toString(),
+      memberUnits: (BigInt(row.memberUnits) + delta).toString(),
     }))
   }
 
-  // if is a new voter, then we are adding new member units to the total
-  // so must handle all sibling flow rates
-  if (!hasPreviousVotes) {
-    await handleIncomingFlowRates(context.db, contract)
-  }
+  // 🔴 REMOVED: do not call handleIncomingFlowRates() here — it is called once on AllocationCommitted instead.
 }
 
 async function updateAllocationWeightOnFlow(
@@ -106,43 +101,62 @@ async function updateAllocationWeightOnFlow(
   }
 }
 
-async function getOldVotes(
+async function clearOldVotesOncePerBlock(
   db: Context["db"],
   contract: `0x${string}`,
   allocationKey: bigint,
   blockNumber: string
-) {
+): Promise<Array<NonNullable<Awaited<ReturnType<typeof db.find<typeof allocations>>>>>> {
+  const key = `${contract}_${allocationKey}`
+  const already = await db.find(allocLastBlockByKey, { contractAllocationKey: key })
+
+  if (already?.lastBlockNumber === blockNumber) {
+    // We've already cleared stale rows for this (contract,key) in this block.
+    return []
+  }
+
   const existingVoteIds = await db.find(allocationsByAllocationKeyAndContract, {
-    contractAllocationKey: `${contract}_${allocationKey}`,
+    contractAllocationKey: key,
   })
 
-  if (!existingVoteIds) return []
+  if (!existingVoteIds) {
+    // Nothing to clear, just stamp the block
+    await db
+      .insert(allocLastBlockByKey)
+      .values({ contractAllocationKey: key, lastBlockNumber: blockNumber })
+      .onConflictDoUpdate(() => ({ lastBlockNumber: blockNumber }))
+    return []
+  }
 
   const existingVotesRaw = await Promise.all(
     existingVoteIds.allocationIds.map((allocationId) => db.find(allocations, { id: allocationId }))
   )
 
-  // filter out nulls
-  const existingVotesNotNull = existingVotesRaw.filter(
-    (vote) => vote !== undefined && vote !== null
-  )
+  // Filter out nulls/undefined
+  const existingVotes = existingVotesRaw.filter(Boolean) as NonNullable<
+    (typeof existingVotesRaw)[number]
+  >[]
 
-  // include votes that come before the latest vote block number
-  // since all votescast events happen in the same block per vote
-  const oldVotes = existingVotesNotNull.filter((vote) => vote.blockNumber !== blockNumber)
+  // Include votes that come before the current block number
+  const oldVotes = existingVotes.filter((v) => v.blockNumber !== blockNumber)
 
-  // delete all old votes
-  await Promise.all(oldVotes.map((vote) => db.delete(allocations, { id: vote.id })))
+  if (oldVotes.length) {
+    // Delete all stale votes (from previous blocks)
+    await Promise.all(oldVotes.map((v) => db.delete(allocations, { id: v.id })))
 
+    // Remove their ids from the KV list
+    await db
+      .update(allocationsByAllocationKeyAndContract, { contractAllocationKey: key })
+      .set((row) => ({
+        allocationIds: row.allocationIds.filter((id) => !oldVotes.some((ov) => ov.id === id)),
+      }))
+  }
+
+  // Stamp the last cleared block
   await db
-    .update(allocationsByAllocationKeyAndContract, {
-      contractAllocationKey: `${contract}_${allocationKey}`,
-    })
-    .set((row) => ({
-      allocationIds: row.allocationIds.filter(
-        (allocationId) => !oldVotes.some((oldVote) => oldVote.id === allocationId)
-      ),
-    }))
+    .insert(allocLastBlockByKey)
+    .values({ contractAllocationKey: key, lastBlockNumber: blockNumber })
+    .onConflictDoUpdate(() => ({ lastBlockNumber: blockNumber }))
 
   return oldVotes
 }
