@@ -107,24 +107,26 @@ export const grants = onchainTable(
 export const allocations = onchainTable(
   "Allocation",
   (t) => ({
-    id: t.text().primaryKey(),
     contract: t.text().notNull(),
-    chainId: t.integer().notNull(),
-    recipientId: t.text().notNull(),
     allocationKey: t.text().notNull(),
+    allocator: t.text().notNull(),
+    recipientId: t.text().notNull(),
+    chainId: t.integer().notNull(),
     strategy: t.text().notNull(),
     bps: t.integer().notNull(),
-    allocator: t.text().notNull(),
+    memberUnits: t.text().notNull(),
+    totalWeight: t.bigint().notNull(),
     blockNumber: t.text().notNull(),
     blockTimestamp: t.integer().notNull(),
     transactionHash: t.text().notNull(),
-    memberUnits: t.text().notNull(),
-    totalWeight: t.bigint().notNull(),
+    logIndex: t.integer().notNull(),
+    commitTxHash: t.text().notNull(),
   }),
-  (table) => ({
-    allocatorIdx: index().on(table.allocator),
-    contractIdx: index().on(table.contract),
-    recipientIdIdx: index().on(table.recipientId),
+  (tbl) => ({
+    pk: primaryKey({ columns: [tbl.contract, tbl.allocationKey, tbl.allocator, tbl.recipientId] }),
+    byKey: index().on(tbl.contract, tbl.allocationKey),
+    byAllocator: index().on(tbl.contract, tbl.allocationKey, tbl.allocator),
+    byRecipient: index().on(tbl.contract, tbl.recipientId),
   })
 )
 
@@ -411,15 +413,6 @@ export const parentFlowToChildren = onchainTable(
   (table) => ({})
 )
 
-export const allocationsByAllocationKeyAndContract = onchainTable(
-  "_kv_AllocationsByAllocationKeyAndContract",
-  (t) => ({
-    contractAllocationKey: t.text().primaryKey(),
-    allocationIds: t.text().array().notNull(),
-  }),
-  (table) => ({})
-)
-
 export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
   ownerContractChainId: t.text().primaryKey(),
   tokenIds: t.integer().array().notNull(),
@@ -432,4 +425,33 @@ export const allocLastBlockByKey = onchainTable(
     lastBlockNumber: t.text().notNull(),
   }),
   (table) => ({})
+)
+
+export const lastRecipientsByKeyAllocator = onchainTable(
+  "_kv_LastRecipientsByKeyAllocator",
+  (t) => ({
+    contractKeyAllocator: t.text().primaryKey(),
+    recipientIds: t.text().array().notNull(),
+    lastCommitTxHash: t.text().notNull(),
+    lastBlockNumber: t.text().notNull(),
+  }),
+  () => ({})
+)
+
+export const tempRecipientsByKeyAllocatorTx = onchainTable(
+  "_kv_TempRecipientsByKeyAllocatorTx",
+  (t) => ({
+    contractKeyAllocatorTx: t.text().primaryKey(),
+    recipientIds: t.text().array().notNull(),
+  }),
+  () => ({})
+)
+
+export const allocationKeyRegistered = onchainTable(
+  "_kv_AllocationKeyRegistered",
+  (t) => ({
+    contractAllocationKey: t.text().primaryKey(),
+    firstSeenBlock: t.text().notNull(),
+  }),
+  () => ({})
 )

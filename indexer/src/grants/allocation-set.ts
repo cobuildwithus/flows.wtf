@@ -2,18 +2,19 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import {
   allocations,
   grants,
-  allocationsByAllocationKeyAndContract,
-  allocLastBlockByKey,
+  tempRecipientsByKeyAllocatorTx,
+  allocationKeyRegistered,
 } from "ponder:schema"
-import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("CustomFlow:AllocationSet", handleAllocationSet)
 
-async function handleAllocationSet(params: {
+async function handleAllocationSet({
+  event,
+  context,
+}: {
   event: Event<"CustomFlow:AllocationSet">
   context: Context<"CustomFlow:AllocationSet">
 }) {
-  const { event, context } = params
   const { recipientId, strategy, allocationKey, memberUnits, bps, totalWeight } = event.args
   const chainId = context.chain.id
 
@@ -22,141 +23,75 @@ async function handleAllocationSet(params: {
   const transactionHash = event.transaction.hash
   const allocator = event.transaction.from.toLowerCase()
   const contract = event.log.address.toLowerCase() as `0x${string}`
+  const logIndex = Number(event.log.logIndex ?? 0)
 
-  const affectedRecipientIds = new Map<string, bigint>()
-  affectedRecipientIds.set(recipientId.toString(), memberUnits)
-
-  // Only the first event for a *brand new key* should add the key's weight to the flow.
-  await updateAllocationWeightOnFlow(context.db, contract, allocationKey, totalWeight)
+  // Update weight-on-flow if this (contract,key) is brand new
+  await incrementWeightIfFirstUse(context.db, contract, allocationKey, totalWeight, blockNumber)
 
   const flow = await context.db.find(grants, { id: contract })
   if (!flow) throw new Error(`Flow not found: ${contract}`)
 
-  // Clear previous-block votes at most once per (contract, key, block)
-  const oldVotes = await clearOldVotesOncePerBlock(context.db, contract, allocationKey, blockNumber)
-
-  for (const oldVote of oldVotes) {
-    const existing = affectedRecipientIds.get(oldVote.recipientId) ?? BigInt(0)
-    affectedRecipientIds.set(oldVote.recipientId, existing - BigInt(oldVote.memberUnits))
-  }
-
-  const voteId = `${contract}_${recipientId}_${allocator}_${blockNumber}_${strategy}_${allocationKey}`
-
-  // Create the new vote
-  await context.db.insert(allocations).values({
-    id: voteId,
-    chainId,
-    contract,
-    recipientId: recipientId.toString(),
-    allocationKey: allocationKey.toString(),
-    strategy: strategy.toLowerCase(),
-    bps: Number(bps),
-    allocator,
-    blockNumber,
-    blockTimestamp,
-    transactionHash,
-    memberUnits: memberUnits.toString(),
-    totalWeight: totalWeight,
-  })
-
+  // Upsert the allocation row for (contract, key, allocator, recipientId)
   await context.db
-    .insert(allocationsByAllocationKeyAndContract)
+    .insert(allocations)
     .values({
-      contractAllocationKey: `${contract}_${allocationKey}`,
-      allocationIds: [voteId],
+      contract,
+      allocationKey: allocationKey.toString(),
+      allocator,
+      recipientId: recipientId.toString(),
+      chainId,
+      strategy: strategy.toLowerCase(),
+      bps: Number(bps),
+      memberUnits: memberUnits.toString(),
+      totalWeight,
+      blockNumber,
+      blockTimestamp,
+      transactionHash,
+      logIndex,
+      commitTxHash: transactionHash,
+    })
+    .onConflictDoUpdate(() => ({
+      // Overwrite with latest values in the same tx/block
+      chainId,
+      strategy: strategy.toLowerCase(),
+      bps: Number(bps),
+      memberUnits: memberUnits.toString(),
+      totalWeight,
+      blockNumber,
+      blockTimestamp,
+      transactionHash,
+      logIndex,
+      commitTxHash: transactionHash,
+    }))
+
+  // Build the scratch recipient set for this tx
+  const scratchKey = `${contract}_${allocationKey}_${allocator}_${transactionHash}`
+  await context.db
+    .insert(tempRecipientsByKeyAllocatorTx)
+    .values({
+      contractKeyAllocatorTx: scratchKey,
+      recipientIds: [recipientId.toString()],
     })
     .onConflictDoUpdate((row) => ({
-      allocationIds: Array.from(new Set([...row.allocationIds, voteId])),
+      recipientIds: Array.from(new Set([...row.recipientIds, recipientId.toString()])),
     }))
-
-  // Apply unit deltas
-  for (const [rid, delta] of affectedRecipientIds) {
-    const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
-    await context.db.update(grants, { id: grantId }).set((row) => ({
-      memberUnits: (BigInt(row.memberUnits) + delta).toString(),
-    }))
-  }
-
-  // 🔴 REMOVED: do not call handleIncomingFlowRates() here — it is called once on AllocationCommitted instead.
 }
 
-async function updateAllocationWeightOnFlow(
+async function incrementWeightIfFirstUse(
   db: Context["db"],
   contract: `0x${string}`,
   allocationKey: bigint,
-  totalWeight: bigint
-) {
-  const grantId = contract
-  if (grantId) {
-    const existingVoteIds = await db.find(allocationsByAllocationKeyAndContract, {
-      contractAllocationKey: `${contract}_${allocationKey}`,
-    })
-    if (!existingVoteIds || existingVoteIds.allocationIds.length === 0) {
-      await db.update(grants, { id: grantId }).set((row) => ({
-        totalAllocationWeightOnFlow: (
-          BigInt(row.totalAllocationWeightOnFlow) + totalWeight
-        ).toString(),
-      }))
-    }
-  }
-}
-
-async function clearOldVotesOncePerBlock(
-  db: Context["db"],
-  contract: `0x${string}`,
-  allocationKey: bigint,
+  newWeight: bigint,
   blockNumber: string
-): Promise<Array<NonNullable<Awaited<ReturnType<typeof db.find<typeof allocations>>>>>> {
+) {
   const key = `${contract}_${allocationKey}`
-  const already = await db.find(allocLastBlockByKey, { contractAllocationKey: key })
-
-  if (already?.lastBlockNumber === blockNumber) {
-    // We've already cleared stale rows for this (contract,key) in this block.
-    return []
-  }
-
-  const existingVoteIds = await db.find(allocationsByAllocationKeyAndContract, {
-    contractAllocationKey: key,
-  })
-
-  if (!existingVoteIds) {
-    // Nothing to clear, just stamp the block
+  const seen = await db.find(allocationKeyRegistered, { contractAllocationKey: key })
+  if (!seen) {
+    await db.update(grants, { id: contract }).set((row) => ({
+      totalAllocationWeightOnFlow: (BigInt(row.totalAllocationWeightOnFlow) + newWeight).toString(),
+    }))
     await db
-      .insert(allocLastBlockByKey)
-      .values({ contractAllocationKey: key, lastBlockNumber: blockNumber })
-      .onConflictDoUpdate(() => ({ lastBlockNumber: blockNumber }))
-    return []
+      .insert(allocationKeyRegistered)
+      .values({ contractAllocationKey: key, firstSeenBlock: blockNumber })
   }
-
-  const existingVotesRaw = await Promise.all(
-    existingVoteIds.allocationIds.map((allocationId) => db.find(allocations, { id: allocationId }))
-  )
-
-  // Filter out nulls/undefined
-  const existingVotes = existingVotesRaw.filter(Boolean) as NonNullable<
-    (typeof existingVotesRaw)[number]
-  >[]
-
-  // Include votes that come before the current block number
-  const oldVotes = existingVotes.filter((v) => v.blockNumber !== blockNumber)
-
-  if (oldVotes.length) {
-    // Delete all stale votes (from previous blocks)
-    await Promise.all(oldVotes.map((v) => db.delete(allocations, { id: v.id })))
-
-    // Remove their ids from the KV list
-    await db
-      .update(allocationsByAllocationKeyAndContract, { contractAllocationKey: key })
-      .set((row) => ({
-        allocationIds: row.allocationIds.filter((id) => !oldVotes.some((ov) => ov.id === id)),
-      }))
-  }
-
-  // Stamp the last cleared block
-  await db
-    .insert(allocLastBlockByKey)
-    .values({ contractAllocationKey: key, lastBlockNumber: blockNumber })
-    .onConflictDoUpdate(() => ({ lastBlockNumber: blockNumber }))
-
-  return oldVotes
 }
