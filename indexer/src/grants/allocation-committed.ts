@@ -117,11 +117,11 @@ async function handleAllocationCommitted({
       if (delta !== 0n) {
         const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
         await context.db.update(grants, { id: grantId }).set((row) => {
-          const nextMember = BigInt(row.memberUnits) + delta
-          const nextBonus = BigInt(row.bonusMemberUnits) + delta
+          const nextMember = row.memberUnits + delta
+          const nextBonus = row.bonusMemberUnits + delta
           return {
-            memberUnits: (nextMember < 0n ? 0n : nextMember).toString(),
-            bonusMemberUnits: (nextBonus < 0n ? 0n : nextBonus).toString(),
+            memberUnits: nextMember < 0n ? 0n : nextMember,
+            bonusMemberUnits: nextBonus < 0n ? 0n : nextBonus,
           }
         })
       }

@@ -42,14 +42,13 @@ async function handleMemberUnitsUpdated(params: {
     throw new Error(`Grant not found: ${member}`)
   }
 
-  const newUnitsStr = newUnits.toString()
-  const baselineChanged = shouldUpdateBaseline && grant.baselineMemberUnits !== newUnitsStr
-  const bonusChanged = shouldUpdateBonus && grant.bonusMemberUnits !== newUnitsStr
+  const baselineChanged = shouldUpdateBaseline && grant.baselineMemberUnits !== newUnits
+  const bonusChanged = shouldUpdateBonus && grant.bonusMemberUnits !== newUnits
 
   if (baselineChanged || bonusChanged) {
     await context.db.update(grants, { id: grant.id }).set((row) => ({
-      baselineMemberUnits: baselineChanged ? newUnitsStr : row.baselineMemberUnits,
-      bonusMemberUnits: bonusChanged ? newUnitsStr : row.bonusMemberUnits,
+      baselineMemberUnits: baselineChanged ? newUnits : row.baselineMemberUnits,
+      bonusMemberUnits: bonusChanged ? newUnits : row.bonusMemberUnits,
       updatedAt: ts,
     }))
   }
@@ -134,7 +133,7 @@ async function handleRemovedGrant(
     })),
     isFlow
       ? db.update(grants, { id: grant.id }).set({
-          monthlyOutgoingFlowRate: "0",
+          monthlyOutgoingFlowRate: 0n,
         })
       : Promise.resolve(),
   ])

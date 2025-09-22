@@ -30,19 +30,19 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
   const parent = await db.find(grants, { id: parentContract })
   if (!parent) throw new Error(`Parent not found: ${parentContract}`)
 
-  // Monthly amounts as BigInt
-  const baselineMonthly = BigInt(parent.monthlyBaselinePoolFlowRate)
-  const bonusMonthly = BigInt(parent.monthlyBonusPoolFlowRate)
+  // Monthly amounts are stored as bigint in schema
+  const baselineMonthly = parent.monthlyBaselinePoolFlowRate
+  const bonusMonthly = parent.monthlyBonusPoolFlowRate
 
   // Parent self-units
-  const parentBaselineUnits = BigInt(parent.baselineMemberUnits ?? "0")
-  const parentBonusUnits = BigInt(parent.bonusMemberUnits ?? "0")
+  const parentBaselineUnits = parent.baselineMemberUnits ?? 0n
+  const parentBonusUnits = parent.bonusMemberUnits ?? 0n
 
   // Sum children units + parent units
   const [totalBaselineUnits, totalBonusUnits] = items.reduce(
     (acc: [bigint, bigint], item) => [
-      acc[0] + BigInt(item.baselineMemberUnits),
-      acc[1] + BigInt(item.bonusMemberUnits),
+      acc[0] + item.baselineMemberUnits,
+      acc[1] + item.bonusMemberUnits,
     ],
     [parentBaselineUnits, parentBonusUnits] as [bigint, bigint]
   )
@@ -51,17 +51,17 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
 
   await Promise.all(
     items.map(async (sibling) => {
-      const baselineUnits = BigInt(sibling.baselineMemberUnits)
-      const bonusUnits = BigInt(sibling.bonusMemberUnits)
+      const baselineUnits = sibling.baselineMemberUnits
+      const bonusUnits = sibling.bonusMemberUnits
 
       const baselineShare = safeDiv(baselineMonthly * baselineUnits, totalBaselineUnits)
       const bonusShare = safeDiv(bonusMonthly * bonusUnits, totalBonusUnits)
       const totalShare = baselineShare + bonusShare
 
       await db.update(grants, { id: sibling.id }).set({
-        monthlyIncomingFlowRate: totalShare.toString(),
-        monthlyIncomingBaselineFlowRate: baselineShare.toString(),
-        monthlyIncomingBonusFlowRate: bonusShare.toString(),
+        monthlyIncomingFlowRate: totalShare,
+        monthlyIncomingBaselineFlowRate: baselineShare,
+        monthlyIncomingBonusFlowRate: bonusShare,
       })
 
       await updateSiblingFlowRates(
@@ -106,11 +106,10 @@ export async function updateSiblingFlowRates(
   const netBase = monthlyIncomingBaselineFlowRate - prevBase
   const netBonus = monthlyIncomingBonusFlowRate - prevBonus
 
-  const addClamp = (current: string, delta: bigint) => {
-    const cur = BigInt(current)
-    if (delta >= 0n) return (cur + delta).toString()
+  const addClamp = (current: bigint, delta: bigint) => {
+    if (delta >= 0n) return current + delta
     const abs = -delta
-    return (cur > abs ? cur - abs : 0n).toString()
+    return current > abs ? current - abs : 0n
   }
 
   await db.update(grants, { id: rid }).set((row) => ({

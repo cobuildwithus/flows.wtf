@@ -1,5 +1,5 @@
 import { ponder, type Context, type Event } from "ponder:registry"
-import { formatEther, getAddress, zeroAddress } from "viem"
+import { getAddress, zeroAddress } from "viem"
 import { grants } from "ponder:schema"
 
 const BATCH_SIZE = 20
@@ -36,7 +36,7 @@ async function handleTotalEarned(params: {
       batch.map(async (grant) => {
         const { parentContract, recipient, id } = grant
 
-        let totalEarned = "0"
+        let totalEarned = 0n
         if (parentContract !== zeroAddress) {
           const total = await context.client.readContract({
             address: getAddress(parentContract),
@@ -52,7 +52,7 @@ async function handleTotalEarned(params: {
             functionName: "getTotalReceivedByMember",
             args: [getAddress(recipient)],
           })
-          totalEarned = formatEther(total)
+          totalEarned = total
 
           // Accumulate payout for the parent flow
           parentTotals[parentContract] = (parentTotals[parentContract] || 0n) + total
@@ -70,7 +70,7 @@ async function handleTotalEarned(params: {
   // After all grants have been processed, update totalPaidOut for parent flows
   const parentUpdates = Object.entries(parentTotals).map(([parentContract, totalWei]) => {
     return context.db.update(grants, { id: parentContract }).set({
-      totalPaidOut: formatEther(totalWei),
+      totalPaidOut: totalWei,
     })
   })
 

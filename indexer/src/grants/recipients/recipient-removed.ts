@@ -29,7 +29,7 @@ async function handleRecipientRemoved(params: {
     isRemoved: true,
     removedAt: Number(event.block.timestamp),
     isActive: false,
-    monthlyIncomingFlowRate: "0",
+    monthlyIncomingFlowRate: 0n,
   })
 
   await context.db.update(grants, { id: flow.id }).set({

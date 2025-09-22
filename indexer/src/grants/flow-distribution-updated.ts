@@ -17,17 +17,16 @@ async function handleFlowDistributionUpdated(params: {
   const grant = await getGrant(context.db, distributor)
   if (!grant) return
 
-  const newMonthlyRate = getMonthlyFlowRate(newTotalDistributionFlowRate)
+  // Compute monthly flow in wei (bigint): flowRate [wei/s] * secondsPerMonth
+  const newMonthlyRate = newTotalDistributionFlowRate * BigInt(60 * 60 * 24 * 30)
 
   if (pool === grant.baselinePool) {
     const monthlyOutgoingFlowRate =
-      Number(grant.monthlyRewardPoolFlowRate) +
-      Number(grant.monthlyBonusPoolFlowRate) +
-      newMonthlyRate
+      grant.monthlyRewardPoolFlowRate + grant.monthlyBonusPoolFlowRate + newMonthlyRate
 
     await context.db.update(grants, { id: grant.id }).set({
-      monthlyBaselinePoolFlowRate: newMonthlyRate.toString(),
-      monthlyOutgoingFlowRate: monthlyOutgoingFlowRate.toString(),
+      monthlyBaselinePoolFlowRate: newMonthlyRate,
+      monthlyOutgoingFlowRate: monthlyOutgoingFlowRate,
       updatedAt: Number(event.block.timestamp),
     })
 
@@ -36,26 +35,22 @@ async function handleFlowDistributionUpdated(params: {
 
   if (pool === grant.managerRewardSuperfluidPool) {
     const monthlyOutgoingFlowRate =
-      Number(grant.monthlyBaselinePoolFlowRate) +
-      Number(grant.monthlyBonusPoolFlowRate) +
-      newMonthlyRate
+      grant.monthlyBaselinePoolFlowRate + grant.monthlyBonusPoolFlowRate + newMonthlyRate
 
     await context.db.update(grants, { id: grant.id }).set({
-      monthlyRewardPoolFlowRate: newMonthlyRate.toString(),
-      monthlyOutgoingFlowRate: monthlyOutgoingFlowRate.toString(),
+      monthlyRewardPoolFlowRate: newMonthlyRate,
+      monthlyOutgoingFlowRate: monthlyOutgoingFlowRate,
       updatedAt: Number(event.block.timestamp),
     })
   }
 
   if (pool === grant.bonusPool) {
     const monthlyOutgoingFlowRate =
-      Number(grant.monthlyBaselinePoolFlowRate) +
-      Number(grant.monthlyRewardPoolFlowRate) +
-      newMonthlyRate
+      grant.monthlyBaselinePoolFlowRate + grant.monthlyRewardPoolFlowRate + newMonthlyRate
 
     await context.db.update(grants, { id: grant.id }).set({
-      monthlyBonusPoolFlowRate: newMonthlyRate.toString(),
-      monthlyOutgoingFlowRate: monthlyOutgoingFlowRate.toString(),
+      monthlyBonusPoolFlowRate: newMonthlyRate,
+      monthlyOutgoingFlowRate: monthlyOutgoingFlowRate,
       updatedAt: Number(event.block.timestamp),
     })
 
@@ -63,9 +58,7 @@ async function handleFlowDistributionUpdated(params: {
   }
 }
 
-const getMonthlyFlowRate = (flowRate: bigint) => {
-  return (Number(flowRate) * 60 * 60 * 24 * 30) / 1e18
-}
+// Monthly rate now computed in bigint above
 
 async function getGrant(db: Context["db"], distributor: string) {
   const grantIdFlow = await db.find(grants, { id: distributor })
