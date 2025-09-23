@@ -23,6 +23,8 @@ export async function handleRecipientMappings(
   }
 
   await db.update(parentFlowToChildren, { parentFlowContract: flowContract }).set((row) => ({
-    childGrantIds: [...row.childGrantIds, grantId],
+    childGrantIds: row.childGrantIds.includes(grantId)
+      ? row.childGrantIds
+      : [...row.childGrantIds, grantId],
   }))
 }

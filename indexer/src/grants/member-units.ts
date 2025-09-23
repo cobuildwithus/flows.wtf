@@ -122,19 +122,38 @@ async function handleRemovedGrant(
   parentContract: string,
   isFlow: boolean
 ) {
-  const grant = await getGrant(db, recipient, parentContract)
+  const key = `${recipient.toLowerCase()}-${parentContract.toLowerCase()}`
 
-  await Promise.all([
-    db.delete(recipientAndParentToGrantId, {
-      recipientAndParent: `${recipient.toLowerCase()}-${parentContract.toLowerCase()}`,
-    }),
-    db.update(parentFlowToChildren, { parentFlowContract: parentContract }).set((row) => ({
-      childGrantIds: row.childGrantIds.filter((id) => id !== grant.id),
-    })),
-    isFlow
-      ? db.update(grants, { id: grant.id }).set({
-          monthlyOutgoingFlowRate: 0n,
-        })
-      : Promise.resolve(),
-  ])
+  const childrenRow = await db.find(parentFlowToChildren, { parentFlowContract: parentContract })
+  const childIds = childrenRow?.childGrantIds ?? []
+  const children = await Promise.all(childIds.map((cid) => db.find(grants, { id: cid })))
+  const normalizedRecipient = recipient.toLowerCase()
+
+  const removedChildren = children.filter(
+    (g): g is NonNullable<typeof g> =>
+      !!g && g.recipient.toLowerCase() === normalizedRecipient && !g.isActive
+  )
+  const activeChild = children.find(
+    (g): g is NonNullable<typeof g> =>
+      !!g && g.recipient.toLowerCase() === normalizedRecipient && g.isActive
+  )
+
+  if (removedChildren.length > 0) {
+    const removedIds = new Set(removedChildren.map((g) => g.id))
+
+    await db.update(parentFlowToChildren, { parentFlowContract: parentContract }).set((row) => ({
+      childGrantIds: row.childGrantIds.filter((id) => !removedIds.has(id)),
+    }))
+
+    if (isFlow) {
+      for (const g of removedChildren) {
+        await db.update(grants, { id: g.id }).set({ monthlyOutgoingFlowRate: 0n })
+      }
+    }
+  }
+
+  // Only delete the mapping when no active child remains for this recipient under this parent
+  if (!activeChild) {
+    await db.delete(recipientAndParentToGrantId, { recipientAndParent: key })
+  }
 }

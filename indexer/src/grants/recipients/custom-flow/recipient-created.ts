@@ -28,10 +28,6 @@ async function handleRecipientCreated(params: {
   const flow = await getFlow(context.db, flowAddress)
   const rootContract = flow.rootContract
 
-  await context.db.update(grants, { id: flow.id }).set((row) => ({
-    activeRecipientCount: row.activeRecipientCount + 1,
-  }))
-
   if (recipientType === RecipientType.FlowContract) {
     return
   }
@@ -113,4 +109,8 @@ async function handleRecipientCreated(params: {
 
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
   await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
+
+  await context.db.update(grants, { id: flow.id }).set((row) => ({
+    activeRecipientCount: row.activeRecipientCount + 1,
+  }))
 }
