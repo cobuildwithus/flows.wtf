@@ -12,7 +12,7 @@ import { isAdmin } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
 import { getPool } from "@/lib/database/queries/pool"
 import { Status } from "@/lib/enums"
-import { getEthAddress } from "@/lib/utils"
+import { fromWei, getEthAddress } from "@/lib/utils"
 import { getUser } from "@/lib/auth/user"
 import Link from "next/link"
 import { Suspense } from "react"
@@ -72,7 +72,7 @@ export default async function FlowPage(props: Props) {
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Budget</h4>
                     <Badge className="mt-2">
-                      <Currency display={flow}>{flow.monthlyIncomingFlowRate}</Currency>
+                      <Currency display={flow}>{fromWei(flow.monthlyIncomingFlowRate)}</Currency>
                       /mo
                     </Badge>
                   </div>
@@ -80,8 +80,12 @@ export default async function FlowPage(props: Props) {
                     <h4 className="text-[13px] text-muted-foreground">Paid out</h4>
                     <p className="mt-1 text-lg font-medium">
                       <AnimatedSalary
-                        value={flow.totalEarned}
-                        monthlyRate={flow.monthlyIncomingFlowRate}
+                        value={fromWei(flow.totalEarned)}
+                        monthlyRate={fromWei(flow.monthlyIncomingFlowRate)}
+                        grant={{
+                          underlyingTokenPrefix: flow.underlyingTokenPrefix ?? undefined,
+                          underlyingTokenSymbol: flow.underlyingTokenSymbol ?? undefined,
+                        }}
                       />
                     </p>
                   </div>

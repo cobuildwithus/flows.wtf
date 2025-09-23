@@ -18,6 +18,7 @@ export type FlowWithBudget = Pick<
   | "bonusMemberUnits"
   | "underlyingTokenSymbol"
   | "underlyingTokenPrefix"
+  | "underlyingTokenDecimals"
 >
 
 interface Props {
@@ -27,14 +28,16 @@ interface Props {
 }
 
 export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
-  const monthlyOutgoingFlowRate = Number(flow.monthlyOutgoingFlowRate)
+  const decimals = flow.underlyingTokenDecimals ?? 18
+  const toTokens = (raw: string | number) => Number(raw) / 10 ** decimals
+  const monthlyOutgoingFlowRate = toTokens(flow.monthlyOutgoingFlowRate)
   const isFlow = flow.isFlow
 
   return (
     <Tooltip>
       <TooltipTrigger tabIndex={-1}>
         <Badge variant="default">
-          <Currency display={flow}>{Math.ceil(Number(display))}</Currency>
+          <Currency display={flow}>{Math.ceil(toTokens(display))}</Currency>
           /mo
         </Badge>
       </TooltipTrigger>
@@ -51,14 +54,14 @@ export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
           </>
         ) : (
           <>
-            <Currency display={flow}>{Number(flow.monthlyIncomingBaselineFlowRate)}</Currency>
+            <Currency display={flow}>{toTokens(flow.monthlyIncomingBaselineFlowRate)}</Currency>
             /mo baseline grant.
             <br />
-            {Number(flow.monthlyIncomingBonusFlowRate) < 1 ? (
+            {toTokens(flow.monthlyIncomingBonusFlowRate) < 1 ? (
               "No bonus from voters."
             ) : (
               <>
-                <Currency display={flow}>{Number(flow.monthlyIncomingBonusFlowRate)}</Currency>
+                <Currency display={flow}>{toTokens(flow.monthlyIncomingBonusFlowRate)}</Currency>
                 /mo as a bonus from voters.
               </>
             )}

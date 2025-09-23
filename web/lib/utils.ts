@@ -99,3 +99,8 @@ export function usesTestNounsToken() {
 export function isBrowser() {
   return typeof window !== "undefined"
 }
+
+export function fromWei(value: string | number | bigint, decimals = 18) {
+  const bigValue = typeof value === "bigint" ? value : BigInt(value)
+  return Number(bigValue) / 10 ** decimals
+}

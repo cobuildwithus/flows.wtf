@@ -22,7 +22,7 @@ export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentValue((prev) => prev + Number(monthlyRate) / 60 / 60 / 24 / 30)
+      setCurrentValue((prev) => prev + Number(monthlyRate) / 30 / 24 / 60 / 60)
     }, 1000)
     return () => clearInterval(interval)
   }, [monthlyRate])
@@ -65,9 +65,9 @@ export function AnimatedSalary({ value, monthlyRate, grant }: Props) {
 
 export function getCurrencyFractionDigits(rate: number) {
   if (rate === 0) return 2
-  if (rate < 1) return 7
-  if (rate < 10) return 6
-  if (rate < 100) return 5
-  if (rate < 1000) return 4
-  return 3
+  if (rate < 0.01) return 5
+  if (rate < 0.1) return 4
+  if (rate < 1) return 3
+  if (rate < 10) return 2
+  return 0
 }

@@ -142,13 +142,14 @@ model Grant {
   isFlow                           Boolean  @map("is_flow")
   isSiblingFlow                    Boolean  @map("is_sibling_flow")
   title                            String
+  flowImpl                         String?  @map("flow_impl")
   description                      String
   image                            String
   tagline                          String?
   url                              String?
   isRemoved                        Boolean  @map("is_removed")
   isActive                         Boolean  @map("is_active")
-  memberUnits                 String   @map("member_units")
+  memberUnits                     String   @map("member_units")
   monthlyIncomingFlowRate          String   @map("monthly_incoming_flow_rate")
   monthlyIncomingBaselineFlowRate  String   @map("monthly_incoming_baseline_flow_rate")
   monthlyIncomingBonusFlowRate     String   @map("monthly_incoming_bonus_flow_rate")
@@ -192,6 +193,7 @@ model Grant {
   jbxChainId                       Int?     @map("jbx_chain_id")
   fundraisingTokenEthPrice         String?  @map("fundraising_token_eth_price")
   fundraisingTokenUsdPrice         String?  @map("fundraising_token_usd_price")
+  marketCapUsd                     String?  @map("market_cap_usd")
   manager                          String   @map("manager")
   managerRewardSuperfluidPool      String   @map("manager_reward_superfluid_pool")
   managerRewardPoolFlowRatePercent Int      @map("manager_reward_pool_flow_rate_percent")
@@ -248,21 +250,25 @@ model SuperfluidFlow {
 }
 
 model Allocation {
-  id               String @id
-  contract         String
-  recipientId      String @map("recipient_id")
-  allocationKey    String @map("allocation_key")
-  strategy         String
-  bps              Int
-  allocator        String
-  blockNumber      String @map("block_number")
-  blockTimestamp   Int    @map("block_timestamp")
-  transactionHash  String @map("transaction_hash")
-  memberUnits String @map("member_units")
-  chainId          Int    @map("chain_id")
+  contract             String
+  allocationKey        String @map("allocation_key")
+  strategy             String
+  allocator            String
+  recipientId          String @map("recipient_id")
+  chainId              Int    @map("chain_id")
+  bps                  Int
+  memberUnits          String @map("member_units")
+  committedMemberUnits String @map("committed_member_units")
+  totalWeight          String @map("total_weight")
+  blockNumber          String @map("block_number")
+  blockTimestamp       Int    @map("block_timestamp")
+  transactionHash      String @map("transaction_hash")
+  logIndex             Int    @map("log_index")
+  commitTxHash         String @map("commit_tx_hash")
 
   grant Grant @relation(fields: [contract, recipientId], references: [flowId, recipientId])
 
+  @@id([contract, allocationKey, strategy, allocator, recipientId, chainId])
   @@index([allocator])
   @@index([contract])
   @@index([recipientId])
