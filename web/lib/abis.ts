@@ -897,7 +897,7 @@ export const cfav1ForwarderConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xa2ff5cc093770613e4fb6d6e05a0a76f1316c60c)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x78ff09aa6f39a3749cea6bff613fbc9aca988080)
  */
 export const customFlowImplAbi = [
   { type: 'constructor', inputs: [], stateMutability: 'payable' },
@@ -929,6 +929,7 @@ export const customFlowImplAbi = [
   { type: 'error', inputs: [], name: 'NOT_MANAGER' },
   { type: 'error', inputs: [], name: 'NOT_OWNER_OR_MANAGER' },
   { type: 'error', inputs: [], name: 'NOT_OWNER_OR_PARENT' },
+  { type: 'error', inputs: [], name: 'NOT_SORTED_OR_DUPLICATE' },
   { type: 'error', inputs: [], name: 'OVERFLOW' },
   { type: 'error', inputs: [], name: 'POOL_CONNECTION_FAILED' },
   {
@@ -1655,6 +1656,40 @@ export const customFlowImplAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: 'recipientIds', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: 'recipients', internalType: 'address[]', type: 'address[]' },
+      {
+        name: 'metadatas',
+        internalType: 'struct FlowTypes.RecipientMetadata[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'title', internalType: 'string', type: 'string' },
+          { name: 'description', internalType: 'string', type: 'string' },
+          { name: 'image', internalType: 'string', type: 'string' },
+          { name: 'tagline', internalType: 'string', type: 'string' },
+          { name: 'url', internalType: 'string', type: 'string' },
+        ],
+      },
+    ],
+    name: 'bulkAddRecipients',
+    outputs: [
+      { name: '', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: '', internalType: 'address[]', type: 'address[]' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipientIds', internalType: 'bytes32[]', type: 'bytes32[]' },
+    ],
+    name: 'bulkRemoveRecipients',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'childFlowRatesOutOfSync',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -2273,14 +2308,14 @@ export const customFlowImplAbi = [
 ] as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xa2ff5cc093770613e4fb6d6e05a0a76f1316c60c)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x78ff09aa6f39a3749cea6bff613fbc9aca988080)
  */
 export const customFlowImplAddress = {
-  8453: '0xa2ff5cC093770613E4Fb6D6E05a0A76f1316C60C',
+  8453: '0x78ff09aA6f39a3749ceA6bFf613fBC9AcA988080',
 } as const
 
 /**
- * [__View Contract on Base Basescan__](https://basescan.org/address/0xa2ff5cc093770613e4fb6d6e05a0a76f1316c60c)
+ * [__View Contract on Base Basescan__](https://basescan.org/address/0x78ff09aa6f39a3749cea6bff613fbc9aca988080)
  */
 export const customFlowImplConfig = {
   address: customFlowImplAddress,
