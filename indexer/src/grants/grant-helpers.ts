@@ -8,10 +8,21 @@ export async function addGrantIdToFlowContractAndRecipientId(
   recipientId: string,
   grantId: string
 ) {
-  await db.insert(flowContractAndRecipientIdToGrantId).values({
-    flowContractAndRecipientId: getId(flowContract, recipientId),
-    grantId,
+  const key = getId(flowContract, recipientId)
+  const existing = await db.find(flowContractAndRecipientIdToGrantId, {
+    flowContractAndRecipientId: key,
   })
+
+  if (existing) {
+    await db
+      .update(flowContractAndRecipientIdToGrantId, { flowContractAndRecipientId: key })
+      .set({ grantId })
+  } else {
+    await db.insert(flowContractAndRecipientIdToGrantId).values({
+      flowContractAndRecipientId: key,
+      grantId,
+    })
+  }
 }
 
 export async function getGrantIdFromFlowContractAndRecipientId(

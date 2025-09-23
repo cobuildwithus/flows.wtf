@@ -7,14 +7,22 @@ export async function handleRecipientMappings(
   flowContract: string,
   grantId: string
 ) {
-  await Promise.all([
-    db.insert(recipientAndParentToGrantId).values({
-      recipientAndParent: `${recipient.toLowerCase()}-${flowContract.toLowerCase()}`,
-      grantId,
-    }),
+  const key = `${recipient.toLowerCase()}-${flowContract.toLowerCase()}`
 
-    db.update(parentFlowToChildren, { parentFlowContract: flowContract }).set((row) => ({
-      childGrantIds: [...row.childGrantIds, grantId],
-    })),
-  ])
+  const existing = await db.find(recipientAndParentToGrantId, {
+    recipientAndParent: key,
+  })
+
+  if (existing) {
+    await db.update(recipientAndParentToGrantId, { recipientAndParent: key }).set({ grantId })
+  } else {
+    await db.insert(recipientAndParentToGrantId).values({
+      recipientAndParent: key,
+      grantId,
+    })
+  }
+
+  await db.update(parentFlowToChildren, { parentFlowContract: flowContract }).set((row) => ({
+    childGrantIds: [...row.childGrantIds, grantId],
+  }))
 }

@@ -39,9 +39,13 @@ async function handleRecipientCreated(params: {
   const existingRecipient = await context.db.find(grants, { id: recipient })
 
   const canonicalId = buildCanonicalRecipientGrantId(flowAddress, grantId)
+  const existingGrantWithCanonicalId = await context.db.find(grants, { id: canonicalId })
+  const versionedId = existingGrantWithCanonicalId
+    ? `${canonicalId}-${event.transaction.hash}`
+    : canonicalId
 
   const grant = await context.db.insert(grants).values({
-    id: canonicalId,
+    id: versionedId,
     chainId: context.chain.id,
     title: metadata.title,
     recipientId: grantId,
