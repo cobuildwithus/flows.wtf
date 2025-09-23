@@ -46,11 +46,16 @@ async function handleMemberUnitsUpdated(params: {
   const bonusChanged = shouldUpdateBonus && grant.bonusMemberUnits !== newUnits
 
   if (baselineChanged || bonusChanged) {
-    await context.db.update(grants, { id: grant.id }).set((row) => ({
-      baselineMemberUnits: baselineChanged ? newUnits : row.baselineMemberUnits,
-      bonusMemberUnits: bonusChanged ? newUnits : row.bonusMemberUnits,
-      updatedAt: ts,
-    }))
+    await context.db.update(grants, { id: grant.id }).set((row) => {
+      const nextBaseline = baselineChanged ? newUnits : row.baselineMemberUnits
+      const nextBonus = bonusChanged ? newUnits : row.bonusMemberUnits
+      return {
+        baselineMemberUnits: nextBaseline,
+        bonusMemberUnits: nextBonus,
+        memberUnits: nextBaseline + nextBonus,
+        updatedAt: ts,
+      }
+    })
   }
 
   if (shouldUpdateBaseline && newUnits === 0n) {

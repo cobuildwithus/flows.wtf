@@ -7,7 +7,6 @@ import {
   allocationKeyRegistered,
 } from "ponder:schema"
 import { handleIncomingFlowRates } from "./lib/handle-incoming-flow-rates"
-import { getGrantIdFromFlowContractAndRecipientId } from "./grant-helpers"
 
 ponder.on("CustomFlow:AllocationCommitted", handleAllocationCommitted)
 
@@ -88,15 +87,12 @@ async function handleAllocationCommitted({
     }
   }
 
-  // Calculate deltas across union of recipients
-  const deltas = new Map<string, bigint>()
+  // Track removals only; member units are updated via pool events
   const allRecipients = new Set([...previousMemberUnits.keys(), ...currentMemberUnits.keys()])
 
   for (const recipientId of allRecipients) {
     const oldUnits = previousMemberUnits.get(recipientId) ?? 0n
     const newUnits = currentMemberUnits.get(recipientId) ?? 0n
-    const delta = newUnits - oldUnits
-    if (delta !== 0n) deltas.set(recipientId, delta)
 
     // Delete allocation for removed recipients (this strategy only)
     if (oldUnits > 0n && newUnits === 0n) {
@@ -107,28 +103,11 @@ async function handleAllocationCommitted({
         allocator,
         recipientId,
         chainId,
-      } as any)
+      })
     }
   }
 
-  // Apply the unit deltas to grant rows: update bonusMemberUnits (and memberUnits if still used)
-  for (const [rid, delta] of deltas) {
-    try {
-      if (delta !== 0n) {
-        const grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, contract, rid)
-        await context.db.update(grants, { id: grantId }).set((row) => {
-          const nextMember = row.memberUnits + delta
-          const nextBonus = row.bonusMemberUnits + delta
-          return {
-            memberUnits: nextMember < 0n ? 0n : nextMember,
-            bonusMemberUnits: nextBonus < 0n ? 0n : nextBonus,
-          }
-        })
-      }
-    } catch (e: any) {
-      console.error(e)
-    }
-  }
+  // No grant memberUnits mutations here; units come from Superfluid pool events
 
   // Stamp committed snapshot and commitTxHash for all new recipients (this strategy only)
   for (const rid of newRecipients) {
