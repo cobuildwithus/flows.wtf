@@ -34,6 +34,7 @@ async function handleFlowInitialized(params: {
     baselinePoolFlowRatePercent,
     bonusPool,
     managerRewardPoolFlowRatePercent,
+    flowImpl,
   } = event.args
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
@@ -57,6 +58,7 @@ async function handleFlowInitialized(params: {
   await context.db.insert(grants).values({
     id: grantId,
     chainId: context.chain.id,
+    flowImpl,
     ...metadata,
     recipient: contract,
     isTopLevel: true,

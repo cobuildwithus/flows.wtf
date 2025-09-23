@@ -14,6 +14,7 @@ export const grants = onchainTable(
     isFlow: t.boolean().notNull(),
     isSiblingFlow: t.boolean().notNull(),
     title: t.text().notNull(),
+    flowImpl: t.hex(),
     description: t.text().notNull(),
     image: t.text().notNull(),
     tagline: t.text(),

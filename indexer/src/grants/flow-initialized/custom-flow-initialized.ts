@@ -31,6 +31,7 @@ async function handleFlowInitialized(params: {
     manager,
     managerRewardPoolFlowRatePercent,
     strategies,
+    flowImpl,
   } = event.args
 
   const contract = event.log.address.toLowerCase() as `0x${string}`
@@ -61,6 +62,7 @@ async function handleFlowInitialized(params: {
     id: grantId,
     chainId: context.chain.id,
     jbxProjectId: revnetProjectId,
+    flowImpl,
     // hardcode to base for now
     jbxChainId: revnetProjectId ? base.id : null,
     ...metadata,
