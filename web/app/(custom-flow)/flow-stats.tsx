@@ -4,6 +4,7 @@ import type { Grant } from "@prisma/flows"
 import { getStartups } from "@/lib/onchain-startup/startup"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { PercentChange } from "@/components/ui/percent-change"
+import { fromWei } from "@/lib/utils"
 
 interface Props {
   customFlow: CustomFlow
@@ -73,11 +74,13 @@ function getSum(
   return flows.reduce((sum, flow) => {
     switch (key) {
       case "earned":
-        return sum + Number(flow.totalEarned)
+        return sum + fromWei(flow.totalEarned)
       case "projects":
         return sum + flow.activeRecipientCount
       case "monthly":
-        return sum + (Number(flow.monthlyOutgoingFlowRate) || Number(flow.monthlyIncomingFlowRate))
+        return (
+          sum + (fromWei(flow.monthlyOutgoingFlowRate) || fromWei(flow.monthlyIncomingFlowRate))
+        )
       default:
         return sum
     }

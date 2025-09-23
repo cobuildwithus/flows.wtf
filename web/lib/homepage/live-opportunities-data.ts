@@ -3,6 +3,7 @@
 import database from "@/lib/database/flows-db"
 import type { OpportunityWithCount, FlowWithDisplayAmount } from "@/components/homepage/types"
 import { unstable_cache } from "next/cache"
+import { fromWei } from "@/lib/utils"
 
 async function _getLiveOpportunitiesData(): Promise<{
   opportunities: OpportunityWithCount[]
@@ -40,10 +41,10 @@ async function _getLiveOpportunitiesData(): Promise<{
   })
 
   const flows: FlowWithDisplayAmount[] = flowsRaw
-    .sort((a, b) => Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate))
+    .sort((a, b) => fromWei(b.monthlyIncomingFlowRate) - fromWei(a.monthlyIncomingFlowRate))
     .map((flow) => ({
       ...flow,
-      displayAmount: Number(flow.monthlyOutgoingFlowRate) / (flow.activeRecipientCount || 1),
+      displayAmount: fromWei(flow.monthlyOutgoingFlowRate) / (flow.activeRecipientCount || 1),
     }))
 
   return { opportunities, flows }

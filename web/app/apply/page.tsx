@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Currency } from "@/components/ui/currency"
 import database from "@/lib/database/flows-db"
-import { getIpfsUrl } from "@/lib/utils"
+import { fromWei, getIpfsUrl } from "@/lib/utils"
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
 import type { Metadata } from "next"
 import Image from "next/image"
@@ -61,10 +61,13 @@ export default async function ApplyPage() {
     .sort((a, b) => {
       return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
     })
-    .map((flow) => ({
-      ...flow,
-      displayAmount: Number(flow.monthlyOutgoingFlowRate) / (flow.activeRecipientCount || 1),
-    }))
+    .map((flow) => {
+      const displayAmount = fromWei(flow.monthlyOutgoingFlowRate) / (flow.activeRecipientCount || 1)
+      return {
+        ...flow,
+        displayAmount,
+      }
+    })
 
   return (
     <div className="relative isolate">

@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Currency } from "@/components/ui/currency"
 import type { DerivedData, Grant } from "@prisma/flows"
-import { explorerUrl } from "@/lib/utils"
+import { explorerUrl, fromWei } from "@/lib/utils"
 import Link from "next/link"
 import { Separator } from "@radix-ui/react-select"
 import { IncomingFlowsList } from "@/components/global/incoming-flows"
@@ -29,14 +29,16 @@ export const BudgetDialog = async (props: Props) => {
     (remainingFlowRatePercent * Number(flow.baselinePoolFlowRatePercent)) / 1e6
   const bonusFlowRatePercent = remainingFlowRatePercent - baselineFlowRatePercent
 
+  const decimals = flow.underlyingTokenDecimals ?? 18
+  const toTokens = (value: string | number) => fromWei(value, decimals)
   const totalFlowRate =
-    Number(flow.monthlyBaselinePoolFlowRate ?? 0) +
-    Number(flow.monthlyBonusPoolFlowRate ?? 0) +
-    Number(flow.monthlyRewardPoolFlowRate ?? 0)
+    toTokens(flow.monthlyBaselinePoolFlowRate ?? 0) +
+    toTokens(flow.monthlyBonusPoolFlowRate ?? 0) +
+    toTokens(flow.monthlyRewardPoolFlowRate ?? 0)
 
-  const baselinePercent = (Number(flow.monthlyBaselinePoolFlowRate ?? 0) / totalFlowRate) * 100
-  const bonusPercent = (Number(flow.monthlyBonusPoolFlowRate ?? 0) / totalFlowRate) * 100
-  const managerPercent = (Number(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
+  const baselinePercent = (toTokens(flow.monthlyBaselinePoolFlowRate ?? 0) / totalFlowRate) * 100
+  const bonusPercent = (toTokens(flow.monthlyBonusPoolFlowRate ?? 0) / totalFlowRate) * 100
+  const managerPercent = (toTokens(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
 
   const currentVotes = Number(flow.totalAllocationWeightOnFlow) / 1e18
   const requiredVotes = (totalAllocationWeight * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6
@@ -126,7 +128,9 @@ export const BudgetDialog = async (props: Props) => {
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Incoming Flow</p>
                     <p className="text-xl font-bold">
-                      <Currency display={flow}>{flow.monthlyIncomingFlowRate || 0}</Currency>
+                      <Currency display={flow}>
+                        {toTokens(flow.monthlyIncomingFlowRate || 0)}
+                      </Currency>
                       /month
                     </p>
                   </div>
@@ -138,7 +142,9 @@ export const BudgetDialog = async (props: Props) => {
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Outgoing Flow</p>
                     <p className="text-xl font-bold">
-                      <Currency display={flow}>{flow.monthlyOutgoingFlowRate || 0}</Currency>
+                      <Currency display={flow}>
+                        {toTokens(flow.monthlyOutgoingFlowRate || 0)}
+                      </Currency>
                       /month
                     </p>
                   </div>
@@ -160,7 +166,9 @@ export const BudgetDialog = async (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency display={flow}>{flow.monthlyBaselinePoolFlowRate || 0}</Currency>
+                  <Currency display={flow}>
+                    {toTokens(flow.monthlyBaselinePoolFlowRate || 0)}
+                  </Currency>
                   /mo
                 </span>
               </div>
@@ -181,7 +189,7 @@ export const BudgetDialog = async (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency display={flow}>{flow.monthlyBonusPoolFlowRate || 0}</Currency>
+                  <Currency display={flow}>{toTokens(flow.monthlyBonusPoolFlowRate || 0)}</Currency>
                   /mo
                 </span>
               </div>
@@ -202,7 +210,7 @@ export const BudgetDialog = async (props: Props) => {
                   </Tooltip>
                 </TooltipProvider>
                 <span className="font-medium">
-                  <Currency display={flow}>{flow.monthlyRewardPoolFlowRate || 0}</Currency>
+                  <Currency display={flow}>{toTokens(flow.monthlyRewardPoolFlowRate || 0)}</Currency>
                   /mo
                 </span>
               </div>

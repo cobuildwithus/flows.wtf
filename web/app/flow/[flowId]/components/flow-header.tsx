@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Status } from "@/lib/enums"
-import { getIpfsUrl } from "@/lib/utils"
+import { fromWei, getEthAddress, getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { BudgetDialog } from "./budget-dialog"
@@ -45,10 +45,11 @@ export const FlowHeader = async (props: Props) => {
                 <BudgetDialog totalAllocationWeight={Number(totalAllocationWeight)} flow={flow}>
                   <Badge className="cursor-help">
                     <Currency display={flow}>
-                      {(flow.activeRecipientCount > 0
-                        ? flow.monthlyOutgoingFlowRate
-                        : flow.monthlyIncomingFlowRate
-                      ).toString()}
+                      {fromWei(
+                        flow.activeRecipientCount > 0
+                          ? flow.monthlyOutgoingFlowRate
+                          : flow.monthlyIncomingFlowRate,
+                      )}
                     </Currency>{" "}
                     /mo
                   </Badge>

@@ -4,6 +4,7 @@ import { Currency } from "@/components/ui/currency"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import pluralize from "pluralize"
 import type { Grant } from "@prisma/flows"
+import { fromWei } from "@/lib/utils"
 
 export type FlowWithBudget = Pick<
   Grant,
@@ -29,7 +30,7 @@ interface Props {
 
 export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
   const decimals = flow.underlyingTokenDecimals ?? 18
-  const toTokens = (raw: string | number) => Number(raw) / 10 ** decimals
+  const toTokens = (raw: string | number) => fromWei(raw, decimals)
   const monthlyOutgoingFlowRate = toTokens(flow.monthlyOutgoingFlowRate)
   const isFlow = flow.isFlow
 

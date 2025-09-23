@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { getIpfsUrl } from "@/lib/utils"
+import { fromWei, getIpfsUrl } from "@/lib/utils"
 import { useRef } from "react"
 import { AnimatedSalary } from "@/components/global/animated-salary"
 import { VRBS_GRANTS_PAYOUTS, REWARD_POOL_PAYOUT } from "@/lib/homepage/old-grants-data"
@@ -87,7 +87,7 @@ export function TrustedBySection({ topLevelFlows }: TrustedBySectionProps) {
                           <div>
                             <AnimatedSalary
                               value={getTotalPaidOut(flow)}
-                              monthlyRate={Number(flow.monthlyOutgoingFlowRate)}
+                              monthlyRate={fromWei(flow.monthlyOutgoingFlowRate)}
                               grant={{
                                 underlyingTokenSymbol: flow.underlyingTokenSymbol,
                                 underlyingTokenPrefix: flow.underlyingTokenPrefix,

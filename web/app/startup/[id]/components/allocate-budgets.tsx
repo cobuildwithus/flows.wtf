@@ -11,7 +11,7 @@ import {
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import type { DerivedData } from "@prisma/flows"
 import { useState } from "react"
-import { getEthAddress } from "@/lib/utils"
+import { fromWei, getEthAddress } from "@/lib/utils"
 import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import { GrantsTable } from "@/components/global/grants-table"
 import { AllocationBar } from "@/components/global/allocation-bar"
@@ -46,7 +46,7 @@ export function AllocateBudgets(props: Props) {
 
   // Calculate total budget across all flows
   const totalBudget = flows.reduce((sum, flow) => {
-    return sum + Number(flow.monthlyIncomingFlowRate)
+    return sum + fromWei(flow.monthlyIncomingFlowRate)
   }, 0)
 
   if (!isAllocator && !isManager) {
