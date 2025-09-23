@@ -45,21 +45,23 @@ export function useAllocateFlow(
         // Build allocation data using the strategies
         const { allocationData } = await buildAllocationData(strategies, chainId, tokenIds)
 
-        writeContract({
-          account,
-          abi: [
-            ...customFlowImplAbi,
-            ...rewardPoolImplAbi,
-            ...erc20VotesMintableImplAbi,
-            ...superfluidPoolAbi,
-            ...gdav1ForwarderAbi,
-            ...cfav1ForwarderAbi,
-          ],
-          functionName: "allocate",
-          address: contract,
-          chainId,
-          args: [allocationData, recipientIds, percentAllocations],
-        })
+        throw new Error("Not implemented yet. Switching to Cobuild miniapp")
+
+        // writeContract({
+        //   account,
+        //   abi: [
+        //     ...customFlowImplAbi,
+        //     ...rewardPoolImplAbi,
+        //     ...erc20VotesMintableImplAbi,
+        //     ...superfluidPoolAbi,
+        //     ...gdav1ForwarderAbi,
+        //     ...cfav1ForwarderAbi,
+        //   ],
+        //   functionName: "allocate",
+        //   address: contract,
+        //   chainId,
+        //   args: [allocationData, recipientIds, percentAllocations],
+        // })
       } catch (e) {
         console.error(e)
         return toast.error(`Failed to vote`, {
