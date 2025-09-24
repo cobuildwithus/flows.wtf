@@ -8,7 +8,7 @@ import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import type { StartupWithRevenue } from "@/components/homepage/types"
 import { unstable_cache } from "next/cache"
 
-async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
+export async function getStartupsTableData(): Promise<StartupWithRevenue[]> {
   const startups = getAllStartupsWithIds()
 
   const revenue = await getTotalRevenue(startups)
@@ -51,7 +51,7 @@ async function _getStartupsTableData(): Promise<StartupWithRevenue[]> {
   return startupsWithData.sort((a, b) => b.revenue - a.revenue)
 }
 
-export const getStartupsTableData = unstable_cache(_getStartupsTableData, ["startups-table"], {
-  tags: ["startups-table-data"],
-  revalidate: 180,
-})
+// export const getStartupsTableData = unstable_cache(_getStartupsTableData, ["startups-table"], {
+//   tags: ["startups-table-data"],
+//   revalidate: 180,
+// })

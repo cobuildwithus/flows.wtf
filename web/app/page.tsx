@@ -25,10 +25,10 @@ export default async function Home() {
         monthlyFlowRate={heroStats.totalMonthlyFlowRate}
         totalBuilders={heroStats.totalBuilders}
       />
-
+      {/* 
       <Suspense>
         <TrustedBySection topLevelFlows={await getTopLevelFlows()} />
-      </Suspense>
+      </Suspense> */}
 
       <div className="container space-y-12">
         <Suspense fallback={<SkeletonLoader count={6} height={280} />}>

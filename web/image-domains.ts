@@ -20,4 +20,9 @@ export const imageDomains = [
   "*.cdninstagram.com",
   "cdn.whisk.so",
   "ipfs.banny.eth.sucks",
+  "raw.githubusercontent.com",
+  "coin-images.coingecko.com",
+  "dd.dexscreener.com",
+  "justco.build",
+  "logo.moralis.io",
 ]
