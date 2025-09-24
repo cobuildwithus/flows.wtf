@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema", "relationJoins"]
+  previewFeatures = ["relationJoins"]
   output          = "../../node_modules/@prisma/farcaster"
 }
 

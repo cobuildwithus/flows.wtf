@@ -177,7 +177,7 @@ async function getOpportunitiesWithProfiles(startupId: string) {
       return {
         ...opportunity,
         applications: applicationsWithProfiles.sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         ),
       }
     }),

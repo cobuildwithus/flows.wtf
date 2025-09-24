@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/flows"
-;("use client")
+"use client"
 
+import { type Prisma } from "@prisma/flows"
 import NumberFlow from "@number-flow/react"
 import { useEffect, useState } from "react"
 

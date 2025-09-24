@@ -150,17 +150,17 @@ model Grant {
   isRemoved                        Boolean  @map("is_removed")
   isActive                         Boolean  @map("is_active")
   memberUnits                      Decimal  @map("member_units")
-  monthlyIncomingFlowRate          Decimal  @map("monthly_incoming_flow_rate") @default(0)
-  monthlyIncomingBaselineFlowRate  Decimal  @map("monthly_incoming_baseline_flow_rate") @default(0)
-  monthlyIncomingBonusFlowRate     Decimal  @map("monthly_incoming_bonus_flow_rate") @default(0)
-  monthlyOutgoingFlowRate          Decimal  @map("monthly_outgoing_flow_rate") @default(0)
-  monthlyRewardPoolFlowRate        Decimal  @map("monthly_reward_pool_flow_rate") @default(0)
-  monthlyBaselinePoolFlowRate      Decimal  @map("monthly_baseline_pool_flow_rate") @default(0)
-  monthlyBonusPoolFlowRate         Decimal  @map("monthly_bonus_pool_flow_rate") @default(0)
+  monthlyIncomingFlowRate          Decimal  @default(0) @map("monthly_incoming_flow_rate")
+  monthlyIncomingBaselineFlowRate  Decimal  @default(0) @map("monthly_incoming_baseline_flow_rate")
+  monthlyIncomingBonusFlowRate     Decimal  @default(0) @map("monthly_incoming_bonus_flow_rate")
+  monthlyOutgoingFlowRate          Decimal  @default(0) @map("monthly_outgoing_flow_rate")
+  monthlyRewardPoolFlowRate        Decimal  @default(0) @map("monthly_reward_pool_flow_rate")
+  monthlyBaselinePoolFlowRate      Decimal  @default(0) @map("monthly_baseline_pool_flow_rate")
+  monthlyBonusPoolFlowRate         Decimal  @default(0) @map("monthly_bonus_pool_flow_rate")
   bonusMemberUnits                 Decimal  @map("bonus_member_units")
   baselineMemberUnits              Decimal  @map("baseline_member_units")
-  totalEarned                      Decimal  @map("total_earned") @default(0)
-  totalPaidOut                     Decimal  @map("total_paid_out") @default(0)
+  totalEarned                      Decimal  @default(0) @map("total_earned")
+  totalPaidOut                     Decimal  @default(0) @map("total_paid_out")
   activeRecipientCount             Int      @map("active_recipient_count")
   awaitingRecipientCount           Int      @map("awaiting_recipient_count")
   challengedRecipientCount         Int      @map("challenged_recipient_count")
@@ -455,7 +455,7 @@ model JuiceboxProject {
   contributorsCount     Int      @default(0) @map("contributors_count")
   redeemCount           Int      @default(0) @map("redeem_count")
   redeemVolume          BigInt   @default(0) @map("redeem_volume")
-  pendingReservedTokens Decimal   @default(0) @map("pending_reserved_tokens")
+  pendingReservedTokens Decimal  @default(0) @map("pending_reserved_tokens")
   metadataUri           String?  @map("metadata_uri")
   metadata              Json?
   name                  String?
@@ -478,11 +478,11 @@ model JuiceboxProject {
   accountingTokenSymbol String @map("accounting_token_symbol")
   accountingTokenName   String @map("accounting_token_name")
 
-  participants JuiceboxParticipant[]
-  rulesets     JuiceboxRuleset[] @relation("JuiceboxProjectRulesets")
-  payEvents    JuiceboxPayEvent[]
-  Grant        Grant[]
-  activeRuleset JuiceboxRuleset? @relation("ActiveRuleset", fields: [currentRulesetId, chainId, projectId], references: [rulesetId, chainId, projectId])
+  participants  JuiceboxParticipant[]
+  rulesets      JuiceboxRuleset[]     @relation("JuiceboxProjectRulesets")
+  payEvents     JuiceboxPayEvent[]
+  Grant         Grant[]
+  activeRuleset JuiceboxRuleset?      @relation("ActiveRuleset", fields: [currentRulesetId, chainId, projectId], references: [rulesetId, chainId, projectId])
 
   @@unique([chainId, projectId])
   @@unique([currentRulesetId, chainId, projectId])
@@ -559,7 +559,7 @@ model JuiceboxRuleset {
   caller                     String  @db.VarChar(42)
   approvalStatus             String? @map("approval_status")
 
-  project JuiceboxProject @relation("JuiceboxProjectRulesets", fields: [chainId, projectId], references: [chainId, projectId])
+  project       JuiceboxProject  @relation("JuiceboxProjectRulesets", fields: [chainId, projectId], references: [chainId, projectId])
   activeProject JuiceboxProject? @relation("ActiveRuleset")
 
   @@unique([chainId, projectId, rulesetId])
