@@ -27,7 +27,9 @@ export function FlowCard({ flow }: Props) {
           <GrantStatusCountBadges id={flow.id} flow={flow} />
         </div>
         <MonthlyBudget
-          display={flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate}
+          display={String(
+            flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate,
+          )}
           flow={flow}
           approvedGrants={flow.activeRecipientCount}
         />

@@ -46,7 +46,7 @@ export function AllocateBudgets(props: Props) {
 
   // Calculate total budget across all flows
   const totalBudget = flows.reduce((sum, flow) => {
-    return sum + fromWei(flow.monthlyIncomingFlowRate)
+    return sum + fromWei(flow.monthlyIncomingFlowRate as any)
   }, 0)
 
   if (!isAllocator && !isManager) {

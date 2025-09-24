@@ -86,7 +86,18 @@ export default async function GrantPage(props: Props) {
 
   const canEdit = canEditGrant(startup, user?.address)
 
-  const totalBudget = calculateTotalBudget(budgets)
+  const totalBudget = calculateTotalBudget(
+    budgets.map((b) => ({
+      id: b.id,
+      monthlyOutgoingFlowRate: String(b.monthlyOutgoingFlowRate),
+      subgrants: b.subgrants?.map((s) => ({
+        recipient: s.recipient,
+        monthlyIncomingFlowRate: s.monthlyIncomingFlowRate
+          ? String(s.monthlyIncomingFlowRate)
+          : null,
+      })),
+    })),
+  )
   const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
 
   return (

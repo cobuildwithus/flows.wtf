@@ -37,9 +37,6 @@ export async function getIncomingFlowFromSiblings(
 
   return flows.map((flow) => ({
     ...flow.flow,
-    isSiblingFlow: true,
-    sender: flow.parentContract,
-    receiver: flow.recipient,
-    flowRate: flow.monthlyIncomingFlowRate,
+    flowRate: String(flow.monthlyIncomingFlowRate),
   }))
 }

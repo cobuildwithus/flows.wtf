@@ -2,7 +2,7 @@
 
 import { Currency } from "@/components/ui/currency"
 import { getIpfsUrl } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import { Grant } from "@/lib/database/types"
 import { Handle, Node, NodeProps, Position } from "@xyflow/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -38,7 +38,7 @@ function FlowNode(props: NodeProps<IFlowNode>) {
         <div className="flex flex-col items-center justify-center space-y-4">
           <div className="px-6 text-center text-3xl font-medium text-white">{title}</div>
           <div className="rounded-md bg-primary px-2.5 py-1 font-medium text-primary-foreground">
-            <Currency>{monthlyIncomingFlowRate}</Currency>
+            <Currency>{String(monthlyIncomingFlowRate)}</Currency>
             /mo
           </div>
         </div>

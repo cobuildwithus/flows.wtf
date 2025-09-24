@@ -1,7 +1,8 @@
 import { Grant } from "@/lib/database/types"
+import { Prisma } from "@prisma/flows"
 
 type GrantWithFlow = {
-  monthlyIncomingFlowRate: string
+  monthlyIncomingFlowRate: string | number | Prisma.Decimal
   flow: Pick<Grant, "underlyingTokenSymbol" | "underlyingTokenPrefix" | "underlyingERC20Token">
 }
 

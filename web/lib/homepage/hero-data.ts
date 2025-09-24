@@ -26,7 +26,13 @@ async function _getHeroStats() {
     getTotalBuilders(),
   ])
 
-  const totalMonthlyFlowRate = calculateTotalOutgoingFlowRate(grants)
+  const totalMonthlyFlowRate = calculateTotalOutgoingFlowRate(
+    grants.map((g) => ({
+      id: g.id,
+      flowId: g.flowId,
+      monthlyOutgoingFlowRate: String(g.monthlyOutgoingFlowRate),
+    })),
+  )
   const totalEarned =
     grants.reduce((acc, grant) => acc + Number(grant.totalEarned), 0) +
     VRBS_GRANTS_PAYOUTS +

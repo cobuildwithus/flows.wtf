@@ -1,11 +1,12 @@
-"use client"
+import { Prisma } from "@prisma/flows"
+;("use client")
 
 import NumberFlow from "@number-flow/react"
 import { useEffect, useState } from "react"
 
 interface Props {
-  value: number | string
-  monthlyRate: number | string
+  value: number | string | Prisma.Decimal
+  monthlyRate: number | string | Prisma.Decimal
   grant?: {
     underlyingTokenSymbol?: string
     underlyingTokenPrefix?: string

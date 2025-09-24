@@ -115,13 +115,13 @@ export function GrantsTable(props: Props) {
               <TableCell className="text-center">
                 <AnimatedSalary
                   grant={grant}
-                  value={grant.totalEarned}
-                  monthlyRate={grant.monthlyIncomingFlowRate}
+                  value={String(grant.totalEarned)}
+                  monthlyRate={String(grant.monthlyIncomingFlowRate)}
                 />
               </TableCell>
 
               <TableCell className="text-center">
-                <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />
+                <MonthlyBudget display={String(grant.monthlyIncomingFlowRate)} flow={grant} />
               </TableCell>
 
               <TableCell className="w-[130px] max-w-[130px] text-center">

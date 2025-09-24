@@ -2,7 +2,8 @@
 
 import { TcrTokenBalance } from "@/components/ui/tcr-token-balance"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
-import type { Grant, TokenHolder } from "@prisma/flows"
+import type { Grant } from "@/lib/database/types"
+import type { TokenHolder } from "@prisma/flows"
 import Image from "next/image"
 import Link from "next/link"
 import { getAddress } from "viem"
@@ -54,7 +55,7 @@ export function TokenRow(props: Props) {
         erc20={getAddress((flow as FlowWithTcr).erc20)}
         className="text-center text-sm font-medium"
         tokenEmitter={getAddress((flow as FlowWithTcr).tokenEmitter)}
-        monthlyRewardPoolRate={flow.monthlyRewardPoolFlowRate}
+        monthlyRewardPoolRate={String(flow.monthlyRewardPoolFlowRate)}
         ethPrice={ethPrice || 0}
         holderInfo={holderInfo}
         chainId={flow.chainId}

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/flows"
 import Link from "next/link"
 import { UserProfile } from "@/components/user-profile/user-profile"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -9,7 +10,7 @@ interface Builder {
   id: number | string
   profile: Profile | null | undefined
   recipient: string
-  monthlyIncomingFlowRate?: number | string | null
+  monthlyIncomingFlowRate?: number | string | Prisma.Decimal | null
 }
 
 interface Props {

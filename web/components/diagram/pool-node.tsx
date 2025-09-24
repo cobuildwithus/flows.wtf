@@ -2,7 +2,7 @@
 
 import { Currency } from "@/components/ui/currency"
 import { getIpfsUrl } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import { Grant } from "@/lib/database/types"
 import { Handle, Node, NodeProps, Position } from "@xyflow/react"
 import Image from "next/image"
 import { memo } from "react"
@@ -34,7 +34,7 @@ function PoolNode(props: NodeProps<IPoolNode>) {
       <div className="z-10 flex flex-col items-center justify-center space-y-14">
         <div className="text-5xl font-bold text-white">{title}</div>
         <div className="mt-3 rounded-md bg-primary px-2.5 py-1 text-2xl font-medium text-primary-foreground">
-          <Currency>{monthlyOutgoingFlowRate}</Currency>
+          <Currency>{String(monthlyOutgoingFlowRate)}</Currency>
           /mo
         </div>
       </div>

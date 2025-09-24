@@ -124,7 +124,7 @@ export async function CustomFlowPage(props: Props) {
         {flowsList && (
           <div className="flex flex-col gap-8">
             <FlowsList
-              flows={flows.sort(sortGrants)}
+              flows={flows.sort((a, b) => sortGrants(a as any, b as any))}
               canManage={canManage}
               contract={getEthAddress(flow.recipient)}
               chainId={flow.chainId}

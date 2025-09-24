@@ -45,7 +45,9 @@ export function GrantCard({ grant }: Props) {
 
       <Link href={url} className="flex h-full flex-col justify-between overflow-hidden p-2.5">
         <div className="relative flex items-center justify-between text-sm">
-          {isActive && <MonthlyBudget display={grant.monthlyIncomingFlowRate} flow={grant} />}
+          {isActive && (
+            <MonthlyBudget display={String(grant.monthlyIncomingFlowRate)} flow={grant} />
+          )}
           {!isActive && <DisputedGrantTag />}
 
           {grade && !isNew && <CircularProgress value={grade} size={26} />}

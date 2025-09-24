@@ -1,6 +1,7 @@
 import { formatCurrency } from "@/lib/erc20/super-token"
 import { CustomFlow } from "./custom-flows"
 import type { Grant } from "@prisma/flows"
+import { Prisma } from "@prisma/flows"
 import { getStartups } from "@/lib/onchain-startup/startup"
 import { getTotalRevenue } from "@/lib/onchain-startup/get-total-revenue"
 import { PercentChange } from "@/components/ui/percent-change"
@@ -74,12 +75,20 @@ function getSum(
   return flows.reduce((sum, flow) => {
     switch (key) {
       case "earned":
-        return sum + fromWei(flow.totalEarned)
+        return (
+          sum + fromWei(flow.totalEarned as unknown as string | number | bigint | Prisma.Decimal)
+        )
       case "projects":
         return sum + flow.activeRecipientCount
       case "monthly":
         return (
-          sum + (fromWei(flow.monthlyOutgoingFlowRate) || fromWei(flow.monthlyIncomingFlowRate))
+          sum +
+          (fromWei(
+            flow.monthlyOutgoingFlowRate as unknown as string | number | bigint | Prisma.Decimal,
+          ) ||
+            fromWei(
+              flow.monthlyIncomingFlowRate as unknown as string | number | bigint | Prisma.Decimal,
+            ))
         )
       default:
         return sum

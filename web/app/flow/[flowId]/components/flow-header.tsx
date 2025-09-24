@@ -46,9 +46,9 @@ export const FlowHeader = async (props: Props) => {
                   <Badge className="cursor-help">
                     <Currency display={flow}>
                       {fromWei(
-                        flow.activeRecipientCount > 0
+                        (flow.activeRecipientCount > 0
                           ? flow.monthlyOutgoingFlowRate
-                          : flow.monthlyIncomingFlowRate,
+                          : flow.monthlyIncomingFlowRate) as any,
                       )}
                     </Currency>{" "}
                     /mo

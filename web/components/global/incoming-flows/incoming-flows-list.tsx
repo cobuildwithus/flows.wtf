@@ -6,7 +6,7 @@ import { UserProfile } from "@/components/user-profile/user-profile"
 import { getIncomingFlows } from "@/lib/superfluid/get-incoming-flows"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Currency } from "@/components/ui/currency"
-import { Grant } from "@prisma/flows"
+import { Grant } from "@/lib/database/types"
 import { getIncomingFlowFromSiblings } from "@/lib/superfluid/get-sibling-flow-connections"
 
 interface IncomingFlowsListProps {
@@ -117,7 +117,7 @@ function IncomingSuperfluidFlowItem({
                   <div className="text-sm font-medium">{profile.display_name}</div>
                   <div className="text-xs text-muted-foreground">
                     <Currency display={parentFlow} currency="ERC20">
-                      {flowRatePerMonth}
+                      {flowRatePerMonth.toString()}
                     </Currency>
                     /mo
                   </div>
@@ -167,7 +167,7 @@ function IncomingSiblingFlowItem({
                 {title || "Sibling Flow"}
               </a>
               <div className="text-xs text-muted-foreground">
-                <Currency display={parentFlow}>{flowRate}</Currency>
+                <Currency display={parentFlow}>{String(flowRate)}</Currency>
                 /mo
               </div>
             </div>

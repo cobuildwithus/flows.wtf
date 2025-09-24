@@ -72,7 +72,9 @@ export default async function FlowPage(props: Props) {
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Budget</h4>
                     <Badge className="mt-2">
-                      <Currency display={flow}>{fromWei(flow.monthlyIncomingFlowRate)}</Currency>
+                      <Currency display={flow}>
+                        {fromWei(flow.monthlyIncomingFlowRate as any)}
+                      </Currency>
                       /mo
                     </Badge>
                   </div>
@@ -91,7 +93,7 @@ export default async function FlowPage(props: Props) {
                   </div>
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Votes</h4>
-                    <p className="mt-1 text-lg font-medium">{flow.memberUnits}</p>
+                    <p className="mt-1 text-lg font-medium">{String(flow.memberUnits)}</p>
                   </div>
                   <div>
                     <h4 className="text-[13px] text-muted-foreground">Your Vote</h4>
@@ -145,7 +147,7 @@ export default async function FlowPage(props: Props) {
                   <Voters
                     contract={flow.parentContract as `0x${string}`}
                     recipientId={flow.recipientId}
-                    flowVotesCount={pool.memberUnits}
+                    flowVotesCount={String(pool.memberUnits)}
                     isFlow={true}
                   />
                 </Suspense>

@@ -100,7 +100,19 @@ export function isBrowser() {
   return typeof window !== "undefined"
 }
 
-export function fromWei(value: string | number | bigint, decimals = 18) {
-  const bigValue = typeof value === "bigint" ? value : BigInt(Number(value))
-  return Number(bigValue) / 10 ** decimals
+export function fromWei(
+  value: string | number | bigint | import("@prisma/flows").Prisma.Decimal,
+  decimals = 18,
+) {
+  let raw: bigint
+  if (typeof value === "bigint") {
+    raw = value
+  } else if (typeof value === "number") {
+    raw = BigInt(Math.trunc(value))
+  } else if (typeof value === "string") {
+    raw = BigInt(value)
+  } else {
+    raw = BigInt(value.toString())
+  }
+  return Number(raw) / 10 ** decimals
 }

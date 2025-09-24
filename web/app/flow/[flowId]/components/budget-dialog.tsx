@@ -6,7 +6,8 @@ import { ArrowDownIcon, ArrowUpIcon, InfoIcon } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Currency } from "@/components/ui/currency"
-import type { DerivedData, Grant } from "@prisma/flows"
+import type { Grant } from "@/lib/database/types"
+import type { DerivedData, Prisma } from "@prisma/flows"
 import { explorerUrl, fromWei } from "@/lib/utils"
 import Link from "next/link"
 import { Separator } from "@radix-ui/react-select"
@@ -30,15 +31,17 @@ export const BudgetDialog = async (props: Props) => {
   const bonusFlowRatePercent = remainingFlowRatePercent - baselineFlowRatePercent
 
   const decimals = flow.underlyingTokenDecimals ?? 18
-  const toTokens = (value: string | number) => fromWei(value, decimals)
+  const toTokens = (value: string | number | Prisma.Decimal) => fromWei(value, decimals)
   const totalFlowRate =
-    toTokens(flow.monthlyBaselinePoolFlowRate ?? 0) +
-    toTokens(flow.monthlyBonusPoolFlowRate ?? 0) +
-    toTokens(flow.monthlyRewardPoolFlowRate ?? 0)
+    toTokens((flow.monthlyBaselinePoolFlowRate ?? 0) as any) +
+    toTokens((flow.monthlyBonusPoolFlowRate ?? 0) as any) +
+    toTokens((flow.monthlyRewardPoolFlowRate ?? 0) as any)
 
-  const baselinePercent = (toTokens(flow.monthlyBaselinePoolFlowRate ?? 0) / totalFlowRate) * 100
-  const bonusPercent = (toTokens(flow.monthlyBonusPoolFlowRate ?? 0) / totalFlowRate) * 100
-  const managerPercent = (toTokens(flow.monthlyRewardPoolFlowRate ?? 0) / totalFlowRate) * 100
+  const baselinePercent =
+    (toTokens((flow.monthlyBaselinePoolFlowRate ?? 0) as any) / totalFlowRate) * 100
+  const bonusPercent = (toTokens((flow.monthlyBonusPoolFlowRate ?? 0) as any) / totalFlowRate) * 100
+  const managerPercent =
+    (toTokens((flow.monthlyRewardPoolFlowRate ?? 0) as any) / totalFlowRate) * 100
 
   const currentVotes = Number(flow.totalAllocationWeightOnFlow) / 1e18
   const requiredVotes = (totalAllocationWeight * tokenVoteWeight * flow.bonusPoolQuorum) / 1e6

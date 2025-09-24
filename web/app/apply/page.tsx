@@ -62,7 +62,8 @@ export default async function ApplyPage() {
       return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
     })
     .map((flow) => {
-      const displayAmount = fromWei(flow.monthlyOutgoingFlowRate) / (flow.activeRecipientCount || 1)
+      const displayAmount =
+        fromWei(flow.monthlyOutgoingFlowRate as any) / (flow.activeRecipientCount || 1)
       return {
         ...flow,
         displayAmount,

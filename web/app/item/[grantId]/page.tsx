@@ -178,20 +178,20 @@ export default async function GrantPage(props: Props) {
               </div>
 
               <Stat label="Budget" className="">
-                <Currency display={grant}>{grant.monthlyIncomingFlowRate}</Currency>
+                <Currency display={grant}>{String(grant.monthlyIncomingFlowRate)}</Currency>
                 /mo
               </Stat>
 
               <Stat label="Total Earned">
                 <AnimatedSalary
                   grant={grant}
-                  value={grant.totalEarned}
-                  monthlyRate={grant.monthlyIncomingFlowRate}
+                  value={String(grant.totalEarned)}
+                  monthlyRate={String(grant.monthlyIncomingFlowRate)}
                 />
               </Stat>
               <Dialog>
                 <DialogTrigger className="group relative col-span-6 h-full text-left duration-200 hover:scale-[1.02] xl:col-span-3">
-                  <Stat label="Votes">{grant.memberUnits}</Stat>
+                  <Stat label="Votes">{String(grant.memberUnits)}</Stat>
                   <ZoomInIcon className="absolute right-4 top-4 size-6 opacity-0 transition-opacity duration-200 group-hover:opacity-75" />
                 </DialogTrigger>
                 <DialogContent>
@@ -201,7 +201,7 @@ export default async function GrantPage(props: Props) {
                       <Voters
                         contract={grant.parentContract as `0x${string}`}
                         recipientId={grant.recipientId}
-                        flowVotesCount={flow.memberUnits}
+                        flowVotesCount={String(flow.memberUnits)}
                       />
                     </Suspense>
                   </div>

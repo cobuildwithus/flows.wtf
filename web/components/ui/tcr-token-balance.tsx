@@ -72,7 +72,7 @@ const TcrTokenBalanceWithTooltip = ({
         <div className="flex flex-col gap-4 p-1">
           <div className="mb-2 border-b border-border pb-2 text-sm">
             Earning {formatPercentage(balance, totalSupply)}% of the{" "}
-            <Currency>{monthlyRewardPoolRate}</Currency>/mo pool
+            <Currency>{String(monthlyRewardPoolRate)}</Currency>/mo pool
           </div>
 
           <div className="space-y-1">

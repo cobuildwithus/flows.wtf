@@ -47,7 +47,7 @@ export default async function RemovedGrantsSection(props: Props) {
             <div className="grid grid-cols-12 gap-x-2 gap-y-4 py-1 lg:gap-x-4">
               <div className="col-span-full xl:col-span-3">
                 <Stat label="Total paid out">
-                  <Currency>{flow.totalEarned}</Currency>
+                  <Currency>{String(flow.totalEarned)}</Currency>
                 </Stat>
               </div>
               <RugRateExplainerDialog
@@ -73,7 +73,7 @@ export default async function RemovedGrantsSection(props: Props) {
                       <TableCell>
                         <div className="flex flex-col justify-end space-y-1">
                           <Currency className="text-right text-xl font-medium">
-                            {grant.totalEarned}
+                            {String(grant.totalEarned)}
                           </Currency>
                         </div>
                       </TableCell>

@@ -71,7 +71,11 @@ export async function Team(props: Props) {
               <div className="hidden sm:block">
                 <OpportunitiesSection
                   canManage={canManage}
-                  budgets={budgets}
+                  budgets={budgets.map((b) => ({
+                    id: b.id,
+                    title: b.title,
+                    monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
+                  }))}
                   startupId={startup.id}
                   user={user}
                 />
@@ -87,7 +91,11 @@ export async function Team(props: Props) {
             <div className="pr-4">
               <OpportunitiesSection
                 canManage={canManage}
-                budgets={budgets}
+                budgets={budgets.map((b) => ({
+                  id: b.id,
+                  title: b.title,
+                  monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
+                }))}
                 startupId={startup.id}
                 user={user}
               />
@@ -107,7 +115,7 @@ async function OpportunitiesSection({
   user,
 }: {
   canManage: boolean
-  budgets: BudgetWithGrants[]
+  budgets: Array<{ id: string; title: string; monthlyIncomingFlowRate: string }>
   startupId: string
   user: User | undefined
 }) {
@@ -131,8 +139,26 @@ async function OpportunitiesSection({
           underlyingTokenPrefix={o.budget.underlyingTokenPrefix}
         />
       ))}
-      {canManage && <CreateOpportunity budgets={budgets} startupId={startupId} />}
-      {canManage && <HireDirectly budgets={budgets} />}
+      {canManage && (
+        <CreateOpportunity
+          budgets={budgets.map((b) => ({
+            id: b.id,
+            title: b.title,
+            monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
+          }))}
+          startupId={startupId}
+        />
+      )}
+      {canManage && (
+        <HireDirectly
+          budgets={budgets.map((b) => ({
+            ...b,
+            id: b.id,
+            title: b.title,
+            monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
+          }))}
+        />
+      )}
     </div>
   )
 }

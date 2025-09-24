@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table"
 import { Status } from "@/lib/enums"
 import { getIpfsUrl } from "@/lib/utils"
-import type { Grant } from "@prisma/flows"
+import type { Grant } from "@/lib/database/types"
 import Image from "next/image"
 import Link from "next/link"
 import { AllocationInput } from "@/components/global/allocation-input"
@@ -99,17 +99,21 @@ export const FlowsTable = (props: Props) => {
               </TableCell>
               <TableCell className="text-center">
                 <AnimatedSalary
-                  value={flow.totalEarned}
+                  value={String(flow.totalEarned)}
                   grant={flow}
                   monthlyRate={
-                    flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate
+                    flow.isFlow
+                      ? String(flow.monthlyOutgoingFlowRate)
+                      : String(flow.monthlyIncomingFlowRate)
                   }
                 />
               </TableCell>
               <TableCell className="text-center">
                 <MonthlyBudget
                   display={
-                    flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate
+                    flow.isFlow
+                      ? String(flow.monthlyOutgoingFlowRate)
+                      : String(flow.monthlyIncomingFlowRate)
                   }
                   flow={flow}
                   approvedGrants={approvedGrants}

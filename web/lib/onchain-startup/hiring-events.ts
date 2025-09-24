@@ -154,7 +154,13 @@ async function getAllHiringEvents(): Promise<HiringEvent[]> {
     const startup = getStartupInfo(budget, flows)
     return (
       budget.subgrants
-        .map((subgrant) => subgrantToHiringEvent(budget, subgrant, startup))
+        .map((subgrant) =>
+          subgrantToHiringEvent(
+            budget,
+            { ...subgrant, monthlyIncomingFlowRate: subgrant.monthlyIncomingFlowRate.toString() },
+            startup,
+          ),
+        )
         // Filter out subgrants that were skipped (manager payments)
         .filter(Boolean)
     )
@@ -192,7 +198,14 @@ async function getHiringEventsForStartup(id: string): Promise<HiringEvent[]> {
   return budgets.flatMap((budget) => {
     const startup = getStartupInfo(budget)
     return budget.subgrants
-      .map((subgrant) => subgrantToHiringEvent(budget, subgrant, startup, mainFlow.manager))
+      .map((subgrant) =>
+        subgrantToHiringEvent(
+          budget,
+          { ...subgrant, monthlyIncomingFlowRate: subgrant.monthlyIncomingFlowRate.toString() },
+          startup,
+          mainFlow.manager,
+        ),
+      )
       .filter(Boolean)
   }) as HiringEvent[]
 }

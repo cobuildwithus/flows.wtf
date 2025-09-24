@@ -2,7 +2,7 @@
 
 import { Currency } from "@/components/ui/currency"
 import { getIpfsUrl } from "@/lib/utils"
-import { Grant } from "@prisma/flows"
+import { Grant } from "@/lib/database/types"
 import { Handle, Node, NodeProps, Position } from "@xyflow/react"
 import Image from "next/image"
 import Link from "next/link"
@@ -41,7 +41,7 @@ function GrantNode(props: NodeProps<IGrantNode>) {
         </h2>
 
         <div className="absolute bottom-2 left-1/2 w-full -translate-x-1/2 rounded bg-primary px-2 py-1 text-center text-xs font-medium text-primary-foreground opacity-0 transition-opacity group-hover:opacity-100">
-          <Currency>{monthlyIncomingFlowRate}</Currency>
+          <Currency>{String(monthlyIncomingFlowRate)}</Currency>
           /mo
         </div>
 

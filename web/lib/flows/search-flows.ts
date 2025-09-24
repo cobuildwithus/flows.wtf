@@ -92,11 +92,26 @@ async function _searchFlows({
   })
 
   // Filter out flows that don't have active outgoing flow rates
-  const activeFlows = flows.filter(
-    (flow) => flow.monthlyOutgoingFlowRate && flow.monthlyOutgoingFlowRate !== "0",
-  )
+  const activeFlows = flows.filter((flow) => {
+    const rate = String(flow.monthlyOutgoingFlowRate)
+    return rate && rate !== "0"
+  })
 
-  return activeFlows
+  const mapped: FlowSearchResult[] = activeFlows.map((f) => ({
+    id: f.id,
+    title: f.title,
+    description: f.description,
+    image: f.image,
+    tagline: f.tagline,
+    recipient: f.recipient,
+    isActive: f.isActive,
+    monthlyIncomingFlowRate: String(f.monthlyIncomingFlowRate),
+    monthlyOutgoingFlowRate: String(f.monthlyOutgoingFlowRate),
+    activeRecipientCount: f.activeRecipientCount,
+    superToken: f.superToken,
+    chainId: f.chainId,
+  }))
+  return mapped
 }
 
 export const searchFlows = unstable_cache(_searchFlows, ["search-flows"], {
