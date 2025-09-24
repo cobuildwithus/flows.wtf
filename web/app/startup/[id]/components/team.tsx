@@ -71,11 +71,7 @@ export async function Team(props: Props) {
               <div className="hidden sm:block">
                 <OpportunitiesSection
                   canManage={canManage}
-                  budgets={budgets.map((b) => ({
-                    id: b.id,
-                    title: b.title,
-                    monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
-                  }))}
+                  budgets={budgets}
                   startupId={startup.id}
                   user={user}
                 />
@@ -91,11 +87,7 @@ export async function Team(props: Props) {
             <div className="pr-4">
               <OpportunitiesSection
                 canManage={canManage}
-                budgets={budgets.map((b) => ({
-                  id: b.id,
-                  title: b.title,
-                  monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
-                }))}
+                budgets={budgets}
                 startupId={startup.id}
                 user={user}
               />
@@ -115,7 +107,7 @@ async function OpportunitiesSection({
   user,
 }: {
   canManage: boolean
-  budgets: Array<{ id: string; title: string; monthlyIncomingFlowRate: string }>
+  budgets: BudgetWithGrants[]
   startupId: string
   user: User | undefined
 }) {
@@ -149,16 +141,7 @@ async function OpportunitiesSection({
           startupId={startupId}
         />
       )}
-      {canManage && (
-        <HireDirectly
-          budgets={budgets.map((b) => ({
-            ...b,
-            id: b.id,
-            title: b.title,
-            monthlyIncomingFlowRate: String(b.monthlyIncomingFlowRate),
-          }))}
-        />
-      )}
+      {canManage && <HireDirectly budgets={budgets} />}
     </div>
   )
 }
