@@ -110,9 +110,9 @@ export function fromWei(
   } else if (typeof value === "number") {
     raw = BigInt(Math.trunc(value))
   } else if (typeof value === "string") {
-    raw = BigInt(value)
+    raw = BigInt(Math.trunc(Number(value)))
   } else {
-    raw = BigInt(value.toString())
+    raw = BigInt(Math.trunc(Number(value.toString())))
   }
   return Number(raw) / 10 ** decimals
 }
