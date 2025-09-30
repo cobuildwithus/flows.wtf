@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Status } from "@/lib/enums"
-import { cn, getIpfsUrl } from "@/lib/utils"
+import { cn, fromWei, getIpfsUrl } from "@/lib/utils"
 import type { DerivedData } from "@prisma/flows"
 import type { Profile } from "@/components/user-profile/get-user-profile"
 import Link from "next/link"
@@ -115,8 +115,11 @@ export function GrantsTable(props: Props) {
               <TableCell className="text-center">
                 <AnimatedSalary
                   grant={grant}
-                  value={String(grant.totalEarned)}
-                  monthlyRate={String(grant.monthlyIncomingFlowRate)}
+                  value={fromWei(grant.totalEarned, grant.underlyingTokenDecimals ?? 18)}
+                  monthlyRate={fromWei(
+                    grant.monthlyIncomingFlowRate,
+                    grant.underlyingTokenDecimals ?? 18,
+                  )}
                 />
               </TableCell>
 

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Status } from "@/lib/enums"
-import { getIpfsUrl } from "@/lib/utils"
+import { fromWei, getIpfsUrl } from "@/lib/utils"
 import type { Grant } from "@/lib/database/types"
 import Image from "next/image"
 import Link from "next/link"
@@ -99,13 +99,12 @@ export const FlowsTable = (props: Props) => {
               </TableCell>
               <TableCell className="text-center">
                 <AnimatedSalary
-                  value={String(flow.totalEarned)}
+                  value={fromWei(flow.totalEarned, flow.underlyingTokenDecimals ?? 18)}
                   grant={flow}
-                  monthlyRate={
-                    flow.isFlow
-                      ? String(flow.monthlyOutgoingFlowRate)
-                      : String(flow.monthlyIncomingFlowRate)
-                  }
+                  monthlyRate={fromWei(
+                    flow.isFlow ? flow.monthlyOutgoingFlowRate : flow.monthlyIncomingFlowRate,
+                    flow.underlyingTokenDecimals ?? 18,
+                  )}
                 />
               </TableCell>
               <TableCell className="text-center">

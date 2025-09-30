@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Currency, type CurrencyDisplay } from "@/components/ui/currency"
 import type { Profile } from "@/components/user-profile/get-user-profile"
+import { fromWei } from "@/lib/utils"
 
 interface Builder {
   id: number | string
@@ -15,11 +16,13 @@ interface Builder {
 
 interface Props {
   builders: Builder[]
-  currency: CurrencyDisplay
+  currency: CurrencyDisplay & { underlyingTokenDecimals?: number | null }
 }
 
 export default async function BuilderList({ builders, currency }: Props) {
   if (builders.length === 0) return null
+
+  const decimals = currency.underlyingTokenDecimals ?? 18
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -41,7 +44,7 @@ export default async function BuilderList({ builders, currency }: Props) {
                     </h3>
                     <Badge variant="secondary">
                       <Currency display={currency}>
-                        {builder.monthlyIncomingFlowRate?.toString() || "0"}
+                        {fromWei(builder.monthlyIncomingFlowRate || 0, decimals)}
                       </Currency>
                       /mo
                     </Badge>

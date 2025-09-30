@@ -20,6 +20,7 @@ export const getUserGrants = unstable_cache(
             underlyingERC20Token: true,
             underlyingTokenPrefix: true,
             underlyingTokenSymbol: true,
+            underlyingTokenDecimals: true,
             underlyingTokenUsdPrice: true,
             image: true,
             baselinePool: true,

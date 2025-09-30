@@ -137,6 +137,7 @@ export async function CustomFlowPage(props: Props) {
                   currency={{
                     underlyingTokenSymbol: flow.underlyingTokenSymbol,
                     underlyingTokenPrefix: flow.underlyingTokenPrefix,
+                    underlyingTokenDecimals: flow.underlyingTokenDecimals,
                   }}
                 />
               </div>

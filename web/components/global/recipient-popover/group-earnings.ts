@@ -1,9 +1,16 @@
 import { Grant } from "@/lib/database/types"
 import { Prisma } from "@prisma/flows"
+import { fromWei } from "@/lib/utils"
 
 type GrantWithFlow = {
   monthlyIncomingFlowRate: string | number | Prisma.Decimal
-  flow: Pick<Grant, "underlyingTokenSymbol" | "underlyingTokenPrefix" | "underlyingERC20Token">
+  flow: Pick<
+    Grant,
+    | "underlyingTokenSymbol"
+    | "underlyingTokenPrefix"
+    | "underlyingERC20Token"
+    | "underlyingTokenDecimals"
+  >
 }
 
 function groupGrantsByCurrency(grants: GrantWithFlow[]) {
@@ -19,7 +26,8 @@ function groupGrantsByCurrency(grants: GrantWithFlow[]) {
         }
       }
 
-      acc[key].yearlyEarnings += Number(grant.monthlyIncomingFlowRate) * 12
+      acc[key].yearlyEarnings +=
+        fromWei(grant.monthlyIncomingFlowRate, grant.flow.underlyingTokenDecimals ?? 18) * 12
 
       return acc
     },

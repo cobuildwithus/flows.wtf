@@ -17,7 +17,7 @@ import database from "@/lib/database/flows-db"
 import { canEditGrant } from "@/lib/database/helpers"
 import { getGrantFeedbackCasts } from "@/lib/database/queries/get-grant-feedback"
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
-import { cn, getIpfsUrl } from "@/lib/utils"
+import { cn, fromWei, getIpfsUrl } from "@/lib/utils"
 import { ZoomInIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
@@ -178,15 +178,20 @@ export default async function GrantPage(props: Props) {
               </div>
 
               <Stat label="Budget" className="">
-                <Currency display={grant}>{String(grant.monthlyIncomingFlowRate)}</Currency>
+                <Currency display={grant}>
+                  {fromWei(grant.monthlyIncomingFlowRate, grant.underlyingTokenDecimals ?? 18)}
+                </Currency>
                 /mo
               </Stat>
 
               <Stat label="Total Earned">
                 <AnimatedSalary
                   grant={grant}
-                  value={String(grant.totalEarned)}
-                  monthlyRate={String(grant.monthlyIncomingFlowRate)}
+                  value={fromWei(grant.totalEarned, grant.underlyingTokenDecimals ?? 18)}
+                  monthlyRate={fromWei(
+                    grant.monthlyIncomingFlowRate,
+                    grant.underlyingTokenDecimals ?? 18,
+                  )}
                 />
               </Stat>
               <Dialog>
