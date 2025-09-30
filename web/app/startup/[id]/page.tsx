@@ -15,7 +15,7 @@ import { getTeamMembers } from "@/lib/onchain-startup/team-members"
 import { getTokenPayments } from "@/lib/onchain-startup/token-payments"
 import { getAllOrders } from "@/lib/shopify/orders"
 import { getProducts } from "@/lib/shopify/products"
-import { getIpfsUrl } from "@/lib/utils"
+import { fromWei, getIpfsUrl } from "@/lib/utils"
 import { Banknote, DollarSign, Repeat, ShoppingBag } from "lucide-react"
 import type { Metadata } from "next"
 import { Suspense } from "react"
@@ -98,7 +98,10 @@ export default async function GrantPage(props: Props) {
       })),
     })),
   )
-  const totalFunded = budgets.map((b) => Number(b.totalEarned)).reduce((a, b) => a + b, 0)
+  const decimals = budgets[0]?.underlyingTokenDecimals ?? 18
+  const totalFunded = budgets
+    .map((b) => fromWei(b.totalEarned, decimals))
+    .reduce((a, b) => a + b, 0)
 
   return (
     <>

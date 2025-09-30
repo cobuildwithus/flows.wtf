@@ -1,7 +1,7 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import database from "@/lib/database/flows-db"
 import { getPool } from "@/lib/database/queries/pool"
-import { cn, getIpfsUrl } from "@/lib/utils"
+import { cn, fromWei, getIpfsUrl } from "@/lib/utils"
 import { Metadata } from "next"
 import { unstable_cache } from "next/cache"
 import Image from "next/image"
@@ -45,7 +45,11 @@ export default async function GrowthPage(props: Props) {
     .filter((f) => !f.isTopLevel && !f.isRemoved)
     .reduce((acc, flow) => acc + flow.activeRecipientCount, 0)
 
-  const topLevelPaidOut = flows.reduce((acc, grant) => acc + Number(grant.totalEarned), 0)
+  const decimals = pool.underlyingTokenDecimals ?? 18
+  const topLevelPaidOut = flows.reduce(
+    (acc, grant) => acc + fromWei(grant.totalEarned, decimals),
+    0,
+  )
 
   return (
     <main>
