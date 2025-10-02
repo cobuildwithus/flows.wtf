@@ -45,32 +45,46 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
 
   const safeDiv = (num: bigint, den: bigint) => (den === 0n ? 0n : num / den)
 
-  await Promise.all(
-    items.map(async (sibling) => {
-      const baselineUnits = sibling.baselineMemberUnits
-      const bonusUnits = sibling.bonusMemberUnits
+  const updates: Promise<unknown>[] = []
+  for (const sibling of items) {
+    const baselineUnits = sibling.baselineMemberUnits
+    const bonusUnits = sibling.bonusMemberUnits
 
-      const baselineShare = safeDiv(baselineMonthly * baselineUnits, totalBaselineUnits)
-      const bonusShare = safeDiv(bonusMonthly * bonusUnits, totalBonusUnits)
-      const totalShare = baselineShare + bonusShare
+    const baselineShare = safeDiv(baselineMonthly * baselineUnits, totalBaselineUnits)
+    const bonusShare = safeDiv(bonusMonthly * bonusUnits, totalBonusUnits)
+    const totalShare = baselineShare + bonusShare
 
-      await db.update(grants, { id: sibling.id }).set({
-        monthlyIncomingFlowRate: totalShare,
-        monthlyIncomingBaselineFlowRate: baselineShare,
-        monthlyIncomingBonusFlowRate: bonusShare,
-      })
+    const noChange =
+      totalShare === sibling.monthlyIncomingFlowRate &&
+      baselineShare === sibling.monthlyIncomingBaselineFlowRate &&
+      bonusShare === sibling.monthlyIncomingBonusFlowRate
 
-      await updateSiblingFlowRates(
-        db,
-        sibling.recipient,
-        parentContract,
-        totalShare,
-        baselineShare,
-        bonusShare,
-        parent.chainId
+    if (!noChange) {
+      updates.push(
+        db.update(grants, { id: sibling.id }).set({
+          monthlyIncomingFlowRate: totalShare,
+          monthlyIncomingBaselineFlowRate: baselineShare,
+          monthlyIncomingBonusFlowRate: bonusShare,
+        })
       )
-    })
-  )
+    }
+
+    if (sibling.isFlow && sibling.parentContract.toLowerCase() !== parentContract.toLowerCase()) {
+      updates.push(
+        updateSiblingFlowRates(
+          db,
+          sibling.recipient,
+          parentContract,
+          totalShare,
+          baselineShare,
+          bonusShare,
+          parent.chainId
+        )
+      )
+    }
+  }
+
+  if (updates.length) await Promise.all(updates)
 }
 
 export async function updateSiblingFlowRates(

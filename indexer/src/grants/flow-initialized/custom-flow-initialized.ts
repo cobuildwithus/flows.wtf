@@ -1,12 +1,7 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { zeroAddress } from "viem"
 import { Status } from "../../enums"
-import {
-  baselinePoolToGrantId,
-  bonusPoolToGrantId,
-  grants,
-  parentFlowToChildren,
-} from "ponder:schema"
+import { grants, parentFlowToChildren, poolToParent } from "ponder:schema"
 import { calculateRootContract } from "../grant-helpers"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { isAccelerator, revnetProjectChainId } from "../recipients/helpers"
@@ -142,14 +137,8 @@ async function createMappings(
   baselinePool: string
 ) {
   await Promise.all([
-    db.insert(bonusPoolToGrantId).values({
-      bonusPool,
-      grantId,
-    }),
-    db.insert(baselinePoolToGrantId).values({
-      baselinePool,
-      grantId,
-    }),
+    db.insert(poolToParent).values({ pool: bonusPool, grantId, kind: "bonus" }),
+    db.insert(poolToParent).values({ pool: baselinePool, grantId, kind: "baseline" }),
     db.insert(parentFlowToChildren).values({
       parentFlowContract: contract,
       childGrantIds: [],

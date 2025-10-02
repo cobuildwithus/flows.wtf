@@ -1,11 +1,10 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { updateSiblingFlowRates } from "./lib/handle-incoming-flow-rates"
 import {
-  baselinePoolToGrantId,
-  bonusPoolToGrantId,
   grants,
   parentFlowToChildren,
   recipientAndParentToGrantId,
+  poolToParent,
 } from "ponder:schema"
 
 ponder.on("SuperfluidPool:MemberUnitsUpdated", handleMemberUnitsUpdated)
@@ -49,6 +48,9 @@ async function handleMemberUnitsUpdated(params: {
     await context.db.update(grants, { id: grant.id }).set((row) => {
       const nextBaseline = baselineChanged ? newUnits : row.baselineMemberUnits
       const nextBonus = bonusChanged ? newUnits : row.bonusMemberUnits
+      if (nextBaseline === row.baselineMemberUnits && nextBonus === row.bonusMemberUnits) {
+        return { updatedAt: ts }
+      }
       return {
         baselineMemberUnits: nextBaseline,
         bonusMemberUnits: nextBonus,
@@ -73,32 +75,15 @@ async function handleMemberUnitsUpdated(params: {
 }
 
 async function getParentGrant(db: Context["db"], pool: string) {
-  const [grantBonus, grantBaseline] = await Promise.all([
-    db.find(bonusPoolToGrantId, { bonusPool: pool }),
-    db.find(baselinePoolToGrantId, { baselinePool: pool }),
-  ])
-
-  if (!grantBonus && !grantBaseline) {
-    return null
+  // Prefer single-shot poolToParent; fallback to legacy lookups if missing
+  const kv = await db.find(poolToParent, { pool })
+  if (kv) {
+    const parent = await db.find(grants, { id: kv.grantId })
+    return parent ?? null
   }
 
-  if (grantBonus && grantBaseline) {
-    throw new Error(`Multiple parent grants found: ${pool}`)
-  }
-
-  const grantResult = grantBonus || grantBaseline
-
-  if (!grantResult) {
-    throw new Error(`Parent grant result not found: ${pool}`)
-  }
-
-  const parent = await db.find(grants, { id: grantResult.grantId })
-
-  if (!parent) {
-    throw new Error(`Parent grant not found: ${pool}`)
-  }
-
-  return parent
+  // Legacy fallback removed now that poolToParent exists; return null to skip
+  return null
 }
 
 async function getGrant(db: Context["db"], recipient: string, parentContract: string) {

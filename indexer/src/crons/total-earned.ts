@@ -1,5 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { getAddress, zeroAddress } from "viem"
+import { isBlockRecent } from "../utils"
 import { grants } from "ponder:schema"
 
 const BATCH_SIZE = 20
@@ -10,7 +11,9 @@ async function handleTotalEarned(params: {
   event: Event<"TotalEarned:block">
   context: Context<"TotalEarned:block">
 }) {
-  const { context } = params
+  const { context, event } = params
+  // Skip during backfill; only run near tip-of-chain
+  if (!isBlockRecent(event.block.timestamp)) return
   const chainId = context.chain.id
 
   // Track total payout per parent flow in wei for accuracy
@@ -31,38 +34,51 @@ async function handleTotalEarned(params: {
   for (let i = 0; i < activeGrants.length; i += BATCH_SIZE) {
     const batch = activeGrants.slice(i, i + BATCH_SIZE)
 
-    // Process batch in parallel
-    const updates = await Promise.all(
-      batch.map(async (grant) => {
-        const { parentContract, recipient, id } = grant
+    // Prepare multicall contracts for all non-zero parent contracts
+    const contracts = batch
+      .filter((g) => g.parentContract !== zeroAddress)
+      .map((g) => ({
+        address: getAddress(g.parentContract),
+        abi: [
+          {
+            type: "function" as const,
+            name: "getTotalReceivedByMember" as const,
+            stateMutability: "view" as const,
+            inputs: [{ name: "member", type: "address" as const }],
+            outputs: [{ type: "uint256" as const }],
+          },
+        ],
+        functionName: "getTotalReceivedByMember" as const,
+        args: [getAddress(g.recipient)] as const,
+      }))
 
-        let totalEarned = 0n
-        if (parentContract !== zeroAddress) {
-          const total = await context.client.readContract({
-            address: getAddress(parentContract),
-            abi: [
-              {
-                inputs: [{ name: "member", type: "address" }],
-                name: "getTotalReceivedByMember",
-                outputs: [{ type: "uint256" }],
-                stateMutability: "view",
-                type: "function",
-              },
-            ],
-            functionName: "getTotalReceivedByMember",
-            args: [getAddress(recipient)],
-          })
-          totalEarned = total
-
-          // Accumulate payout for the parent flow
-          parentTotals[parentContract] = (parentTotals[parentContract] || 0n) + total
-        }
-
-        return context.db.update(grants, { id }).set({
-          totalEarned,
+    const results = contracts.length
+      ? await context.client.multicall({
+          contracts,
+          allowFailure: true,
         })
+      : ([] as const)
+
+    // Map results back to batch grants
+    let callIndex = 0
+    const updates = batch.map((grant) => {
+      const { parentContract, id } = grant
+
+      let totalEarned = 0n
+      if (parentContract !== zeroAddress) {
+        const res = results[callIndex++]
+        const total =
+          res && (res as any).status === "success" ? ((res as any).result as bigint) : 0n
+        totalEarned = total
+
+        // Accumulate payout for the parent flow
+        parentTotals[parentContract] = (parentTotals[parentContract] || 0n) + total
+      }
+
+      return context.db.update(grants, { id }).set({
+        totalEarned,
       })
-    )
+    })
 
     await Promise.all(updates)
   }

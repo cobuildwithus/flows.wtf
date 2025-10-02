@@ -4,10 +4,9 @@ import { Status } from "../../enums"
 import { base as baseContracts } from "../../../addresses"
 import {
   arbitratorToGrantId,
-  baselinePoolToGrantId,
-  bonusPoolToGrantId,
   grants,
   parentFlowToChildren,
+  poolToParent,
   rewardPoolContractToGrantId,
   tcrToGrantId,
   tokenEmitterToErc20,
@@ -151,14 +150,8 @@ async function createMappings(
       arbitrator: baseContracts.ERC20VotesArbitrator,
       grantId,
     }),
-    db.insert(bonusPoolToGrantId).values({
-      bonusPool,
-      grantId,
-    }),
-    db.insert(baselinePoolToGrantId).values({
-      baselinePool,
-      grantId,
-    }),
+    db.insert(poolToParent).values({ pool: bonusPool, grantId, kind: "bonus" }),
+    db.insert(poolToParent).values({ pool: baselinePool, grantId, kind: "baseline" }),
     db.insert(parentFlowToChildren).values({
       parentFlowContract: contract,
       childGrantIds: [],

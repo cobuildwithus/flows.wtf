@@ -3,10 +3,11 @@ import { base, optimism } from "viem/chains"
 import { mainnet } from "viem/chains"
 
 // helpful for things that we only want to run one time eg: embeddings or chain queries
-export function isBlockRecent(blockTimestamp: number) {
+export function isBlockRecent(blockTimestamp: number | bigint) {
   const FIVE_MINUTES = 5 * 60
   const currentTime = Math.floor(Date.now() / 1000)
-  return currentTime - blockTimestamp < FIVE_MINUTES
+  const ts = typeof blockTimestamp === "bigint" ? Number(blockTimestamp) : blockTimestamp
+  return currentTime - ts < FIVE_MINUTES
 }
 
 const getPrefix = (chain: "base" | "eth" | "arbitrum" | "optimism") => {

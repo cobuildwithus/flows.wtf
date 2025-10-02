@@ -56,9 +56,10 @@ async function createRecipientMappings(
       recipientAndParent: `${flowContract.toLowerCase()}-${parentFlowContract.toLowerCase()}`,
       grantId: flowContract,
     }),
-
     db.update(parentFlowToChildren, { parentFlowContract }).set((row) => ({
-      childGrantIds: [...row.childGrantIds, flowContract],
+      childGrantIds: row.childGrantIds.includes(flowContract)
+        ? row.childGrantIds
+        : [...row.childGrantIds, flowContract],
     })),
     addGrantIdToFlowContractAndRecipientId(db, parentFlowContract, recipientId, flowContract),
   ])
