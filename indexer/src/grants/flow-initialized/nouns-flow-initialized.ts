@@ -39,8 +39,11 @@ async function handleFlowInitialized(params: {
   const contract = event.log.address.toLowerCase() as `0x${string}`
   const parentContract = parent.toLowerCase() as `0x${string}`
 
-  const { metadata, managerRewardSuperfluidPool, underlyingERC20Token } =
-    await getFlowMetadataAndRewardPool(context, contract, managerRewardPool, superToken)
+  const { metadata, underlyingERC20Token } = await getFlowMetadataAndRewardPool(
+    context,
+    contract,
+    superToken
+  )
 
   const {
     symbol: underlyingTokenSymbol,
@@ -70,7 +73,7 @@ async function handleFlowInitialized(params: {
     parentContract,
     rootContract,
     managerRewardPool: managerRewardPool.toLowerCase(),
-    managerRewardSuperfluidPool: managerRewardSuperfluidPool.toLowerCase(),
+    managerRewardSuperfluidPool: "",
     superToken: superToken.toLowerCase(),
     underlyingERC20Token: underlyingERC20Token.toLowerCase(),
     underlyingTokenSymbol,
