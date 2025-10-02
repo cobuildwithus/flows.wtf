@@ -380,20 +380,15 @@ export const senderAndReceiverToPreviousFlowRate = onchainTable(
   })
 )
 
-export const bonusPoolToGrantId = onchainTable(
-  "_kv_BonusPoolToGrantId",
-  (t) => ({
-    bonusPool: t.text().primaryKey(),
-    grantId: t.text().notNull(),
-  }),
-  () => ({})
-)
+// Removed legacy bonus/baseline pool mappings in favor of consolidated poolToParent
 
-export const baselinePoolToGrantId = onchainTable(
-  "_kv_BaselinePoolToGrantId",
+// Consolidated KV for pool -> parent grant + kind
+export const poolToParent = onchainTable(
+  "_kv_PoolToParent",
   (t) => ({
-    baselinePool: t.text().primaryKey(),
+    pool: t.text().primaryKey(),
     grantId: t.text().notNull(),
+    kind: t.text().notNull(), // "baseline" | "bonus" | "manager"
   }),
   () => ({})
 )
