@@ -3,7 +3,7 @@ import { zeroAddress } from "viem"
 import { grants } from "ponder:schema"
 
 import { fetchTokenPriceWeiForToken, fetchEthUsdPrice } from "../utils/token-price"
-import { USDC } from "../utils"
+import { USDC, isBlockRecent } from "../utils"
 
 const BATCH_SIZE = 20
 
@@ -13,7 +13,9 @@ async function handleTokenPrices(params: {
   event: Event<"UnderlyingTokenPrices:block">
   context: Context<"UnderlyingTokenPrices:block">
 }) {
-  const { context } = params
+  const { context, event } = params
+  // Skip during backfill; only run near tip-of-chain
+  if (!isBlockRecent(event.block.timestamp)) return
   const chainId = context.chain.id
 
   // Grab the current ETH → USD spot price

@@ -2,6 +2,7 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
 import { fetchTokenPriceWeiForProject, fetchEthUsdPrice } from "../utils/token-price"
+import { isBlockRecent } from "../utils"
 
 const BATCH_SIZE = 20
 
@@ -11,7 +12,9 @@ async function handleTokenPrices(params: {
   event: Event<"FundraisingTokenPrices:block">
   context: Context<"FundraisingTokenPrices:block">
 }) {
-  const { context } = params
+  const { context, event } = params
+  // Skip during backfill; only run near tip-of-chain
+  if (!isBlockRecent(event.block.timestamp)) return
   const chainId = context.chain.id
 
   // Grab the current ETH → USD spot price
@@ -44,7 +47,8 @@ async function handleTokenPrices(params: {
     )
   )
 
-  if (uniqueJbxProjects.length === 0 && chainId === 8453) throw new Error("stop")
+  // quiet: do nothing if no projects
+  if (uniqueJbxProjects.length === 0) return
 
   // Fetch prices in parallel
   const jbxProjectPriceMap = new Map<string, { ethWei: string; usd: string }>()

@@ -20,7 +20,6 @@ interface ProjectResponse {
  */
 async function fetchTokenPriceData(url: string): Promise<string | null> {
   try {
-    console.log({ url })
     const res = await fetch(url)
     if (!res.ok) return null
 
@@ -39,7 +38,6 @@ async function fetchTokenPriceData(url: string): Promise<string | null> {
  */
 async function fetchProjectPriceData(url: string): Promise<string | null> {
   try {
-    console.log({ url })
     const res = await fetch(url)
     if (!res.ok) return null
 
