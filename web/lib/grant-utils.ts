@@ -74,7 +74,7 @@ export function calculateTotalBudget(
 
       const netBudget = flowRate - subgrantFlowToOtherBudgets
 
-      return netBudget
+      return netBudget / 10 ** 18
     })
     .reduce((a, b) => a + b, 0)
 }

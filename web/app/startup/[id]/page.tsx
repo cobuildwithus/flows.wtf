@@ -99,9 +99,8 @@ export default async function GrantPage(props: Props) {
     })),
   )
   const decimals = budgets[0]?.underlyingTokenDecimals ?? 18
-  const totalFunded = budgets
-    .map((b) => fromWei(b.totalEarned, decimals))
-    .reduce((a, b) => a + b, 0)
+
+  const totalFunded = budgets.map((b) => fromWei(b.totalEarned, 18)).reduce((a, b) => a + b, 0)
 
   return (
     <>

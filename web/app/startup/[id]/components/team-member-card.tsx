@@ -32,7 +32,7 @@ export async function TeamMemberCard(props: {
       <div className="flex flex-col">
         <div>
           <Badge variant="secondary">
-            <Currency display={currency}>{member.monthlyIncomingFlowRate.toString()}</Currency> /mo
+            <Currency display={currency}>{member.monthlyIncomingFlowRate / 10 ** 18}</Currency> /mo
           </Badge>
           <h3 className="mt-2.5 text-sm font-medium">
             <TeamMemberLink username={username || ""} displayName={display_name}>
