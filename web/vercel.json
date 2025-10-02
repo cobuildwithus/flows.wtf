@@ -5,14 +5,6 @@
       "schedule": "*/2 * * * *"
     },
     {
-      "path": "/crons/balance-flow-rates",
-      "schedule": "*/1 * * * *"
-    },
-    {
-      "path": "/crons/flow-rate-too-high",
-      "schedule": "*/1 * * * *"
-    },
-    {
       "path": "/crons/conversion-rates",
       "schedule": "*/10 * * * *"
     },
