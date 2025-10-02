@@ -53,12 +53,15 @@ ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
     const prev = previousFlowRate ? BigInt(previousFlowRate.previousFlowRate) : 0n
     const netIncomingFlowRateWeiPerSec = flowRate - prev
 
-    const secondsPerMonth = 60n * 60n * 24n * 30n
-    const netMonthlyIncomingFlowRateWei = netIncomingFlowRateWeiPerSec * secondsPerMonth
+    // Only update if there's a net change in flow rate
+    if (netIncomingFlowRateWeiPerSec !== 0n) {
+      const secondsPerMonth = 60n * 60n * 24n * 30n
+      const netMonthlyIncomingFlowRateWei = netIncomingFlowRateWeiPerSec * secondsPerMonth
 
-    await context.db.update(grants, { id: receiver }).set((row) => ({
-      monthlyIncomingFlowRate: row.monthlyIncomingFlowRate + netMonthlyIncomingFlowRateWei,
-    }))
+      await context.db.update(grants, { id: receiver }).set((row) => ({
+        monthlyIncomingFlowRate: row.monthlyIncomingFlowRate + netMonthlyIncomingFlowRateWei,
+      }))
+    }
 
     await context.db
       .insert(senderAndReceiverToPreviousFlowRate)
