@@ -105,7 +105,7 @@ export const RecipientPopover = (props: Props) => {
                         compact
                         className="text-right text-lg font-medium"
                       >
-                        {String(grant.totalEarned)}
+                        {String(Number(grant.totalEarned) / 10 ** 18)}
                       </Currency>
                       <div className="items-right flex justify-end">
                         <WithdrawSalaryButton
