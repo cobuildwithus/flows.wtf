@@ -53,39 +53,49 @@ async function handleAllocationCommitted({
   })
   const prevRecipientIds = prev?.recipientIds ?? []
 
-  // Build a map of previous committed units (per strategy)
+  // Build a map of previous committed units (per strategy) in parallel
   const previousMemberUnits = new Map<string, bigint>()
-  for (const recipientId of prevRecipientIds) {
-    const prevAllocation = await context.db.find(allocations, {
-      contract,
-      allocationKey: allocationKey.toString(),
-      strategy: strategyLower,
-      allocator,
-      recipientId,
-      chainId,
-    } as any)
+  const prevAllocs = await Promise.all(
+    prevRecipientIds.map((recipientId) =>
+      context.db.find(allocations, {
+        contract,
+        allocationKey: allocationKey.toString(),
+        strategy: strategyLower,
+        allocator,
+        recipientId,
+        chainId,
+      } as any)
+    )
+  )
+  prevRecipientIds.forEach((recipientId, idx) => {
+    const prevAllocation = prevAllocs[idx]
     if (prevAllocation) {
       previousMemberUnits.set(recipientId, BigInt(prevAllocation.committedMemberUnits))
     } else {
       previousMemberUnits.set(recipientId, 0n)
     }
-  }
+  })
 
-  // Current units come from upserted AllocationSet rows in this tx (per strategy)
+  // Current units come from upserted AllocationSet rows in this tx (per strategy) in parallel
   const currentMemberUnits = new Map<string, bigint>()
-  for (const recipientId of newRecipients) {
-    const allocation = await context.db.find(allocations, {
-      contract,
-      allocationKey: allocationKey.toString(),
-      strategy: strategyLower,
-      allocator,
-      recipientId,
-      chainId,
-    } as any)
+  const curAllocs = await Promise.all(
+    newRecipients.map((recipientId) =>
+      context.db.find(allocations, {
+        contract,
+        allocationKey: allocationKey.toString(),
+        strategy: strategyLower,
+        allocator,
+        recipientId,
+        chainId,
+      } as any)
+    )
+  )
+  newRecipients.forEach((recipientId, idx) => {
+    const allocation = curAllocs[idx]
     if (allocation) {
       currentMemberUnits.set(recipientId, BigInt(allocation.memberUnits))
     }
-  }
+  })
 
   // Track removals only; member units are updated via pool events
   const allRecipients = new Set([...previousMemberUnits.keys(), ...currentMemberUnits.keys()])
@@ -110,21 +120,23 @@ async function handleAllocationCommitted({
   // No grant memberUnits mutations here; units come from Superfluid pool events
 
   // Stamp committed snapshot and commitTxHash for all new recipients (this strategy only)
-  for (const rid of newRecipients) {
-    await context.db
-      .update(allocations, {
-        contract,
-        allocationKey: allocationKey.toString(),
-        strategy: strategyLower,
-        allocator,
-        recipientId: rid,
-        chainId,
-      } as any)
-      .set((row) => ({
-        committedMemberUnits: row.memberUnits,
-        commitTxHash: txHash,
-      }))
-  }
+  await Promise.all(
+    newRecipients.map((rid) =>
+      context.db
+        .update(allocations, {
+          contract,
+          allocationKey: allocationKey.toString(),
+          strategy: strategyLower,
+          allocator,
+          recipientId: rid,
+          chainId,
+        } as any)
+        .set((row) => ({
+          committedMemberUnits: row.memberUnits,
+          commitTxHash: txHash,
+        }))
+    )
+  )
 
   // Save the "last" recipients set for this allocator/key/strategy
   await context.db

@@ -70,8 +70,8 @@ async function getGrant(db: Context["db"], distributor: string) {
   const grantIdFlow = await db.find(grants, { id: distributor })
   if (grantIdFlow) return grantIdFlow
 
-  const grantIdRewardPool = await db.find(rewardPoolContractToGrantId, { contract: distributor })
-  if (grantIdRewardPool) return db.find(grants, { id: grantIdRewardPool.grantId })
+  // const grantIdRewardPool = await db.find(rewardPoolContractToGrantId, { contract: distributor })
+  // if (grantIdRewardPool) return db.find(grants, { id: grantIdRewardPool.grantId })
 
   return null
 }
