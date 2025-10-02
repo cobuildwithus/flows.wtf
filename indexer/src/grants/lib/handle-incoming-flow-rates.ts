@@ -34,17 +34,13 @@ export async function handleIncomingFlowRates(db: Context["db"], parentContract:
   const baselineMonthly = parent.monthlyBaselinePoolFlowRate
   const bonusMonthly = parent.monthlyBonusPoolFlowRate
 
-  // Parent self-units
-  const parentBaselineUnits = parent.baselineMemberUnits ?? 0n
-  const parentBonusUnits = parent.bonusMemberUnits ?? 0n
-
   // Sum children units + parent units
   const [totalBaselineUnits, totalBonusUnits] = items.reduce(
     (acc: [bigint, bigint], item) => [
       acc[0] + item.baselineMemberUnits,
       acc[1] + item.bonusMemberUnits,
     ],
-    [parentBaselineUnits, parentBonusUnits] as [bigint, bigint]
+    [1n, 1n] as [bigint, bigint]
   )
 
   const safeDiv = (num: bigint, den: bigint) => (den === 0n ? 0n : num / den)
