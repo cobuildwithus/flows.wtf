@@ -1,5 +1,5 @@
 import { ponder } from "ponder:registry"
-import { superfluidFlow } from "ponder:schema"
+import { grants, superfluidFlow } from "ponder:schema"
 
 ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
   const { token, sender, receiver: rawReceiver, flowRate } = event.args
@@ -18,6 +18,11 @@ ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
 
   const flowRateStr = flowRate.toString()
   const isClosing = flowRate === 0n
+
+  const flow = await context.db.find(grants, { id: receiver })
+  if (!flow || !flow.isFlow) {
+    return
+  }
 
   // Upsert the flow - handles create, update, and close in one operation
   await context.db
