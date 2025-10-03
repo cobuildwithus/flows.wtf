@@ -4,7 +4,6 @@ import { useContractTransaction } from "@/lib/wagmi/use-contract-transaction"
 import { toast } from "sonner"
 import { encodeAbiParameters } from "viem"
 import { useAccount } from "wagmi"
-import { useUserTcrTokens } from "../curator-popover/hooks/use-user-tcr-tokens"
 
 export const useBulkPoolWithdrawMacro = (
   pools: `0x${string}`[],
@@ -12,13 +11,11 @@ export const useBulkPoolWithdrawMacro = (
   onSuccess?: () => void,
 ) => {
   const { address } = useAccount()
-  const { mutateEarnings } = useUserTcrTokens(address)
 
   const { prepareWallet, writeContract, isLoading, toastId } = useContractTransaction({
     chainId,
     success: "Earnings withdrawn!",
-    onSuccess: (hash) => {
-      mutateEarnings()
+    onSuccess: () => {
       onSuccess?.()
     },
   })

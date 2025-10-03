@@ -8,16 +8,13 @@ import {
   superfluidPoolAbi,
   tcrFactoryImplAbi,
   gdav1Address,
-  tokenEmitterImplAbi,
   customFlowImplAbi,
-  nounsTokenAbi,
   cfav1Abi,
   cfav1Address,
   gdav1Abi,
 } from "./abis"
 import {
   base as baseContracts,
-  mainnet as mainnetContracts,
   oldCustomFlowImpl,
   optimism as optimismContracts,
 } from "./addresses"
@@ -101,28 +98,6 @@ export default createConfig({
       chain: "base",
       startBlock: blockStarts.base.FLOWS,
     },
-    TokenEmitter: {
-      abi: tokenEmitterImplAbi,
-      address: baseContracts.TokenEmitter,
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
-      // so we can pull erc20
-      includeTransactionReceipts: true,
-    },
-    TokenEmitterChildren: {
-      abi: tokenEmitterImplAbi,
-      address: factory({
-        address: baseContracts.TCRFactory,
-        event: getAbiItem({
-          abi: tcrFactoryImplAbi,
-          name: "FlowTCRDeployed",
-        }),
-        parameter: "tokenEmitterProxy",
-      }),
-      chain: "base",
-      includeTransactionReceipts: true,
-      startBlock: blockStarts.base.FLOWS,
-    },
     Erc20Token: {
       abi: erc20VotesMintableImplAbi,
       address: baseContracts.ERC20VotesMintable,
@@ -169,18 +144,6 @@ export default createConfig({
           ],
         },
       },
-    },
-    ERC721TokenMainnet: {
-      abi: nounsTokenAbi,
-      chain: "ethereum",
-      startBlock: blockStarts.mainnet.NOUNS_TOKEN,
-      address: [mainnetContracts.NounsToken],
-    },
-    ERC721TokenBase: {
-      abi: nounsTokenAbi,
-      chain: "base",
-      startBlock: Math.min(blockStarts.base.GNARS, blockStarts.base.GROUNDS),
-      address: [baseContracts.VrbsToken, baseContracts.GroundsToken, baseContracts.GnarsToken],
     },
   },
   blocks: {

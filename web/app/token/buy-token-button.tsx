@@ -1,4 +1,3 @@
-import { useUserTcrTokens } from "@/components/global/curator-popover/hooks/use-user-tcr-tokens"
 import { Button } from "@/components/ui/button"
 import { tokenEmitterImplAbi } from "@/lib/abis"
 import { getEthAddress } from "@/lib/utils"
@@ -35,7 +34,6 @@ export const BuyTokenButton = ({
 }: PropsWithChildren<Props>) => {
   const { address } = useAccount()
   const { data: balance } = useBalance({ address, chainId })
-  const { mutate: mutateUserTcrTokens } = useUserTcrTokens(address)
 
   const { executeBuyTokenRelay, txHashes } = useBuyTokenRelay()
 
@@ -43,7 +41,6 @@ export const BuyTokenButton = ({
     chainId,
     success: successMessage,
     onSuccess: async (hash) => {
-      setTimeout(() => mutateUserTcrTokens(), 1000)
       onSuccess(hash)
     },
   })

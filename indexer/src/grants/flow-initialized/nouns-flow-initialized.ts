@@ -9,7 +9,6 @@ import {
   poolToParent,
   rewardPoolContractToGrantId,
   tcrToGrantId,
-  tokenEmitterToErc20,
 } from "ponder:schema"
 import { getFlowMetadataAndRewardPool } from "./initialized-helpers"
 import { isAccelerator } from "../recipients/helpers"
@@ -137,10 +136,6 @@ async function createMappings(
   baselinePool: string
 ) {
   await Promise.all([
-    db.insert(tokenEmitterToErc20).values({
-      tokenEmitter: baseContracts.TokenEmitter,
-      erc20: baseContracts.ERC20VotesMintable,
-    }),
     db.insert(tcrToGrantId).values({
       tcr: baseContracts.FlowTCR,
       grantId,
