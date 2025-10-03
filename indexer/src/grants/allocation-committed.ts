@@ -100,22 +100,27 @@ async function handleAllocationCommitted({
   // Track removals only; member units are updated via pool events
   const allRecipients = new Set([...previousMemberUnits.keys(), ...currentMemberUnits.keys()])
 
+  const deletions = []
   for (const recipientId of allRecipients) {
     const oldUnits = previousMemberUnits.get(recipientId) ?? 0n
     const newUnits = currentMemberUnits.get(recipientId) ?? 0n
 
     // Delete allocation for removed recipients (this strategy only)
     if (oldUnits > 0n && newUnits === 0n) {
-      await context.db.delete(allocations, {
-        contract,
-        allocationKey: allocationKey.toString(),
-        strategy: strategyLower,
-        allocator,
-        recipientId,
-        chainId,
-      })
+      deletions.push(
+        context.db.delete(allocations, {
+          contract,
+          allocationKey: allocationKey.toString(),
+          strategy: strategyLower,
+          allocator,
+          recipientId,
+          chainId,
+        })
+      )
     }
   }
+
+  await Promise.all(deletions)
 
   // No grant memberUnits mutations here; units come from Superfluid pool events
 

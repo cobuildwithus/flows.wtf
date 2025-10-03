@@ -136,9 +136,11 @@ async function handleRemovedGrant(
     }))
 
     if (isFlow) {
-      for (const g of removedChildren) {
-        await db.update(grants, { id: g.id }).set({ monthlyOutgoingFlowRate: 0n })
-      }
+      await Promise.all(
+        removedChildren.map((g) =>
+          db.update(grants, { id: g.id }).set({ monthlyOutgoingFlowRate: 0n })
+        )
+      )
     }
   }
 
