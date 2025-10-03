@@ -1,4 +1,3 @@
-import { http, webSocket } from "viem"
 import { base, optimism } from "viem/chains"
 import { mainnet } from "viem/chains"
 
@@ -68,18 +67,18 @@ export const IndexerConfig = {
   },
   SuperfluidPool: {
     base: {
-      startBlock: 21519031,
+      startBlock: "latest",
     },
     optimism: {
-      startBlock: 137560689,
+      startBlock: "latest",
     },
   },
   GdaV1: {
     base: {
-      startBlock: 21519031,
+      startBlock: "latest",
     },
     optimism: {
-      startBlock: 137560689,
+      startBlock: "latest",
     },
   },
   CfaV1: {

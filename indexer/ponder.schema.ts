@@ -430,6 +430,15 @@ export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
   tokenIds: t.integer().array().notNull(),
 }))
 
+export const systemFlags = onchainTable(
+  "_kv_SystemFlags",
+  (t) => ({
+    key: t.text().primaryKey(),
+    value: t.text().notNull(),
+  }),
+  () => ({})
+)
+
 export const lastRecipientsByKeyAllocator = onchainTable(
   "_kv_LastRecipientsByKeyAllocator",
   (t) => ({

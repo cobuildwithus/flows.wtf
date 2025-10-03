@@ -196,5 +196,9 @@ export default createConfig({
       chain: IndexerConfig.LatestBlockCron,
       interval: (60 * 60) / 0.25, // Every hour (base block time is 250ms)
     },
+    FlowRateSetup: {
+      chain: IndexerConfig.LatestBlockCron,
+      interval: (24 * 60 * 60) / 0.25, // Every 24 hours
+    },
   },
 })
