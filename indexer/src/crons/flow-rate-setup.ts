@@ -7,10 +7,13 @@ import {
   siblingFlowAndParentToPreviousFlowRates,
   systemFlags,
 } from "ponder:schema"
+import { isBlockRecent } from "../utils"
 
 const SECONDS_PER_MONTH = 60n * 60n * 24n * 30n
 
-ponder.on("FlowRateSetup:block", async ({ context }) => {
+ponder.on("FlowRateSetup:block", async ({ context, event }) => {
+  // Only run near tip-of-chain
+  if (!isBlockRecent(event.block.timestamp)) return
   const chainId = context.chain.id
   const flagKey = `flow_rate_setup_done_${chainId}`
 
@@ -32,6 +35,7 @@ ponder.on("FlowRateSetup:block", async ({ context }) => {
 
   const parentBaselinePerSec = new Map<string, bigint>()
   const parentBonusPerSec = new Map<string, bigint>()
+  const childTotals = new Map<string, { base: bigint; bonus: bigint }>()
 
   for (const parent of parents) {
     const parentId = parent.id.toLowerCase()
@@ -137,12 +141,12 @@ ponder.on("FlowRateSetup:block", async ({ context }) => {
       const incBonusMonthly = (xRate > 0n ? xRate : 0n) * SECONDS_PER_MONTH
       const incTotalMonthly = incBaseMonthly + incBonusMonthly
 
-      // Additive update for incoming monthly across multiple parents
-      await context.db.update(grants, { id: child.id }).set((row) => ({
-        monthlyIncomingBaselineFlowRate: row.monthlyIncomingBaselineFlowRate + incBaseMonthly,
-        monthlyIncomingBonusFlowRate: row.monthlyIncomingBonusFlowRate + incBonusMonthly,
-        monthlyIncomingFlowRate: row.monthlyIncomingFlowRate + incTotalMonthly,
-      }))
+      // Accumulate totals per child; we'll replace after parent iteration completes
+      const totals = childTotals.get(child.id) ?? { base: 0n, bonus: 0n }
+      childTotals.set(child.id, {
+        base: totals.base + incBaseMonthly,
+        bonus: totals.bonus + incBonusMonthly,
+      })
 
       if (child.isFlow && child.parentContract.toLowerCase() !== parentId) {
         const kvKey = `${chainId}_${child.recipient.toLowerCase()}_${parentId}`
@@ -164,6 +168,21 @@ ponder.on("FlowRateSetup:block", async ({ context }) => {
 
     parentBaselinePerSec.set(parentId, basePerSec)
     parentBonusPerSec.set(parentId, bonusPerSec)
+  }
+
+  // Replace child monthly incoming with aggregated totals
+  if (childTotals.size > 0) {
+    const updates: Promise<unknown>[] = []
+    for (const [id, { base, bonus }] of childTotals) {
+      updates.push(
+        context.db.update(grants, { id }).set({
+          monthlyIncomingBaselineFlowRate: base,
+          monthlyIncomingBonusFlowRate: bonus,
+          monthlyIncomingFlowRate: base + bonus,
+        })
+      )
+    }
+    await Promise.all(updates)
   }
 
   // Push parent monthly outflows
