@@ -70,7 +70,7 @@ export default async function DraftPage(props: Props) {
     getPrivyIdToken(),
   ])
 
-  const { title, flow, isOnchain, createdAt, users, description, opportunity } = draft
+  const { title, flow, isOnchain, users, description, opportunity } = draft
   const isTcrFlow = flow.tcr && flow.erc20 && flow.tokenEmitter
   const isManager = flow.manager === user?.address
 
@@ -172,18 +172,6 @@ export default async function DraftPage(props: Props) {
                         </UserProfile>
                       ))}
                     </div>
-                  </div>
-                  <div className="max-sm:text-sm">
-                    <h4 className="text-[13px] text-muted-foreground">Created At</h4>
-                    <DateTime
-                      date={createdAt}
-                      options={{
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                      }}
-                    />
                   </div>
 
                   <div>
