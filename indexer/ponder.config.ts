@@ -2,7 +2,6 @@ import { createConfig, factory } from "ponder"
 import { getAbiItem } from "viem"
 import {
   erc20VotesArbitratorImplAbi,
-  erc20VotesMintableImplAbi,
   flowTcrImplAbi,
   nounsFlowImplAbi,
   superfluidPoolAbi,
@@ -94,25 +93,6 @@ export default createConfig({
           name: "FlowTCRDeployed",
         }),
         parameter: "arbitratorProxy",
-      }),
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
-    },
-    Erc20Token: {
-      abi: erc20VotesMintableImplAbi,
-      address: baseContracts.ERC20VotesMintable,
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
-    },
-    Erc20TokenChildren: {
-      abi: erc20VotesMintableImplAbi,
-      address: factory({
-        address: baseContracts.TCRFactory,
-        event: getAbiItem({
-          abi: tcrFactoryImplAbi,
-          name: "FlowTCRDeployed",
-        }),
-        parameter: "erc20Proxy",
       }),
       chain: "base",
       startBlock: blockStarts.base.FLOWS,

@@ -6,8 +6,12 @@ import { getClient } from "@/lib/viem/client"
 import { erc721VotesStrategyImplAbi } from "@/lib/abis"
 import { getAddress } from "viem"
 import { StrategyKey } from "../strategy-key"
+import type { ERC721VotingToken } from "../allocation-types"
 
-export async function fetchDelegatedTokens(address: string, flowId: string) {
+export async function fetchDelegatedTokens(
+  address: string,
+  flowId: string,
+): Promise<ERC721VotingToken[]> {
   const tokenRecord = await database.grant.findUnique({
     where: { id: flowId },
     select: {
@@ -75,7 +79,7 @@ export async function fetchDelegatedTokens(address: string, flowId: string) {
 
   const pageSize = 1000
   let skip = 0
-  const out: Array<{ tokenId: string; owner: `0x${string}`; contract: `0x${string}` }> = []
+  const out: ERC721VotingToken[] = []
 
   // Paginate through all delegated tokens
   while (true) {
@@ -97,11 +101,7 @@ export async function fetchDelegatedTokens(address: string, flowId: string) {
 
     const tokens = json.data?.daos?.[0]?.tokens ?? []
     for (const t of tokens) {
-      out.push({
-        tokenId: t.tokenId,
-        owner: t.owner as `0x${string}`,
-        contract: tokenAddress as `0x${string}`,
-      })
+      out.push({ tokenId: Number(t.tokenId), owner: t.owner, contract: tokenAddress })
     }
 
     if (tokens.length < pageSize) break
