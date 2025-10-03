@@ -14,7 +14,7 @@ interface Props {
 
 export function BlockEdit(props: Props) {
   const { isEditing, setIsEditing, impactId } = props
-  const { setMessages, reload, appendData } = useAgentChat()
+  const { append, appendData } = useAgentChat()
   const router = useRouter()
 
   return (
@@ -45,8 +45,7 @@ export function BlockEdit(props: Props) {
             onClick={() => {
               setIsEditing(true)
               appendData({ impactId })
-              setMessages([{ role: "user", content: "I want to edit this impact block", id: "1" }])
-              reload()
+              append({ role: "user", content: "I want to edit this impact block" })
             }}
           >
             Edit Impact

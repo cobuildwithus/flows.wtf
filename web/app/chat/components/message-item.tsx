@@ -6,7 +6,7 @@ import { getThumbnailUrlFromCloudflareStream } from "@/lib/file-upload/get-thumb
 import { cn } from "@/lib/utils"
 import Flo from "@/public/flo.png"
 import Gonzo from "@/public/gonzo.svg"
-import type { Attachment, ToolInvocation } from "ai"
+import type { UIMessage, UIMessagePart } from "ai"
 import Image from "next/image"
 import type { ReactNode } from "react"
 import { PreviewAttachment } from "./preview-attachment"
@@ -19,8 +19,8 @@ import { ChallengeGrantApplication } from "./tools/challenge-grant-application"
 interface Props {
   role: string
   content: string | ReactNode
-  toolInvocations?: Array<ToolInvocation> | undefined
-  attachments?: Array<Attachment>
+  toolInvocations?: UIMessage["parts"]
+  attachments?: Array<{ url: string }>
   type: AgentType
 }
 
@@ -80,51 +80,72 @@ export const MessageItem = (props: Props) => {
             "mt-4": !!content,
           })}
         >
-          {toolInvocations.map((tool) => {
-            const { toolName, toolCallId, state } = tool
-
-            if (state === "result") {
-              switch (toolName) {
-                case "submitApplication":
-                  return <SubmitApplicationResult key={toolCallId} draftId={Number(tool.result)} />
-                case "updateStory":
-                case "updateGrant":
-                case "updateImpact":
-                case "submitOpportunityApplication":
-                  return <SuccessMessageResult key={toolCallId} message={tool.result} />
-                case "castPreview":
-                  return <CastPreview key={toolCallId} {...tool.result} />
-                case "challengeGrantApplication":
-                  if (
-                    tool.result?.grantId &&
-                    tool.result?.reason &&
-                    !tool.result?.transactionHash
-                  ) {
-                    return <ChallengeGrantApplication key={toolCallId} {...tool.result} />
-                  }
-                  break
-                case "requestGrantRemoval":
-                  if (
-                    tool.result?.grantId &&
-                    tool.result?.reason &&
-                    !tool.result?.transactionHash
-                  ) {
-                    // Important, as once tx is confirmed the data isn't there - check backend code for details
-                    return <RequestGrantRemoval key={toolCallId} {...tool.result} />
-                  }
-                  break
-                default:
-                  return null
+          {toolInvocations
+            .filter((p) => (p as UIMessagePart<any, any>).type?.toString().startsWith("tool-"))
+            .map((p) => {
+              const part = p as unknown as {
+                type: string
+                toolCallId: string
+                state: string
+                input?: any
+                output?: any
+                errorText?: string
               }
-            }
-          })}
+              const name = part.type.replace(/^tool-/, "")
+              if (part.state === "output-available") {
+                switch (name) {
+                  case "submitApplication":
+                    return (
+                      <SubmitApplicationResult
+                        key={part.toolCallId}
+                        draftId={Number((part as any).output)}
+                      />
+                    )
+                  case "updateStory":
+                  case "updateGrant":
+                  case "updateImpact":
+                  case "submitOpportunityApplication":
+                    return (
+                      <SuccessMessageResult key={part.toolCallId} message={(part as any).output} />
+                    )
+                  case "castPreview":
+                    return <CastPreview key={part.toolCallId} {...(part as any).output} />
+                  case "challengeGrantApplication":
+                    if (
+                      (part as any).output?.grantId &&
+                      (part as any).output?.reason &&
+                      !(part as any).output?.transactionHash
+                    ) {
+                      return (
+                        <ChallengeGrantApplication
+                          key={part.toolCallId}
+                          {...(part as any).output}
+                        />
+                      )
+                    }
+                    break
+                  case "requestGrantRemoval":
+                    if (
+                      (part as any).output?.grantId &&
+                      (part as any).output?.reason &&
+                      !(part as any).output?.transactionHash
+                    ) {
+                      return <RequestGrantRemoval key={part.toolCallId} {...(part as any).output} />
+                    }
+                    break
+                  default:
+                    return null
+                }
+              }
+              return null
+            })}
         </div>
       )}
     </div>
   )
 }
 
-function getPreviewFromAttachment(attachment: Attachment) {
+function getPreviewFromAttachment(attachment: { url: string }) {
   return {
     ...attachment,
     imageUrl: attachment.url.includes(".m3u8")

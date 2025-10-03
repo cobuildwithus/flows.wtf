@@ -2,8 +2,8 @@
 
 import { User } from "@/lib/auth/user"
 import { AgentType } from "@/lib/enums"
-import { Attachment, Message } from "ai"
-import { useChat, UseChatHelpers } from "ai/react"
+import { type UIMessage, DefaultChatTransport } from "ai"
+import { useChat, type UseChatHelpers } from "@ai-sdk/react"
 import { useRouter } from "next/navigation"
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
 import { flushSync } from "react-dom"
@@ -15,14 +15,22 @@ interface Props {
   type: AgentType
   user?: User
   data?: ChatData
-  initialMessages?: Message[]
+  initialMessages?: UIMessage[]
   identityToken: string | undefined
 }
 
-interface AgentChatContext extends Omit<UseChatHelpers, "data" | "setData"> {
+type AttachmentState = {
+  url: string
+  name?: string
+  contentType?: string
+  imageUrl?: string
+  videoUrl?: string
+}
+
+interface AgentChatContext extends UseChatHelpers<UIMessage> {
   restart: () => void
-  attachments: Attachment[]
-  setAttachments: React.Dispatch<React.SetStateAction<Attachment[]>>
+  attachments: AttachmentState[]
+  setAttachments: React.Dispatch<React.SetStateAction<AttachmentState[]>>
   user?: User
   context: string
   setContext: React.Dispatch<React.SetStateAction<string>>
@@ -32,6 +40,15 @@ interface AgentChatContext extends Omit<UseChatHelpers, "data" | "setData"> {
   data: ChatData | undefined
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  // v5 wrappers for legacy API used by UI components
+  input: string
+  setInput: React.Dispatch<React.SetStateAction<string>>
+  handleSubmit: (
+    event?: { preventDefault?: () => void },
+    options?: { experimental_attachments?: AttachmentState[] },
+  ) => void
+  append: (message: { role: "user" | "assistant"; content: string }) => void
+  isLoading: boolean
 }
 
 const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
@@ -39,28 +56,32 @@ const AgentChatContext = createContext<AgentChatContext | undefined>(undefined)
 export function AgentChatProvider(props: PropsWithChildren<Props>) {
   const { id, type, user, initialMessages, children, identityToken } = props
   const { readChatHistory, storeChatHistory, resetChatHistory } = useChatHistory({ id })
-  const [attachments, setAttachments] = useState<Array<Attachment>>([])
+  const [attachments, setAttachments] = useState<Array<AttachmentState>>([])
   const [context, setContext] = useState("")
   const [hasStartedStreaming, setHasStartedStreaming] = useState(false)
   const router = useRouter()
   const [data, setData] = useState<ChatData | undefined>(props.data)
   const [isOpen, setIsOpen] = useState(false)
+  const [input, setInput] = useState("")
 
   const chat = useChat({
     id,
-    api: `${process.env.NEXT_PUBLIC_CHAT_API_URL ?? "http://localhost:4000"}/api/chat`,
-    body: { type, id, data, context } satisfies Omit<ChatBody, "messages">,
-    initialMessages: initialMessages || readChatHistory(),
-    keepLastMessageOnError: true,
-    streamProtocol: "data",
-    headers: {
-      "privy-id-token": identityToken || "",
-      city: user?.location?.city || "",
-      country: user?.location?.country || "",
-      "country-region": user?.location?.countryRegion || "",
-    },
+    transport: new DefaultChatTransport({
+      api: `${process.env.NEXT_PUBLIC_CHAT_API_URL ?? "http://localhost:4000"}/api/chat`,
+      body: { type, id, data, context } satisfies Omit<ChatBody, "messages">,
+      headers: {
+        "privy-id-token": identityToken || "",
+        city: user?.location?.city || "",
+        country: user?.location?.country || "",
+        "country-region": user?.location?.countryRegion || "",
+      },
+    }),
+    messages: initialMessages || readChatHistory(),
     onToolCall: ({ toolCall }) => {
-      switch (toolCall.toolName) {
+      const toolName =
+        (toolCall as unknown as { toolName?: string; name?: string }).toolName ??
+        (toolCall as unknown as { toolName?: string; name?: string }).name
+      switch (toolName) {
         case "updateGrant":
         case "updateStory":
         case "updateImpact":
@@ -70,9 +91,6 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
         default:
           break
       }
-    },
-    onResponse: () => {
-      setHasStartedStreaming(true)
     },
     onFinish: () => {
       setHasStartedStreaming(false)
@@ -86,13 +104,49 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
     if (!confirmed) return
     resetChatHistory()
     chat.setMessages([])
-    chat.reload()
   }
 
   useEffect(() => {
     storeChatHistory(chat.messages)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chat.messages])
+
+  const isLoading = chat.status === "submitted" || chat.status === "streaming"
+
+  function attachmentsToFileParts(list: AttachmentState[]) {
+    return list.map((a) => ({
+      type: "file" as const,
+      url: a.url,
+      mediaType:
+        a.contentType ||
+        (a.url.endsWith(".m3u8") ? "application/vnd.apple.mpegurl" : "application/octet-stream"),
+      filename: a.name,
+    }))
+  }
+
+  const handleSubmit: AgentChatContext["handleSubmit"] = async (event, options) => {
+    event?.preventDefault?.()
+    const atts = options?.experimental_attachments ?? attachments
+    const files = attachmentsToFileParts(atts)
+    const text = input.trim()
+    if (!text && files.length === 0) return
+    setHasStartedStreaming(true)
+    if (text && files.length) {
+      await chat.sendMessage({ text, files })
+    } else if (text) {
+      await chat.sendMessage({ text })
+    } else {
+      await chat.sendMessage({ files })
+    }
+    setInput("")
+    setAttachments([])
+  }
+
+  const append: AgentChatContext["append"] = async ({ content }) => {
+    if (!content?.trim()) return
+    setHasStartedStreaming(true)
+    await chat.sendMessage({ text: content })
+  }
 
   return (
     <AgentChatContext.Provider
@@ -114,6 +168,11 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
         data,
         isOpen,
         setIsOpen,
+        input,
+        setInput,
+        handleSubmit,
+        append,
+        isLoading,
       }}
     >
       {children}

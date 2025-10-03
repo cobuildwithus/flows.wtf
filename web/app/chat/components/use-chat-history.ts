@@ -1,6 +1,6 @@
 "use client"
 
-import { Message } from "ai"
+import { type UIMessage } from "ai"
 
 interface Props {
   id: string
@@ -9,7 +9,7 @@ interface Props {
 export function useChatHistory(props: Props) {
   const { id } = props
 
-  function readChatHistory(): Message[] {
+  function readChatHistory(): UIMessage[] {
     if (typeof window === "undefined") return []
 
     try {
@@ -20,7 +20,7 @@ export function useChatHistory(props: Props) {
     }
   }
 
-  function storeChatHistory(messages: Message[]) {
+  function storeChatHistory(messages: UIMessage[]) {
     if (typeof window === "undefined") return
 
     try {

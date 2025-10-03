@@ -46,9 +46,14 @@ export function Messages() {
           key={message.id}
           type={type}
           role={message.role}
-          content={message.content}
-          attachments={message.experimental_attachments}
-          toolInvocations={message.toolInvocations}
+          content={message.parts
+            ?.filter((p) => p.type === "text")
+            .map((p: any) => p.text)
+            .join("\n")}
+          attachments={message.parts
+            ?.filter((p: any) => p.type === "file")
+            .map((p: any) => ({ url: p.url }))}
+          toolInvocations={message.parts}
         />
       ))}
 

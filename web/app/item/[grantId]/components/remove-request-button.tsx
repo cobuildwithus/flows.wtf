@@ -18,7 +18,7 @@ export function GrantRemoveRequestButton({
   removalType = "grant",
   initialMessage = `I want to request removal of this ${removalType}. Please help me submit my request.`,
 }: GrantRemoveRequestButtonProps) {
-  const { setIsOpen, setContext, setMessages, reload } = useAgentChat()
+  const { setIsOpen, setContext, append } = useAgentChat()
 
   return (
     <AuthButton
@@ -48,14 +48,7 @@ If their concerns are about specific grants, redirect them to individual grant r
             Follow instructions for the grant removal request and try to understand their reasons for removal and their validity before proceeding.`,
           )
         })
-        setMessages([
-          {
-            role: "user",
-            content: initialMessage,
-            id: "1",
-          },
-        ])
-        reload()
+        append({ role: "user", content: initialMessage })
         setIsOpen(true)
       }}
     >

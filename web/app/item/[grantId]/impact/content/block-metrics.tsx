@@ -15,7 +15,7 @@ interface Props {
 
 export function BlockMetrics(props: Props) {
   const { isEditing, setIsEditing, impactId, canEdit } = props
-  const { setMessages, reload, appendData } = useAgentChat()
+  const { append, appendData } = useAgentChat()
 
   const impactMetrics = props.impactMetrics.filter(
     ({ name, value }) => name.toLowerCase() !== "noggles" && Number(value) > 0,
@@ -50,14 +50,7 @@ export function BlockMetrics(props: Props) {
                 } else {
                   setIsEditing(true)
                   appendData({ impactId })
-                  setMessages([
-                    {
-                      role: "user",
-                      content: "I want to add metrics to this impact block",
-                      id: "1",
-                    },
-                  ])
-                  reload()
+                  append({ role: "user", content: "I want to add metrics to this impact block" })
                 }
               }}
             >
