@@ -130,6 +130,9 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
     const files = attachmentsToFileParts(atts)
     const text = input.trim()
     if (!text && files.length === 0) return
+    // Clear UI immediately so input doesn't linger while streaming
+    setInput("")
+    setAttachments([])
     setHasStartedStreaming(true)
     if (text && files.length) {
       await chat.sendMessage({ text, files })
@@ -138,8 +141,6 @@ export function AgentChatProvider(props: PropsWithChildren<Props>) {
     } else {
       await chat.sendMessage({ files })
     }
-    setInput("")
-    setAttachments([])
   }
 
   const append: AgentChatContext["append"] = async ({ content }) => {
