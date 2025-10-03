@@ -17,7 +17,7 @@ interface Props {
 
 export function ApplyOpportunity(props: Props) {
   const { opportunityId, position, startupId, size, variant = "outline" } = props
-  const { messages, isOpen, setIsOpen, appendData, setMessages, reload } = useAgentChat()
+  const { messages, isOpen, setIsOpen, appendData, append } = useAgentChat()
 
   return (
     <>
@@ -28,14 +28,10 @@ export function ApplyOpportunity(props: Props) {
         variant={variant}
         onClick={() => {
           appendData({ opportunityId, startupId })
-          setMessages([
-            {
-              role: "user",
-              content: `Hi, I'm interested in applying for this opportunity: [${position}](${opportunityId})`,
-              id: "1",
-            },
-          ])
-          reload()
+          append({
+            role: "user",
+            content: `Hi, I'm interested in applying for this opportunity: [${position}](${opportunityId})`,
+          })
           setIsOpen(true)
         }}
       >

@@ -24,7 +24,7 @@ export function DisputeStartButton({
   className,
   initialMessage,
 }: DisputeStartButtonProps) {
-  const { setIsOpen, setContext, setMessages, reload } = useAgentChat()
+  const { setIsOpen, setContext, append } = useAgentChat()
 
   const type = grant.isActive ? "removal request" : "application"
   const buttonText = text || `Challenge ${type}`
@@ -59,14 +59,7 @@ export function DisputeStartButton({
             Make sure to collect a clear reason for the challenge before proceeding.`,
           )
         })
-        setMessages([
-          {
-            role: "user",
-            content: defaultMessage,
-            id: "1",
-          },
-        ])
-        reload()
+        append({ role: "user", content: defaultMessage })
         setIsOpen(true)
       }}
     >

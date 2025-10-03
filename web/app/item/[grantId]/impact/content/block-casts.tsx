@@ -18,7 +18,7 @@ interface Props {
 }
 
 export function BlockCasts({ proofs, impactId, isEditing, setIsEditing, canEdit }: Props) {
-  const { setMessages, reload, appendData } = useAgentChat()
+  const { append, appendData } = useAgentChat()
 
   const castIds = useMemo(() => {
     return proofs.flatMap((proof) => proof.cast?.id).filter((id) => id !== null && id !== undefined)
@@ -62,14 +62,10 @@ export function BlockCasts({ proofs, impactId, isEditing, setIsEditing, canEdit 
               appendData({
                 impactId,
               })
-              setMessages([
-                {
-                  role: "user",
-                  content: "I want to add pictures or videos as proof of my impact",
-                  id: "1",
-                },
-              ])
-              reload()
+              append({
+                role: "user",
+                content: "I want to add pictures or videos as proof of my impact",
+              })
             }}
           >
             Add media

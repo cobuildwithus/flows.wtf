@@ -1,9 +1,9 @@
 import { AgentType } from "@/lib/enums"
-import { Message } from "ai"
+import { type UIMessage } from "ai"
 
 export type ChatBody = {
   id: string
-  messages: Array<Message>
+  messages: Array<UIMessage>
   type: AgentType
   data?: ChatData
   context?: string

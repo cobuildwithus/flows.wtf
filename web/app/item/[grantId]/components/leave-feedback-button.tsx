@@ -17,7 +17,7 @@ export function LeaveFeedbackButton({
   variant?: "default" | "secondary"
   initialMessage?: string
 }) {
-  const { setIsOpen, setContext, setMessages, reload, append, messages } = useAgentChat()
+  const { setIsOpen, setContext, append, messages } = useAgentChat()
 
   return (
     <AuthButton
