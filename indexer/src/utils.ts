@@ -83,7 +83,7 @@ export const IndexerConfig = {
   },
   CfaV1: {
     base: {
-      startBlock: 21519031,
+      startBlock: 34096111,
     },
     optimism: {
       startBlock: 137560689,
