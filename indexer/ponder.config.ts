@@ -25,9 +25,6 @@ const blockStarts = {
     GNARS: 11194740,
     GROUNDS: 12698633,
   },
-  mainnet: {
-    NOUNS_TOKEN: 12985438,
-  },
 }
 
 export default createConfig({
