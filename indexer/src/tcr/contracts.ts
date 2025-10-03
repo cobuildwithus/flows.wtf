@@ -5,7 +5,6 @@ import {
   grants,
   rewardPoolContractToGrantId,
   tcrToGrantId,
-  tokenEmitterToErc20,
 } from "ponder:schema"
 
 ponder.on("NounsFlowTcrFactory:FlowTCRDeployed", async (params) => {
@@ -72,10 +71,6 @@ async function createMappings(
   grantId: string
 ) {
   await Promise.all([
-    db.insert(tokenEmitterToErc20).values({
-      tokenEmitter: tokenEmitterProxy.toLowerCase(),
-      erc20: erc20Proxy.toLowerCase(),
-    }),
     db.insert(tcrToGrantId).values({
       tcr: flowTCRProxy.toLowerCase(),
       grantId,

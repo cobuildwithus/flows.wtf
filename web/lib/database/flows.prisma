@@ -210,7 +210,6 @@ model Grant {
   subgrants            Grant[]          @relation("Subgrants")
   drafts               Draft[]
   disputes             Dispute[]
-  tokenHolders         TokenHolder[]
   evidences            Evidence[]
   derivedData          DerivedData?
   allocations          Allocation[]
@@ -276,22 +275,6 @@ model Allocation {
   @@schema("onchain")
 }
 
-model erc721Token {
-  id       String  @id
-  contract String
-  owner    String
-  delegate String
-  tokenId  Int     @map("token_id")
-  burned   Boolean
-  chainId  Int     @map("chain_id")
-
-  @@index([contract])
-  @@index([owner])
-  @@index([delegate])
-  @@map("ERC721Token")
-  @@schema("onchain")
-}
-
 model Dispute {
   id                   String     @id
   disputeId            String     @map("dispute_id")
@@ -333,25 +316,6 @@ model DisputeVote {
 
   @@unique([disputeId, arbitrator, voter])
   @@index([voter])
-  @@schema("onchain")
-}
-
-model TokenHolder {
-  id                String @id
-  tokenContract     String @map("token_contract")
-  flow              Grant  @relation(fields: [tokenContract], references: [erc20])
-  holder            String
-  firstPurchase     Int    @map("first_purchase")
-  amount            String
-  totalBought       String @map("total_bought")
-  totalSold         String @map("total_sold")
-  costBasis         String @map("cost_basis")
-  totalSaleProceeds String @map("total_sale_proceeds")
-  chainId           Int    @map("chain_id")
-
-  @@unique([tokenContract, holder])
-  @@index([holder])
-  @@index([holder, amount])
   @@schema("onchain")
 }
 

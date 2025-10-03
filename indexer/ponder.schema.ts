@@ -200,44 +200,6 @@ export const disputeVotes = onchainTable(
   })
 )
 
-export const erc721Tokens = onchainTable(
-  "ERC721Token",
-  (t) => ({
-    id: t.text().primaryKey(),
-    contract: t.text().notNull(),
-    owner: t.text().notNull(),
-    tokenId: t.integer().notNull(),
-    burned: t.boolean().notNull(),
-    chainId: t.integer().notNull(),
-    delegate: t.text().notNull(),
-  }),
-  (table) => ({
-    contractIdx: index().on(table.contract),
-    ownerIdx: index().on(table.owner),
-    delegateIdx: index().on(table.delegate),
-  })
-)
-
-export const tokenHolders = onchainTable(
-  "TokenHolder",
-  (t) => ({
-    id: t.text().primaryKey(),
-    tokenContract: t.text().notNull(),
-    chainId: t.integer().notNull(),
-    holder: t.text().notNull(),
-    firstPurchase: t.integer().notNull(),
-    amount: t.text().notNull(),
-    totalBought: t.text().notNull(),
-    totalSold: t.text().notNull(),
-    costBasis: t.text().notNull(),
-    totalSaleProceeds: t.text().notNull(),
-  }),
-  (table) => ({
-    tokenContractIdx: index().on(table.tokenContract),
-    holderIdx: index().on(table.holder),
-  })
-)
-
 export const evidence = onchainTable(
   "Evidence",
   (t) => ({
@@ -296,21 +258,6 @@ export const superfluidFlow = onchainTable(
     senderReceiverIdx: index().on(table.sender, table.receiver),
     flowRateIdx: index().on(table.flowRate),
     chainIdIdx: index().on(table.chainId),
-  })
-)
-
-/**
- * Lookup tables
- */
-
-export const tokenEmitterToErc20 = onchainTable(
-  "_kv_TokenEmitterToErc20",
-  (t) => ({
-    tokenEmitter: t.text().primaryKey(),
-    erc20: t.text().notNull(),
-  }),
-  (table) => ({
-    erc20Idx: index().on(table.erc20),
   })
 )
 
@@ -424,11 +371,6 @@ export const parentFlowToChildren = onchainTable(
   }),
   () => ({})
 )
-
-export const tokenIdsByOwner = onchainTable("_kv_TokenIdsByOwner", (t) => ({
-  ownerContractChainId: t.text().primaryKey(),
-  tokenIds: t.integer().array().notNull(),
-}))
 
 export const systemFlags = onchainTable(
   "_kv_SystemFlags",

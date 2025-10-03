@@ -72,7 +72,6 @@ This file governs the behavior of AI coding agents working **inside the `/indexe
 - Use Ponder's type-safe database methods
 - Batch operations where possible
 - Leverage lookup tables for efficient queries:
-  - `tokenEmitterToErc20`
   - `arbitratorToGrantId`
   - `tcrToGrantId`
   - `flowContractAndRecipientIdToGrantId`

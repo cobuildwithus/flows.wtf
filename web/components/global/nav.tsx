@@ -2,7 +2,6 @@ import Link from "next/link"
 import { MenuDesktop, MenuMobile } from "@/components/global/menu"
 import { MenuAvatar } from "@/components/global/menu-avatar"
 import { RecipientPopover } from "@/components/global/recipient-popover/recipient-popover"
-import { CuratorPopover } from "@/components/global/curator-popover/curator-popover"
 import { Logo } from "@/components/global/logo"
 import { User } from "@/lib/auth/user"
 
@@ -28,7 +27,6 @@ export function Nav({ pool, user, sessionPresent }: Props) {
       <MenuDesktop />
       <div className="flex items-center justify-end space-x-2.5 md:space-x-3 lg:w-1/5">
         {user && <RecipientPopover user={user} />}
-        {user && <CuratorPopover flow={pool} address={user.address} />}
         <MenuAvatar user={user} hasSession={sessionPresent} />
         <MenuMobile />
       </div>
