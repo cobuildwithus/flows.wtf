@@ -1,5 +1,5 @@
 import { ponder } from "ponder:registry"
-import { grants, senderAndReceiverToPreviousFlowRate, superfluidFlow } from "ponder:schema"
+import { superfluidFlow } from "ponder:schema"
 
 ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
   const { token, sender, receiver: rawReceiver, flowRate } = event.args
@@ -39,40 +39,4 @@ ponder.on("CfaV1:FlowUpdated", async ({ event, context }) => {
       // Set closeTime when flow stops, clear it if flow restarts
       closeTime: isClosing ? timestamp : flowRate > 0n ? null : row.closeTime,
     }))
-
-  // if someone is streaming into a flow contract potentially, we want to update its incoming flow rate accordingly!
-  const potentialFlow = await context.db.find(grants, { id: receiver })
-
-  if (potentialFlow) {
-    const previousFlowRate = await context.db.find(senderAndReceiverToPreviousFlowRate, {
-      sender: sender.toLowerCase(),
-      receiver,
-      chainId,
-    })
-
-    const prev = previousFlowRate ? BigInt(previousFlowRate.previousFlowRate) : 0n
-    const netIncomingFlowRateWeiPerSec = flowRate - prev
-
-    // Only update if there's a net change in flow rate
-    if (netIncomingFlowRateWeiPerSec !== 0n) {
-      const secondsPerMonth = 60n * 60n * 24n * 30n
-      const netMonthlyIncomingFlowRateWei = netIncomingFlowRateWeiPerSec * secondsPerMonth
-
-      await context.db.update(grants, { id: receiver }).set((row) => ({
-        monthlyIncomingFlowRate: row.monthlyIncomingFlowRate + netMonthlyIncomingFlowRateWei,
-      }))
-    }
-
-    await context.db
-      .insert(senderAndReceiverToPreviousFlowRate)
-      .values({
-        sender: sender.toLowerCase(),
-        receiver,
-        chainId,
-        previousFlowRate: flowRateStr,
-      })
-      .onConflictDoUpdate(() => ({
-        previousFlowRate: flowRateStr,
-      }))
-  }
 })
