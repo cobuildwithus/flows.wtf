@@ -47,6 +47,7 @@ export const FlowSubmenu = async (props: Props) => {
   const hasTcr = !!flow.tcr
   const isFlow = flow.isFlow
   const isManager = flow.manager === user?.address
+  const isTopLevel = flow.isTopLevel
   const showDrafts = (isFlow && (hasTcr || isManager)) || !flow.isTopLevel
   const isAccelerator = flow.isAccelerator
   const links: { label: string; href: string; isActive: boolean; badge?: number }[] = [
@@ -96,7 +97,7 @@ export const FlowSubmenu = async (props: Props) => {
           {!isFlowRemoved && isFlow && isManager && !isAccelerator && (
             <AddRecipientModal variant="outline" flow={flow} />
           )}
-          {!isManager && (
+          {!isManager && !isTopLevel && (
             <Link href={`/apply/${flowId}`}>
               <Button variant="outline">Apply</Button>
             </Link>
