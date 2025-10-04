@@ -25,4 +25,6 @@ export const imageDomains = [
   "dd.dexscreener.com",
   "justco.build",
   "logo.moralis.io",
+  "www.gnars.com",
+  "gnars.com",
 ]

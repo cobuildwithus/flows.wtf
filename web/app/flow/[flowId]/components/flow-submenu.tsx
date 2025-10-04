@@ -96,7 +96,7 @@ export const FlowSubmenu = async (props: Props) => {
           {!isFlowRemoved && isFlow && isManager && !isAccelerator && (
             <AddRecipientModal variant="outline" flow={flow} />
           )}
-          {!isManager && flow.isAccelerator && (
+          {!isManager && (
             <Link href={`/apply/${flowId}`}>
               <Button variant="outline">Apply</Button>
             </Link>
