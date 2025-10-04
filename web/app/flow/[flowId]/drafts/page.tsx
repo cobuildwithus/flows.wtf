@@ -94,9 +94,7 @@ export default async function FlowDraftsPage(props: Props) {
                 </div>
               </TableCell>
 
-              <TableCell className="text-center max-sm:text-xs">
-                <DateTime date={draft.createdAt} relative short />
-              </TableCell>
+              <TableCell className="text-center max-sm:text-xs"></TableCell>
 
               {flow.tcr && flow.erc20 && flow.tokenEmitter && (
                 <TableCell className="w-[100px] max-w-[100px]">

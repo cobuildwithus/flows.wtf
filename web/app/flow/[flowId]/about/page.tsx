@@ -106,7 +106,7 @@ export default async function FlowPage(props: Props) {
             </Card>
           )}
 
-          {!isTopLevel && flow.tcr && (
+          {/* {!isTopLevel && flow.tcr && (
             <Card>
               <CardHeader>
                 <CardTitle>
@@ -124,7 +124,7 @@ export default async function FlowPage(props: Props) {
                 <CurationStatus grant={flow} flow={pool} />
               </CardContent>
             </Card>
-          )}
+          )} */}
 
           {flow.isDisputed && (
             <Card>
