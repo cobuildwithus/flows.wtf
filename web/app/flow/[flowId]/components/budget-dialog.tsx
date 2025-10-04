@@ -30,7 +30,7 @@ export const BudgetDialog = async (props: Props) => {
     (remainingFlowRatePercent * Number(flow.baselinePoolFlowRatePercent)) / 1e6
   const bonusFlowRatePercent = remainingFlowRatePercent - baselineFlowRatePercent
 
-  const decimals = flow.underlyingTokenDecimals ?? 18
+  const decimals = 18
   const toTokens = (value: string | number | Prisma.Decimal) => fromWei(value, decimals)
   const totalFlowRate =
     toTokens((flow.monthlyBaselinePoolFlowRate ?? 0) as any) +
