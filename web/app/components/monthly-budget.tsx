@@ -30,7 +30,7 @@ interface Props {
 }
 
 export const MonthlyBudget = ({ flow, approvedGrants, display }: Props) => {
-  const decimals = flow.underlyingTokenDecimals ?? 18
+  const decimals = 18
   const toTokens = (raw: string | number | Prisma.Decimal) => fromWei(raw, decimals)
   const monthlyOutgoingFlowRate = toTokens(flow.monthlyOutgoingFlowRate)
   const isFlow = flow.isFlow
