@@ -77,7 +77,7 @@ export function TCRDraftPublishButton(props: Props) {
       ref.current?.click() // close dialog
       // wait 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      router.push(`/flow/${flow.id}/applications`)
+      router.push(`/flow/${flow.id}/curate`)
     },
   })
 
