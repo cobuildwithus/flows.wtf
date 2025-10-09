@@ -5,7 +5,6 @@ import {
   grants,
   parentFlowToChildren,
   siblingFlowAndParentToPreviousFlowRates,
-  systemFlags,
 } from "ponder:schema"
 import { isBlockRecent } from "../utils"
 
@@ -15,10 +14,6 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
   // Only run near tip-of-chain
   if (!isBlockRecent(event.block.timestamp)) return
   const chainId = context.chain.id
-  const flagKey = `flow_rate_setup_done_${chainId}`
-
-  const existing = await context.db.find(systemFlags, { key: flagKey })
-  if (existing?.value === "done") return
 
   // Load all flows for this chain (parents set includes all flows)
   const parents = await context.db.sql.query.grants.findMany({
@@ -198,10 +193,4 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
       monthlyOutgoingFlowRate: mBase + mBonus,
     })
   }
-
-  // Mark done for this chain
-  await context.db
-    .insert(systemFlags)
-    .values({ key: flagKey, value: "done" })
-    .onConflictDoUpdate(() => ({ value: "done" }))
 })

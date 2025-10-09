@@ -372,15 +372,6 @@ export const parentFlowToChildren = onchainTable(
   () => ({})
 )
 
-export const systemFlags = onchainTable(
-  "_kv_SystemFlags",
-  (t) => ({
-    key: t.text().primaryKey(),
-    value: t.text().notNull(),
-  }),
-  () => ({})
-)
-
 export const lastRecipientsByKeyAllocator = onchainTable(
   "_kv_LastRecipientsByKeyAllocator",
   (t) => ({

@@ -138,7 +138,7 @@ export default createConfig({
     },
     FlowRateSetup: {
       chain: IndexerConfig.LatestBlockCron,
-      interval: (24 * 60 * 60) / 0.25, // Every 24 hours
+      interval: (20 * 365.25 * 24 * 60 * 60) / 0.25, // Every 20 years
     },
   },
 })
