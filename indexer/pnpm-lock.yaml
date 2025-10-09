@@ -21,8 +21,8 @@ importers:
         specifier: ^8.13.3
         version: 8.13.3
       ponder:
-        specifier: ^0.13.8
-        version: 0.13.8(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))
+        specifier: ^0.13.13
+        version: 0.13.13(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))
       viem:
         specifier: ^2.23.13
         version: 2.23.13(typescript@5.7.2)
@@ -378,8 +378,8 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@ponder/utils@0.2.13':
-    resolution: {integrity: sha512-Yjkr2j9xerqPtsGCrVWTvC/HzjrPsdYPSBnqlj1ZwivIjkB371pTYmj6T1+kNshCyBuClXCp5ZxHReBaG2Fz0A==}
+  '@ponder/utils@0.2.14':
+    resolution: {integrity: sha512-O4t14Hb6/tVcD0WoS13ghFnDntP6x33/DDvA+sd0tRjemzS+Cne4YTkXl9TKW3AawBIEwMjGrGbAn82C8gXQWQ==}
     peerDependencies:
       typescript: '>=5.0.4'
       viem: '>=2'
@@ -1350,8 +1350,8 @@ packages:
     resolution: {integrity: sha512-ip4qdzjkAyDDZklUaZkcRFb2iA118H9SgRh8yzTkSQK8HilsOJF7rSY8HoW5+I0M46AZgX/pxbprf2vvzQCE0Q==}
     hasBin: true
 
-  ponder@0.13.8:
-    resolution: {integrity: sha512-Eqj4ZBpft6/WOZdbW1XIVoUsrdMtfZMEtfX7P4wBgqc1YCSHCOFtQmLUB2QxAe/Qw+sO+eiCCk+BDCCMEXlOYA==}
+  ponder@0.13.13:
+    resolution: {integrity: sha512-Y7SiRPL8asJWwP/x919CG4QqGMg+mf6YkAeZX493Vo38ho558x17BUwzbTCx7W/6TDgNohke/d/gspohSPR61A==}
     engines: {node: '>=18.14'}
     hasBin: true
     peerDependencies:
@@ -1990,7 +1990,7 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@ponder/utils@0.2.13(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))':
+  '@ponder/utils@0.2.14(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))':
     dependencies:
       viem: 2.23.13(typescript@5.7.2)
     optionalDependencies:
@@ -2871,7 +2871,7 @@ snapshots:
       sonic-boom: 3.8.1
       thread-stream: 2.7.0
 
-  ponder@0.13.8(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2)):
+  ponder@0.13.13(@opentelemetry/api@1.9.0)(@types/node@22.10.2)(@types/pg@8.11.11)(hono@4.6.14)(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2)):
     dependencies:
       '@babel/code-frame': 7.26.2
       '@commander-js/extra-typings': 12.1.0(commander@12.1.0)
@@ -2880,7 +2880,7 @@ snapshots:
       '@escape.tech/graphql-armor-max-depth': 2.4.0
       '@escape.tech/graphql-armor-max-tokens': 2.5.0
       '@hono/node-server': 1.13.3(hono@4.6.14)
-      '@ponder/utils': 0.2.13(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))
+      '@ponder/utils': 0.2.14(typescript@5.7.2)(viem@2.23.13(typescript@5.7.2))
       abitype: 0.10.3(typescript@5.7.2)
       ansi-escapes: 7.0.0
       commander: 12.1.0
