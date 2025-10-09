@@ -4,8 +4,6 @@ import { getFlow } from "./helpers"
 import { getGrantIdFromTcrAndItemId } from "../../tcr/tcr-helpers"
 import { getGrantIdFromFlowContractAndRecipientId } from "../grant-helpers"
 
-ponder.on("NounsFlowChildren:RecipientRemoved", handleRecipientRemoved)
-ponder.on("NounsFlow:RecipientRemoved", handleRecipientRemoved)
 ponder.on("CustomFlow:RecipientRemoved", handleRecipientRemoved)
 
 async function handleRecipientRemoved(params: {

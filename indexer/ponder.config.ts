@@ -3,7 +3,6 @@ import { getAbiItem } from "viem"
 import {
   erc20VotesArbitratorImplAbi,
   flowTcrImplAbi,
-  nounsFlowImplAbi,
   superfluidPoolAbi,
   tcrFactoryImplAbi,
   gdav1Address,
@@ -21,9 +20,7 @@ import { getChainsAndRpcUrls, IndexerConfig } from "./src/utils"
 
 const blockStarts = {
   base: {
-    FLOWS: 21519031,
-    GNARS: 11194740,
-    GROUNDS: 12698633,
+    FLOWS: 31834955,
   },
 }
 
@@ -31,25 +28,6 @@ export default createConfig({
   database: { kind: "postgres" },
   chains: getChainsAndRpcUrls(),
   contracts: {
-    NounsFlow: {
-      abi: nounsFlowImplAbi,
-      address: baseContracts.NounsFlow,
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
-    },
-    NounsFlowChildren: {
-      abi: nounsFlowImplAbi,
-      address: factory({
-        address: baseContracts.NounsFlow,
-        event: getAbiItem({
-          abi: nounsFlowImplAbi,
-          name: "FlowRecipientCreated", // only works because they were created via application first
-        }),
-        parameter: "recipient",
-      }),
-      chain: "base",
-      startBlock: blockStarts.base.FLOWS,
-    },
     FlowTcr: {
       abi: flowTcrImplAbi,
       address: baseContracts.FlowTCR,

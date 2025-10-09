@@ -4,8 +4,6 @@ import { updateTcrAndItemId } from "../../tcr/tcr-helpers"
 import { addGrantIdToFlowContractAndRecipientId } from "../grant-helpers"
 import { isAccelerator, isOnchainStartup } from "./helpers"
 
-ponder.on("NounsFlowChildren:FlowRecipientCreated", handleFlowRecipientCreated)
-ponder.on("NounsFlow:FlowRecipientCreated", handleFlowRecipientCreated)
 ponder.on("CustomFlow:FlowRecipientCreated", handleFlowRecipientCreated)
 
 async function handleFlowRecipientCreated(params: {

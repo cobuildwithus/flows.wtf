@@ -1,8 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
-ponder.on("NounsFlow:MetadataSet", handleMetadataSet)
-ponder.on("NounsFlowChildren:MetadataSet", handleMetadataSet)
 ponder.on("CustomFlow:MetadataSet", handleMetadataSet)
 
 async function handleMetadataSet(params: {

@@ -2,8 +2,6 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
 ponder.on("CustomFlow:FlowImplementationSet", handleFlowImplementationSet)
-ponder.on("NounsFlow:FlowImplementationSet", handleFlowImplementationSet)
-ponder.on("NounsFlowChildren:FlowImplementationSet", handleFlowImplementationSet)
 
 async function handleFlowImplementationSet(params: {
   event: Event<"CustomFlow:FlowImplementationSet">

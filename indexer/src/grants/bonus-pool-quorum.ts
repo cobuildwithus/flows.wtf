@@ -1,8 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
-ponder.on("NounsFlowChildren:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
-ponder.on("NounsFlow:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
 ponder.on("CustomFlow:BonusPoolQuorumUpdated", handleBonusPoolQuorumUpdated)
 
 async function handleBonusPoolQuorumUpdated(params: {

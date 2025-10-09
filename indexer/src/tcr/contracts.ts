@@ -24,7 +24,7 @@ ponder.on("NounsFlowTcrFactory:FlowTCRDeployed", async (params) => {
   const [superToken, managerRewardSuperfluidPool, parentContract] = await Promise.all([
     context.client.readContract({
       address: flowProxy,
-      abi: context.contracts.NounsFlow.abi,
+      abi: context.contracts.CustomFlow.abi,
       functionName: "superToken",
     }),
     context.client.readContract({
@@ -34,7 +34,7 @@ ponder.on("NounsFlowTcrFactory:FlowTCRDeployed", async (params) => {
     }),
     context.client.readContract({
       address: flowProxy,
-      abi: context.contracts.NounsFlow.abi,
+      abi: context.contracts.CustomFlow.abi,
       functionName: "parent",
     }),
   ])

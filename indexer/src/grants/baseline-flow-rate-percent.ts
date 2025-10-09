@@ -1,8 +1,6 @@
 import { ponder, type Context, type Event } from "ponder:registry"
 import { grants } from "ponder:schema"
 
-ponder.on("NounsFlow:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
-ponder.on("NounsFlowChildren:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
 ponder.on("CustomFlow:BaselineFlowRatePercentUpdated", handleBaselineFlowRatePercentUpdated)
 
 async function handleBaselineFlowRatePercentUpdated(params: {

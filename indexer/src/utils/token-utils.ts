@@ -31,10 +31,7 @@ const LOGO_MAP: Record<string, string> = {
 }
 
 export async function fetchTokenInfo(
-  context:
-    | Context<"NounsFlow:FlowInitialized">
-    | Context<"CustomFlow:FlowInitialized">
-    | Context<"NounsFlowChildren:FlowInitialized">,
+  context: Context<"CustomFlow:FlowInitialized">,
   tokenAddress: `0x${string}`
 ): Promise<SuperTokenInfo> {
   const address = tokenAddress.toLowerCase() as `0x${string}`

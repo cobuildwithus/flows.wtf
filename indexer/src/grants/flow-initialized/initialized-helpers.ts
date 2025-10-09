@@ -2,10 +2,7 @@ import { Context } from "ponder:registry"
 import { customFlowImplAbi, superTokenAbi } from "../../../abis"
 
 export async function getFlowMetadataAndRewardPool(
-  context:
-    | Context<"NounsFlow:FlowInitialized">
-    | Context<"CustomFlow:FlowInitialized">
-    | Context<"NounsFlowChildren:FlowInitialized">,
+  context: Context<"CustomFlow:FlowInitialized">,
   contract: `0x${string}`,
   superToken: `0x${string}`
 ) {
