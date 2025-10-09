@@ -58,12 +58,12 @@ export default async function ApplyPage() {
 
   // sort flows by monthly incoming flow rate and map to display funding amount
   const sortedFlows = flows
+    .filter((flow) => Number(flow.monthlyOutgoingFlowRate) !== 0)
     .sort((a, b) => {
       return Number(b.monthlyIncomingFlowRate) - Number(a.monthlyIncomingFlowRate)
     })
     .map((flow) => {
-      const displayAmount =
-        fromWei(flow.monthlyOutgoingFlowRate as any) / (flow.activeRecipientCount || 1)
+      const displayAmount = fromWei(flow.monthlyOutgoingFlowRate) / (flow.activeRecipientCount || 1)
       return {
         ...flow,
         displayAmount,
