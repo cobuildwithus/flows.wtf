@@ -26,8 +26,7 @@ function groupGrantsByCurrency(grants: GrantWithFlow[]) {
         }
       }
 
-      acc[key].yearlyEarnings +=
-        fromWei(grant.monthlyIncomingFlowRate, grant.flow.underlyingTokenDecimals ?? 18) * 12
+      acc[key].yearlyEarnings += fromWei(grant.monthlyIncomingFlowRate, 18) * 12
 
       return acc
     },

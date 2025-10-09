@@ -8,7 +8,6 @@ import { getGrantsClaimableBalance } from "./get-grants-claimable-balance"
 interface GrantForEarnings {
   monthlyIncomingFlowRate: string
   flow: {
-    underlyingTokenDecimals: number | null
     underlyingTokenUsdPrice: string | null
   }
 }
@@ -38,11 +37,7 @@ export function useUserGrants(address: string | undefined) {
     claimableTokens,
   )
 
-  const monthly = grants.reduce(
-    (acc, grant) =>
-      acc + fromWei(grant.monthlyIncomingFlowRate, grant.flow.underlyingTokenDecimals ?? 18),
-    0,
-  )
+  const monthly = grants.reduce((acc, grant) => acc + fromWei(grant.monthlyIncomingFlowRate, 18), 0)
 
   return {
     grants,
@@ -65,10 +60,7 @@ export function useUserGrants(address: string | undefined) {
 function calculateUsdEarnings(grants: GrantForEarnings[], claimableTokens: number[]) {
   const monthlyUsd = grants.reduce((acc, grant) => {
     const price = Number(grant.flow.underlyingTokenUsdPrice ?? 0)
-    const tokenMonthly = fromWei(
-      grant.monthlyIncomingFlowRate,
-      grant.flow.underlyingTokenDecimals ?? 18,
-    )
+    const tokenMonthly = fromWei(grant.monthlyIncomingFlowRate, 18)
     return acc + tokenMonthly * price
   }, 0)
 
