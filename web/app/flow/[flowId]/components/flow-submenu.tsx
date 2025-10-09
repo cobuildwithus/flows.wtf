@@ -80,6 +80,7 @@ export const FlowSubmenu = async (props: Props) => {
     <div className="mb-4 mt-14 flex items-center justify-between md:mb-8">
       <Submenu links={links} />
 
+      {/* Desktop and above: full submenu buttons */}
       <div className="max-sm:hidden">
         <div className="flex items-center space-x-2">
           {flow.tokenEmitter && flow.erc20 && (
@@ -104,6 +105,17 @@ export const FlowSubmenu = async (props: Props) => {
           )}
           <FundFlow variant="default" flow={flow} />
         </div>
+      </div>
+
+      {/* On small screens: only show the Apply button if available */}
+      <div className="sm:hidden">
+        {!isManager && !isTopLevel && (
+          <Link href={`/apply/${flowId}`}>
+            <Button variant="outline" className="w-full">
+              Apply
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   )
