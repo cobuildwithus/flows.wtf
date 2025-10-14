@@ -24,7 +24,6 @@ model Profile {
   updated_at         DateTime
   fid                BigInt          @id
   casts              Cast[]
-  channel_members    ChannelMember[]
 
   // manually verified addresses on flows.wtf (outside of warpcast flow that is too hard for users to find)
   // we merge this with verified_addresses from warpcast on the backend, so just use this field as a source of history
@@ -36,18 +35,17 @@ model Profile {
 }
 
 model Cast {
-  id                       BigInt    @id
+  hash                     Bytes @id
   created_at               DateTime
   updated_at               DateTime
   deleted_at               DateTime?
   timestamp                DateTime
   fid                      BigInt
-  hash                     Bytes
   parent_hash              Bytes?
   parent_fid               BigInt?
   parent_url               String?
   text                     String?
-  embeds                   String?
+  embeds_array             Json?
   mentioned_fids           BigInt[]
   mentions_positions_array Int[]
   root_parent_hash         Bytes?
@@ -59,21 +57,5 @@ model Cast {
   impact_verifications     Json?
 
   @@map("farcaster_casts")
-  @@schema("production")
-}
-
-model ChannelMember {
-  id         BigInt    @id
-  created_at DateTime
-  updated_at DateTime
-  deleted_at DateTime?
-  timestamp  DateTime
-  fid        BigInt
-  channel_id String
-  profile    Profile   @relation(fields: [fid], references: [fid])
-
-  @@index([fid])
-  @@index([channel_id])
-  @@map("farcaster_channel_members")
   @@schema("production")
 }

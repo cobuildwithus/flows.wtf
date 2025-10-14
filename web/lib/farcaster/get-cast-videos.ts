@@ -14,9 +14,9 @@ function normalizeJsonString(str: string): string {
   return s
 }
 
-export function getCastVideos(cast: Pick<Cast, "embeds">): string[] {
-  const raw = cast.embeds || "[]"
-  let parsed: unknown = tryParseJson(normalizeJsonString(raw))
+export function getCastVideos(cast: Pick<Cast, "embeds_array">): string[] {
+  const raw = cast.embeds_array || []
+  let parsed: unknown = tryParseJson(normalizeJsonString(JSON.stringify(raw)))
 
   if (typeof parsed === "string") parsed = tryParseJson(parsed)
   if (!Array.isArray(parsed)) return []

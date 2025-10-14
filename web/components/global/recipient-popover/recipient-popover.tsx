@@ -1,13 +1,10 @@
 "use client"
 
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Currency } from "@/components/ui/currency"
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { getUserUpdatesChannel } from "@/lib/farcaster/get-user-updates-channel"
-import { useServerFunction } from "@/lib/hooks/use-server-function"
 import { getEthAddress, getIpfsUrl } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
@@ -29,8 +26,6 @@ export const RecipientPopover = (props: Props) => {
   const { grants, earnings, refetch } = useUserGrants(address)
   const closeRef = useRef<HTMLButtonElement>(null)
 
-  const { data, isLoading } = useServerFunction(getUserUpdatesChannel, "updates-channel", [address])
-
   const hasGrants = grants.length > 0
   const activeGrants = grants.filter((grant) => Number(grant.monthlyIncomingFlowRate) > 0)
   const hasActiveGrants = activeGrants.length > 0 || Number(earnings.claimable) > 0
@@ -38,11 +33,6 @@ export const RecipientPopover = (props: Props) => {
   if (!hasActiveGrants) {
     return null
   }
-
-  const { isFlowsMember, hasFarcasterAccount } = data || {}
-
-  const needsVerify = !isLoading && !hasFarcasterAccount
-  const shouldJoinFlowsChannel = !isLoading && !isFlowsMember && hasFarcasterAccount
 
   const closePopover = () => closeRef.current?.click()
 
@@ -123,33 +113,6 @@ export const RecipientPopover = (props: Props) => {
                     </div>
                   ))}
                 </div>
-
-                {needsVerify && (
-                  <Alert className="mt-6" variant="default">
-                    <AlertDescription>
-                      You must connect to Farcaster to keep getting paid.
-                      <br />
-                      <SignInWithNeynar variant="default" className="mt-2" user={user} />
-                    </AlertDescription>
-                  </Alert>
-                )}
-                {shouldJoinFlowsChannel && (
-                  <Alert className="mt-6" variant="default">
-                    <AlertDescription>
-                      Please join the Flows channel on Farcaster to post updates about your work.
-                      <br />
-                      <Button asChild size="sm" variant="default" className="mt-2">
-                        <a
-                          href="https://farcaster.xyz/~/channel/flows/join?inviteCode=35EHtdIhE-ivqVxl2SaEFg"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Join /flows
-                        </a>
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                )}
               </>
             ) : (
               <div className="mt-8 flex flex-col items-center justify-center space-x-2 space-y-4 rounded-xl border border-border bg-gray-200/30 py-6 text-sm text-muted-foreground dark:bg-gray-800">

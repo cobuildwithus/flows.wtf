@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 import { CheckUpdateButton } from "./check-update-button"
 
 interface Props {
-  cast: Pick<Cast, "impact_verifications" | "id">
+  cast: Pick<Cast, "impact_verifications" | "hash">
 }
 
 const ImpactVerificationContent = ({
@@ -99,7 +99,7 @@ export const ImpactVerification = ({ cast }: Props) => {
     <ImpactVerificationContent
       verification={verification}
       grantId={grantId as string}
-      castId={Number(cast.id)}
+      castId={Number(cast.hash)}
     />
   )
 }

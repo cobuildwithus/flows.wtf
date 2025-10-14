@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useServerFunction } from "@/lib/hooks/use-server-function"
-import { getUserUpdatesChannel } from "@/lib/farcaster/get-user-updates-channel"
 import { getUserGrants } from "./recipient-popover/get-user-grants"
 import {
   Dialog,
@@ -24,22 +23,17 @@ interface Props {
 
 export const PromptFarcasterSignup = ({ user }: Props) => {
   const [open, setOpen] = useState(false)
-  const { data: farcasterData, isLoading: isFarcasterLoading } = useServerFunction(
-    getUserUpdatesChannel,
-    "updates-channel",
-    [user.address],
-  )
+
   const { data: grants, isLoading: isGrantsLoading } = useServerFunction(
     getUserGrants,
     "user-grants",
     [user.address],
   )
-  const { hasFarcasterAccount } = farcasterData || {}
 
   useEffect(() => {
-    if (isFarcasterLoading || isGrantsLoading) return
+    if (isGrantsLoading) return
 
-    const shouldPrompt = !hasFarcasterAccount && (grants?.length || 0) > 0
+    const shouldPrompt = (grants?.length || 0) > 0
     if (!shouldPrompt) return
 
     const lastShown = localStorage.getItem(STORAGE_KEY)
@@ -49,9 +43,9 @@ export const PromptFarcasterSignup = ({ user }: Props) => {
       setOpen(true)
       localStorage.setItem(STORAGE_KEY, now.toString())
     }
-  }, [isFarcasterLoading, isGrantsLoading, hasFarcasterAccount, grants])
+  }, [isGrantsLoading, grants])
 
-  if (isFarcasterLoading || isGrantsLoading || hasFarcasterAccount || !grants?.length) return null
+  if (isGrantsLoading || !grants?.length) return null
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -86,9 +86,8 @@ export async function getStartupUpdates(flowIds: string[], startDate: Date) {
     select: {
       hash: true,
       text: true,
-      id: true,
       created_at: true,
-      embeds: true,
+      embeds_array: true,
       computed_tags: true,
       fid: true,
       mentioned_fids: true,

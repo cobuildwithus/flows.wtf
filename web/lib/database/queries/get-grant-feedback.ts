@@ -8,9 +8,8 @@ async function fetchFeedbackCasts(url: string): Promise<MinimalCast[]> {
     return await farcasterDb.cast.findMany({
       select: {
         created_at: true,
-        embeds: true,
+        embeds_array: true,
         hash: true,
-        id: true,
         impact_verifications: true,
         mentioned_fids: true,
         mentions_positions_array: true,
