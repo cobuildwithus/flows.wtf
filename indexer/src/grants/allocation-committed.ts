@@ -160,7 +160,6 @@ async function handleAllocationCommitted({
 
   // Clean up the scratch row for this tx (strategy-scoped)
   await context.db.delete(tempRecipientsByKeyAllocatorTx, { contractKeyAllocatorTx: scratchKey })
-
   // Recompute flows exactly once
   await handleIncomingFlowRates(context.db, contract)
 }
