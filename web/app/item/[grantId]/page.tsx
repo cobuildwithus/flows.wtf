@@ -178,20 +178,15 @@ export default async function GrantPage(props: Props) {
               </div>
 
               <Stat label="Budget" className="">
-                <Currency display={grant}>
-                  {fromWei(grant.monthlyIncomingFlowRate, grant.underlyingTokenDecimals ?? 18)}
-                </Currency>
+                <Currency display={grant}>{fromWei(grant.monthlyIncomingFlowRate, 18)}</Currency>
                 /mo
               </Stat>
 
               <Stat label="Total Earned">
                 <AnimatedSalary
                   grant={grant}
-                  value={fromWei(grant.totalEarned, grant.underlyingTokenDecimals ?? 18)}
-                  monthlyRate={fromWei(
-                    grant.monthlyIncomingFlowRate,
-                    grant.underlyingTokenDecimals ?? 18,
-                  )}
+                  value={fromWei(grant.totalEarned, 18)}
+                  monthlyRate={fromWei(grant.monthlyIncomingFlowRate, 18)}
                 />
               </Stat>
               <Dialog>

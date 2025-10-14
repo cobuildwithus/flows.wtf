@@ -12,7 +12,6 @@ import { useRef } from "react"
 import { AnimatedSalary } from "../animated-salary"
 import { WithdrawSalaryButton } from "../withdraw-salary-button"
 import { useUserGrants } from "./use-user-grants"
-import SignInWithNeynar from "../signin-with-neynar"
 import type { User } from "@/lib/auth/user"
 import { formatEarningsList } from "./group-earnings"
 
