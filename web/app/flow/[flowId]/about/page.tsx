@@ -1,21 +1,19 @@
 import { Voters } from "@/app/item/[grantId]/cards/voters"
-import { CurationStatus, CurationVote } from "@/app/item/[grantId]/components/curation-card"
+import { CurationVote } from "@/app/item/[grantId]/components/curation-card"
 import { UserVotes } from "@/app/item/[grantId]/components/user-votes"
 import { AnimatedSalary } from "@/components/global/animated-salary"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Currency } from "@/components/ui/currency"
-import { EditDescription } from "../components/edit-description"
-import { EditMetadataDialog } from "../components/edit-metadata"
+import { getUser } from "@/lib/auth/user"
 import { isAdmin } from "@/lib/database/helpers"
 import { getFlowWithGrants } from "@/lib/database/queries/flow"
-import { getPool } from "@/lib/database/queries/pool"
-import { Status } from "@/lib/enums"
 import { fromWei, getEthAddress } from "@/lib/utils"
-import { getUser } from "@/lib/auth/user"
 import Link from "next/link"
 import { Suspense } from "react"
+import { EditDescription } from "../components/edit-description"
+import { EditMetadataDialog } from "../components/edit-metadata"
 
 interface Props {
   params: Promise<{ flowId: string }>
@@ -26,7 +24,6 @@ export default async function FlowPage(props: Props) {
   const { flowId } = params
 
   const flow = await getFlowWithGrants(flowId)
-  const pool = await getPool()
   const user = await getUser()
 
   const { description, parentContract, isTopLevel, recipient, chainId, manager } = flow
@@ -147,7 +144,6 @@ export default async function FlowPage(props: Props) {
                   <Voters
                     contract={flow.parentContract as `0x${string}`}
                     recipientId={flow.recipientId}
-                    flowVotesCount={String(pool.memberUnits)}
                     isFlow={true}
                   />
                 </Suspense>

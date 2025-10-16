@@ -1,25 +1,18 @@
-import { MenuDesktop, MenuMobile } from "@/components/global/menu"
-import { MenuAvatar } from "@/components/global/menu-avatar"
+import { Nav } from "@/components/global/nav"
 import { PromptFarcasterSignup } from "@/components/global/prompt-farcaster-signup"
-import { RecipientPopover } from "@/components/global/recipient-popover/recipient-popover"
 import { RefreshOnFocus } from "@/components/global/refresh-on-focus"
 import { ThemeProvider } from "@/components/global/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { getUser, hasSession } from "@/lib/auth/user"
-import { getPool } from "@/lib/database/queries/pool"
 import { isProduction } from "@/lib/utils"
 import Wagmi from "@/lib/wagmi/wagmi-provider"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import { Roboto_Mono } from "next/font/google"
-import Image from "next/image"
-import Link from "next/link"
 import CommandPalette from "./components/search/command-dialog"
 import "./globals.css"
-import Flows from "@/public/logo.png"
-import { Nav } from "@/components/global/nav"
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -38,7 +31,7 @@ export const viewport = {
 export default async function RootLayout(props: Readonly<{ children: React.ReactNode }>) {
   const { children } = props
 
-  const [pool, user, sessionPresent] = await Promise.all([getPool(), getUser(), hasSession()])
+  const [user, sessionPresent] = await Promise.all([getUser(), hasSession()])
 
   return (
     <html lang="en" suppressHydrationWarning className="h-full">
@@ -52,7 +45,7 @@ export default async function RootLayout(props: Readonly<{ children: React.React
         >
           <TooltipProvider delayDuration={350}>
             <Wagmi>
-              <Nav pool={pool} user={user} sessionPresent={sessionPresent} />
+              <Nav user={user} sessionPresent={sessionPresent} />
               {children}
               <Toaster />
               <Analytics />

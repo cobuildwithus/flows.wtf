@@ -6,12 +6,11 @@ import { Logo } from "@/components/global/logo"
 import { User } from "@/lib/auth/user"
 
 interface Props {
-  pool: FlowWithTcr
   user?: User
   sessionPresent: boolean
 }
 
-export function Nav({ pool, user, sessionPresent }: Props) {
+export function Nav({ user, sessionPresent }: Props) {
   return (
     <nav className="container flex items-center py-5 max-lg:justify-between md:py-6">
       <div className="lg:w-1/5">

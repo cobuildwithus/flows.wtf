@@ -1,10 +1,9 @@
 import "server-only"
 
+import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import { getUser } from "@/lib/auth/user"
 import { getFlow, getFlowWithGrants } from "@/lib/database/queries/flow"
-import { getPool } from "@/lib/database/queries/pool"
 import { getEthAddress } from "@/lib/utils"
-import { AllocationProvider } from "@/lib/allocation/allocation-context"
 import type { Metadata } from "next"
 import type { PropsWithChildren } from "react"
 
@@ -17,9 +16,9 @@ interface Props {
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { flowId } = await props.params
 
-  const [pool, flow] = await Promise.all([getPool(), getFlow(flowId)])
+  const flow = await getFlow(flowId)
 
-  return { title: `${flow.title} - ${pool.title}`, description: flow.tagline }
+  return { title: flow.title, description: flow.tagline }
 }
 
 export default async function FlowLayout(props: PropsWithChildren<Props>) {

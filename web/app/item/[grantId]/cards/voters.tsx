@@ -7,12 +7,11 @@ import { getVoters } from "../components/get-voters"
 interface Props {
   contract: `0x${string}`
   recipientId: string
-  flowVotesCount: string
   isFlow?: boolean
 }
 
 export const Voters = async (props: Props) => {
-  const { contract, recipientId, flowVotesCount, isFlow } = props
+  const { contract, recipientId, isFlow } = props
 
   const voters = await getVoters(contract, recipientId)
 
@@ -21,11 +20,6 @@ export const Voters = async (props: Props) => {
       {voters.length === 0 && (
         <div className="text-sm text-muted-foreground">
           There are no direct votes for this {isFlow ? "flow" : "grant"} yet.
-          <br />
-          <br />
-          {!isFlow &&
-            Number(flowVotesCount) <= 1000 &&
-            `The parent budget has limited support (${flowVotesCount} votes).`}
         </div>
       )}
       {voters.length > 0 && (
