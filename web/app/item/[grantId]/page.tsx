@@ -201,7 +201,6 @@ export default async function GrantPage(props: Props) {
                       <Voters
                         contract={grant.parentContract as `0x${string}`}
                         recipientId={grant.recipientId}
-                        flowVotesCount={String(flow.memberUnits)}
                       />
                     </Suspense>
                   </div>
