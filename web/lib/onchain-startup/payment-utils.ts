@@ -11,7 +11,7 @@ export function paymentToUsd(payment: TokenPayment, ethPrice: number, flowsPrice
   const flowWei = Number(payment.newlyIssuedTokenCount || "0")
 
   // 1️⃣ Only treat txnValue as ETH when it’s actually > 0.
-  if (ethPrice && wei > 0n) {
+  if (ethPrice && wei > 0) {
     return (Number(wei) / WEI_IN_ETH) * ethPrice
   }
 
