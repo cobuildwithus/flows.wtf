@@ -55,6 +55,7 @@ export async function Timeline(props: Props) {
   })
 
   tokenPayments.forEach((payment) => {
+    if (!("timestamp" in payment) || typeof payment.timestamp !== "number") return
     events.push({ type: "token", date: new Date(payment.timestamp * 1000), data: payment })
   })
 

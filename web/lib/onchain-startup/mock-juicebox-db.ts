@@ -1,5 +1,6 @@
 import database from "@/lib/database/flows-db"
 import { base } from "viem/chains"
+import type { Prisma } from "@prisma/flows"
 
 type MockProject = {
   chainId: number
@@ -88,16 +89,10 @@ type MockParticipant = {
   suckerGroupId: string | null
 }
 
-type FindUniqueArgs = {
-  where: Record<string, any>
-  select?: Record<string, any>
-}
-
-type FindManyArgs = {
-  where?: Record<string, any>
-  select?: Record<string, any>
-  orderBy?: Record<string, "asc" | "desc">
-}
+type ProjectFindUniqueArgs = Prisma.JuiceboxProjectFindUniqueArgs
+type PayEventFindManyArgs = Prisma.JuiceboxPayEventFindManyArgs
+type ParticipantFindUniqueArgs = Prisma.JuiceboxParticipantFindUniqueArgs
+type ParticipantFindManyArgs = Prisma.JuiceboxParticipantFindManyArgs
 
 const now = Math.floor(Date.now() / 1000)
 
@@ -528,48 +523,58 @@ function filterParticipants(participants: MockParticipant[], where?: Record<stri
 
 export const juiceboxDb = {
   juiceboxProject: {
-    async findUnique(args: FindUniqueArgs) {
-      if (isMockedProject(args?.where)) {
-        const projectId = getMockProjectIdFromWhere(args.where)
+    async findUnique(args: ProjectFindUniqueArgs) {
+      const where = args?.where as Record<string, any> | undefined
+
+      if (isMockedProject(where)) {
+        const projectId = getMockProjectIdFromWhere(where)
         if (!projectId) return null
         const project = MOCK_PROJECTS[projectId]
         if (!project) return null
-        return applySelect({ ...project }, args.select)
+        return applySelect({ ...project }, args.select as Record<string, any> | undefined)
       }
 
       return database.juiceboxProject.findUnique(args)
     },
-    async findUniqueOrThrow(args: FindUniqueArgs) {
+    async findUniqueOrThrow(args: ProjectFindUniqueArgs) {
       const result = await this.findUnique(args)
       if (!result) throw new Error("Mock Juicebox project not found")
       return result
     },
   },
   juiceboxPayEvent: {
-    async findMany(args: FindManyArgs = {}) {
-      if (isMockedProject(args.where)) {
-        const projectId = getMockProjectIdFromWhere(args.where)
+    async findMany(args?: PayEventFindManyArgs) {
+      const where = args?.where as Record<string, any> | undefined
+
+      if (isMockedProject(where)) {
+        const projectId = getMockProjectIdFromWhere(where)
         if (!projectId) return []
         const events = MOCK_PAY_EVENTS[projectId] ?? []
-        const filtered = filterPayEvents(events, args.where)
-        const sorted = sortRecords(filtered, args.orderBy)
-        return sorted.map((event) => applySelect({ ...event }, args.select))
+        const filtered = filterPayEvents(events, where)
+        const sorted = sortRecords(
+          filtered,
+          args?.orderBy as Record<string, "asc" | "desc"> | undefined,
+        )
+        const select = args?.select as Record<string, any> | undefined
+        return sorted.map((event) => applySelect({ ...event }, select))
       }
 
       return database.juiceboxPayEvent.findMany(args)
     },
   },
   juiceboxParticipant: {
-    async findUnique(args: FindUniqueArgs) {
-      if (isMockedProject(args.where)) {
-        const projectId = getMockProjectIdFromWhere(args.where)
+    async findUnique(args: ParticipantFindUniqueArgs) {
+      const where = args?.where as Record<string, any> | undefined
+
+      if (isMockedProject(where)) {
+        const projectId = getMockProjectIdFromWhere(where)
         if (!projectId) return null
         const participants = MOCK_PARTICIPANTS[projectId] ?? []
 
         const address =
-          args.where?.chainId_projectId_address?.address ??
-          args.where?.address ??
-          args.where?.address?.equals
+          (where?.chainId_projectId_address?.address ??
+            where?.address ??
+            where?.address?.equals) as string | undefined
 
         if (!address) return null
 
@@ -579,18 +584,21 @@ export const juiceboxDb = {
 
         if (!participant) return null
 
-        return applySelect({ ...participant }, args.select)
+        return applySelect({ ...participant }, args.select as Record<string, any> | undefined)
       }
 
       return database.juiceboxParticipant.findUnique(args)
     },
-    async findMany(args: FindManyArgs = {}) {
-      if (isMockedProject(args.where)) {
-        const projectId = getMockProjectIdFromWhere(args.where)
+    async findMany(args?: ParticipantFindManyArgs) {
+      const where = args?.where as Record<string, any> | undefined
+
+      if (isMockedProject(where)) {
+        const projectId = getMockProjectIdFromWhere(where)
         if (!projectId) return []
         const participants = MOCK_PARTICIPANTS[projectId] ?? []
-        const filtered = filterParticipants(participants, args.where)
-        return filtered.map((participant) => applySelect({ ...participant }, args.select))
+        const filtered = filterParticipants(participants, where)
+        const select = args?.select as Record<string, any> | undefined
+        return filtered.map((participant) => applySelect({ ...participant }, select))
       }
 
       return database.juiceboxParticipant.findMany(args)

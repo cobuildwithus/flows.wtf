@@ -5,11 +5,12 @@ import { getAllocator } from "../allocation/allocation-data/get-allocator"
 import { straystrong } from "./data/straystrong"
 import { tropicalbody } from "./data/tropicalbody"
 import { flows } from "./data/flows"
-import { base, startupsToJbxBaseProjectId } from "@/addresses"
+import { base as baseAddresses, startupsToJbxBaseProjectId } from "@/addresses"
 import { Grant } from "../database/types"
 import { StartupData } from "./data/interface"
 import { JuiceboxProject, JuiceboxRuleset } from "@prisma/flows"
 import { juiceboxDb } from "./mock-juicebox-db"
+import { base as baseChain } from "viem/chains"
 
 const startups = {
   "0xd3758b55916128c88dd7895472a2d47cacb9f208": vrbscoffee,
@@ -126,7 +127,7 @@ const getStartupData = cache((id: string): StartupData | null => {
 async function getJuiceboxProjectForGrant(grant: Grant): Promise<RawJuiceboxProject | null> {
   if (!grant.jbxProjectId) return null
 
-  const chainId = grant.jbxChainId ?? base.id
+  const chainId = grant.jbxChainId ?? baseChain.id
 
   const project = await juiceboxDb.juiceboxProject.findUnique({
     where: {
@@ -160,7 +161,7 @@ async function enrichGrantWithStartupData(
 
   const nextPriceIncrease = getNextPriceIncrease(activeRuleset)
 
-  const isBackedByFlows = rawJbxProject?.accountingToken === base.FlowsToken
+  const isBackedByFlows = rawJbxProject?.accountingToken === baseAddresses.FlowsToken
 
   const tokenSymbol = rawJbxProject?.erc20Symbol ?? ""
 
