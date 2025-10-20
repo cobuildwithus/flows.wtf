@@ -1,11 +1,11 @@
 "use server"
 
 import { unstable_cache } from "next/cache"
-import database from "@/lib/database/flows-db"
+import { juiceboxDb } from "./mock-juicebox-db"
 import { base } from "viem/chains"
 
 async function _getTokenPayments(projectId: number) {
-  const project = await database.juiceboxProject.findUniqueOrThrow({
+  const project = await juiceboxDb.juiceboxProject.findUniqueOrThrow({
     where: { chainId_projectId: { chainId: base.id, projectId } },
     select: { suckerGroupId: true },
   })
@@ -14,7 +14,7 @@ async function _getTokenPayments(projectId: number) {
     return []
   }
 
-  const payments = await database.juiceboxPayEvent.findMany({
+  const payments = await juiceboxDb.juiceboxPayEvent.findMany({
     select: {
       txHash: true,
       timestamp: true,

@@ -38,7 +38,6 @@ import { getPrivyIdToken } from "@/lib/auth/get-user-from-cookie"
 import { AgentChatProvider } from "@/app/chat/components/agent-chat"
 import { BgGradient } from "@/app/item/[grantId]/components/bg-gradient"
 import { StartupHero } from "./components/startup-hero"
-import { getUserBalance } from "@/lib/onchain-startup/user-balance"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -74,14 +73,13 @@ export default async function GrantPage(props: Props) {
     startup.jbxProjectId ? getTokenPayments(startup.jbxProjectId) : Promise.resolve([]),
   ])
 
-  const [products, revenue, impacts, balance] = await Promise.all([
+  const [products, revenue, impacts] = await Promise.all([
     shopify ? getProducts(shopify, orders) : Promise.resolve([]),
     getRevenueChange(orders, tokenPayments),
     database.impact.findMany({
       where: { grantId: { in: budgets.map((b) => b.id) }, deletedAt: null },
       orderBy: [{ date: "desc" }, { updatedAt: "desc" }],
     }),
-    user?.address ? getUserBalance(user.address, startup.chainId, startup.jbxProjectId) : null,
   ])
 
   const canEdit = canEditGrant(startup, user?.address)
@@ -104,7 +102,7 @@ export default async function GrantPage(props: Props) {
 
   return (
     <>
-      <StartupHero startup={startup} revenue={revenue.totalSales} balance={balance} />
+      <StartupHero startup={startup} revenue={revenue.totalSales} />
 
       <div className="container flex">
         <Team members={teamMembers} user={user} startup={startup} />
