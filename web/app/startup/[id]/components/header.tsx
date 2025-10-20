@@ -1,6 +1,5 @@
 import { getIpfsUrl } from "@/lib/utils"
 import { Startup } from "@/lib/onchain-startup/startup"
-import { getRevnetHolders } from "@/lib/revnet/get-holders"
 import { getTeamMemberCount } from "@/lib/onchain-startup/get-team-member-count"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
@@ -10,13 +9,7 @@ interface Props {
 }
 
 export async function Header({ startup }: Props) {
-  const revnetProjectId = startup.jbxProjectId
-  const chainId = startup.chainId
-
-  const [holdersCount, teamMemberCount] = await Promise.all([
-    revnetProjectId ? getRevnetHolders(revnetProjectId, chainId) : Promise.resolve(0),
-    getTeamMemberCount(startup.id),
-  ])
+  const teamMemberCount = await getTeamMemberCount(startup.id)
 
   return (
     <div className="flex items-center gap-6 pb-2 pt-6">
@@ -36,9 +29,6 @@ export async function Header({ startup }: Props) {
         <div className="space-y-2">
           <p className="text-muted-foreground md:text-xl">{startup.shortMission}</p>
           <div className="flex gap-2">
-            <Badge variant="secondary" className="w-fit">
-              {holdersCount} {holdersCount === 1 ? "holder" : "holders"}
-            </Badge>
             <Badge variant="secondary" className="w-fit">
               {teamMemberCount} {teamMemberCount === 1 ? "team member" : "team members"}
             </Badge>
