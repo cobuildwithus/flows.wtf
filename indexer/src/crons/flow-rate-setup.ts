@@ -30,11 +30,24 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
 
   if (!parents.length) return
 
-  const parentBaselinePerSec = new Map<string, bigint>()
-  const parentBonusPerSec = new Map<string, bigint>()
-  const childTotals = new Map<string, { base: bigint; bonus: bigint }>()
+  const CHUNK_SIZE = 10
 
-  for (const parent of parents) {
+  function chunkArray<T>(arr: T[], size: number): T[][] {
+    const chunks: T[][] = []
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size))
+    }
+    return chunks
+  }
+
+  type ParentProcessResult = {
+    parentId: string
+    basePerSec: bigint
+    bonusPerSec: bigint
+    childTotals: Array<{ childId: string; base: bigint; bonus: bigint }>
+  }
+
+  async function processParent(parent: (typeof parents)[number]): Promise<ParentProcessResult> {
     const parentId = parent.id.toLowerCase()
     const baselinePool = parent.baselinePool.toLowerCase() as `0x${string}`
     const bonusPool = parent.bonusPool.toLowerCase() as `0x${string}`
@@ -44,9 +57,7 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
     })
     const childIds = childrenRow?.childGrantIds ?? []
     if (!childIds.length) {
-      parentBaselinePerSec.set(parentId, 0n)
-      parentBonusPerSec.set(parentId, 0n)
-      continue
+      return { parentId, basePerSec: 0n, bonusPerSec: 0n, childTotals: [] }
     }
 
     const children = await context.db.sql.query.grants.findMany({
@@ -102,6 +113,7 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
     let idx = 0
     let basePerSec = 0n
     let bonusPerSec = 0n
+    const perParentChildTotals = new Map<string, { base: bigint; bonus: bigint }>()
 
     for (const child of children) {
       const bUnitsRes = results[idx++]
@@ -138,11 +150,9 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
       const incBonusMonthly = (xRate > 0n ? xRate : 0n) * SECONDS_PER_MONTH
       const incTotalMonthly = incBaseMonthly + incBonusMonthly
 
-      // Accumulate totals per child; we'll replace after parent iteration completes
-      const totals = childTotals.get(child.id) ?? { base: 0n, bonus: 0n }
-      childTotals.set(child.id, {
-        base: totals.base + incBaseMonthly,
-        bonus: totals.bonus + incBonusMonthly,
+      perParentChildTotals.set(child.id, {
+        base: (perParentChildTotals.get(child.id)?.base ?? 0n) + incBaseMonthly,
+        bonus: (perParentChildTotals.get(child.id)?.bonus ?? 0n) + incBonusMonthly,
       })
 
       if (child.isFlow && child.parentContract.toLowerCase() !== parentId) {
@@ -163,8 +173,38 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
       }
     }
 
-    parentBaselinePerSec.set(parentId, basePerSec)
-    parentBonusPerSec.set(parentId, bonusPerSec)
+    return {
+      parentId,
+      basePerSec,
+      bonusPerSec,
+      childTotals: Array.from(perParentChildTotals.entries()).map(([childId, v]) => ({
+        childId,
+        base: v.base,
+        bonus: v.bonus,
+      })),
+    }
+  }
+
+  const parentBaselinePerSec = new Map<string, bigint>()
+  const parentBonusPerSec = new Map<string, bigint>()
+  const childTotals = new Map<string, { base: bigint; bonus: bigint }>()
+
+  const chunks = chunkArray(parents, CHUNK_SIZE)
+  for (const chunk of chunks) {
+    const results = await Promise.all(chunk.map((p) => processParent(p)))
+
+    for (const r of results) {
+      parentBaselinePerSec.set(r.parentId, r.basePerSec)
+      parentBonusPerSec.set(r.parentId, r.bonusPerSec)
+
+      for (const ct of r.childTotals) {
+        const existing = childTotals.get(ct.childId) ?? { base: 0n, bonus: 0n }
+        childTotals.set(ct.childId, {
+          base: existing.base + ct.base,
+          bonus: existing.bonus + ct.bonus,
+        })
+      }
+    }
   }
 
   // Replace child monthly incoming with aggregated totals
