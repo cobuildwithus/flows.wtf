@@ -26,6 +26,8 @@ ponder.on("FlowRateSetup:block", async ({ context, event }) => {
     },
   })
 
+  console.log(chainId)
+
   if (!parents.length) return
 
   const parentBaselinePerSec = new Map<string, bigint>()
