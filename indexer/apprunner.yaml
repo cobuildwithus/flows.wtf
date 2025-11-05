@@ -17,6 +17,6 @@ run:
     port: 8080
   secrets:
     - name: ALCHEMY_KEY_FLOWS_INDEXER
-      value-from: "arn:aws:secretsmanager:us-east-1:741448937731:secret:prod/ALCHEMY_KEY_FLOWS_INDEXER-wAe4X6"
+      value-from: "arn:aws:secretsmanager:us-east-1:741448937731:secret:prod/ALCHEMY_KEY_FLOWS_INDEXER-MJEikG"
     - name: DATABASE_URL
-      value-from: "arn:aws:secretsmanager:us-east-1:741448937731:secret:prod/FLOWS_DB_URL-xrYJuM"
+      value-from: "arn:aws:secretsmanager:us-east-1:741448937731:secret:prod/FLOWS_DB_URL-k2dlue"
