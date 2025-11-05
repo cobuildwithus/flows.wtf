@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ -z "${ALCHEMY_KEY_FLOWS_INDEXER:-}" ]; then
-  echo "[run] Missing required environment variable ALCHEMY_KEY_FLOW_INDEXER" >&2
+if [ -z "${ALCHEMY_API_KEY:-}" ]; then
+  echo "[run] Missing required environment variable ALCHEMY_API_KEY" >&2
   exit 1
 fi
 
