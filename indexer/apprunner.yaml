@@ -1,0 +1,22 @@
+version: 1.0
+runtime: nodejs22
+
+build:
+  commands:
+    pre-build:
+      - bash -lc "./scripts/prebuild.sh"
+    build:
+      - pnpm install --frozen-lockfile
+
+run:
+  pre-run:
+    - bash -lc "./scripts/prerun.sh"
+  command: bash -lc "./scripts/run.sh"
+
+  network:
+    port: 8080
+  secrets:
+    - name: ALCHEMY_KEY_FLOWS_INDEXER
+      value-from: "arn:aws:secretsmanager:us-east-1:741448937731:secret:prod/ALCHEMY_KEY_FLOWS_INDEXER-wAe4X6"
+    - name: DATABASE_URL
+      value-from: "arn:aws:secretsmanager:us-east-1:741448937731:secret:prod/FLOWS_DB_URL-xrYJuM"
