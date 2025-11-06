@@ -97,6 +97,43 @@ resolver.resolve4(HOST)
   });
 JS
 
+echo "[health] Regional host DNS lookup (us-east-2.private-pg.psdb.cloud)"
+node -e "require('node:dns').promises.lookup('us-east-2.private-pg.psdb.cloud').then(console.log).catch(e=>{console.error('DNS FAIL',e.code||e);process.exit(1);})"
+
+echo "[health] Regional host TLS handshake (6432)"
+node - <<'JS'
+const tls = require('node:tls');
+const host = 'us-east-2.private-pg.psdb.cloud';
+const socket = tls.connect({ host, port: 6432, servername: host }, () => {
+  console.log('TLS authorized?', socket.authorized, socket.authorizationError || '');
+  socket.end();
+});
+socket.on('error', (e) => {
+  console.error('TLS FAIL', e.message || e);
+  process.exit(1);
+});
+socket.on('end', () => process.exit(0));
+JS
+
+echo "[health] Regional host SELECT 1"
+node - <<'JS'
+const { Client } = require('pg');
+(async () => {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: true },
+  });
+  await client.connect();
+  const result = await client.query('select 1');
+  console.log('SELECT 1 ->', result.rows);
+  await client.end();
+  process.exit(0);
+})().catch((e) => {
+  console.error('PG FAIL', e.message || e);
+  process.exit(1);
+});
+JS
+
 echo "[health] Alchemy reachability (masked key prefix ${ALCHEMY_API_KEY:0:4})"
 curl --fail -sS "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}" \
   -H 'content-type: application/json' \
