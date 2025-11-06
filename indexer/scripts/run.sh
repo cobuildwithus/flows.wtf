@@ -18,6 +18,30 @@ VIEWS_SCHEMA="${VIEWS_SCHEMA:-flows_onchain}"
 DB_SCHEMA="${DB_SCHEMA_PREFIX}_${DEPLOY_ID}"
 
 echo "[run] Starting Ponder on PORT=${PORT} with schema ${DB_SCHEMA} and views schema ${VIEWS_SCHEMA}"
+
+echo "[health] Resolver config (/etc/resolv.conf)"
+node -e "console.log(require('node:fs').readFileSync('/etc/resolv.conf','utf8'))"
+
+echo "[health] PrivateLink DNS lookup"
+node - <<'JS'
+const dns = require('node:dns').promises;
+const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
+dns.lookup(HOST)
+  .then((res) => {
+    console.log(res);
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error('DNS FAIL', err.code || err);
+    process.exit(1);
+  });
+JS
+
+echo "[health] Alchemy reachability (masked key prefix ${ALCHEMY_API_KEY:0:4})"
+curl --fail -sS "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}" \
+  -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"web3_clientVersion","params":[]}'
+
 node - <<'JS'
 const dns = require('node:dns').promises;
 const tls = require('node:tls');
