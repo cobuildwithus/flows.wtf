@@ -35,6 +35,31 @@ fi
 echo "[health] Resolver config (/etc/resolv.conf)"
 node -e "console.log(require('node:fs').readFileSync('/etc/resolv.conf','utf8'))"
 
+if DB_INFO=$(node - <<'JS'
+const raw = process.env.DATABASE_URL || process.env.PONDER_DATABASE_URL || '';
+if (!raw) process.exit(1);
+try {
+  const url = new URL(raw);
+  if (!url.hostname) process.exit(1);
+  process.stdout.write(url.hostname);
+  process.stdout.write('\n');
+  process.stdout.write(url.port || '');
+} catch (err) {
+  process.exit(1);
+}
+JS
+); then
+  IFS=$'\n' read -r DB_HOST DB_PORT <<< "${DB_INFO}"
+  DB_PORT="${DB_PORT:-5432}"
+  export DB_HOST DB_PORT
+  echo "[health] Database host parsed from connection string: ${DB_HOST}"
+else
+  DB_HOST=""
+  DB_PORT="5432"
+  export DB_HOST DB_PORT
+  echo "[health] Warning: unable to parse database host from connection string" >&2
+fi
+
 echo "[health] Public DNS lookup (example.com via OS resolver)"
 node - <<'JS'
 const dns = require('node:dns');
@@ -50,61 +75,45 @@ dns.promises.lookup('example.com', { family: 4 })
   });
 JS
 
-echo "[health] PrivateLink DNS lookup"
+echo "[health] Database host DNS lookup (${DB_HOST:-us-east-2.private-pg.psdb.cloud})"
 node - <<'JS'
 const dns = require('node:dns');
 dns.setDefaultResultOrder?.('ipv4first');
-const dnsPromises = dns.promises;
-const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-(async () => {
-  const maxAttempts = 5;
-  let lastError;
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    try {
-      const res = await dnsPromises.lookup(HOST, { family: 4 });
-      console.log(res);
-      process.exit(0);
-    } catch (err) {
-      lastError = err;
-      console.error(`[health] DNS attempt ${attempt}/${maxAttempts} failed:`, err.code || err.message || err);
-      if (attempt < maxAttempts) {
-        await sleep(1000 * attempt);
-      }
-    }
-  }
-  console.error('DNS FAIL', lastError);
-  process.exit(1);
-})();
-JS
-
-echo "[health] Route53 resolver lookup (direct)"
-node - <<'JS'
-const { Resolver } = require('node:dns').promises;
-const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
-const resolver = new Resolver();
-resolver.setServers(['169.254.169.253', '10.0.0.2']);
-resolver.resolve4(HOST)
+const host = process.env.DB_HOST || 'us-east-2.private-pg.psdb.cloud';
+dns.promises.lookup(host, { family: 4 })
   .then((res) => {
     console.log(res);
     process.exit(0);
   })
   .catch((err) => {
-    console.error('[health] Route53 resolve FAIL', err.code || err.message || err);
+    console.error('DNS FAIL', err.code || err.message || err);
+    process.exit(1);
+});
+JS
+
+echo "[health] Database host Route53 lookup (169.254.169.253 priority)"
+node - <<'JS'
+const { Resolver } = require('node:dns').promises;
+const resolver = new Resolver();
+resolver.setServers(['169.254.169.253', '10.0.0.2']);
+const host = process.env.DB_HOST || 'us-east-2.private-pg.psdb.cloud';
+resolver.resolve4(host)
+  .then((addresses) => {
+    console.log(addresses);
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error('Route53 DNS FAIL', err.code || err.message || err);
     process.exit(1);
   });
 JS
 
-echo "[health] Regional host DNS lookup (us-east-2.private-pg.psdb.cloud)"
-node -e "require('node:dns').promises.lookup('us-east-2.private-pg.psdb.cloud').then(console.log).catch(e=>{console.error('DNS FAIL',e.code||e);process.exit(1);})"
-
-echo "[health] Regional host TLS handshake (6432)"
+echo "[health] Database host TLS handshake (${DB_HOST:-us-east-2.private-pg.psdb.cloud}:${DB_PORT})"
 node - <<'JS'
 const tls = require('node:tls');
-const host = 'us-east-2.private-pg.psdb.cloud';
-const socket = tls.connect({ host, port: 6432, servername: host }, () => {
+const host = process.env.DB_HOST || 'us-east-2.private-pg.psdb.cloud';
+const port = Number(process.env.DB_PORT || process.env.PONDER_DB_PORT || 5432);
+const socket = tls.connect({ host, port, servername: host }, () => {
   console.log('TLS authorized?', socket.authorized, socket.authorizationError || '');
   socket.end();
 });
@@ -115,7 +124,7 @@ socket.on('error', (e) => {
 socket.on('end', () => process.exit(0));
 JS
 
-echo "[health] Regional host SELECT 1"
+echo "[health] Database host SELECT 1"
 node - <<'JS'
 const { Client } = require('pg');
 (async () => {
@@ -146,7 +155,7 @@ const dns = dnsModule.promises;
 const tls = require('node:tls');
 const { Client } = require('pg');
 
-const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
+const defaultHost = 'us-east-2.private-pg.psdb.cloud';
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const lookupWithRetry = async (host, attempts = 5) => {
@@ -171,11 +180,15 @@ const lookupWithRetry = async (host, attempts = 5) => {
     const safe = String(url).replace(/(:\/\/[^:]+:)[^@]+@/, '$1***@');
     console.log('DB URL (masked):', safe);
 
-    const a = await lookupWithRetry(HOST);
+    const host = url.hostname || process.env.DB_HOST || defaultHost;
+    const port = Number(url.port || process.env.DB_PORT || 5432);
+    console.log(`DB host: ${host}, port: ${port}`);
+
+    const a = await lookupWithRetry(host);
     console.log('DNS lookup ->', a); // expect a 10.x IP in your VPC
 
     await new Promise((res, rej) => {
-      const s = tls.connect({ host: HOST, port: 5432, servername: HOST }, () => {
+      const s = tls.connect({ host, port, servername: host }, () => {
         console.log('TLS authorized?', s.authorized, s.authorizationError || '');
         s.end();
         res();
