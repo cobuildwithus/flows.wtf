@@ -24,17 +24,32 @@ node -e "console.log(require('node:fs').readFileSync('/etc/resolv.conf','utf8'))
 
 echo "[health] PrivateLink DNS lookup"
 node - <<'JS'
-const dns = require('node:dns').promises;
+const dns = require('node:dns');
+dns.setDefaultResultOrder?.('ipv4first');
+const dnsPromises = dns.promises;
 const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
-dns.lookup(HOST)
-  .then((res) => {
-    console.log(res);
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error('DNS FAIL', err.code || err);
-    process.exit(1);
-  });
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+(async () => {
+  const maxAttempts = 5;
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const res = await dnsPromises.lookup(HOST, { family: 4 });
+      console.log(res);
+      process.exit(0);
+    } catch (err) {
+      lastError = err;
+      console.error(`[health] DNS attempt ${attempt}/${maxAttempts} failed:`, err.code || err.message || err);
+      if (attempt < maxAttempts) {
+        await sleep(1000 * attempt);
+      }
+    }
+  }
+  console.error('DNS FAIL', lastError);
+  process.exit(1);
+})();
 JS
 
 echo "[health] Alchemy reachability (masked key prefix ${ALCHEMY_API_KEY:0:4})"
@@ -43,18 +58,38 @@ curl --fail -sS "https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}" \
   -d '{"jsonrpc":"2.0","id":1,"method":"web3_clientVersion","params":[]}'
 
 node - <<'JS'
-const dns = require('node:dns').promises;
+const dnsModule = require('node:dns');
+dnsModule.setDefaultResultOrder?.('ipv4first');
+const dns = dnsModule.promises;
 const tls = require('node:tls');
 const { Client } = require('pg');
 
 const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const lookupWithRetry = async (host, attempts = 5) => {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await dns.lookup(host, { family: 4 });
+    } catch (err) {
+      lastError = err;
+      console.error(`[probe] DNS attempt ${attempt}/${attempts} failed:`, err.code || err.message || err);
+      if (attempt < attempts) {
+        await sleep(1000 * attempt);
+      }
+    }
+  }
+  throw lastError;
+};
+
 (async () => {
   try {
     const url = new URL(process.env.DATABASE_URL || process.env.PONDER_DATABASE_URL || '');
     const safe = String(url).replace(/(:\/\/[^:]+:)[^@]+@/, '$1***@');
     console.log('DB URL (masked):', safe);
 
-    const a = await dns.lookup(HOST);
+    const a = await lookupWithRetry(HOST);
     console.log('DNS lookup ->', a); // expect a 10.x IP in your VPC
 
     await new Promise((res, rej) => {
