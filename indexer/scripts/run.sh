@@ -19,8 +19,36 @@ DB_SCHEMA="${DB_SCHEMA_PREFIX}_${DEPLOY_ID}"
 
 echo "[run] Starting Ponder on PORT=${PORT} with schema ${DB_SCHEMA} and views schema ${VIEWS_SCHEMA}"
 
+echo "[health] Patching resolv.conf to prefer 169.254.169.253"
+TMP="/tmp/resolv.conf.$RANDOM"
+if { echo "nameserver 169.254.169.253"; cat /etc/resolv.conf; } > "${TMP}"; then
+  if cp "${TMP}" /etc/resolv.conf 2>/dev/null; then
+    echo "[health] resolv.conf patched to prioritize Route 53 resolver"
+  else
+    echo "[health] resolv.conf patch skipped (read-only?)"
+  fi
+  rm -f "${TMP}"
+else
+  echo "[health] Unable to prepare resolv.conf patch" >&2
+fi
+
 echo "[health] Resolver config (/etc/resolv.conf)"
 node -e "console.log(require('node:fs').readFileSync('/etc/resolv.conf','utf8'))"
+
+echo "[health] Public DNS lookup (example.com via OS resolver)"
+node - <<'JS'
+const dns = require('node:dns');
+dns.setDefaultResultOrder?.('ipv4first');
+dns.promises.lookup('example.com', { family: 4 })
+  .then((res) => {
+    console.log(res);
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error('example.com DNS FAIL', err.code || err.message || err);
+    process.exit(1);
+  });
+JS
 
 echo "[health] PrivateLink DNS lookup"
 node - <<'JS'
@@ -50,6 +78,23 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   console.error('DNS FAIL', lastError);
   process.exit(1);
 })();
+JS
+
+echo "[health] Route53 resolver lookup (direct)"
+node - <<'JS'
+const { Resolver } = require('node:dns').promises;
+const HOST = 'vpce-02de1ac313d9f8b14.us-east-2.private-pg.psdb.cloud';
+const resolver = new Resolver();
+resolver.setServers(['169.254.169.253', '10.0.0.2']);
+resolver.resolve4(HOST)
+  .then((res) => {
+    console.log(res);
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error('[health] Route53 resolve FAIL', err.code || err.message || err);
+    process.exit(1);
+  });
 JS
 
 echo "[health] Alchemy reachability (masked key prefix ${ALCHEMY_API_KEY:0:4})"
