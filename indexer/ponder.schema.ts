@@ -87,9 +87,7 @@ export const grants = onchainTable(
     flowIdIdx: index().on(table.flowId),
     isDisputedIdx: index().on(table.isDisputed),
     isActiveIdx: index().on(table.isActive),
-    arbitratorIdx: index().on(table.arbitrator),
     arbitratorIsFlowIdx: index().on(table.arbitrator, table.isFlow),
-    recipientIdx: index().on(table.recipient),
     recipientIsFlowIdx: index().on(table.recipient, table.isFlow),
     recipientParentContractIdx: index().on(table.recipient, table.parentContract),
     rootContractIdx: index().on(table.rootContract),
@@ -252,8 +250,6 @@ export const superfluidFlow = onchainTable(
   }),
   (table) => ({
     primaryKey: primaryKey({ columns: [table.token, table.sender, table.receiver, table.chainId] }),
-    tokenIdx: index().on(table.token),
-    senderIdx: index().on(table.sender),
     receiverIdx: index().on(table.receiver),
     senderReceiverIdx: index().on(table.sender, table.receiver),
     flowRateIdx: index().on(table.flowRate),
@@ -359,7 +355,6 @@ export const recipientAndParentToGrantId = onchainTable(
   }),
   (table) => ({
     grantIdIdx: index().on(table.grantId),
-    recipientAndParentIdx: index().on(table.recipientAndParent),
   })
 )
 
