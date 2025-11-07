@@ -1,5 +1,5 @@
+import { fallback, http } from "viem"
 import { base, optimism } from "viem/chains"
-import { mainnet } from "viem/chains"
 
 // helpful for things that we only want to run one time eg: embeddings or chain queries
 export function isBlockRecent(blockTimestamp: number | bigint) {
@@ -9,7 +9,9 @@ export function isBlockRecent(blockTimestamp: number | bigint) {
   return currentTime - ts < FIVE_MINUTES
 }
 
-const getPrefix = (chain: "base" | "eth" | "arbitrum" | "optimism") => {
+type Chain = "base" | "eth" | "arbitrum" | "optimism"
+
+const getPrefix = (chain: Chain) => {
   switch (chain) {
     case "base":
       return "base-mainnet"
@@ -22,10 +24,7 @@ const getPrefix = (chain: "base" | "eth" | "arbitrum" | "optimism") => {
   }
 }
 
-const createAlchemyUrl = (
-  chain: "base" | "eth" | "arbitrum" | "optimism",
-  protocol: "https" | "wss"
-) => {
+const createAlchemyUrl = (chain: Chain, protocol: "https" | "wss") => {
   const prefix = getPrefix(chain)
   const baseUrl = `${prefix}.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
 
@@ -36,22 +35,76 @@ const createAlchemyUrl = (
   }
 }
 
+const createDwellirUrl = (chain: Chain, protocol: "https" | "wss") => {
+  const key = process.env.DWELLIR_API_KEY
+  const dwellirHosts: Partial<Record<Chain, string>> = {
+    base: "api-base-mainnet-archive.n.dwellir.com",
+    optimism: "api-optimism-mainnet-archive.n.dwellir.com",
+  }
+
+  const host = dwellirHosts[chain]
+  if (!host) {
+    return createAlchemyUrl(chain, protocol)
+  }
+
+  const scheme = protocol === "https" ? "https" : "wss"
+  return `${scheme}://${host}/${key}`
+}
+
+type HttpTransport = ReturnType<typeof http>
+
+const defined = <T>(value: T | undefined | null): value is T => !!value
+
+function assertAtLeastTwo<T>(items: T[]): asserts items is [T, T, ...T[]] {
+  if (items.length < 2) {
+    throw new Error("Expected at least two transports.")
+  }
+}
+
+const buildHttpTransports = (chain: Chain): HttpTransport[] => {
+  const httpUrls = [
+    process.env.DWELLIR_API_KEY && createDwellirUrl(chain, "https"),
+    process.env.ALCHEMY_API_KEY && createAlchemyUrl(chain, "https"),
+  ].filter(defined)
+
+  if (httpUrls.length === 0) {
+    throw new Error(`At least one HTTP RPC URL must be configured for ${chain}.`)
+  }
+
+  return httpUrls.map((url) => http(url))
+}
+
+const createRpcTransport = (chain: Chain) => {
+  const httpTransports = buildHttpTransports(chain)
+  if (httpTransports.length === 1) {
+    return httpTransports[0]
+  }
+
+  assertAtLeastTwo(httpTransports)
+  return fallback(httpTransports as readonly [HttpTransport, HttpTransport, ...HttpTransport[]])
+}
+
+const buildWsUrl = (chain: Chain): string => {
+  if (process.env.DWELLIR_API_KEY) {
+    return createDwellirUrl(chain, "wss")
+  }
+  if (process.env.ALCHEMY_API_KEY) {
+    return createAlchemyUrl(chain, "wss")
+  }
+  throw new Error(`At least one WS RPC URL must be configured for ${chain}.`)
+}
+
 export const getChainsAndRpcUrls = () => {
   return {
     base: {
       id: base.id,
-      rpc: createAlchemyUrl("base", "https"),
-      ws: createAlchemyUrl("base", "wss"),
-    },
-    ethereum: {
-      id: mainnet.id,
-      rpc: createAlchemyUrl("eth", "https"),
-      ws: createAlchemyUrl("eth", "wss"),
+      rpc: createRpcTransport("base"),
+      ws: buildWsUrl("base"),
     },
     optimism: {
       id: optimism.id,
-      rpc: createAlchemyUrl("optimism", "https"),
-      ws: createAlchemyUrl("optimism", "wss"),
+      rpc: createRpcTransport("optimism"),
+      ws: buildWsUrl("optimism"),
     },
   }
 }
