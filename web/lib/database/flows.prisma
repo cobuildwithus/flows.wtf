@@ -124,7 +124,6 @@ model Story {
   edits                   Json?
 
   @@index([complete])
-  @@index([id])
   @@index([updated_at])
   @@index([parent_flow_ids])
   @@map("Stories")
@@ -239,8 +238,6 @@ model SuperfluidFlow {
   chainId    Int    @map("chain_id")
 
   @@id([token, sender, receiver, chainId])
-  @@index([token])
-  @@index([sender])
   @@index([receiver])
   @@index([sender, receiver])
   @@index([flowRate])
