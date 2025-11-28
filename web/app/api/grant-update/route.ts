@@ -15,9 +15,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { castId, grantId } = await request.json()
-    if (!castId || !grantId) {
-      return NextResponse.json({ error: "Missing castId or grantId" }, { status: 400 })
+    const { castHash, grantId } = await request.json()
+    if (!castHash || !grantId) {
+      console.error("Missing castHash or grantId", { castHash, grantId })
+      return NextResponse.json({ error: "Missing castHash or grantId" }, { status: 400 })
     }
 
     // Check rate limit
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
       )
     }
 
-    await postBulkIsGrantsUpdateRequest([{ castId, grantId }])
+    await postBulkIsGrantsUpdateRequest([{ castHash, grantId }])
 
     // Increment rate limit counter
     await saveItem(rateLimitKey, currentCount + 1)

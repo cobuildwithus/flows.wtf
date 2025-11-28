@@ -4,8 +4,14 @@ import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
 import type { Grant } from "@prisma/flows"
 import { farcasterDb } from "../farcaster-db"
 import type { Profile } from "@prisma/farcaster"
+import { Prisma } from "@prisma/farcaster"
 
 const MAX_LEVEL = 3
+
+interface CastRow {
+  timestamp: Date
+  computed_tags: string[] | null
+}
 
 export async function getActivity(
   recipient: string,
@@ -45,16 +51,39 @@ export async function getActivity(
 async function getActivityFromCasts(recipient: string, grantIds: string[], startDate: Date) {
   const user = await getFarcasterUserByEthAddress(recipient as `0x${string}`)
 
-  const casts = await farcasterDb.cast.findMany({
-    select: { timestamp: true, computed_tags: true },
-    where: {
-      deleted_at: null,
-      OR: [{ computed_tags: { hasSome: grantIds } }, { fid: user?.fid }],
-      created_at: { gt: startDate },
-      parent_hash: null,
-    },
-    orderBy: { created_at: "asc" },
-  })
+  // Use UNION to hit the partial index on computed_tags while also including fid-based casts
+  const casts = user?.fid
+    ? await farcasterDb.$queryRaw<CastRow[]>`
+        SELECT "timestamp", computed_tags FROM (
+          SELECT "timestamp", computed_tags
+          FROM production.farcaster_casts
+          WHERE deleted_at IS NULL
+            AND computed_tags IS NOT NULL
+            AND array_length(computed_tags, 1) > 0
+            AND computed_tags && ${grantIds}::text[]
+            AND created_at > ${startDate}
+            AND parent_hash IS NULL
+          UNION
+          SELECT "timestamp", computed_tags
+          FROM production.farcaster_casts
+          WHERE deleted_at IS NULL
+            AND fid = ${user.fid}
+            AND created_at > ${startDate}
+            AND parent_hash IS NULL
+        ) AS combined
+        ORDER BY "timestamp" ASC
+      `
+    : await farcasterDb.$queryRaw<CastRow[]>`
+        SELECT "timestamp", computed_tags
+        FROM production.farcaster_casts
+        WHERE deleted_at IS NULL
+          AND computed_tags IS NOT NULL
+          AND array_length(computed_tags, 1) > 0
+          AND computed_tags && ${grantIds}::text[]
+          AND created_at > ${startDate}
+          AND parent_hash IS NULL
+        ORDER BY "timestamp" ASC
+      `
 
   const activityByDate = casts.reduce<Record<string, { count: number; aboutGrant: number }>>(
     (acc, cast) => {

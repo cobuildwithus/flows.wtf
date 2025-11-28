@@ -6,11 +6,11 @@ import { Button } from "../button"
 import { useRouter } from "next/navigation"
 
 export const CheckUpdateButton = ({
-  castId,
+  castHash,
   grantId,
   text = "Check",
 }: {
-  castId: number
+  castHash: string
   grantId: string
   text?: string
 }) => {
@@ -22,7 +22,7 @@ export const CheckUpdateButton = ({
       setLoading(true)
       const response = await fetch("/api/grant-update", {
         method: "POST",
-        body: JSON.stringify({ castId, grantId }),
+        body: JSON.stringify({ castHash, grantId }),
       })
 
       if (!response.ok) {

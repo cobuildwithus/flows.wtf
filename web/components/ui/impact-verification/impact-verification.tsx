@@ -21,11 +21,11 @@ interface Props {
 const ImpactVerificationContent = ({
   verification,
   grantId,
-  castId,
+  castHash,
 }: {
   verification: PrismaJson.ImpactVerification
   grantId?: string
-  castId: number
+  castHash: string
 }) => {
   const verificationGrantId = verification.grant_id
   const isForDifferentGrant =
@@ -58,7 +58,7 @@ const ImpactVerificationContent = ({
             />
             {isForDifferentGrant ? (
               <div onClick={(e) => e.stopPropagation()}>
-                <CheckUpdateButton text="Re-check" castId={castId} grantId={grantId as string} />
+                <CheckUpdateButton text="Re-check" castHash={castHash} grantId={grantId as string} />
               </div>
             ) : (
               <ModelInfo model={verification.model} />
@@ -95,11 +95,13 @@ export const ImpactVerification = ({ cast }: Props) => {
     cast.impact_verifications.find((v) => v.is_grant_update && v.grant_id === grantId) ||
     cast.impact_verifications[numVerifications - 1]
 
+  const castHash = `0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`
+
   return (
     <ImpactVerificationContent
       verification={verification}
       grantId={grantId as string}
-      castId={Number(cast.hash)}
+      castHash={castHash}
     />
   )
 }

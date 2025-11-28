@@ -2,7 +2,7 @@
 
 import { getFarcasterUsersByFids } from "@/lib/farcaster/get-user"
 import { farcasterDb } from "../farcaster-db"
-import type { Profile } from "@prisma/farcaster"
+import type { Cast, Profile } from "@prisma/farcaster"
 
 const MAX_LEVEL = 3
 
@@ -33,17 +33,23 @@ export async function getStartupActivity(flowIds: string[], startDate: Date) {
   )
 }
 
+interface CastRow {
+  timestamp: Date
+  computed_tags: string[] | null
+}
+
 async function getActivityFromCasts(flowIds: string[], startDate: Date) {
-  const casts = await farcasterDb.cast.findMany({
-    select: { timestamp: true, computed_tags: true },
-    where: {
-      deleted_at: null,
-      computed_tags: { hasSome: flowIds },
-      created_at: { gt: startDate },
-      parent_hash: null,
-    },
-    orderBy: { created_at: "asc" },
-  })
+  const casts = await farcasterDb.$queryRaw<CastRow[]>`
+    SELECT "timestamp", computed_tags
+    FROM production.farcaster_casts
+    WHERE deleted_at IS NULL
+      AND computed_tags IS NOT NULL
+      AND array_length(computed_tags, 1) > 0
+      AND computed_tags && ${flowIds}::text[]
+      AND created_at > ${startDate}
+      AND parent_hash IS NULL
+    ORDER BY created_at ASC
+  `
 
   const activityByDate = casts.reduce<Record<string, { count: number; aboutGrant: number }>>(
     (acc, cast) => {
@@ -74,27 +80,31 @@ function getDate(date: Date) {
   return date.toISOString().split("T")[0]
 }
 
+type CastUpdateRow = Pick<
+  Cast,
+  | "hash"
+  | "text"
+  | "created_at"
+  | "embeds_array"
+  | "computed_tags"
+  | "fid"
+  | "mentioned_fids"
+  | "impact_verifications"
+  | "mentions_positions_array"
+>
+
 export async function getStartupUpdates(flowIds: string[], startDate: Date) {
-  const allCasts = await farcasterDb.cast.findMany({
-    where: {
-      deleted_at: null,
-      computed_tags: { hasSome: flowIds },
-      parent_hash: null,
-      created_at: { gt: startDate },
-    },
-    orderBy: { created_at: "desc" },
-    select: {
-      hash: true,
-      text: true,
-      created_at: true,
-      embeds_array: true,
-      computed_tags: true,
-      fid: true,
-      mentioned_fids: true,
-      impact_verifications: true,
-      mentions_positions_array: true,
-    },
-  })
+  const allCasts = await farcasterDb.$queryRaw<CastUpdateRow[]>`
+    SELECT hash, text, created_at, embeds_array, computed_tags, fid, mentioned_fids, impact_verifications, mentions_positions_array
+    FROM production.farcaster_casts
+    WHERE deleted_at IS NULL
+      AND computed_tags IS NOT NULL
+      AND array_length(computed_tags, 1) > 0
+      AND computed_tags && ${flowIds}::text[]
+      AND parent_hash IS NULL
+      AND created_at > ${startDate}
+    ORDER BY created_at DESC
+  `
 
   const profiles = await getFarcasterUsersByFids(allCasts.map((cast) => cast.fid))
 
