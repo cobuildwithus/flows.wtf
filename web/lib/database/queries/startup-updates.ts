@@ -1,10 +1,22 @@
 "use server"
 
 import { getFarcasterUsersByFids } from "@/lib/farcaster/get-user"
+import { getComputedTagForFlow } from "@/lib/flows/gnars-config"
 import { farcasterDb } from "../farcaster-db"
 import type { Cast, Profile } from "@prisma/farcaster"
 
 const MAX_LEVEL = 3
+
+// Map flowIds to their computed tags (for Gnars flows)
+function getComputedTagsForFlows(flowIds: string[]): string[] {
+  const tags = new Set<string>()
+  for (const flowId of flowIds) {
+    tags.add(getComputedTagForFlow(flowId))
+    // Also add the original flowId for backwards compatibility
+    tags.add(flowId)
+  }
+  return Array.from(tags)
+}
 
 export async function getStartupActivity(flowIds: string[], startDate: Date) {
   const casts = await getActivityFromCasts(flowIds, startDate)
@@ -39,13 +51,15 @@ interface CastRow {
 }
 
 async function getActivityFromCasts(flowIds: string[], startDate: Date) {
+  const computedTags = getComputedTagsForFlows(flowIds)
+
   const casts = await farcasterDb.$queryRaw<CastRow[]>`
     SELECT "timestamp", computed_tags
     FROM production.farcaster_casts
     WHERE deleted_at IS NULL
       AND computed_tags IS NOT NULL
       AND array_length(computed_tags, 1) > 0
-      AND computed_tags && ${flowIds}::text[]
+      AND computed_tags && ${computedTags}::text[]
       AND created_at > ${startDate}
       AND parent_hash IS NULL
     ORDER BY created_at ASC
@@ -60,7 +74,7 @@ async function getActivityFromCasts(flowIds: string[], startDate: Date) {
       }
 
       acc[date].count++
-      if (cast.computed_tags?.some((tag) => flowIds.includes(tag))) {
+      if (cast.computed_tags?.some((tag) => computedTags.includes(tag))) {
         acc[date].aboutGrant++
       }
 
@@ -94,13 +108,15 @@ type CastUpdateRow = Pick<
 >
 
 export async function getStartupUpdates(flowIds: string[], startDate: Date) {
+  const computedTags = getComputedTagsForFlows(flowIds)
+
   const allCasts = await farcasterDb.$queryRaw<CastUpdateRow[]>`
     SELECT hash, text, created_at, embeds_array, computed_tags, fid, mentioned_fids, impact_verifications, mentions_positions_array
     FROM production.farcaster_casts
     WHERE deleted_at IS NULL
       AND computed_tags IS NOT NULL
       AND array_length(computed_tags, 1) > 0
-      AND computed_tags && ${flowIds}::text[]
+      AND computed_tags && ${computedTags}::text[]
       AND parent_hash IS NULL
       AND created_at > ${startDate}
     ORDER BY created_at DESC
@@ -116,7 +132,7 @@ export async function getStartupUpdates(flowIds: string[], startDate: Date) {
   }))
 
   const updates = castsWithProfiles.filter((cast) =>
-    cast.computed_tags?.some((tag) => flowIds.includes(tag)),
+    cast.computed_tags?.some((tag) => computedTags.includes(tag)),
   )
 
   return {

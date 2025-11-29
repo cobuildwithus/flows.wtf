@@ -15,6 +15,11 @@ async function fetchFeedbackCasts(url: string): Promise<MinimalCast[]> {
         mentions_positions_array: true,
         text: true,
         profile: { select: { fname: true, avatar_url: true, display_name: true } },
+        ai_model_outputs: {
+          select: { output: true, model: true, created_at: true, rule_id: true },
+          orderBy: { created_at: "desc" },
+          take: 1,
+        },
       },
       where: { deleted_at: null, parent_hash: null, root_parent_url: url },
       orderBy: { created_at: "desc" },

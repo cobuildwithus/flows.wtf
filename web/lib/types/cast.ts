@@ -1,4 +1,4 @@
-import type { Cast, Profile } from "@prisma/farcaster"
+import type { AiModelOutput, Cast, Profile } from "@prisma/farcaster"
 
 export type MinimalCast = Pick<
   Cast,
@@ -11,4 +11,5 @@ export type MinimalCast = Pick<
   | "text"
 > & {
   profile: Pick<Profile, "fname" | "avatar_url" | "display_name">
+  ai_model_outputs?: Pick<AiModelOutput, "output" | "model" | "created_at" | "rule_id">[]
 }

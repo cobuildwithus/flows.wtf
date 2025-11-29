@@ -1,6 +1,6 @@
 "use client"
 
-import type { Cast } from "@prisma/farcaster"
+import type { AiModelOutput, Cast } from "@prisma/farcaster"
 import OpenAI from "@/public/openai.svg"
 import ClaudeColor from "@/public/claude-color.svg"
 import Image from "next/image"
@@ -9,16 +9,105 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsi
 import { ZeroState } from "./zero-state"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip"
 import { useParams } from "next/navigation"
-import { useServerFunction } from "@/lib/hooks/use-server-function"
-import { getGrantById } from "./get-grant"
 import { cn } from "@/lib/utils"
 import { CheckUpdateButton } from "./check-update-button"
 
 interface Props {
-  cast: Pick<Cast, "impact_verifications" | "hash">
+  cast: Pick<Cast, "impact_verifications" | "hash"> & {
+    ai_model_outputs?: Pick<AiModelOutput, "output" | "model" | "created_at" | "rule_id">[]
+  }
 }
 
-const ImpactVerificationContent = ({
+const AiModelVerificationContent = ({
+  aiOutput,
+  castHash,
+  grantId,
+}: {
+  aiOutput: Pick<AiModelOutput, "output" | "model" | "created_at" | "rule_id">
+  castHash: string
+  grantId: string
+}) => {
+  const rawOutput = aiOutput.output as PrismaJson.AiModelOutputResult | null
+  const output = rawOutput && typeof rawOutput === "object" ? rawOutput : { pass: false, reasoning: "" }
+  const isGrantUpdate = output.pass === true
+
+  return (
+    <Collapsible>
+      <div className="rounded-b-md border bg-muted/50 px-7 pb-1.5 pt-2">
+        <CollapsibleTrigger className="w-full focus:outline-none">
+          <div className="flex items-center justify-between">
+            <div className="group flex items-center gap-2">
+              {isGrantUpdate ? (
+                <>
+                  <CircleCheckBig className="size-4 text-green-400/75" />
+                  <span className="text-xs font-medium text-muted-foreground">Verified update</span>
+                </>
+              ) : (
+                <>
+                  <CircleX className="size-4 text-red-400/75" />
+                  <span className="text-xs font-medium text-muted-foreground">Not verified</span>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <div onClick={(e) => e.stopPropagation()}>
+                <CheckUpdateButton text="Re-check" castHash={castHash} grantId={grantId} />
+              </div>
+              <ModelInfo model={aiOutput.model} />
+            </div>
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent>
+          <div className="pb-2 pt-1">
+            <p className="text-xs text-muted-foreground">{output.reasoning}</p>
+          </div>
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
+  )
+}
+
+export const ImpactVerification = ({ cast }: Props) => {
+  const { grantId } = useParams()
+  const castHash = `0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`
+
+  // Prefer new AI model outputs if available
+  if (cast.ai_model_outputs && cast.ai_model_outputs.length > 0) {
+    const latestOutput = cast.ai_model_outputs[0]
+    return (
+      <AiModelVerificationContent
+        aiOutput={latestOutput}
+        castHash={castHash}
+        grantId={grantId as string}
+      />
+    )
+  }
+
+  // Fall back to legacy impact_verifications
+  if (
+    !cast.impact_verifications ||
+    !Array.isArray(cast.impact_verifications) ||
+    cast.impact_verifications.length === 0
+  ) {
+    return <ZeroState cast={cast} grantId={grantId as string} />
+  }
+
+  const numVerifications = cast.impact_verifications.length
+  const verification =
+    cast.impact_verifications.find((v) => v.is_grant_update && v.grant_id === grantId) ||
+    cast.impact_verifications[numVerifications - 1]
+
+  return (
+    <LegacyVerificationContent
+      verification={verification}
+      grantId={grantId as string}
+      castHash={castHash}
+    />
+  )
+}
+
+const LegacyVerificationContent = ({
   verification,
   grantId,
   castHash,
@@ -35,16 +124,6 @@ const ImpactVerificationContent = ({
     verificationGrantId !== "0x0000"
   const isGrantUpdate = verification.is_grant_update && !isForDifferentGrant
 
-  const { data: grant } = useServerFunction(
-    getGrantById,
-    "getGrantById",
-    [isForDifferentGrant ? (verificationGrantId ?? "") : ""],
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
-  )
-
   return (
     <Collapsible>
       <div className="rounded-b-md border bg-muted/50 px-7 pb-1.5 pt-2">
@@ -54,7 +133,6 @@ const ImpactVerificationContent = ({
               isGrantUpdate={isGrantUpdate}
               verification={verification}
               isForDifferentGrant={isForDifferentGrant}
-              grantTitle={grant?.title}
             />
             {isForDifferentGrant ? (
               <div onClick={(e) => e.stopPropagation()}>
@@ -76,33 +154,6 @@ const ImpactVerificationContent = ({
         </CollapsibleContent>
       </div>
     </Collapsible>
-  )
-}
-
-export const ImpactVerification = ({ cast }: Props) => {
-  const { grantId } = useParams()
-
-  if (
-    !cast.impact_verifications ||
-    !Array.isArray(cast.impact_verifications) ||
-    cast.impact_verifications.length === 0
-  ) {
-    return <ZeroState cast={cast} grantId={grantId as string} />
-  }
-
-  const numVerifications = cast.impact_verifications.length
-  const verification =
-    cast.impact_verifications.find((v) => v.is_grant_update && v.grant_id === grantId) ||
-    cast.impact_verifications[numVerifications - 1]
-
-  const castHash = `0x${Buffer.from(new Uint8Array(cast.hash)).toString("hex")}`
-
-  return (
-    <ImpactVerificationContent
-      verification={verification}
-      grantId={grantId as string}
-      castHash={castHash}
-    />
   )
 }
 
@@ -135,12 +186,10 @@ const VerificationStatus = ({
   isGrantUpdate,
   verification,
   isForDifferentGrant,
-  grantTitle,
 }: {
   isGrantUpdate: boolean
   verification: PrismaJson.ImpactVerification
   isForDifferentGrant: boolean
-  grantTitle?: string
 }) => {
   let { score } = verification
   // hot fix for bad AI data
@@ -165,7 +214,7 @@ const VerificationStatus = ({
             })}
           />
           <span className="max-w-[200px] truncate text-ellipsis text-xs font-medium text-muted-foreground">
-            {isForDifferentGrant ? `${grantTitle || "For another grant"}` : "Not verified"}
+            {isForDifferentGrant ? "For another grant" : "Not verified"}
           </span>
         </>
       )}

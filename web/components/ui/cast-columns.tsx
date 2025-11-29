@@ -16,9 +16,19 @@ export function CastColumns({
   const numColumns = casts.length >= 3 ? 3 : casts.length > 1 ? 2 : 1
   const columns = Array.from({ length: numColumns }, () => [] as MinimalCast[])
 
+  const isVerifiedUpdate = (cast: MinimalCast) => {
+    // Check new AI model outputs first
+    if (cast.ai_model_outputs && cast.ai_model_outputs.length > 0) {
+      const output = cast.ai_model_outputs[0].output as { pass?: boolean } | null
+      return output?.pass === true
+    }
+    // Fall back to legacy impact_verifications
+    return cast.impact_verifications?.some((v) => v.is_grant_update)
+  }
+
   const sortedCasts = [
-    ...casts.filter((cast) => cast.impact_verifications?.some((v) => v.is_grant_update)),
-    ...casts.filter((cast) => !cast.impact_verifications?.some((v) => v.is_grant_update)),
+    ...casts.filter((cast) => isVerifiedUpdate(cast)),
+    ...casts.filter((cast) => !isVerifiedUpdate(cast)),
   ]
 
   sortedCasts.forEach((cast, index) => {

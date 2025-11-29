@@ -18,6 +18,7 @@ export const CheckUpdateButton = ({
   const router = useRouter()
 
   const checkUpdate = async () => {
+    const toastId = toast.loading("Checking cast…")
     try {
       setLoading(true)
       const response = await fetch("/api/grant-update", {
@@ -25,25 +26,21 @@ export const CheckUpdateButton = ({
         body: JSON.stringify({ castHash, grantId }),
       })
 
+      const result = await response.json()
+
       if (!response.ok) {
-        if (response.status === 500) {
-          throw new Error(
-            (await response.text()) || "Internal server error. Please try again later.",
-          )
-        }
-        throw new Error("Failed to check update")
+        throw new Error(result.error || "Failed to check update")
       }
 
-      const id = toast.info("Checking update (takes ~45 seconds)...", {
-        duration: 50000,
-      })
-      // wait 50 seconds
-      await new Promise((resolve) => setTimeout(resolve, 45000))
-      toast.success("Verification successful", { id, duration: 2000 })
+      if (result.rulePassed) {
+        toast.success("Verified as grant update!", { id: toastId })
+      } else {
+        toast.error(result.outcomeReason || "Not verified as grant update", { id: toastId })
+      }
       router.refresh()
     } catch (error) {
       console.error("Failed to check update:", error)
-      toast.error((error as Error).message || "Failed to check update")
+      toast.error((error as Error).message || "Failed to check update", { id: toastId })
     } finally {
       setLoading(false)
     }

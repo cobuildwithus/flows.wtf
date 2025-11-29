@@ -61,6 +61,11 @@ declare global {
       date_verified: Date | undefined
     }
 
+    type AiModelOutputResult = {
+      pass: boolean
+      reasoning: string
+    }
+
     type Beneficiary = {
       description: string
       id: string

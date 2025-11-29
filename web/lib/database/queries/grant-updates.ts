@@ -1,16 +1,29 @@
 "use server"
 
 import { getFarcasterUserByEthAddress } from "@/lib/farcaster/get-user"
+import { getComputedTagForFlow } from "@/lib/flows/gnars-config"
 import type { Grant } from "@prisma/flows"
 import { farcasterDb } from "../farcaster-db"
 import type { Profile } from "@prisma/farcaster"
-import { Prisma } from "@prisma/farcaster"
 
 const MAX_LEVEL = 3
 
 interface CastRow {
   timestamp: Date
   computed_tags: string[] | null
+}
+
+// Extract the flow (parentContract) from a grantId and map to computed tag
+function getComputedTagsForGrants(grantIds: string[]): string[] {
+  const tags = new Set<string>()
+  for (const grantId of grantIds) {
+    // grantId format: {flowId}-{recipientId}, extract flowId
+    const flowId = grantId.split("-")[0]
+    tags.add(getComputedTagForFlow(flowId))
+    // Also add the original grantId for backwards compatibility
+    tags.add(grantId)
+  }
+  return Array.from(tags)
 }
 
 export async function getActivity(
@@ -50,6 +63,7 @@ export async function getActivity(
 
 async function getActivityFromCasts(recipient: string, grantIds: string[], startDate: Date) {
   const user = await getFarcasterUserByEthAddress(recipient as `0x${string}`)
+  const computedTags = getComputedTagsForGrants(grantIds)
 
   // Use UNION to hit the partial index on computed_tags while also including fid-based casts
   const casts = user?.fid
@@ -60,7 +74,7 @@ async function getActivityFromCasts(recipient: string, grantIds: string[], start
           WHERE deleted_at IS NULL
             AND computed_tags IS NOT NULL
             AND array_length(computed_tags, 1) > 0
-            AND computed_tags && ${grantIds}::text[]
+            AND computed_tags && ${computedTags}::text[]
             AND created_at > ${startDate}
             AND parent_hash IS NULL
           UNION
@@ -79,7 +93,7 @@ async function getActivityFromCasts(recipient: string, grantIds: string[], start
         WHERE deleted_at IS NULL
           AND computed_tags IS NOT NULL
           AND array_length(computed_tags, 1) > 0
-          AND computed_tags && ${grantIds}::text[]
+          AND computed_tags && ${computedTags}::text[]
           AND created_at > ${startDate}
           AND parent_hash IS NULL
         ORDER BY "timestamp" ASC
@@ -94,7 +108,7 @@ async function getActivityFromCasts(recipient: string, grantIds: string[], start
       }
 
       acc[date].count++
-      if (cast.computed_tags?.some((tag) => grantIds.includes(tag))) {
+      if (cast.computed_tags?.some((tag) => computedTags.includes(tag))) {
         acc[date].aboutGrant++
       }
 
@@ -123,6 +137,7 @@ export async function getGrantUpdates(grants: Pick<Grant, "id" | "recipient">[],
   )
 
   const grantIds = grants.map((grant) => grant.id)
+  const computedTags = getComputedTagsForGrants(grantIds)
   const fids = profiles.map((profile) => profile?.fid).filter((fid) => fid !== undefined)
 
   const allCasts = await farcasterDb.cast.findMany({
@@ -143,6 +158,11 @@ export async function getGrantUpdates(grants: Pick<Grant, "id" | "recipient">[],
       mentioned_fids: true,
       impact_verifications: true,
       mentions_positions_array: true,
+      ai_model_outputs: {
+        select: { output: true, model: true, created_at: true, rule_id: true },
+        orderBy: { created_at: "desc" },
+        take: 1,
+      },
     },
   })
 
@@ -154,7 +174,7 @@ export async function getGrantUpdates(grants: Pick<Grant, "id" | "recipient">[],
   }))
 
   const updates = castsWithProfiles.filter((cast) =>
-    cast.computed_tags?.some((tag) => grantIds.includes(tag)),
+    cast.computed_tags?.some((tag) => computedTags.includes(tag)),
   )
 
   return {

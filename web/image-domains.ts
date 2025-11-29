@@ -27,4 +27,5 @@ export const imageDomains = [
   "logo.moralis.io",
   "www.gnars.com",
   "gnars.com",
+  "dmo9tcngmx442k9b.public.blob.vercel-storage.com",
 ]

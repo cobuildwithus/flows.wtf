@@ -35,7 +35,7 @@ model Profile {
 }
 
 model Cast {
-  hash                     Bytes @id
+  hash                     Bytes           @id
   created_at               DateTime
   updated_at               DateTime
   deleted_at               DateTime?
@@ -50,12 +50,33 @@ model Cast {
   mentions_positions_array Int[]
   root_parent_hash         Bytes?
   root_parent_url          String?
-  profile                  Profile   @relation(fields: [fid], references: [fid])
+  profile                  Profile         @relation(fields: [fid], references: [fid])
   computed_tags            String[]
   embed_summaries          String[]
   /// [ImpactVerification[]]
   impact_verifications     Json?
+  ai_model_outputs         AiModelOutput[]
 
   @@map("farcaster_casts")
+  @@schema("production")
+}
+
+model AiModelOutput {
+  id                Int      @id @default(autoincrement())
+  created_at        DateTime @default(now())
+  model             String
+  prompt_tokens     Int?
+  completion_tokens Int?
+  total_tokens      Int?
+  /// [AiModelOutputResult]
+  output            Json
+  cast_hash         Bytes?
+  rule_id           Int?
+  cast              Cast?    @relation(fields: [cast_hash], references: [hash])
+
+  @@index([cast_hash])
+  @@index([rule_id])
+  @@index([created_at])
+  @@map("ai_model_outputs")
   @@schema("production")
 }
