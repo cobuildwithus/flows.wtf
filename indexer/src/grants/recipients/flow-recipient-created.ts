@@ -74,5 +74,5 @@ async function handleTCRMapping(
 
   if (!parent.tcr) return
 
-  await updateTcrAndItemId(db, parent.tcr, recipientId, flowContract)
+  await updateTcrAndItemId(db, parent.tcr, recipientId.toLowerCase(), flowContract)
 }

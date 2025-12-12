@@ -15,6 +15,7 @@ async function handleItemSubmitted(params: {
   const tcr = event.log.address.toLowerCase()
 
   const { _submitter, _data, _itemID, _evidenceGroupID } = event.args
+  const itemId = _itemID.toLowerCase()
 
   const [flow, challengePeriodDuration] = await Promise.all([
     getFlowFromTcr(context.db, tcr),
@@ -46,7 +47,7 @@ async function handleItemSubmitted(params: {
   )
 
   const grant = await context.db.insert(grants).values({
-    id: _itemID,
+    id: itemId,
     chainId: context.chain.id,
     ...metadata,
     manager: "",
@@ -54,7 +55,7 @@ async function handleItemSubmitted(params: {
     isOnchainStartup: false,
     isAccelerator: false,
     recipient: recipient.toLowerCase(),
-    recipientId: _itemID,
+    recipientId: itemId,
     flowId: flow.id,
     submitter: _submitter.toLowerCase(),
     parentContract: flow.recipient,
@@ -107,7 +108,7 @@ async function handleItemSubmitted(params: {
     allocationStrategies: [],
   })
 
-  await addGrantIdToTcrAndItemId(context.db, tcr, _itemID, grant.id)
+  await addGrantIdToTcrAndItemId(context.db, tcr, itemId, grant.id)
 }
 
 async function getFlowFromTcr(db: Context["db"], tcr: string) {

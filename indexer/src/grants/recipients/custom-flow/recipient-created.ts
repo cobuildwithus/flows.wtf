@@ -24,7 +24,7 @@ async function handleRecipientCreated(params: {
 
   const recipient = rawRecipient.toLowerCase()
   const flowAddress = event.log.address.toLowerCase()
-  const grantId = recipientId.toString()
+  const grantId = recipientId.toString().toLowerCase()
   const timestamp = Number(event.block.timestamp)
   const flow = await getFlow(context.db, flowAddress)
   const rootContract = flow.rootContract

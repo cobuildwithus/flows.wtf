@@ -18,9 +18,16 @@ async function handleRecipientRemoved(params: {
   const flow = await getFlow(context.db, flowAddress)
 
   let removedGrantId: string | null = null
-  if (flow.tcr) removedGrantId = await tryGetGrantIdFromTcrAndItemId(context.db, flow.tcr, recipientId)
+  const normalizedRecipientId = recipientId.toLowerCase()
+  if (flow.tcr) {
+    removedGrantId = await tryGetGrantIdFromTcrAndItemId(context.db, flow.tcr, normalizedRecipientId)
+  }
   if (!removedGrantId) {
-    removedGrantId = await getGrantIdFromFlowContractAndRecipientId(context.db, flowAddress, recipientId)
+    removedGrantId = await getGrantIdFromFlowContractAndRecipientId(
+      context.db,
+      flowAddress,
+      normalizedRecipientId
+    )
   }
 
   await context.db.update(grants, { id: removedGrantId }).set({

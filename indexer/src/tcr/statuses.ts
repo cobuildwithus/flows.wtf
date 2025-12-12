@@ -14,6 +14,7 @@ async function handleItemStatusChange(params: {
 }) {
   const { event, context } = params
   const { _itemID, _itemStatus, _disputed, _resolved } = event.args
+  const itemId = _itemID.toLowerCase()
 
   const tcr = event.log.address.toLowerCase()
   const parent = await context.db.find(tcrToGrantId, { tcr })
@@ -22,13 +23,13 @@ async function handleItemStatusChange(params: {
     return
   }
 
-  let grantId = await tryGetGrantIdFromTcrAndItemId(context.db, parent.tcr, _itemID)
+  let grantId = await tryGetGrantIdFromTcrAndItemId(context.db, parent.tcr, itemId)
   if (!grantId) {
     try {
-      grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, parent.grantId, _itemID)
+      grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, parent.grantId, itemId)
     } catch (err) {
       console.error(
-        `[ItemStatusChange] Grant ID not found for tcr=${parent.tcr} itemId=${_itemID} (flow fallback failed)`,
+        `[ItemStatusChange] Grant ID not found for tcr=${parent.tcr} itemId=${itemId} (flow fallback failed)`,
         err
       )
       return
@@ -37,7 +38,7 @@ async function handleItemStatusChange(params: {
 
   const grant = await context.db.find(grants, { id: grantId })
   if (!grant) {
-    console.error(`[ItemStatusChange] Grant row not found for id=${grantId} (itemId=${_itemID})`)
+    console.error(`[ItemStatusChange] Grant row not found for id=${grantId} (itemId=${itemId})`)
     return
   }
 
