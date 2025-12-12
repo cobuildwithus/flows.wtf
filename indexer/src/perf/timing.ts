@@ -6,7 +6,9 @@ function nowMs(): number {
   try {
     const ns = (process.hrtime as any).bigint?.() as bigint | undefined
     if (ns !== undefined) return Number(ns / 1_000_000n)
-  } catch {}
+  } catch {
+    // Ignore: fallback to Date.now()
+  }
   return Date.now()
 }
 

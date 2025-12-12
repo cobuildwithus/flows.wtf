@@ -2,7 +2,8 @@ import { ponder, type Context, type Event } from "ponder:registry"
 import { Status } from "../enums"
 import { getAddress } from "viem"
 import { grants, tcrToGrantId } from "ponder:schema"
-import { getGrantIdFromTcrAndItemId } from "./tcr-helpers"
+import { tryGetGrantIdFromTcrAndItemId } from "./tcr-helpers"
+import { getGrantIdFromFlowContractAndRecipientId } from "../grants/grant-helpers"
 
 ponder.on("FlowTcr:ItemStatusChange", handleItemStatusChange)
 ponder.on("FlowTcrChildren:ItemStatusChange", handleItemStatusChange)
@@ -14,24 +15,39 @@ async function handleItemStatusChange(params: {
   const { event, context } = params
   const { _itemID, _itemStatus, _disputed, _resolved } = event.args
 
-  const parent = await context.db.find(tcrToGrantId, { tcr: event.log.address.toLowerCase() })
-  if (!parent) throw new Error(`Parent grant not found: ${event.log.address.toLowerCase()}`)
+  const tcr = event.log.address.toLowerCase()
+  const parent = await context.db.find(tcrToGrantId, { tcr })
+  if (!parent) {
+    console.error(`[ItemStatusChange] Parent grant not found for TCR ${tcr}`)
+    return
+  }
 
-  const grantId = await getGrantIdFromTcrAndItemId(context.db, parent.tcr, _itemID)
-  if (!grantId) throw new Error(`Grant not found: ${_itemID}`)
+  let grantId = await tryGetGrantIdFromTcrAndItemId(context.db, parent.tcr, _itemID)
+  if (!grantId) {
+    try {
+      grantId = await getGrantIdFromFlowContractAndRecipientId(context.db, parent.grantId, _itemID)
+    } catch (err) {
+      console.error(
+        `[ItemStatusChange] Grant ID not found for tcr=${parent.tcr} itemId=${_itemID} (flow fallback failed)`,
+        err
+      )
+      return
+    }
+  }
 
   const grant = await context.db.find(grants, { id: grantId })
-  if (!grant) throw new Error(`Grant not found: ${_itemID}`)
+  if (!grant) {
+    console.error(`[ItemStatusChange] Grant row not found for id=${grantId} (itemId=${_itemID})`)
+    return
+  }
 
   let challengePeriodEndsAt = grant.challengePeriodEndsAt
 
   // Update challenge period end time if there is a removal request for this grant
   // Previously it was the end of application challenge period
   if (grant.status === Status.Registered && _itemStatus === Status.ClearingRequested) {
-    const tcr = event.log.address.toLowerCase()
-
     const challengePeriodDuration = await context.client.readContract({
-      address: getAddress(tcr),
+      address: getAddress(parent.tcr),
       abi: context.contracts.FlowTcr.abi,
       functionName: "challengePeriodDuration",
     })

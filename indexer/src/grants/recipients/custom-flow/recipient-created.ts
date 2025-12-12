@@ -7,6 +7,7 @@ import {
   buildCanonicalRecipientGrantId,
 } from "../../grant-helpers"
 import { grants } from "ponder:schema"
+import { upsertGrantIdForTcrAndItemId } from "../../../tcr/tcr-helpers"
 
 ponder.on("CustomFlow:RecipientCreated", handleRecipientCreated)
 
@@ -109,6 +110,9 @@ async function handleRecipientCreated(params: {
 
   await handleRecipientMappings(context.db, recipient, flowAddress, grant.id)
   await addGrantIdToFlowContractAndRecipientId(context.db, flowAddress, recipientId, grant.id)
+  if (flow.tcr) {
+    await upsertGrantIdForTcrAndItemId(context.db, flow.tcr, grantId, grant.id)
+  }
 
   await context.db.update(grants, { id: flow.id }).set((row) => ({
     activeRecipientCount: row.activeRecipientCount + 1,

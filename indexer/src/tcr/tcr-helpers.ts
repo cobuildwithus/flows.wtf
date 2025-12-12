@@ -28,12 +28,38 @@ export async function updateTcrAndItemId(
     })
 }
 
+export async function upsertGrantIdForTcrAndItemId(
+  db: Context["db"],
+  tcr: string,
+  itemId: string,
+  grantId: string
+) {
+  const tcrAndItemId = getId(tcr, itemId)
+  const existing = await db.find(tcrAndItemIdToGrantId, { tcrAndItemId })
+  if (existing) {
+    await db.update(tcrAndItemIdToGrantId, { tcrAndItemId }).set({ grantId })
+    return
+  }
+  await db.insert(tcrAndItemIdToGrantId).values({ tcrAndItemId, grantId })
+}
+
 export async function getGrantIdFromTcrAndItemId(db: Context["db"], tcr: string, itemId: string) {
   const result = await db.find(tcrAndItemIdToGrantId, {
     tcrAndItemId: getId(tcr, itemId),
   })
   if (!result) throw new Error("Grant ID not found for TCR and item ID")
   return result.grantId
+}
+
+export async function tryGetGrantIdFromTcrAndItemId(
+  db: Context["db"],
+  tcr: string,
+  itemId: string
+): Promise<string | null> {
+  const result = await db.find(tcrAndItemIdToGrantId, {
+    tcrAndItemId: getId(tcr, itemId),
+  })
+  return result?.grantId ?? null
 }
 
 const getId = (tcr: string, itemId: string) => `${tcr.toLowerCase()}-${itemId}`
