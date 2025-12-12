@@ -1,10 +1,4 @@
-import {
-  BuilderProfileJobBody,
-  EmbeddingType,
-  ImpactSummaryJobBody,
-  IsGrantUpdateJobBody,
-  JobBody,
-} from "../types/job"
+import { EmbeddingType, ImpactSummaryJobBody, IsGrantUpdateJobBody, JobBody } from "../types/job"
 
 const validateEnvVars = () => {
   if (!process.env.EMBEDDINGS_QUEUE_API_KEY) {
@@ -60,10 +54,6 @@ export async function deleteEmbeddingRequest(contentHash: string, type: Embeddin
 
 export async function postBulkIsGrantsUpdateRequest(payloads: IsGrantUpdateJobBody[]) {
   await makeRequest("/bulk-add-is-grants-update", { jobs: payloads })
-}
-
-export async function postBuilderProfileRequest(payloads: BuilderProfileJobBody[]) {
-  await makeRequest("/bulk-add-builder-profile", { jobs: payloads })
 }
 
 export async function postImpactSummaryRequest(payloads: ImpactSummaryJobBody[]) {

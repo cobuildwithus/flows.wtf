@@ -1,4 +1,4 @@
-import { BuilderProfileJobBody, EmbeddingType, IsGrantUpdateJobBody, JobBody } from "./job"
+import { EmbeddingType, IsGrantUpdateJobBody, JobBody } from "./job"
 
 const validateEnvVars = () => {
   if (!process.env.EMBEDDINGS_QUEUE_URL) {
@@ -59,6 +59,3 @@ export async function postBulkIsGrantsUpdateRequest(payloads: IsGrantUpdateJobBo
   await makeRequest("/bulk-add-is-grants-update", { jobs: payloads })
 }
 
-export async function postBuilderProfileRequest(payloads: BuilderProfileJobBody[]) {
-  await makeRequest("/bulk-add-builder-profile", { jobs: payloads })
-}

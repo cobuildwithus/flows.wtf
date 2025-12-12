@@ -18,6 +18,16 @@ import { useAccount } from "wagmi"
 import { useAgentChat } from "../agent-chat"
 import { base } from "viem/chains"
 
+function getOnchainGrantId(grantId: string): `0x${string}` {
+  // Grant IDs from indexer can be "flowAddress-grantId" format
+  // The contract expects just the grantId part
+  if (grantId.includes("-")) {
+    const parts = grantId.split("-")
+    return parts[parts.length - 1] as `0x${string}`
+  }
+  return grantId as `0x${string}`
+}
+
 interface Props {
   grantId: string
   reason: keyof typeof reasons
@@ -126,7 +136,7 @@ export function RequestGrantRemoval(props: Props) {
                       address: getEthAddress(grant.flow.tcr),
                       chainId,
                       args: [
-                        grant.id as `0x${string}`,
+                        getOnchainGrantId(grant.id),
                         reason.toString() + (comment ? ` || ${comment}` : ""),
                       ],
                     })

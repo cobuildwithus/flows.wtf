@@ -19,6 +19,16 @@ import { useAccount } from "wagmi"
 import { useAgentChat } from "../agent-chat"
 import { Textarea } from "@/components/ui/textarea"
 
+function getOnchainGrantId(grantId: string): `0x${string}` {
+  // Grant IDs from indexer can be "flowAddress-grantId" format
+  // The contract expects just the grantId part
+  if (grantId.includes("-")) {
+    const parts = grantId.split("-")
+    return parts[parts.length - 1] as `0x${string}`
+  }
+  return grantId as `0x${string}`
+}
+
 interface Props {
   grantId: string
   reason: string
@@ -168,7 +178,7 @@ export function ChallengeGrantApplication(props: Props) {
                       abi: [...flowTcrImplAbi, ...erc20VotesArbitratorImplAbi],
                       functionName: "challengeRequest",
                       chainId,
-                      args: [grant.id as `0x${string}`, reason],
+                      args: [getOnchainGrantId(grant.id), reason],
                     })
                   } catch (e: unknown) {
                     toast.error((e as Error)?.message, { id: toastId })
